@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TQM.yarnCount">
+
+    <!--<NavigationPage.TitleView>
+        --><!--<StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand" VerticalOptions="Center" >
+            <Image Source="SasthaLogo.jpg" HorizontalOptions="Center" Aspect="AspectFit" HeightRequest="40" WidthRequest="40">
+
+            </Image>
+            <Label Text="Sri Satha" FontSize="16" TextColor="White" HorizontalOptions="Center" VerticalTextAlignment="Center" />
+        </StackLayout>--><!--
+        <AbsoluteLayout VerticalOptions="CenterAndExpand">
+            <ImageButton Source="menu.png" BackgroundColor="SkyBlue" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="0,0,40,40"/>
+        </AbsoluteLayout>
+    </NavigationPage.TitleView>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add Machine" Clicked="addMachine_Clicked"/>
+    </ContentPage.ToolbarItems>-->
+   
+
+    <StackLayout>
+        <Label Text="Yarn Count Calulator"
+                HorizontalOptions="Center"
+               Margin="0,30"
+                FontSize="25"
+               TextColor="{StaticResource blueColor}"/>
+        <StackLayout Orientation="Horizontal"
+             HorizontalOptions="FillAndExpand"
+                     Margin="10,50">
+            <Button Style="{StaticResource successButton}"
+                        x:Name="testYCButton"
+                        Text="Start Test"
+                    CornerRadius="25"
+                    Margin="10"
+                    Clicked="testYCButton_Clicked"
+                        HorizontalOptions="Start"/>
+            <StackLayout Orientation="Horizontal"
+                 HorizontalOptions="FillAndExpand">
+                <Button Style="{StaticResource warningButton}"
+                        x:Name="displayResultYCButton"
+                        Text="View Result"
+                    CornerRadius="25"
+                        Margin="10"
+                        HorizontalOptions="EndAndExpand"/>
+            </StackLayout>
+        </StackLayout>
+
+        <!--<Button Style="{StaticResource normalButton}"
+                    x:Name="transferYCButton"
+                    Text="Transfer"
+                CornerRadius="25"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"/>-->
+    </StackLayout>
+
+</ContentPage>

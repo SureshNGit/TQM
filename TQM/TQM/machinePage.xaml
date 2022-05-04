@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TQM.machinePage">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Add Machine"
+                Margin="10" 
+                FontSize="25"
+                TextColor="{StaticResource blueColor}"/>
+            <Entry x:Name="machineNameEntry" 
+                   ClearButtonVisibility="WhileEditing"
+                   Margin="40,25,40,15"/>
+            <Button x:Name="addMachineButton"
+                    Text="Save"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    Style="{StaticResource successButton}"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

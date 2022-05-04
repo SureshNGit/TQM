@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FlyoutPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:TQM"
+             x:Class="TQM.flyoutNavigation"
+             Title="Menu"
+            NavigationPage.HasNavigationBar="false">
+
+    <FlyoutPage.Flyout>
+        <local:flyoutMenuPage x:Name="flyout"/>
+    </FlyoutPage.Flyout>
+
+    <FlyoutPage.Detail>
+        <NavigationPage>
+            <x:Arguments>
+                <local:yarnCount/>
+            </x:Arguments>
+        </NavigationPage>
+    </FlyoutPage.Detail>
+    
+</FlyoutPage>

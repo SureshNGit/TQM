@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TQM.MainPage">
+
+    <!--<ContentPage.ToolbarItems>
+        <ToolbarItem Text="Sri Sastha"></ToolbarItem>
+    </ContentPage.ToolbarItems>-->
+
+    <NavigationPage.TitleView>
+        <StackLayout Orientation="Horizontal" HorizontalOptions="StartAndExpand" VerticalOptions="Center" Spacing="10">
+            <Image Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40">
+
+            </Image>
+            <Label Text="Sri Satha" FontSize="16" TextColor="White" VerticalTextAlignment="Center" />
+        </StackLayout>
+    </NavigationPage.TitleView>
+
+    <StackLayout Margin="15" VerticalOptions="Center">
+        <Entry x:Name="userNameEntry" 
+               Placeholder="User Name"
+               Margin="40,0,40,5"></Entry>
+        <Entry x:Name="passWordEntry" 
+               Placeholder="Password" 
+               IsPassword="True"
+               Margin="40,5"></Entry>
+        <Button x:Name="loginButton" 
+                HorizontalOptions="Center"
+                Text="Login" Style="{StaticResource normalButton}" 
+                Clicked="loginButton_Clicked"></Button>
+    </StackLayout>
+
+</ContentPage>
