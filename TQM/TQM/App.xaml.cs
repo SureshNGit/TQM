@@ -4,6 +4,7 @@ namespace TQM
 {
     public partial class App : Application
     {
+        public static string DatabaseLocation = string.Empty;
         public App()
         {
             InitializeComponent();
@@ -16,6 +17,8 @@ namespace TQM
             InitializeComponent();
 
             MainPage = new NavigationPage(new MainPage());
+
+            DatabaseLocation = databasePath;
         }
 
         protected override void OnStart()
