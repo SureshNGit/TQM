@@ -39,6 +39,21 @@ namespace TQM
                     });
 
                 }
+                else if (item.Title == "Bluetooth Settings")
+                {
+
+                    ObservableCollection<flyoutItemPage> flyItems = new ObservableCollection<flyoutItemPage>();
+
+                    flyout.listview.ItemsSource = flyItems;
+
+                    flyItems.Add(new flyoutItemPage
+                    {
+                        Title = "Yarn Count",
+                        ImageSource = "yarn.jpeg",
+                        TargetPage = typeof(yarnCount)
+                    });
+
+                }
 
                 if (item.Title == "Yarn Count")
                 {

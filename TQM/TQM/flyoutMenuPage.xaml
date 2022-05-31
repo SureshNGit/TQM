@@ -10,6 +10,7 @@
             <ListView.ItemsSource>
                 <x:Array Type="{x:Type local:flyoutItemPage}">
                     <local:flyoutItemPage Title="Add Machine" ImageSource="machine.png" TargetPage="{x:Type local:machinePage}" />
+                    <local:flyoutItemPage Title="Bluetooth Settings" ImageSource="bluetooth.png" TargetPage="{x:Type local:BluetoothConfig}" />
                 </x:Array>
             </ListView.ItemsSource>
 

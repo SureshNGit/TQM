@@ -6,7 +6,6 @@ using Android.OS;
 using Android.Runtime;
 using System.IO;
 
-
 namespace TQM.Droid
 {
     //[Activity(Label = "TQM", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
