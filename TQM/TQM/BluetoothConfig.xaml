@@ -7,13 +7,11 @@
     <ContentPage.Content>
         <StackLayout>
            <StackLayout>
-                <ListView x:Name="lv_devices" ItemSelected="lv_devices_ItemSelected">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextCell Text="{Binding Id}" Detail="{Binding Address}"/>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <Label x:Name="lbl_output" Text="Output......"
+                HorizontalOptions="Center"
+               Margin="0,30"
+                FontSize="25"
+               TextColor="{StaticResource blueColor}"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

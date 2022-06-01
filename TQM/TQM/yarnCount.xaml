@@ -47,6 +47,16 @@
             </StackLayout>
         </StackLayout>
 
+        <StackLayout>
+            <StackLayout>
+                <Label x:Name="lbl_output" Text="Output......"
+                HorizontalOptions="Center"
+               Margin="0,30"
+                FontSize="25"
+               TextColor="{StaticResource blueColor}"/>
+            </StackLayout>
+        </StackLayout>
+
         <!--<Button Style="{StaticResource normalButton}"
                     x:Name="transferYCButton"
                     Text="Transfer"
