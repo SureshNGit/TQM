@@ -1,70 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:vm="clr-namespace:TQM.ViewModel"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              x:Class="TQM.BluetoothConfig">
 
-
-    <ContentPage.BindingContext>
-        <vm:DeviceViewModel></vm:DeviceViewModel>
-    </ContentPage.BindingContext>
-    
+  
     <ContentPage.Content>
         <StackLayout>
-            <StackLayout>
-                <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-            </StackLayout>
-            <StackLayout>
-                <Button Style="{StaticResource warningButton}" 
-                    x:Name="btnConnect"
-                    Text="Connect"
-                    Clicked="btnConnect_Clicked">
-
-                </Button>
-            </StackLayout>
-            <StackLayout>
-                <Button Style="{StaticResource warningButton}" 
-                    x:Name="btnStatus"
-                    Text="Status"
-                    Clicked="btnStatus_Clicked">
-
-                </Button>
-            </StackLayout>
-            <StackLayout>
-                <Button Style="{StaticResource warningButton}" 
-                    x:Name="btnScan"
-                    Text="Scan"
-                   Clicked="btnScan_Clicked">
-
-                </Button>
-            </StackLayout>
-            <!--<StackLayout>
-                <Button Style="{StaticResource warningButton}" 
-                    x:Name="btnKnow"
-                    Text="Know"
-                   Clicked="btnKnow_Clicked">
-
-                </Button>
-            </StackLayout>
-            <StackLayout>
-                <Button Style="{StaticResource warningButton}" 
-                    x:Name="btnGetServices"
-                    Text="Get Services"
-                   Clicked="btnGetServices_Clicked">
-
-                </Button>
-            </StackLayout>-->
-            <StackLayout>
-                <ListView x:Name="lv" ItemSelected="lv_ItemSelected" BackgroundColor="Yellow" SeparatorColor="Aqua" >
+           <StackLayout>
+                <ListView x:Name="lv_devices" ItemSelected="lv_devices_ItemSelected">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <ViewCell>
-                                <StackLayout>
-                                    <Label Text="{Binding NativeDevice.ID}"></Label>
-                                    <Label Text="{Binding NativeDevice.Name}"></Label>
-                                </StackLayout>
-                            </ViewCell>
+                            <TextCell Text="{Binding Id}" Detail="{Binding Address}"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>

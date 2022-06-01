@@ -1,99 +1,66 @@
-﻿using Plugin.BLE;
-using Plugin.BLE.Abstractions.Contracts;
-using Plugin.BLE.Abstractions.Exceptions;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using Plugin.BluetoothClassic.Abstractions;
+using System;
+using System.Diagnostics;
+using System.Threading;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+
 
 namespace TQM
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class BluetoothConfig : ContentPage
     {
-        IBluetoothLE ble;
-        IAdapter adapter;
-        ObservableCollection<IDevice> deviceList;
-        IDevice device;
-        IService Service;
-        IList<IService> Services;
+        Memory<byte> BufferSize;
+        private CancellationTokenSource cs;
+        private IBluetoothConnection connection;
 
         public BluetoothConfig()
         {
             InitializeComponent();
-            ble = CrossBluetoothLE.Current;
-            adapter = CrossBluetoothLE.Current.Adapter;
-            deviceList = new ObservableCollection<IDevice>();
-            lv.ItemsSource = deviceList;
 
+            FillDevices();
         }
 
-        private async void btnConnect_Clicked(object sender, System.EventArgs e)
+        private void FillDevices()
+        {
+            var adapter = DependencyService.Resolve<IBluetoothAdapter>();
+            lv_devices.ItemsSource = adapter.BondedDevices;
+        }
+
+        private void lv_devices_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            BluetoothDeviceModel device = (BluetoothDeviceModel)e.SelectedItem;
+            if (device != null)
+            {
+                var _bluetoothAdapter = DependencyService.Resolve<IBluetoothAdapter>();
+                connection = _bluetoothAdapter.CreateConnection(device);
+
+                Debug.WriteLine("Connected to $$$$$$$$$$$$$$$$$" + device.Name);
+                read();
+            }
+        }
+
+        private async void read()
         {
 
-            try
+            var buffer = new byte[8192];
+            BufferSize = new Memory<byte>(buffer);
+            await connection.ConnectAsync();
+            cs = new CancellationTokenSource();
+            if (connection.DataAvailable)
             {
-                if (device != null)
+                int response = await connection.ReciveAsync(BufferSize, cs.Token);
+                Debug.WriteLine("Byes Read $$$$$$$$$$$$$$$$$" + response);
+                foreach (char c in BufferSize)
                 {
-                    await adapter.ConnectToDeviceAsync(device);
-                }
-                else
-                {
-                    await DisplayAlert("Notice", "No Device Selected!!!", "OK");
+
                 }
             }
-            catch (DeviceConnectionException ex)
-            {
-                await DisplayAlert("Notice", ex.Message.ToString(), "Error!");
-            }
-
         }
 
-        private void btnStatus_Clicked(object sender, System.EventArgs e)
-        {
-            var state = ble.State;
-            this.DisplayAlert("Notice", state.ToString(), "OK");
 
-        }
 
-        private async void btnScan_Clicked(object sender, System.EventArgs e)
-        {
-            deviceList.Clear();
-            adapter.DeviceDiscovered += (s, a) =>
-            {
-                deviceList.Add(a.Device);
-            };
-            if (!ble.Adapter.IsScanning)
-            {
-                await adapter.StartScanningForDevicesAsync();
-            }
-        }
 
-        //private async void btnKnow_Clicked(object sender, System.EventArgs e)
-        //{
-        //    try
-        //    {
-        //        await adapter.ConnectToKnownDeviceAsync(new Guid("guid"));
-        //    }
-        //    catch (DeviceConnectionException ex)
-        //    {
-        //        await DisplayAlert("Notice", ex.Message.ToString(), "OK");
-        //    }
-        //}
-
-        //private async void btnGetServices_Clicked(object sender, EventArgs e)
-        //{
-        //    Services = (IList<IService>)await device.GetServicesAsync();
-        //    Service = (IService)await device.GetServicesAsync();
-        //}
-
-        private void lv_ItemSelected(object sender, SelectedItemChangedEventArgs e)
-        {
-            if (lv.SelectedItem == null)
-            {
-                return;
-            }
-            device = lv.SelectedItem as IDevice;
-        }
     }
 }
