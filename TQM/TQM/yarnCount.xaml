@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TQM.yarnCount">
+             x:Class="TQM.yarnCount" >
+    
+   
 
     <!--<NavigationPage.TitleView>
         --><!--<StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand" VerticalOptions="Center" >
@@ -26,6 +28,25 @@
                Margin="0,30"
                 FontSize="25"
                TextColor="{StaticResource blueColor}"/>
+        
+        <StackLayout>
+            <Frame Grid.RowSpan="3" Grid.ColumnSpan="2" BackgroundColor="LightGray">
+                <Label x:Name="lbl_error" VerticalOptions="Center" HorizontalOptions="Center" Text="" TextColor="red" FontSize="Medium"/>
+            </Frame>
+        </StackLayout>
+
+        <Entry x:Name="entry_yardcount" 
+               Text="6"
+                   ClearButtonVisibility="WhileEditing"
+                    Keyboard="Numeric"
+                   Margin="40,25,40,15"/>
+
+        <Entry x:Name="entry_testcount" 
+               Text="1"
+                   ClearButtonVisibility="WhileEditing"
+                    Keyboard="Numeric"
+                   Margin="40,25,40,15"/>
+
         <StackLayout Orientation="Horizontal"
              HorizontalOptions="FillAndExpand"
                      Margin="10,50">
@@ -48,21 +69,13 @@
         </StackLayout>
 
         <StackLayout>
-            <StackLayout>
-                <Label x:Name="lbl_output" Text="Output......"
+                <Label x:Name="lbl_output" Text=""
                 HorizontalOptions="Center"
                Margin="0,30"
                 FontSize="25"
                TextColor="{StaticResource blueColor}"/>
-            </StackLayout>
         </StackLayout>
 
-        <!--<Button Style="{StaticResource normalButton}"
-                    x:Name="transferYCButton"
-                    Text="Transfer"
-                CornerRadius="25"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center"/>-->
     </StackLayout>
 
 </ContentPage>
