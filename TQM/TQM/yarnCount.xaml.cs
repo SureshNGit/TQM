@@ -1,7 +1,6 @@
 ﻿using Android.Bluetooth;
 using Java.IO;
 using Java.Util;
-using Plugin.BluetoothClassic.Abstractions;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -17,42 +16,62 @@ namespace TQM
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class yarnCount : ContentPage, INotifyPropertyChanged
     {
-        private CancellationTokenSource cs;
-        private IBluetoothConnection connection;
         private BluetoothSocket _socket;
         BluetoothAdapter adapter;
         BluetoothDevice device;
         const decimal MIN_VAL = 0.0m;
         const decimal ZERO = 0.0m;
-        private string userMsg;
+        const int PER_TEST_LOOP_COUNT = 100;
+        const int DATA_READ_LOOP_COUNT = 100;
+        const int STABLE_DATA_CHECK = 25;
+        private decimal current_stable_data = 0;
 
-        public string UserMsg
+        public yarnCount()
         {
-            get
+
+            InitializeComponent();
+            checkCommunication(true);
+        }
+
+        private void checkCommunication(bool toggleStartBtn)
+        {
+            if (!initializeBluetooth())
             {
-                return userMsg;
-            }
-            set
-            {
-                if (userMsg != value)
+                _socket.Dispose();
+                device.Dispose();
+                adapter.Dispose();
+                UpdateUserNotification("Communication Error!!!");
+                if (toggleStartBtn)
                 {
-                    userMsg = value;
-                    this.OnPropertyChanged("UserMsg");
+                    testYCButton.IsEnabled = false;
+                    testYCButton.BackgroundColor = Color.SlateGray;
+                }
+            }
+            else
+            {
+                CancellationTokenSource src = new CancellationTokenSource();
+                CancellationToken ct = src.Token;
+                ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
+                src.Cancel();
+                if (!blueState)
+                {
+                    UpdateUserNotification("Communication Error!!!");
+                    if (toggleStartBtn)
+                    {
+                        testYCButton.IsEnabled = false;
+                        testYCButton.BackgroundColor = Color.SlateGray;
+                    }
                 }
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void addMachine_Clicked(object sender, EventArgs e)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this,
-                    new PropertyChangedEventArgs(propertyName));
-            };
+            Navigation.PushAsync(new machinePage());
         }
 
-        private async void updateLabelText(string msg)
+        private async void UpdateUserNotification(string msg)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
@@ -60,71 +79,91 @@ namespace TQM
             });
         }
 
-        private async void updateOutputLabelText(string msg)
+        private async void showAlert(string msg)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                lbl_output.Text = msg;
+                DisplayAlert("Notice", msg, "Ok");
+            });
+        }
+
+        private async void reset()
+        {
+            current_stable_data = 0;
+            UpdateUserNotification("");
+            checkCommunication(false);
+            Device.BeginInvokeOnMainThread(() =>
+            {
                 testYCButton.IsEnabled = true;
                 testYCButton.BackgroundColor = Color.Green;
             });
         }
 
-        public yarnCount()
-        {
-
-            InitializeComponent();
-            if (!initializeBluetooth())
-            {
-                _socket.Dispose();
-                device.Dispose();
-                adapter.Dispose();
-                DisplayAlert("Alert", "Communication Error!!!", "OK");
-            }
-
-
-        }
-
-
-
-
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
+            UpdateUserNotification("");
+            string testCount_str = entry_testcount.Text;
+            int testCount = int.Parse(testCount_str);
+            if (testCount_str == null || testCount_str == "")
+            {
+                UpdateUserNotification("Test count cannot be zero!!!");
+                return;
+            }
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-            await Task.Run(async () => await runTest(entry_testcount.Text), ct);
+            await Task.Run(async () => await HandleTest(testCount), ct);
             src.Cancel();
         }
 
-
-
-        private async Task runTest(string testCount_str)
+        private async Task HandleTest(int testCount)
         {
-            if (testCount_str == null || testCount_str == "")
+            try
             {
-                updateLabelText("Test count cannot be zero!!!");
-                return;
-            }
-            int testCount = int.Parse(testCount_str);
-            CancellationTokenSource src = new CancellationTokenSource();
-            CancellationToken ct = src.Token;
-            ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-            bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
-            src.Cancel();
-            if (blueState)
-            {
-
-
                 for (int i = 0; i < testCount; i++)
                 {
-                    lbl_output.Text = "";
-                    bool testStatus = true;
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    bool runResult = Task.Run(async () => await RunTest(), ct).Result;
+                    src.Cancel();
+                    if (runResult)
+                    {
+                        showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
+                    }
+                    else
+                    {
+                        showAlert("Test - [" + (i + 1) + "] Failed!!! Please start test from begining!!!");
+                        reset();
+                        break;
+                    }
+                }
+                reset();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                showAlert("Communication Error. Please start test from begining!!!");
+                reset();
+            }
+        }
+
+        private async Task<bool> RunTest()
+        {
+            try
+            {
+                CancellationTokenSource src = new CancellationTokenSource();
+                CancellationToken ct = src.Token;
+                ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
+                src.Cancel();
+                if (blueState)
+                {
                     bool initialWeigthCheck = false;
                     int perTestLoopCount = 0;
-                    while (testStatus)
+                    while (true)
                     {
                         CancellationTokenSource src_1 = new CancellationTokenSource();
                         CancellationToken ct_1 = src_1.Token;
@@ -133,33 +172,26 @@ namespace TQM
                         src_1.Cancel();
                         if (!blueState)
                         {
+                            UpdateUserNotification("Communication Error!!!");
                             disposeble();
-                            await DisplayAlert("Alert", "Communication Error!!!", "OK");
-                            break;
+                            return false;
                         }
-
-
-                        String balOutput = Listen();
+                        String balOutput = Listen(initialWeigthCheck);
                         Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
                         if (balOutput != "")
                         {
                             if (balOutput == "reset")
                             {
-                                updateLabelText("Remove weigth to ensure zero!!!");
+                                UpdateUserNotification("Remove weigth to ensure zero!!!");
                                 Debug.WriteLine("Remove weigth to ensure zero!!!");
-                                //lbl_error.Text = "Remove weigth to ensure zero!!!";
-                                //lbl_error.TextColor = Color.Red;
                                 disposeble();
-                                //break;
                             }
                             else if (balOutput == "fail")
                             {
-                                updateLabelText("Read data failed!!!");
+                                UpdateUserNotification("Read data failed!!!");
                                 Debug.WriteLine("Read data failed");
-                                //lbl_error.Text = "Read data failed";
-                                //lbl_error.TextColor = Color.Red;
                                 disposeble();
-                                return;
+                                return false;
                             }
                             else
                             {
@@ -169,77 +201,65 @@ namespace TQM
                                     if (s_op == ZERO || s_op <= MIN_VAL)
                                     {
                                         initialWeigthCheck = true;
-                                        updateLabelText("Place object to start test!!!");
+                                        UpdateUserNotification("Place object to start test!!!");
                                         Debug.WriteLine("Place object to start test!!!");
-                                        //lbl_error.Text = "Place object to start test!!!";
-                                        //lbl_error.TextColor = Color.Green;
                                         disposeble();
-
                                     }
                                     else
                                     {
-                                        updateLabelText("Remove weigth to ensure zero!!!");
+                                        UpdateUserNotification("Remove weigth to ensure zero!!!");
                                         Debug.WriteLine("Remove weigth to ensure zero!!!");
-                                        //lbl_error.Text = "Remove weigth to ensure zero!!!";
-                                        //lbl_error.TextColor = Color.Red;
                                         disposeble();
-                                        //break;
                                     }
                                 }
                                 else
                                 {
                                     if (s_op == ZERO)
                                     {
-                                        updateLabelText("Place object to start test!!!");
+                                        UpdateUserNotification("Place object to start test!!!");
                                         Debug.WriteLine("Place object to start test!!!");
-                                        //lbl_error.Text = "Place object to start test!!!";
-                                        //lbl_error.TextColor = Color.Green;
                                         disposeble();
                                     }
                                     else
                                     {
-                                        //lbl_output.Text = "Stable value : " + balOutput;
-                                        updateOutputLabelText("Stable value : " + balOutput);
-                                        updateLabelText("");
+                                        current_stable_data = s_op;
+                                        UpdateUserNotification("");
                                         disposeble();
-                                        break;
+                                        return true;
                                     }
                                 }
-
                             }
                         }
                         else
                         {
-                            updateLabelText("Data is unstable!!! Ensure weighing machine is covered properly");
+                            UpdateUserNotification("Data is unstable!!! Ensure weighing machine is covered properly");
                             Debug.WriteLine("Data is unstable!!! Ensure weighing machine is covered properly");
-                            //lbl_error.Text = "Data is unstable!!! Ensure weighing machine is covered properly";
-                            //lbl_error.TextColor = Color.Red;
                             disposeble();
-                            //break;
                         }
-                        if (perTestLoopCount > 25)
+                        if (perTestLoopCount > PER_TEST_LOOP_COUNT)
                         {
-                            updateLabelText("Improper Test!!! Start new test");
+                            UpdateUserNotification("Improper Test!!! Start new test");
                             Debug.WriteLine("Improper Test!!! Start new test");
-                            //lbl_error.Text = "Improper Test!!! Start new test";
-                            //lbl_error.TextColor = Color.Red;
                             disposeble();
-                            return;
+                            return false;
                         }
                         perTestLoopCount += 1;
                     }
-
+                }
+                else
+                {
+                    disposeble();
+                    UpdateUserNotification("Communication Error!!!");
+                    return false;
                 }
             }
-            else
+            catch (Exception ex)
             {
                 disposeble();
-                updateLabelText("Communication Error!!!");
-                //lbl_error.Text = "Communication Error!!!";
+                Debug.WriteLine(ex.ToString());
+                return false;
             }
         }
-
-
 
         private void disposeble()
         {
@@ -255,12 +275,6 @@ namespace TQM
                 Debug.WriteLine("Exception handled!!!! Error:" + ex.Message.ToString());
             }
         }
-
-        private void addMachine_Clicked(object sender, EventArgs e)
-        {
-            Navigation.PushAsync(new machinePage());
-        }
-
 
         public bool initializeBluetooth()
         {
@@ -343,19 +357,16 @@ namespace TQM
             return sb.ToString();
         }
 
-        private string Listen()
+        private string Listen(bool iwc)
         {
             string op = "";
             string prevOp = "";
-
             bool Listening = true;
             Debug.WriteLine("Listening has been started.");
-
             while (Listening)
             {
                 try
                 {
-
                     int loopCount = 0;
                     int stableCount = 0;
                     while (true)
@@ -368,23 +379,17 @@ namespace TQM
                             Debug.WriteLine("Output: " + op);
                             while (op != null)
                             {
-                                if (op.Contains("-"))
-                                {
-                                    return "reset";
-
-                                }
+                                if (op.Contains("-")) { return "reset"; }
                                 else
                                 {
                                     decimal op_dec = decimal.Parse(op);
                                     Debug.WriteLine("Output Modifed to int: [" + op_dec + "]: greater than 0?: " + (op_dec > 0));
-
+                                    if (!iwc) { return op; }
                                 }
-
-
                                 if (prevOp == op)
                                 {
                                     stableCount += 1;
-                                    if (stableCount > 15)
+                                    if (stableCount > STABLE_DATA_CHECK)
                                     {
                                         Debug.WriteLine("Stable Output: " + op.Trim('\0'));
                                         return op;
@@ -397,18 +402,13 @@ namespace TQM
                                 prevOp = op;
                                 op = RemoveSpecialCharacters(buffer.ReadLine());
 
-                                if (loopCount > 50)
+                                if (loopCount > DATA_READ_LOOP_COUNT)
                                 {
                                     return "";
                                 }
                                 loopCount += 1;
                             }
-
-
-
                         }
-
-
                     }
                 }
                 catch (Java.IO.IOException e)
@@ -417,10 +417,8 @@ namespace TQM
                     Listening = false;
                     return "fail";
                 }
-
             }
-            Debug.WriteLine("Listening has ended.");
-
+            Debug.WriteLine("Listening has ended....");
             return op;
         }
     }

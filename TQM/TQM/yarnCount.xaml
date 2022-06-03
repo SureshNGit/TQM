@@ -42,7 +42,7 @@
                    Margin="40,25,40,15"/>
 
         <Entry x:Name="entry_testcount" 
-               Text="1"
+               Text="2"
                    ClearButtonVisibility="WhileEditing"
                     Keyboard="Numeric"
                    Margin="40,25,40,15"/>
@@ -68,13 +68,7 @@
             </StackLayout>
         </StackLayout>
 
-        <StackLayout>
-                <Label x:Name="lbl_output" Text=""
-                HorizontalOptions="Center"
-               Margin="0,30"
-                FontSize="25"
-               TextColor="{StaticResource blueColor}"/>
-        </StackLayout>
+
 
     </StackLayout>
 

@@ -11,7 +11,8 @@ namespace TQM
 
         private void loginButton_Clicked(object sender, System.EventArgs e)
         {
-            Navigation.PushAsync(new homePage());
+            //Navigation.PushAsync(new homePage());
+            Navigation.PushAsync(new flyoutNavigation());
         }
     }
 }
