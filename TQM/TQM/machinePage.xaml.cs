@@ -5,6 +5,7 @@ using Xamarin.Forms.Xaml;
 namespace TQM
 {
     using SQLite;
+    using System;
     using TQM.Model;
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
@@ -17,15 +18,16 @@ namespace TQM
 
         private void addMachineButton_Clicked(object sender, System.EventArgs e)
         {
-            machineModel machine = new machineModel()
+            MachineModel machinemodel = new MachineModel()
             {
                 machineName = machineNameEntry.Text,
+                createdate = DateTime.Now
             };
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                conn.CreateTable<machineModel>();
-                int row = conn.Insert(machine);
+                conn.CreateTable<MachineModel>();
+                int row = conn.Insert(machinemodel);
                 if (row > 0)
                 {
                     DisplayAlert("Success", "Machine Added Successfully!!!", "OK");

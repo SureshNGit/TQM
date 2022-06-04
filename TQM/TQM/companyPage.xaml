@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TQM.companyPage">
+
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem x:Name="btn_Save" Text="Save" Clicked="btn_Save_Clicked"/>
+    </ContentPage.ToolbarItems>
+    
+    <ContentPage.Content>
+        <StackLayout>
+            <Entry x:Name="entry_companyName" Placeholder="Enter Company Name"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

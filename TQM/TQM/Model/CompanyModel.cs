@@ -3,12 +3,14 @@ using System;
 
 namespace TQM.Model
 {
-    public class MachineModel
+    public class CompanyModel
     {
         [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
-        [MaxLength(50)]
-        public string machineName { get; set; }
+        public int id { get; set; }
+
+        [MaxLength(100)]
+        public string Name { get; set; }
+
         public DateTime createdate { get; set; }
     }
 }

@@ -28,6 +28,8 @@
                 HorizontalOptions="Center"
                 Text="Login" Style="{StaticResource normalButton}" 
                 Clicked="loginButton_Clicked"></Button>
+        <Button x:Name="btn_addcompany" Text="Company" BorderWidth="0" Clicked="btn_addcompany_Clicked" />
+        <Button x:Name="btn_adduser" Text="User" BorderWidth="0" Clicked="btn_adduser_Clicked" />
     </StackLayout>
 
 </ContentPage>
