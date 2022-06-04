@@ -1,11 +1,12 @@
 ﻿using SQLite;
+using System;
 
 namespace TQM.Model
 {
     public class YarnCountConfigModel
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+        [PrimaryKey]
+        public Guid ID { get; set; }
 
         public string countsysname { get; set; }
 

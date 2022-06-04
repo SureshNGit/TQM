@@ -5,8 +5,8 @@ namespace TQM.Model
 {
     public class CompanyModel
     {
-        [PrimaryKey, AutoIncrement]
-        public int id { get; set; }
+        [PrimaryKey]
+        public Guid ID { get; set; }
 
         [MaxLength(100)]
         public string Name { get; set; }

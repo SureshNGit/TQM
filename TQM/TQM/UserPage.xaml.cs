@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using SQLiteNetExtensions.Extensions;
 using System;
 using System.Collections.Generic;
 using TQM.Model;
@@ -11,15 +12,35 @@ namespace TQM
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class UserPage : ContentPage
     {
-
+        private Guid currentID;
         public UserPage()
         {
             InitializeComponent();
             SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
             conn.CreateTable<CompanyModel>();
-            List<CompanyModel> companieslist = conn.Table<CompanyModel>().Where(CompanyModel => CompanyModel.id == 1).ToList();
+            List<CompanyModel> companieslist = conn.Table<CompanyModel>().ToList();
             picker_companyname.ItemsSource = companieslist;
             conn.Close();
+        }
+
+        public UserPage(UserModelView selectedItem)
+        {
+            InitializeComponent();
+            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+            conn.CreateTable<CompanyModel>();
+            List<CompanyModel> companieslist = conn.Table<CompanyModel>().ToList();
+            picker_companyname.ItemsSource = companieslist;
+            conn.Close();
+            picker_companyname.SelectedIndex = 1;
+            entry_firstname.Text = selectedItem.firstname;
+            entry_lastname.Text = selectedItem.lastname;
+            entry_userid.Text = selectedItem.userId;
+            entry_password.Text = selectedItem.password;
+            switch_admin.IsToggled = selectedItem.isAdmin;
+            switch_active.IsToggled = selectedItem.isActive;
+            currentID = Guid.Empty;
+            currentID = selectedItem.ID;
+            btn_save.Text = "Update";
         }
 
         private void btn_save_Clicked(object sender, EventArgs e)
@@ -27,45 +48,72 @@ namespace TQM
             var selectedItem = picker_companyname.SelectedItem as CompanyModel;
             SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
             conn.CreateTable<CompanyModel>();
-            List<CompanyModel> selectedCompany = conn.Table<CompanyModel>().Where(CompanyModel => CompanyModel.id == selectedItem.id).ToList();
+            List<CompanyModel> selectedCompany = conn.Table<CompanyModel>().Where(CompanyModel => CompanyModel.ID == selectedItem.ID).ToList();
             conn.Close();
             conn = new SQLiteConnection(App.DatabaseLocation);
             conn.CreateTable<UserModel>();
-            List<UserModel> existingUserList = conn.Table<UserModel>().Where(UserModel =>
+            List<UserModel> existingUserList = conn.GetAllWithChildren<UserModel>().FindAll(UserModel =>
                             ((UserModel.firstname.ToLower().Contains(entry_firstname.Text.ToLower())) &&
                             (UserModel.lastname.ToLower().Contains(entry_lastname.Text.ToLower()))) ||
-                            (UserModel.userId.ToLower().Contains(entry_userid.Text.ToLower()))
-                            ).ToList();
+                            (UserModel.userId.ToLower().Contains(entry_userid.Text.ToLower())));
             conn.Close();
+            conn.Dispose();
             if (existingUserList.Count > 0)
             {
-                DisplayAlert("Notice", "User already exists!!!", "OK");
-                return;
+                if (btn_save.Text == "Save")
+                {
+                    DisplayAlert("Notice", "User already exists!!!", "OK");
+                    return;
+                }
+                else if (btn_save.Text == "Update")
+                {
+                    if (existingUserList.Count == 1 && existingUserList[0].ID != currentID)
+                    {
+                        DisplayAlert("Notice", "User already exists!!!", "OK");
+                        return;
+                    }
+                }
+
             }
             UserModel usermodel = new UserModel()
             {
-                companies = selectedCompany,
+                companyID = selectedCompany[0].ID,
                 firstname = entry_firstname.Text,
                 lastname = entry_lastname.Text,
                 userId = entry_userid.Text,
                 password = entry_password.Text,
-                isAdmin = switch_admin.IsEnabled,
-                isActive = switch_active.IsEnabled,
+                isAdmin = switch_admin.IsToggled,
+                isActive = switch_active.IsToggled,
                 createdate = DateTime.Now,
                 lastLogin = DateTime.Now
             };
-            conn = new SQLiteConnection(App.DatabaseLocation);
-            conn.CreateTable<UserModel>();
-            int row = conn.Insert(usermodel);
+            SQLiteConnection conn1 = new SQLiteConnection(App.DatabaseLocation);
+            conn1.CreateTable<UserModel>();
+            string msg = "saved";
+            if (btn_save.Text.ToLower() == "update") { msg = "updated"; }
+            int row = 0;
+            if (btn_save.Text == "Save")
+            {
+                usermodel.ID = Guid.NewGuid();
+                row = conn1.Insert(usermodel);
+            }
+            else if (btn_save.Text == "Update")
+            {
+                if (currentID == Guid.Empty) { DisplayAlert("Failure", "User failed to be " + msg + "!!!", "OK"); return; }
+                usermodel.ID = currentID;
+                row = conn1.Update(usermodel);
+            }
             if (row > 0)
             {
                 reset();
-                DisplayAlert("Success", "User saved successfully!!!", "OK");
+                DisplayAlert("Success", "User " + msg + " successfully!!!", "OK");
             }
             else
             {
-                DisplayAlert("Failure", "User failed to be saved!!!", "OK");
+                DisplayAlert("Failure", "User failed to be " + msg + "!!!", "OK");
             }
+            conn1.Close();
+            conn1.Dispose();
         }
 
         private void reset()
@@ -75,60 +123,67 @@ namespace TQM
             entry_lastname.Text = "";
             entry_userid.Text = "";
             entry_password.Text = "";
-            switch_admin.IsEnabled = false;
-            switch_active.IsEnabled = false;
+            switch_admin.IsToggled = false;
+            switch_active.IsToggled = false;
+            btn_save.Text = "Save";
+            currentID = Guid.Empty;
         }
 
-        //private void picker_companyname_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    var item = sender as Picker;
-        //    var selectedItem = item.SelectedItem as CompanyModel;
-        //    DisplayAlert("Notice", selectedItem.id.ToString(), "OK");
-        //}
 
         private void btn_usersearch_Clicked(object sender, EventArgs e)
         {
-            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
-            conn.CreateTable<UserModel>();
-            List<UserModel> usersearchlist = conn.Table<UserModel>().Where(UserModel =>
-                            (UserModel.firstname.ToLower().Contains(entry_usersearch.Text.ToLower()) ||
-                            UserModel.lastname.ToLower().Contains(entry_usersearch.Text.ToLower()))).ToList();
-            List<UserModelView> usersearchlistmodified = new List<UserModelView>();
-
-            foreach (UserModel user in usersearchlist)
+            try
             {
-                string dn = "";
-                if (user.lastname.ToString() != "")
+                SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                conn.CreateTable<UserModel>();
+                List<UserModel> usersearchlist = conn.GetAllWithChildren<UserModel>().FindAll(UserModel =>
+                                (UserModel.firstname.ToLower().Contains(entry_usersearch.Text.ToLower()) ||
+                                UserModel.lastname.ToLower().Contains(entry_usersearch.Text.ToLower())));
+                List<UserModelView> usersearchlistmodified = new List<UserModelView>();
+
+                foreach (UserModel user in usersearchlist)
                 {
-                    dn = user.firstname + ", " + user.lastname + " [" + user.userId + "]";
+                    string dn = "";
+                    if (user.lastname.ToString() != "")
+                    {
+                        dn = user.firstname + ", " + user.lastname + " [" + user.userId + "]";
+                    }
+                    else
+                    {
+                        dn = user.firstname + " [" + user.userId + "]";
+                    }
+                    if (user.companyID == Guid.Empty)
+                    {
+                        DisplayAlert("Notice", "Invalid record!!!", "Ok");
+                        return;
+                    }
+                    UserModelView userModelView = new UserModelView()
+                    {
+                        ID = user.ID,
+                        firstname = user.firstname,
+                        lastname = user.lastname,
+                        displayname = dn,
+                        userId = user.userId,
+                        password = user.password,
+                        isAdmin = user.isAdmin,
+                        isActive = user.isActive,
+                        companyID = user.companyID
+                    };
+                    usersearchlistmodified.Add(userModelView);
+                }
+                conn.Close();
+                if (usersearchlist.Count > 0)
+                {
+                    Navigation.PushAsync(new UserSearch(usersearchlistmodified));
                 }
                 else
                 {
-                    dn = user.firstname + " [" + user.userId + "]";
+                    DisplayAlert("Notice", "No record found!!!", "Ok");
                 }
-                UserModelView userModelView = new UserModelView()
-                {
-                    id = user.id,
-                    firstname = user.firstname,
-                    lastname = user.lastname,
-                    displayname = dn,
-                    userId = user.userId,
-                    password = user.password,
-                    isAdmin = user.isAdmin,
-                    isActive = user.isActive,
-                    companies = user.companies
-                };
-                usersearchlistmodified.Add(userModelView);
             }
-
-            conn.Close();
-            if (usersearchlist != null)
+            catch (Exception ex)
             {
-                Navigation.PushAsync(new UserSearch(usersearchlistmodified));
-            }
-            else
-            {
-                DisplayAlert("Notice", "No record found!!!", "Ok");
+                DisplayAlert("Notice", "Search failed!!! Error: " + ex.Message.ToString(), "Ok");
             }
         }
     }

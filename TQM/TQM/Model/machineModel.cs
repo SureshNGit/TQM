@@ -5,8 +5,8 @@ namespace TQM.Model
 {
     public class MachineModel
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+        [PrimaryKey]
+        public Guid ID { get; set; }
         [MaxLength(50)]
         public string machineName { get; set; }
         public DateTime createdate { get; set; }

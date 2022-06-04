@@ -21,9 +21,14 @@ namespace TQM
             {
                 base.OnAppearing();
                 SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                //conn.DropTable<CompanyModel>();
+                //conn.DropTable<UserModel>();
                 conn.CreateTable<CompanyModel>();
-                var company = conn.Table<CompanyModel>().FirstOrDefault(CompanyModel => CompanyModel.id == 1);
-                entry_companyName.Text = company.Name;
+                var company = conn.Table<CompanyModel>().FirstOrDefault();
+                if (company != null)
+                {
+                    entry_companyName.Text = company.Name;
+                }
                 conn.Close();
             }
             catch (Exception ex)
@@ -44,15 +49,16 @@ namespace TQM
 
                 SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
                 conn.CreateTable<CompanyModel>();
-                var company = conn.Table<CompanyModel>().FirstOrDefault(CompanyModel => CompanyModel.id == 1);
+                var company = conn.Table<CompanyModel>().FirstOrDefault();
                 int row = 0;
                 if (company == null)
                 {
+                    companymodel.ID = Guid.NewGuid();
                     row = conn.Insert(companymodel);
                 }
                 else
                 {
-                    companymodel.id = 1;
+                    companymodel.ID = company.ID;
                     row = conn.Update(companymodel);
                 }
                 conn.Close();

@@ -17,7 +17,16 @@ namespace TQM
         public UserSearch(List<UserModelView> usersearchlist)
         {
             InitializeComponent();
-            this.userSearchResultView.ItemsSource = usersearchlist;
+            userSearchResultView.ItemsSource = usersearchlist;
+        }
+
+        private void userSearchResultView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            var selectedItem = userSearchResultView.SelectedItem as UserModelView;
+            if (selectedItem != null)
+            {
+                Navigation.PushAsync(new UserPage(selectedItem));
+            }
         }
     }
 }

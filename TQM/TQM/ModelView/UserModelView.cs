@@ -1,18 +1,17 @@
-﻿using System.Collections.Generic;
-using TQM.Model;
+﻿using System;
 
 namespace TQM.ModelView
 {
     public class UserModelView
     {
-        public int id { get { return id; } set { this.id = value; } }
-        public string firstname { get { return firstname; } set { this.firstname = value; } }
-        public string lastname { get { return lastname; } set { this.lastname = value; } }
-        public string displayname { get { return displayname; } set { this.displayname = value; } }
-        public string userId { get { return userId; } set { this.userId = value; } }
-        public bool isAdmin { get { return isAdmin; } set { this.isAdmin = value; } }
-        public string password { get { return password; } set { this.password = value; } }
-        public bool isActive { get { return isActive; } set { this.isActive = value; } }
-        public List<CompanyModel> companies { get { return companies; } set { this.companies = value; } }
+        public Guid ID { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public string displayname { get; set; }
+        public string userId { get; set; }
+        public bool isAdmin { get; set; }
+        public string password { get; set; }
+        public bool isActive { get; set; }
+        public Guid companyID { get; set; }
     }
 }

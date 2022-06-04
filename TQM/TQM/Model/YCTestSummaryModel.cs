@@ -7,8 +7,8 @@ namespace TQM.Model
 {
     public class YCTestSummaryModel
     {
-        [PrimaryKey, AutoIncrement]
-        public int id { get; set; }
+        [PrimaryKey]
+        public Guid ID { get; set; }
         public string testID { get; set; }
 
         [OneToMany(CascadeOperations = CascadeOperation.All)]

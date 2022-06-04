@@ -7,8 +7,8 @@ namespace TQM.Model
 {
     public class YCTestModel
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+        [PrimaryKey]
+        public Guid ID { get; set; }
 
         public string testID { get; set; }
 

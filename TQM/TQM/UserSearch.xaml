@@ -4,10 +4,10 @@
              x:Class="TQM.UserSearch">
     <ContentPage.Content>
         <StackLayout>
-            <ListView x:Name="userSearchResultView">
+            <ListView x:Name="userSearchResultView" ItemSelected="userSearchResultView_ItemSelected">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextCell Text="{Binding displayname}" />
+                        <TextCell Text="{Binding displayname}"/>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

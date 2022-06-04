@@ -20,6 +20,7 @@ namespace TQM
         {
             MachineModel machinemodel = new MachineModel()
             {
+                ID = Guid.NewGuid(),
                 machineName = machineNameEntry.Text,
                 createdate = DateTime.Now
             };
