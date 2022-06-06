@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TQM.YCSettings">
+
+    <NavigationPage.TitleView>
+        <StackLayout>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="16" TextColor="White" VerticalTextAlignment="Center" />
+            </Grid>
+        </StackLayout>
+    </NavigationPage.TitleView>
+
+    <ContentPage.Content>
+        <StackLayout>
+            <Grid Margin="35">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Text="Count System:" />
+                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_countsysname" >   
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Nec</x:String>
+                            <x:String>Nm</x:String>
+                            <x:String>Den</x:String>
+                            <x:String>Tex</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>       
+                </Picker>
+                <Label Grid.Row="1" Grid.Column="0" Text="Yarn Length Unit:" />
+                <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_yarnlengthunit" >
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Yard</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+                <Label Grid.Row="2" Grid.Column="0" Text="Yarn Length:" />
+                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_yarnlength" Keyboard="Numeric"/>
+                <Label Grid.Row="3" Grid.Column="0" Text="Test Count:" />
+                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcount" Keyboard="Numeric"/>
+                <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,15" Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked"/>
+            </Grid>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

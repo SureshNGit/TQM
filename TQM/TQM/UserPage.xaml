@@ -1,12 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TQM.UserPage">
-    <ContentPage.ToolbarItems>
+             x:Class="TQM.UserPage" NavigationPage.HasBackButton="False">
+    <!--<ContentPage.ToolbarItems>
         <ToolbarItem Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked"/>
-    </ContentPage.ToolbarItems>
-    <ContentPage.Content>
+    </ContentPage.ToolbarItems>-->
+
+
+    <NavigationPage.TitleView>
         <StackLayout>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="16" TextColor="White" VerticalTextAlignment="Center" />
+            </Grid>
+        </StackLayout>
+    </NavigationPage.TitleView>
+
+    <ContentPage.Content>
+        <ScrollView>
+        <StackLayout>
+            
             <Grid Margin="35">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -46,10 +67,12 @@
                 <Label Grid.Row="4" Grid.Column="0" Text="Password: " />
                 <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" IsPassword="True" Text="" x:Name="entry_password"/>
                 <Label Grid.Row="5" Grid.Column="0" Text="Admin: " />
-                <Switch Grid.Row="5" IsToggled="False" Grid.Column="1" x:Name="switch_admin"/>
-                <Label Grid.Row="5" Grid.Column="2" Text="Active: " />
-                <Switch Grid.Row="5" IsToggled="False" Grid.Column="3" x:Name="switch_active"/>
+                <Switch Grid.Row="5" IsToggled="False" Grid.Column="0" x:Name="switch_admin" HorizontalOptions="Start"/>
+                <Label Grid.Row="5" Grid.Column="3" Text="Active: " />
+                <Switch Grid.Row="5" IsToggled="False" Grid.Column="3" x:Name="switch_active" HorizontalOptions="Start"/>
+                <Button Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,15" Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked"/>
             </Grid>
         </StackLayout>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

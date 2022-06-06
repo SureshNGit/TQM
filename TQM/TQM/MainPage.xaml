@@ -9,9 +9,7 @@
 
     <NavigationPage.TitleView>
         <StackLayout Orientation="Horizontal" HorizontalOptions="StartAndExpand" VerticalOptions="Center" Spacing="10">
-            <Image Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40">
-
-            </Image>
+            <Image Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"></Image>
             <Label Text="Sri Satha" FontSize="16" TextColor="White" VerticalTextAlignment="Center" />
         </StackLayout>
     </NavigationPage.TitleView>
@@ -28,8 +26,8 @@
                 HorizontalOptions="Center"
                 Text="Login" Style="{StaticResource normalButton}" 
                 Clicked="loginButton_Clicked"></Button>
-        <Button x:Name="btn_addcompany" Text="Company" BorderWidth="0" Clicked="btn_addcompany_Clicked" />
-        <Button x:Name="btn_adduser" Text="User" BorderWidth="0" Clicked="btn_adduser_Clicked" />
+        <!--<Button x:Name="btn_addcompany" Text="Company" BorderWidth="0" Clicked="btn_addcompany_Clicked" />
+        <Button x:Name="btn_adduser" Text="User" BorderWidth="0" Clicked="btn_adduser_Clicked" />-->
     </StackLayout>
 
 </ContentPage>

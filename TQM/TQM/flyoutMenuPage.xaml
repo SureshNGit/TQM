@@ -9,8 +9,14 @@
         <ListView x:Name="listview" x:FieldModifier="public">
             <ListView.ItemsSource>
                 <x:Array Type="{x:Type local:flyoutItemPage}">
+                    <local:flyoutItemPage Title="Company" ImageSource="company.jpg" TargetPage="{x:Type local:companyPage}" />
+                    <local:flyoutItemPage Title="User Management" ImageSource="user.png" TargetPage="{x:Type local:UserPage}" />
                     <local:flyoutItemPage Title="Add Machine" ImageSource="machine.png" TargetPage="{x:Type local:machinePage}" />
-                    <local:flyoutItemPage Title="Bluetooth Settings" ImageSource="bluetooth.png" TargetPage="{x:Type local:BluetoothConfig}" />
+                    <local:flyoutItemPage Title="Yarn Count Settings" ImageSource="ycsettings.png" TargetPage="{x:Type local:YCSettings}" />
+                    <local:flyoutItemPage Title="Exit" ImageSource="logout.png" TargetPage="{x:Type local:MainPage}" />
+                    <!--<local:flyoutItemPage Title="Bluetooth Settings" ImageSource="bluetooth.png" TargetPage="{x:Type local:BluetoothConfig}" />-->
+
+
                 </x:Array>
             </ListView.ItemsSource>
 

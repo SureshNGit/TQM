@@ -7,11 +7,16 @@ namespace TQM
         public MainPage()
         {
             InitializeComponent();
+            loginButton.IsEnabled = true;
+            loginButton.BackgroundColor = Color.Green;
         }
+
 
         private void loginButton_Clicked(object sender, System.EventArgs e)
         {
             //Navigation.PushAsync(new homePage());
+            loginButton.IsEnabled = false;
+            loginButton.BackgroundColor = Color.SlateGray;
             Navigation.PushAsync(new flyoutNavigation());
         }
 
@@ -24,5 +29,6 @@ namespace TQM
         {
             Navigation.PushAsync(new UserPage());
         }
+
     }
 }

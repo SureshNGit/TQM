@@ -2,21 +2,73 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TQM.machinePage">
+
+    <!--<ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked"/>
+    </ContentPage.ToolbarItems>-->
+
+    <NavigationPage.TitleView>
+        <StackLayout>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="16" TextColor="White" VerticalTextAlignment="Center" />
+            </Grid>
+        </StackLayout>
+    </NavigationPage.TitleView>
+
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Add Machine"
-                Margin="10" 
-                FontSize="25"
-                TextColor="{StaticResource blueColor}"/>
-            <Entry x:Name="machineNameEntry" 
-                   ClearButtonVisibility="WhileEditing"
-                   Margin="40,25,40,15"/>
-            <Button x:Name="addMachineButton"
-                    Text="Save"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center"
-                    Clicked="addMachineButton_Clicked"
-                    Style="{StaticResource successButton}"/>
+            <ListView x:Name="machineSearchResultView" ItemSelected="machineSearchResultView_ItemSelected" >
+                <ListView.Header>
+                    <StackLayout>
+                        <Grid Margin="35">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Entry Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Placeholder="Enter name to search" x:Name="entry_machinesearch" />
+                            <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"  Text = "View All" x:Name="btn_viewall" Clicked="btn_viewall_Clicked"/>
+                            <Button Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Text = "Search" x:Name="btn_usermachine" Clicked="btn_searchmachine_Clicked"/>
+                            <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Text = "Clear" x:Name="btn_clear" Clicked="btn_clear_Clicked"/>
+                        </Grid>
+                        <Grid Margin="35">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Text="Machine Name: "/>
+                            <Entry Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="entry_machinename" />
+                            <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,15" Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked"/>
+                        </Grid>
+                    </StackLayout>
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding machineName}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

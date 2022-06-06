@@ -30,32 +30,18 @@ namespace TQM
         {
 
             InitializeComponent();
-            checkCommunication(true);
+            //checkCommunication(true);
         }
 
         private void checkCommunication(bool toggleStartBtn)
         {
-            if (!initializeBluetooth())
+            try
             {
-                _socket.Dispose();
-                device.Dispose();
-                adapter.Dispose();
-                UpdateUserNotification("Communication Error!!!");
-                if (toggleStartBtn)
+                if (!initializeBluetooth())
                 {
-                    testYCButton.IsEnabled = false;
-                    testYCButton.BackgroundColor = Color.SlateGray;
-                }
-            }
-            else
-            {
-                CancellationTokenSource src = new CancellationTokenSource();
-                CancellationToken ct = src.Token;
-                ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
-                src.Cancel();
-                if (!blueState)
-                {
+                    _socket.Dispose();
+                    device.Dispose();
+                    adapter.Dispose();
                     UpdateUserNotification("Communication Error!!!");
                     if (toggleStartBtn)
                     {
@@ -63,6 +49,28 @@ namespace TQM
                         testYCButton.BackgroundColor = Color.SlateGray;
                     }
                 }
+                else
+                {
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
+                    src.Cancel();
+                    if (!blueState)
+                    {
+                        UpdateUserNotification("Communication Error!!!");
+                        if (toggleStartBtn)
+                        {
+                            testYCButton.IsEnabled = false;
+                            testYCButton.BackgroundColor = Color.SlateGray;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                DisplayAlert("Error", ex.Message.ToString(), "OK");
             }
         }
 

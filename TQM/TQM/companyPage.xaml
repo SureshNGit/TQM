@@ -4,13 +4,31 @@
              x:Class="TQM.companyPage">
 
 
-    <ContentPage.ToolbarItems>
+    <!--<ContentPage.ToolbarItems>
         <ToolbarItem x:Name="btn_Save" Text="Save" Clicked="btn_Save_Clicked"/>
-    </ContentPage.ToolbarItems>
-    
+    </ContentPage.ToolbarItems>-->
+
+    <NavigationPage.TitleView>
+        <StackLayout>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="16" TextColor="White" VerticalTextAlignment="Center" />
+            </Grid>
+        </StackLayout>
+    </NavigationPage.TitleView>
+
     <ContentPage.Content>
         <StackLayout>
             <Entry x:Name="entry_companyName" Placeholder="Enter Company Name"/>
+            <Button x:Name="btn_Save" Text="Save" Clicked="btn_Save_Clicked"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

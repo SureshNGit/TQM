@@ -10,7 +10,7 @@ namespace TQM.Model
 
         public string countsysname { get; set; }
 
-        public int yarnlenunit { get; set; }
+        public string yarnlenunit { get; set; }
 
         public int yarnlength { get; set; }
 
