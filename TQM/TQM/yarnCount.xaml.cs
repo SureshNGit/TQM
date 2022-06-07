@@ -33,59 +33,59 @@ namespace TQM
             //checkCommunication(true);
         }
 
-        private void checkCommunication(bool toggleStartBtn)
-        {
-            try
-            {
-                if (!initializeBluetooth())
-                {
-                    _socket.Dispose();
-                    device.Dispose();
-                    adapter.Dispose();
-                    UpdateUserNotification("Communication Error!!!");
-                    if (toggleStartBtn)
-                    {
-                        testYCButton.IsEnabled = false;
-                        testYCButton.BackgroundColor = Color.SlateGray;
-                    }
-                }
-                else
-                {
-                    bool blueState = false;
-                    CancellationTokenSource src = new CancellationTokenSource();
-                    CancellationToken ct = src.Token;
-                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                    Task.Run(async () => await blueConnect(), ct).ContinueWith((t) =>
-                    {
-                        t.Wait();
-                        if (t.IsFaulted)
-                        {
-                            UpdateUserNotification("Communication Error!!!");
-                        };
-                        if (t.IsCompleted)
-                        {
-                            blueState = t.Result;
-                        };
-                    });
-                    //bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
-                    src.Cancel();
-                    if (!blueState)
-                    {
-                        UpdateUserNotification("Communication Error!!!");
-                        if (toggleStartBtn)
-                        {
-                            testYCButton.IsEnabled = false;
-                            testYCButton.BackgroundColor = Color.SlateGray;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                DisplayAlert("Error", ex.Message.ToString(), "OK");
-            }
-        }
+        //private void checkCommunication(bool toggleStartBtn)
+        //{
+        //    try
+        //    {
+        //        if (!initializeBluetooth())
+        //        {
+        //            _socket.Dispose();
+        //            device.Dispose();
+        //            adapter.Dispose();
+        //            UpdateUserNotification("Communication Error!!!");
+        //            if (toggleStartBtn)
+        //            {
+        //                testYCButton.IsEnabled = false;
+        //                testYCButton.BackgroundColor = Color.SlateGray;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            bool blueState = false;
+        //            CancellationTokenSource src = new CancellationTokenSource();
+        //            CancellationToken ct = src.Token;
+        //            ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+        //            Task.Run(async () => await blueConnect(), ct).ContinueWith((t) =>
+        //            {
+        //                t.Wait();
+        //                if (t.IsFaulted)
+        //                {
+        //                    UpdateUserNotification("Communication Error!!!");
+        //                };
+        //                if (t.IsCompleted)
+        //                {
+        //                    blueState = t.Result;
+        //                };
+        //            });
+        //            //bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
+        //            src.Cancel();
+        //            if (!blueState)
+        //            {
+        //                UpdateUserNotification("Communication Error!!!");
+        //                if (toggleStartBtn)
+        //                {
+        //                    testYCButton.IsEnabled = false;
+        //                    testYCButton.BackgroundColor = Color.SlateGray;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine(ex.ToString());
+        //        DisplayAlert("Error", ex.Message.ToString(), "OK");
+        //    }
+        //}
 
         private void addMachine_Clicked(object sender, EventArgs e)
         {
@@ -108,12 +108,12 @@ namespace TQM
             });
         }
 
-        private async void reset(bool fullreset = true)
+        private void reset(bool fullreset = true)
         {
             try
             {
                 current_stable_data = 0;
-                if (fullreset) { UpdateUserNotification(""); }
+                if (fullreset) { UpdateUserNotification(""); disposeble(); }
                 //checkCommunication(false);
                 Device.BeginInvokeOnMainThread(() =>
                 {
@@ -130,7 +130,12 @@ namespace TQM
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
             UpdateUserNotification("");
-            checkCommunication(true);
+            //checkCommunication(true);
+            if (!initializeBluetooth())
+            {
+                UpdateUserNotification("Communication Error!!!");
+                return;
+            }
             string testCount_str = entry_testcount.Text;
             int testCount = int.Parse(testCount_str);
             if (testCount_str == null || testCount_str == "")
@@ -204,53 +209,53 @@ namespace TQM
         {
             try
             {
-                CancellationTokenSource src = new CancellationTokenSource();
-                CancellationToken ct = src.Token;
-                ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                bool blueState = false;
-                await Task.Run(async () => await blueConnect(), ct).ContinueWith((t) =>
-                {
-                    t.Wait();
-                    if (t.IsFaulted)
-                    {
-                        UpdateUserNotification("Communication Error!!!");
-                    };
-                    if (t.IsCompleted)
-                    {
-                        blueState = t.Result;
-                    };
-                });
-                //bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
-                src.Cancel();
+                //CancellationTokenSource src = new CancellationTokenSource();
+                //CancellationToken ct = src.Token;
+                //ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                bool blueState = true;
+                //await Task.Run(async () => await blueConnect(), ct).ContinueWith((t) =>
+                //{
+                //    t.Wait();
+                //    if (t.IsFaulted)
+                //    {
+                //        UpdateUserNotification("Communication Error!!!");
+                //    };
+                //    if (t.IsCompleted)
+                //    {
+                //        blueState = t.Result;
+                //    };
+                //});
+                ////bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
+                //src.Cancel();
                 if (blueState)
                 {
                     bool initialWeigthCheck = false;
                     int perTestLoopCount = 0;
                     while (true)
                     {
-                        CancellationTokenSource src_1 = new CancellationTokenSource();
-                        CancellationToken ct_1 = src_1.Token;
-                        ct_1.Register(() => Debug.WriteLine("ConnectBluetoothToken-1"));
-                        await Task.Run(async () => await blueConnect(), ct_1).ContinueWith((t) =>
-                        {
-                            t.Wait();
-                            if (t.IsFaulted)
-                            {
-                                UpdateUserNotification("Communication Error!!!");
-                            };
-                            if (t.IsCompleted)
-                            {
-                                blueState = t.Result;
-                            };
-                        });
-                        //blueState = Task.Run(async () => await blueConnect(), ct_1).Result;
-                        src_1.Cancel();
-                        if (!blueState)
-                        {
-                            UpdateUserNotification("Communication Error!!!");
-                            disposeble();
-                            return false;
-                        }
+                        //CancellationTokenSource src_1 = new CancellationTokenSource();
+                        //CancellationToken ct_1 = src_1.Token;
+                        //ct_1.Register(() => Debug.WriteLine("ConnectBluetoothToken-1"));
+                        //await Task.Run(async () => await blueConnect(), ct_1).ContinueWith((t) =>
+                        //{
+                        //    t.Wait();
+                        //    if (t.IsFaulted)
+                        //    {
+                        //        UpdateUserNotification("Communication Error!!!");
+                        //    };
+                        //    if (t.IsCompleted)
+                        //    {
+                        //        blueState = t.Result;
+                        //    };
+                        //});
+                        ////blueState = Task.Run(async () => await blueConnect(), ct_1).Result;
+                        //src_1.Cancel();
+                        //if (!blueState)
+                        //{
+                        //    UpdateUserNotification("Communication Error!!!");
+                        //    disposeble();
+                        //    return false;
+                        //}
                         String balOutput = Listen(initialWeigthCheck);
                         Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
                         if (balOutput != "")
@@ -259,13 +264,13 @@ namespace TQM
                             {
                                 UpdateUserNotification("Remove weigth to ensure zero!!!");
                                 Debug.WriteLine("Remove weigth to ensure zero!!!");
-                                disposeble();
+                                //disposeble();
                             }
                             else if (balOutput == "fail")
                             {
                                 UpdateUserNotification("Read data failed!!!");
                                 Debug.WriteLine("Read data failed");
-                                disposeble();
+                                //disposeble();
                                 return false;
                             }
                             else
@@ -278,13 +283,13 @@ namespace TQM
                                         initialWeigthCheck = true;
                                         UpdateUserNotification("Place object to start test!!!");
                                         Debug.WriteLine("Place object to start test!!!");
-                                        disposeble();
+                                        //disposeble();
                                     }
                                     else
                                     {
                                         UpdateUserNotification("Remove weigth to ensure zero!!!");
                                         Debug.WriteLine("Remove weigth to ensure zero!!!");
-                                        disposeble();
+                                        //disposeble();
                                     }
                                 }
                                 else
@@ -293,13 +298,13 @@ namespace TQM
                                     {
                                         UpdateUserNotification("Place object to start test!!!");
                                         Debug.WriteLine("Place object to start test!!!");
-                                        disposeble();
+                                        //disposeble();
                                     }
                                     else
                                     {
                                         current_stable_data = s_op;
                                         UpdateUserNotification("");
-                                        disposeble();
+                                        //disposeble();
                                         return true;
                                     }
                                 }
@@ -309,13 +314,13 @@ namespace TQM
                         {
                             UpdateUserNotification("Data is unstable!!! Ensure weighing machine is covered properly");
                             Debug.WriteLine("Data is unstable!!! Ensure weighing machine is covered properly");
-                            disposeble();
+                            //disposeble();
                         }
                         if (perTestLoopCount > PER_TEST_LOOP_COUNT)
                         {
                             UpdateUserNotification("Improper Test!!! Start new test");
                             Debug.WriteLine("Improper Test!!! Start new test");
-                            disposeble();
+                            //disposeble();
                             return false;
                         }
                         perTestLoopCount += 1;
@@ -323,14 +328,14 @@ namespace TQM
                 }
                 else
                 {
-                    disposeble();
+                    //disposeble();
                     UpdateUserNotification("Communication Error!!!");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                disposeble();
+                //disposeble();
                 Debug.WriteLine(ex.ToString());
                 return false;
             }
@@ -384,6 +389,7 @@ namespace TQM
                 }
 
                 _socket = device.CreateRfcommSocketToServiceRecord(UUID.FromString("00001101-0000-1000-8000-00805f9b34fb"));
+                _socket.Connect();
                 return true;
             }
             catch (Exception ex)
@@ -393,29 +399,33 @@ namespace TQM
             }
         }
 
-        private async Task<bool> blueConnect()
-        {
+        //private async Task<bool> blueConnect()
+        //{
 
-            try
-            {
-                if (!_socket.IsConnected)
-                {
-                    await _socket.ConnectAsync();
-                }
-                return true;
-            }
-            catch (ObjectDisposedException ex)
-            {
-                Debug.WriteLine("Error: " + ex.Message);
-                if (!initializeBluetooth()) { return false; } else { await _socket.ConnectAsync(); return true; }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Error: " + ex.Message);
-                return false;
-            }
+        //    try
+        //    {
+        //        if (!this._socket.IsConnected)
+        //        {
+        //            System.Threading.Thread.Sleep(1000);
+        //            await this._socket.ConnectAsync();
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (ex is ObjectDisposedException || ex is IOException)
+        //        {
+        //            Debug.WriteLine("Error: " + ex.Message);
+        //            if (!initializeBluetooth()) { return false; } else { await this._socket.ConnectAsync(); return true; }
+        //        }
+        //        else
+        //        {
+        //            Debug.WriteLine("Error: " + ex.Message);
+        //            return false;
+        //        }
+        //    }
 
-        }
+        //}
 
         private string RemoveSpecialCharacters(string str)
         {
@@ -442,6 +452,7 @@ namespace TQM
                 {
                     int loopCount = 0;
                     int stableCount = 0;
+                    int bufferfailedcount = 0;
                     while (true)
                     {
                         var buffer = new BufferedReader(new InputStreamReader(_socket.InputStream));
@@ -481,6 +492,15 @@ namespace TQM
                                 }
                                 loopCount += 1;
                             }
+                        }
+                        else
+                        {
+                            if (bufferfailedcount > 100)
+                            {
+                                Debug.WriteLine("Buffer is not ready!!!");
+                                return "fail";
+                            }
+                            else { bufferfailedcount++; }
                         }
                     }
                 }
