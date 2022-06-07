@@ -1,29 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TQM.yarnCount" >
+             x:Class="TQM.yarnCount" BackgroundColor="white" >
     
-   
-
-    <!--<NavigationPage.TitleView>
-        --><!--<StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand" VerticalOptions="Center" >
-            <Image Source="SasthaLogo.jpg" HorizontalOptions="Center" Aspect="AspectFit" HeightRequest="40" WidthRequest="40">
-
-            </Image>
-            <Label Text="Sri Satha" FontSize="16" TextColor="White" HorizontalOptions="Center" VerticalTextAlignment="Center" />
-        </StackLayout>--><!--
-        <AbsoluteLayout VerticalOptions="CenterAndExpand">
-            <ImageButton Source="menu.png" BackgroundColor="SkyBlue" AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="0,0,40,40"/>
-        </AbsoluteLayout>
+    <NavigationPage.TitleView>
+        <StackLayout BackgroundColor="White">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
+            </Grid>
+        </StackLayout>
     </NavigationPage.TitleView>
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add Machine" Clicked="addMachine_Clicked"/>
-    </ContentPage.ToolbarItems>-->
-   
 
     <StackLayout>
-        <Label Text="Yarn Count Calulator"
+        <!--<Label Text="Yarn Count Calulator"
                 HorizontalOptions="Center"
                Margin="0,30"
                 FontSize="25"
@@ -66,9 +65,49 @@
                         Margin="10"
                         HorizontalOptions="EndAndExpand"/>
             </StackLayout>
-        </StackLayout>
+        </StackLayout>-->
 
+        <Grid Margin="35,5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+            <BoxView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+            <BoxView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+            <BoxView Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+            <BoxView Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+            
+            <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="5" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="5" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="5" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+            
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Count System Name" FontSize="20" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Yarn Count Unit" FontSize="20" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
+            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Yarn Length" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Count" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            
+            <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" Text="Tex" FontSize="20" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" Text="Yard" FontSize="20" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Text="120" FontSize="20" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" Text="6" x:Name="entry_testcount" TextColor="Green" FontSize="20" Keyboard="Numeric"
+                   VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
+            <Frame Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="4" BackgroundColor="White" BorderColor="White" CornerRadius="25" HasShadow="False">
+                <Label x:Name="lbl_error" VerticalTextAlignment="Start" HorizontalTextAlignment="Start" Text="" TextColor="#E74C3C" FontSize="Medium"/>
+            </Frame>
+
+            <Button Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="4" HorizontalOptions="CenterAndExpand" Text="Start" 
+                        x:Name="testYCButton"  Clicked="testYCButton_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="25"/>
+        </Grid>
 
     </StackLayout>
 

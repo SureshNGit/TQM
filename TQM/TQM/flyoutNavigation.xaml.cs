@@ -17,7 +17,7 @@ namespace TQM
 
         private async void OnSelectedItem(object sender, SelectedItemChangedEventArgs e)
         {
-            var item = e.SelectedItem as flyoutItemPage;
+            var item = e.SelectedItem as MenuItem;
 
 
             if (item != null)
@@ -35,36 +35,36 @@ namespace TQM
                 if (item.Title == "Add Machine")
                 {
 
-                    ObservableCollection<flyoutItemPage> flyItems = new ObservableCollection<flyoutItemPage>();
+                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
 
                     flyout.listview.ItemsSource = flyItems;
 
 
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Company",
                         ImageSource = "company.jpg",
                         TargetPage = typeof(companyPage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "User Management",
                         ImageSource = "user.png",
                         TargetPage = typeof(UserPage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count Settings",
                         ImageSource = "ycsettings.png",
                         TargetPage = typeof(YCSettings)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count",
                         ImageSource = "yarn.jpeg",
                         TargetPage = typeof(yarnCount)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Exit",
                         ImageSource = "logout.png",
@@ -74,35 +74,35 @@ namespace TQM
                 else if (item.Title == "User Management")
                 {
 
-                    ObservableCollection<flyoutItemPage> flyItems = new ObservableCollection<flyoutItemPage>();
+                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
 
                     flyout.listview.ItemsSource = flyItems;
 
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Company",
                         ImageSource = "company.jpg",
                         TargetPage = typeof(companyPage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Add Machine",
                         ImageSource = "machine.png",
                         TargetPage = typeof(machinePage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count Settings",
                         ImageSource = "ycsettings.png",
                         TargetPage = typeof(YCSettings)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count",
                         ImageSource = "yarn.jpeg",
                         TargetPage = typeof(yarnCount)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Exit",
                         ImageSource = "logout.png",
@@ -112,35 +112,35 @@ namespace TQM
                 else if (item.Title == "Company")
                 {
 
-                    ObservableCollection<flyoutItemPage> flyItems = new ObservableCollection<flyoutItemPage>();
+                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
 
                     flyout.listview.ItemsSource = flyItems;
 
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "User Management",
                         ImageSource = "user.png",
                         TargetPage = typeof(UserPage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Add Machine",
                         ImageSource = "machine.png",
                         TargetPage = typeof(machinePage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count Settings",
                         ImageSource = "ycsettings.png",
                         TargetPage = typeof(YCSettings)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count",
                         ImageSource = "yarn.jpeg",
                         TargetPage = typeof(yarnCount)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Exit",
                         ImageSource = "logout.png",
@@ -150,35 +150,35 @@ namespace TQM
                 else if (item.Title == "Yarn Count Settings")
                 {
 
-                    ObservableCollection<flyoutItemPage> flyItems = new ObservableCollection<flyoutItemPage>();
+                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
 
                     flyout.listview.ItemsSource = flyItems;
 
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Company",
                         ImageSource = "company.jpg",
                         TargetPage = typeof(companyPage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "User Management",
                         ImageSource = "user.png",
                         TargetPage = typeof(UserPage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Add Machine",
                         ImageSource = "machine.png",
                         TargetPage = typeof(machinePage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count",
                         ImageSource = "yarn.jpeg",
                         TargetPage = typeof(yarnCount)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Exit",
                         ImageSource = "logout.png",
@@ -189,35 +189,35 @@ namespace TQM
                 if (item.Title == "Yarn Count")
                 {
 
-                    ObservableCollection<flyoutItemPage> flyItems = new ObservableCollection<flyoutItemPage>();
+                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
 
                     flyout.listview.ItemsSource = flyItems;
 
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Company",
                         ImageSource = "company.jpg",
                         TargetPage = typeof(companyPage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "User Management",
                         ImageSource = "user.png",
                         TargetPage = typeof(UserPage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Add Machine",
                         ImageSource = "machine.png",
                         TargetPage = typeof(machinePage)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count Settings",
                         ImageSource = "ycsettings.png",
                         TargetPage = typeof(YCSettings)
                     });
-                    flyItems.Add(new flyoutItemPage
+                    flyItems.Add(new MenuItem
                     {
                         Title = "Exit",
                         ImageSource = "logout.png",

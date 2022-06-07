@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TQM.YCSettings">
+             x:Class="TQM.YCSettings" BackgroundColor="White" >
 
     <NavigationPage.TitleView>
-        <StackLayout>
+        <StackLayout BackgroundColor="White">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -15,15 +15,16 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
-                <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="16" TextColor="White" VerticalTextAlignment="Center" />
+                <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
             </Grid>
         </StackLayout>
     </NavigationPage.TitleView>
 
     <ContentPage.Content>
         <StackLayout>
-            <Grid Margin="35">
+            <Grid Margin="280,35">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -35,8 +36,8 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Text="Count System:" />
-                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_countsysname" >   
+                <Label Grid.Row="0" Grid.Column="0" Text="Count System" TextColor="#0e0273" FontSize="25"/>
+                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_countsysname" TextColor="Green" FontSize="25" >   
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String>Nec</x:String>
@@ -46,19 +47,21 @@
                         </x:Array>
                     </Picker.ItemsSource>       
                 </Picker>
-                <Label Grid.Row="1" Grid.Column="0" Text="Yarn Length Unit:" />
-                <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_yarnlengthunit" >
+                <Label Grid.Row="1" Grid.Column="0" Text="Yarn Length Unit" TextColor="#0e0273" FontSize="25"/>
+                <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_yarnlengthunit" TextColor="Green" FontSize="25">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String>Yard</x:String>
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>
-                <Label Grid.Row="2" Grid.Column="0" Text="Yarn Length:" />
-                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_yarnlength" Keyboard="Numeric"/>
-                <Label Grid.Row="3" Grid.Column="0" Text="Test Count:" />
-                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcount" Keyboard="Numeric"/>
-                <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,15" Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked"/>
+                <Label Grid.Row="2" Grid.Column="0" Text="Yarn Length" TextColor="#0e0273" FontSize="25"/>
+                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_yarnlength" Keyboard="Numeric" TextColor="Green" FontSize="25"/>
+                <Label Grid.Row="3" Grid.Column="0" Text="Test Count" TextColor="#0e0273" FontSize="25"/>
+                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcount" Keyboard="Numeric" TextColor="Green" FontSize="25"/>
+                <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,15" 
+                        Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked"
+                        BackgroundColor="#0e0273" TextColor="White" CornerRadius="25"/>
             </Grid>
         </StackLayout>
     </ContentPage.Content>

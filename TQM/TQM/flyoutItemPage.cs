@@ -2,7 +2,7 @@
 
 namespace TQM
 {
-    public class flyoutItemPage
+    public class MenuItem
     {
 
         public string Title { get; set; }

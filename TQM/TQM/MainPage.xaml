@@ -3,31 +3,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TQM.MainPage">
 
-    <!--<ContentPage.ToolbarItems>
-        <ToolbarItem Text="Sri Sastha"></ToolbarItem>
-    </ContentPage.ToolbarItems>-->
-
-    <NavigationPage.TitleView>
-        <StackLayout Orientation="Horizontal" HorizontalOptions="StartAndExpand" VerticalOptions="Center" Spacing="10">
+    <NavigationPage.TitleView >
+        <StackLayout Orientation="Horizontal" HorizontalOptions="StartAndExpand" VerticalOptions="Center" Spacing="10" BackgroundColor="White">
             <Image Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"></Image>
-            <Label Text="Sri Satha" FontSize="16" TextColor="White" VerticalTextAlignment="Center" />
+            <Label Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
         </StackLayout>
     </NavigationPage.TitleView>
 
     <StackLayout Margin="15" VerticalOptions="Center">
-        <Entry x:Name="userNameEntry" 
-               Placeholder="User Name"
-               Margin="40,0,40,5"></Entry>
-        <Entry x:Name="passWordEntry" 
-               Placeholder="Password" 
-               IsPassword="True"
-               Margin="40,5"></Entry>
-        <Button x:Name="loginButton" 
-                HorizontalOptions="Center"
-                Text="Login" Style="{StaticResource normalButton}" 
-                Clicked="loginButton_Clicked"></Button>
-        <!--<Button x:Name="btn_addcompany" Text="Company" BorderWidth="0" Clicked="btn_addcompany_Clicked" />
-        <Button x:Name="btn_adduser" Text="User" BorderWidth="0" Clicked="btn_adduser_Clicked" />-->
+        <Grid Margin="35">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="1" Grid.Column="2" Text="Username" FontSize="20" TextColor="#0e0273" Margin="0,15"/>
+            <Entry Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Text = "" x:Name="entry_username" TextColor="Green" FontSize="20"/>
+            <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" Text="Password" FontSize="20" TextColor="#0e0273" Margin="0,15"/>
+            <Entry Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Text="" IsPassword="True"
+                   x:Name="entry_password" TextColor="Green" FontSize="20"/>
+            <Button Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="1" Text="Login"  Margin="0,15"
+                        x:Name="btn_login" Clicked="btn_login_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="25"/>
+        </Grid>
     </StackLayout>
 
 </ContentPage>

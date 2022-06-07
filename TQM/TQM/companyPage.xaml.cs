@@ -27,6 +27,7 @@ namespace TQM
                 var company = conn.Table<CompanyModel>().FirstOrDefault();
                 if (company != null)
                 {
+                    btn_Save.Text = "Update";
                     entry_companyName.Text = company.Name;
                 }
                 conn.Close();
@@ -46,7 +47,7 @@ namespace TQM
                     Name = entry_companyName.Text,
                     createdate = DateTime.Now
                 };
-
+                string msg = "saved";
                 SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
                 conn.CreateTable<CompanyModel>();
                 var company = conn.Table<CompanyModel>().FirstOrDefault();
@@ -55,20 +56,22 @@ namespace TQM
                 {
                     companymodel.ID = Guid.NewGuid();
                     row = conn.Insert(companymodel);
+                    btn_Save.Text = "Udpate";
                 }
                 else
                 {
+                    msg = "update";
                     companymodel.ID = company.ID;
                     row = conn.Update(companymodel);
                 }
                 conn.Close();
                 if (row > 0)
                 {
-                    DisplayAlert("Success", "Company saved successfully!!!", "OK");
+                    DisplayAlert("Success", "Company " + msg + " successfully!!!", "OK");
                 }
                 else
                 {
-                    DisplayAlert("Failure", "Company failed to be saved!!!", "OK");
+                    DisplayAlert("Failure", "Company failed to be " + msg + "!!!", "OK");
                 }
             }
             catch (Exception ex)

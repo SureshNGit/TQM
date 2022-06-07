@@ -8,7 +8,7 @@
     </ContentPage.ToolbarItems>-->
 
     <NavigationPage.TitleView>
-        <StackLayout>
+        <StackLayout BackgroundColor="White">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -19,34 +19,42 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
-                <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="16" TextColor="White" VerticalTextAlignment="Center" />
+                <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
             </Grid>
         </StackLayout>
     </NavigationPage.TitleView>
 
     <ContentPage.Content>
         <StackLayout>
-            <ListView x:Name="machineSearchResultView" ItemSelected="machineSearchResultView_ItemSelected" >
+            <ListView x:Name="machineSearchResultView" ItemSelected="machineSearchResultView_ItemSelected">
                 <ListView.Header>
                     <StackLayout>
                         <Grid Margin="35">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Entry Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Placeholder="Enter name to search" x:Name="entry_machinesearch" />
-                            <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"  Text = "View All" x:Name="btn_viewall" Clicked="btn_viewall_Clicked"/>
-                            <Button Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Text = "Search" x:Name="btn_usermachine" Clicked="btn_searchmachine_Clicked"/>
-                            <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Text = "Clear" x:Name="btn_clear" Clicked="btn_clear_Clicked"/>
+                            <Entry Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" PlaceholderColor="#E5E8E8"
+                                   Placeholder="Enter machine name to search" x:Name="entry_machinesearch" FontSize="25" TextColor="Green"/>
+                            <Button Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="1" Text = "Search" 
+                                    x:Name="btn_usermachine" Clicked="btn_searchmachine_Clicked" 
+                                    BackgroundColor="#239B56" TextColor="White" CornerRadius="25"/>
+                            <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="1"  Text = "View All" 
+                                    x:Name="btn_viewall" Clicked="btn_viewall_Clicked" 
+                                    BackgroundColor="#85C1E9 " TextColor="Black" CornerRadius="25"/>
+                            <Button Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="1" Text = "Clear" 
+                                    x:Name="btn_clear" Clicked="btn_clear_Clicked" 
+                                    BackgroundColor="#7B241C" TextColor="White" CornerRadius="25"/>
                         </Grid>
-                        <Grid Margin="35">
+                        <Grid Margin="35,15">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -56,16 +64,26 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Text="Machine Name: "/>
-                            <Entry Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="entry_machinename" />
-                            <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,15" Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked"/>
+                            <Label Grid.Row="0" Grid.Column="0" Text="Machine Name" TextColor="#0e0273" FontSize="25" Margin="0,25"/>
+                            <Entry Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Placeholder="Enter machine name to add" PlaceholderColor="#E5E8E8"
+                                   x:Name="entry_machinename" TextColor="Green" FontSize="25" Margin="5" />
+                            <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="1" Margin="0,15" 
+                                    Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked" 
+                                    BackgroundColor="#0e0273" TextColor="White" CornerRadius="25"/>
                         </Grid>
+                        <Label x:Name="lbl_searchresultheader" FontSize="25" TextColor="black" IsVisible="false" Text="Search Results:" TextDecorations="Underline" />
                     </StackLayout>
                 </ListView.Header>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextCell Text="{Binding machineName}"/>
+                        <!--<TextCell TextColor="black" Text="{Binding machineName}" />-->
+                        <ViewCell Tapped="ViewCell_Tapped">
+                            <StackLayout>
+                                <Label Margin="35,5,0,0" Text="{Binding machineName}" TextColor="Black" FontSize="25"/>
+                            </StackLayout>
+                        </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

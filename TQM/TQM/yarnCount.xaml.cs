@@ -51,10 +51,23 @@ namespace TQM
                 }
                 else
                 {
+                    bool blueState = false;
                     CancellationTokenSource src = new CancellationTokenSource();
                     CancellationToken ct = src.Token;
                     ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                    bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
+                    Task.Run(async () => await blueConnect(), ct).ContinueWith((t) =>
+                    {
+                        t.Wait();
+                        if (t.IsFaulted)
+                        {
+                            UpdateUserNotification("Communication Error!!!");
+                        };
+                        if (t.IsCompleted)
+                        {
+                            blueState = t.Result;
+                        };
+                    });
+                    //bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
                     src.Cancel();
                     if (!blueState)
                     {
@@ -95,21 +108,29 @@ namespace TQM
             });
         }
 
-        private async void reset()
+        private async void reset(bool fullreset = true)
         {
-            current_stable_data = 0;
-            UpdateUserNotification("");
-            checkCommunication(false);
-            Device.BeginInvokeOnMainThread(() =>
+            try
             {
-                testYCButton.IsEnabled = true;
-                testYCButton.BackgroundColor = Color.Green;
-            });
+                current_stable_data = 0;
+                if (fullreset) { UpdateUserNotification(""); }
+                //checkCommunication(false);
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    testYCButton.IsEnabled = true;
+                    testYCButton.BackgroundColor = Color.Green;
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
         }
 
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
             UpdateUserNotification("");
+            checkCommunication(true);
             string testCount_str = entry_testcount.Text;
             int testCount = int.Parse(testCount_str);
             if (testCount_str == null || testCount_str == "")
@@ -130,12 +151,26 @@ namespace TQM
         {
             try
             {
+                bool runResult = false;
                 for (int i = 0; i < testCount; i++)
                 {
+                    runResult = false;
                     CancellationTokenSource src = new CancellationTokenSource();
                     CancellationToken ct = src.Token;
                     ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                    bool runResult = Task.Run(async () => await RunTest(), ct).Result;
+                    await Task.Run(async () => await RunTest(), ct).ContinueWith((t) =>
+                    {
+                        t.Wait();
+                        if (t.IsFaulted)
+                        {
+                            runResult = false;
+                        };
+                        if (t.IsCompleted)
+                        {
+                            runResult = t.Result;
+                        };
+                    });
+                    //bool runResult = Task.Run(async () => await RunTest(), ct).Result;
                     src.Cancel();
                     if (runResult)
                     {
@@ -144,11 +179,18 @@ namespace TQM
                     else
                     {
                         showAlert("Test - [" + (i + 1) + "] Failed!!! Please start test from begining!!!");
-                        reset();
+                        reset(false);
                         break;
                     }
                 }
-                reset();
+                if (runResult)
+                {
+                    reset();
+                }
+                else
+                {
+                    reset(false);
+                }
             }
             catch (Exception ex)
             {
@@ -165,7 +207,20 @@ namespace TQM
                 CancellationTokenSource src = new CancellationTokenSource();
                 CancellationToken ct = src.Token;
                 ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
+                bool blueState = false;
+                await Task.Run(async () => await blueConnect(), ct).ContinueWith((t) =>
+                {
+                    t.Wait();
+                    if (t.IsFaulted)
+                    {
+                        UpdateUserNotification("Communication Error!!!");
+                    };
+                    if (t.IsCompleted)
+                    {
+                        blueState = t.Result;
+                    };
+                });
+                //bool blueState = Task.Run(async () => await blueConnect(), ct).Result;
                 src.Cancel();
                 if (blueState)
                 {
@@ -176,7 +231,19 @@ namespace TQM
                         CancellationTokenSource src_1 = new CancellationTokenSource();
                         CancellationToken ct_1 = src_1.Token;
                         ct_1.Register(() => Debug.WriteLine("ConnectBluetoothToken-1"));
-                        blueState = Task.Run(async () => await blueConnect(), ct_1).Result;
+                        await Task.Run(async () => await blueConnect(), ct_1).ContinueWith((t) =>
+                        {
+                            t.Wait();
+                            if (t.IsFaulted)
+                            {
+                                UpdateUserNotification("Communication Error!!!");
+                            };
+                            if (t.IsCompleted)
+                            {
+                                blueState = t.Result;
+                            };
+                        });
+                        //blueState = Task.Run(async () => await blueConnect(), ct_1).Result;
                         src_1.Cancel();
                         if (!blueState)
                         {
@@ -328,21 +395,19 @@ namespace TQM
 
         private async Task<bool> blueConnect()
         {
+
             try
             {
-                try
+                if (!_socket.IsConnected)
                 {
-                    if (!_socket.IsConnected)
-                    {
-                        await _socket.ConnectAsync();
-                    }
-                }
-                catch (ObjectDisposedException ex)
-                {
-                    Debug.WriteLine("Error: " + ex.Message);
-                    if (!initializeBluetooth()) { return false; } else { await _socket.ConnectAsync(); return true; }
+                    await _socket.ConnectAsync();
                 }
                 return true;
+            }
+            catch (ObjectDisposedException ex)
+            {
+                Debug.WriteLine("Error: " + ex.Message);
+                if (!initializeBluetooth()) { return false; } else { await _socket.ConnectAsync(); return true; }
             }
             catch (Exception ex)
             {

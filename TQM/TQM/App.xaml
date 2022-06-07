@@ -3,8 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TQM.App">
     <Application.Resources>
+
+       
         
         <ResourceDictionary>
+            <Style TargetType="NavigationPage">
+                <Setter Property="BarBackgroundColor" Value="#fff"/>
+                <Setter Property="BarTextColor" Value="#203341"/>
+            </Style>
             <Color x:Key="blueColor">blue</Color>
             <Color x:Key="greenColor">green</Color>
             <Color x:Key="yellowColor">yellow</Color>

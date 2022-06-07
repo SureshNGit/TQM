@@ -4,7 +4,7 @@
              x:Class="TQM.UserSearch">
 
     <NavigationPage.TitleView>
-        <StackLayout>
+        <StackLayout BackgroundColor="White">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -15,7 +15,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
-                <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="16" TextColor="White" VerticalTextAlignment="Center" />
+                <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
             </Grid>
         </StackLayout>
     </NavigationPage.TitleView>

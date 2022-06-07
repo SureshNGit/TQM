@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:TQM"
              x:Class="TQM.flyoutNavigation"
-             Title="Menu"
-            NavigationPage.HasNavigationBar="false">
+             Title=""
+            NavigationPage.HasNavigationBar="false" FlyoutLayoutBehavior="Popover" >
 
     <FlyoutPage.Flyout>
         <local:flyoutMenuPage x:Name="flyout"/>

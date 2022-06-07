@@ -9,7 +9,7 @@
     </ContentPage.ToolbarItems>-->
 
     <NavigationPage.TitleView>
-        <StackLayout>
+        <StackLayout BackgroundColor="White">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -20,15 +20,16 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
-                <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="16" TextColor="White" VerticalTextAlignment="Center" />
+                <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
             </Grid>
         </StackLayout>
     </NavigationPage.TitleView>
 
     <ContentPage.Content>
         <StackLayout>
-            <Entry x:Name="entry_companyName" Placeholder="Enter Company Name"/>
-            <Button x:Name="btn_Save" Text="Save" Clicked="btn_Save_Clicked"/>
+            <Entry x:Name="entry_companyName" Placeholder="Enter Company Name" TextColor="Green" FontSize="25" HeightRequest="80"/>
+            <Button x:Name="btn_Save" Text="Save" Clicked="btn_Save_Clicked" 
+                    BackgroundColor="#0e0273" TextColor="White" Margin="430,15,430,0" CornerRadius="25"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

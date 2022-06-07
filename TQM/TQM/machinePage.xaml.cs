@@ -14,6 +14,7 @@ namespace TQM
     public partial class machinePage : ContentPage
     {
         private Guid currentMachineID = Guid.Empty;
+        private ViewCell lastCell;
         public machinePage()
         {
             InitializeComponent();
@@ -116,6 +117,7 @@ namespace TQM
 
         private void reset()
         {
+            lbl_searchresultheader.IsVisible = false;
             btn_save.Text = "Save";
             entry_machinename.Text = "";
             entry_machinesearch.Text = "";
@@ -135,6 +137,7 @@ namespace TQM
                     if (machinelist.Count > 0)
                     {
                         machineSearchResultView.ItemsSource = machinelist;
+                        lbl_searchresultheader.IsVisible = true;
                     }
                     else
                     {
@@ -155,11 +158,13 @@ namespace TQM
                 if (entry_machinesearch.Text.Trim() == "") { DisplayAlert("Notice", "Please enter machine name to search!!!", "OK"); return; }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
+                    string machinesearched = entry_machinesearch.Text.Trim();
                     conn.CreateTable<MachineModel>();
-                    List<MachineModel> machinelist = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineName.ToLower().Contains(entry_machinesearch.Text.Trim().ToLower())).ToList();
+                    List<MachineModel> machinelist = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineName.ToLower().Contains(machinesearched.ToLower())).ToList();
                     if (machinelist.Count > 0)
                     {
                         machineSearchResultView.ItemsSource = machinelist;
+                        lbl_searchresultheader.IsVisible = true;
                     }
                     else
                     {
@@ -178,8 +183,17 @@ namespace TQM
             reset();
         }
 
-
-
+        private void ViewCell_Tapped(object sender, EventArgs e)
+        {
+            if (lastCell != null)
+                lastCell.View.BackgroundColor = Color.Transparent;
+            var viewCell = (ViewCell)sender;
+            if (viewCell.View != null)
+            {
+                viewCell.View.BackgroundColor = Color.FromHex("#FCF3CF");
+                lastCell = viewCell;
+            }
+        }
     }
 
 }
