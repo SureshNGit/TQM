@@ -99,6 +99,12 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
+                        Title = "Test Report",
+                        ImageSource = "report.jpeg",
+                        TargetPage = typeof(YCReport)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
                         Title = "Exit",
                         ImageSource = "logout.png",
                         TargetPage = typeof(MainPage)
@@ -134,6 +140,12 @@ namespace TQM
                         Title = "Yarn Count",
                         ImageSource = "yarn.jpeg",
                         TargetPage = typeof(yarnCount)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "Test Report",
+                        ImageSource = "report.jpeg",
+                        TargetPage = typeof(YCReport)
                     });
                     flyItems.Add(new MenuItem
                     {
@@ -175,6 +187,12 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
+                        Title = "Test Report",
+                        ImageSource = "report.jpeg",
+                        TargetPage = typeof(YCReport)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
                         Title = "Exit",
                         ImageSource = "logout.png",
                         TargetPage = typeof(MainPage)
@@ -210,6 +228,12 @@ namespace TQM
                         Title = "Yarn Count",
                         ImageSource = "yarn.jpeg",
                         TargetPage = typeof(yarnCount)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "Test Report",
+                        ImageSource = "report.jpeg",
+                        TargetPage = typeof(YCReport)
                     });
                     flyItems.Add(new MenuItem
                     {
@@ -249,6 +273,59 @@ namespace TQM
                         Title = "Yarn Count Settings",
                         ImageSource = "ycsettings.png",
                         TargetPage = typeof(YCSettings)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "Test Report",
+                        ImageSource = "yarn.jpeg",
+                        TargetPage = typeof(YCReport)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "Exit",
+                        ImageSource = "logout.png",
+                        TargetPage = typeof(MainPage)
+                    });
+
+
+                }
+
+                if (item.Title == "Test Report")
+                {
+
+                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
+
+                    flyout.listview.ItemsSource = flyItems;
+
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "Company",
+                        ImageSource = "company.jpg",
+                        TargetPage = typeof(companyPage)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "User Management",
+                        ImageSource = "user.png",
+                        TargetPage = typeof(UserPage)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "Add Machine",
+                        ImageSource = "machine.png",
+                        TargetPage = typeof(machinePage)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "Yarn Count Settings",
+                        ImageSource = "ycsettings.png",
+                        TargetPage = typeof(YCSettings)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "Yarn Count",
+                        ImageSource = "yarn.jpeg",
+                        TargetPage = typeof(yarnCount)
                     });
                     flyItems.Add(new MenuItem
                     {

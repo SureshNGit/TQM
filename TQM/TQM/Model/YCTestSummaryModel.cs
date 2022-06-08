@@ -1,7 +1,6 @@
 ﻿using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
-using System.Collections.Generic;
 
 namespace TQM.Model
 {
@@ -9,19 +8,26 @@ namespace TQM.Model
     {
         [PrimaryKey]
         public Guid ID { get; set; }
-        public string testID { get; set; }
 
-        [OneToMany(CascadeOperations = CascadeOperation.All)]
-        public List<UserModel> users { get; set; }
+        [ForeignKey(typeof(YCTestModel))]
+        public long testID { get; set; }
 
-        [OneToMany(CascadeOperations = CascadeOperation.All)]
-        public List<MachineModel> machines { get; set; }
+        [ForeignKey(typeof(UserModel))]
+        public Guid userID { get; set; }
+
+        public string userName { get; set; }
+
+        [ForeignKey(typeof(MachineModel))]
+        public Guid machineID { get; set; }
+
+        public string machineCategory { get; set; }
+        public string machineName { get; set; }
 
         public string countsysname { get; set; }
 
-        public int yarnlenunit { get; set; }
+        public string yarnlenunit { get; set; }
 
-        public int yarnlength { get; set; }
+        public decimal yarnlength { get; set; }
 
         public int totaltestcount { get; set; }
 

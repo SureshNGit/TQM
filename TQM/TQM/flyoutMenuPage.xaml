@@ -19,6 +19,7 @@
                     <local:MenuItem Title="User Management"  TargetPage="{x:Type local:UserPage}" />
                     <local:MenuItem Title="Add Machine"  TargetPage="{x:Type local:machinePage}" />
                     <local:MenuItem Title="Yarn Count Settings"  TargetPage="{x:Type local:YCSettings}" />
+                    <local:MenuItem Title="Test Report"  TargetPage="{x:Type local:YCReport}" />
                     <local:MenuItem Title="Exit"  TargetPage="{x:Type local:MainPage}" />
 
                 </x:Array>

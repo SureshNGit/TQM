@@ -32,11 +32,55 @@ namespace TQM
         private List<YCTestModelView> ycTestModelViewlist;
         private long currentTestID = 0;
         private UserModel currentloggedInUser = null;
+        private string selectedMachineCategory = null;
+        private Guid selectedMachineID = Guid.Empty;
+        private string selectedMachineName = null;
+        private string selectedSysName = null;
+        private string selectedCountUnit = null;
+        private decimal selectedYarnLen = 0m;
+        private int selectedTestCount = 0;
+        private string selectedApercent = null;
+
 
         public yarnCount()
         {
             InitializeComponent();
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                conn.CreateTable<YarnCountConfigModel>();
+                YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                if (yarncountconfigmodel != null)
+                {
+                    lbl_countsysname.Text = yarncountconfigmodel.countsysname;
+                    lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
+                    lbl_yarnlen.Text = yarncountconfigmodel.yarnlength.ToString();
+                    entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
+                }
+                else
+                {
+                    lbl_countsysname.Text = "";
+                    lbl_yarncountunit.Text = "";
+                    lbl_yarnlen.Text = "";
+                    entry_testcount.Text = "";
+                }
+            }
         }
+
+        private void btn_sendMessage_Clicked(object sender, System.EventArgs e)
+        {
+            //try
+            //{
+            //    Uri uri = Uri.("http://www.google.com");
+            //    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            //    Chat.Open("+919790522299", "Message from SriSastha");
+            //}
+            //catch (Exception ex)
+            //{
+            //    DisplayAlert("Error", ex.Message, "OK");
+            //}
+        }
+
+
 
         private async void UpdateUserNotification(string msg)
         {
@@ -52,6 +96,100 @@ namespace TQM
             {
                 DisplayAlert("Notice", msg, "Ok");
             });
+        }
+
+        private async Task refListView(bool visibility = true)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                listview_testresult.ItemsSource = null;
+                listview_testresult.IsVisible = visibility;
+                listview_testresult.ItemsSource = ycTestModelViewlist;
+            });
+        }
+
+        private async void updateDB()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                bool dbStatus = true;
+                decimal totalCalcCountVal = 0m;
+                conn.CreateTable<YCTestModel>();
+                foreach (YCTestModelView test in ycTestModelViewlist)
+                {
+                    YCTestModel ycTestModel = new YCTestModel()
+                    {
+                        ID = Guid.NewGuid(),
+                        testID = test.testID,
+                        userID = test.userID,
+                        userName = test.userName,
+                        machineID = test.machineID,
+                        machineCategory = test.machineCategory,
+                        machineName = test.machineName,
+                        apercent = test.apercent,
+                        countsysname = test.countsysname,
+                        yarnlenunit = test.yarnlenunit,
+                        yarnlength = test.yarnlength,
+                        totaltestcount = test.totaltestcount,
+                        testcount = test.testcount,
+                        yarnweight = test.yarnweight,
+                        yccalcval = test.yccalcval,
+                        createdate = DateTime.Now
+                    };
+                    int row = conn.Insert(ycTestModel);
+                    if (row < 1)
+                    {
+                        dbStatus = false;
+                    }
+                    totalCalcCountVal = totalCalcCountVal + test.yccalcval;
+                }
+                if (dbStatus)
+                {
+                    decimal mean = 0m;
+                    decimal sd = 0m;
+                    decimal cv = 0m;
+                    if (ycTestModelViewlist[0].totaltestcount > 1)
+                    {
+                        mean = totalCalcCountVal / ycTestModelViewlist[0].totaltestcount;
+                        decimal IndividualCalValminusMean = 0m;
+                        foreach (YCTestModelView test in ycTestModelViewlist)
+                        {
+                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
+                        }
+                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
+                        cv = (sd / mean) * 100; //Coefficient of Variation
+                    }
+                    YCTestSummaryModel ycTestSummaryModel = new YCTestSummaryModel()
+                    {
+                        ID = Guid.NewGuid(),
+                        testID = ycTestModelViewlist[0].testID,
+                        userID = ycTestModelViewlist[0].userID,
+                        userName = ycTestModelViewlist[0].userName,
+                        machineID = ycTestModelViewlist[0].machineID,
+                        machineCategory = ycTestModelViewlist[0].machineCategory,
+                        machineName = ycTestModelViewlist[0].machineName,
+                        countsysname = ycTestModelViewlist[0].countsysname,
+                        yarnlenunit = ycTestModelViewlist[0].yarnlenunit,
+                        yarnlength = ycTestModelViewlist[0].yarnlength,
+                        totaltestcount = ycTestModelViewlist[0].totaltestcount,
+                        testaverage = mean,
+                        testsd = sd,
+                        testcv = cv,
+                        createdate = DateTime.Now
+                    };
+                    conn.CreateTable<YCTestSummaryModel>();
+                    int row = conn.Insert(ycTestSummaryModel);
+                    if (row < 1)
+                    {
+                        dbStatus = false;
+                    }
+                    if (dbStatus)
+                    {
+                        await refListView();
+                    }
+                }
+
+            }
         }
 
         private void reset(bool fullreset = true)
@@ -75,6 +213,12 @@ namespace TQM
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
             UpdateUserNotification("");
+            await refListView(false);
+            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null)
+            {
+                await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                return;
+            }
             if (!initializeBluetooth())
             {
                 UpdateUserNotification("Communication Error!!!");
@@ -90,14 +234,14 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 conn.CreateTable<YCTestModel>();
-                YCTestModel lastTestRecord = conn.Table<YCTestModel>().Last<YCTestModel>();
+                YCTestModel lastTestRecord = conn.Table<YCTestModel>().OrderByDescending(YCTestModel => YCTestModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
                     currentTestID = lastTestRecord.testID + 1;
                 }
                 else
                 {
-                    currentTestID = 0;
+                    currentTestID = 1;
                 }
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
@@ -110,6 +254,12 @@ namespace TQM
                     currentloggedInUser = loggedInUser;
                 }
             }
+            selectedSysName = lbl_countsysname.Text;
+            selectedCountUnit = lbl_yarncountunit.Text;
+            selectedYarnLen = int.Parse(lbl_yarnlen.Text);
+            selectedTestCount = int.Parse(entry_testcount.Text);
+            selectedApercent = entry_apercent.Text.Trim();
+            ycTestModelViewlist = new List<YCTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
             CancellationTokenSource src = new CancellationTokenSource();
@@ -150,21 +300,52 @@ namespace TQM
                         {
                             displayusername = currentloggedInUser.firstname + ", " + currentloggedInUser.lastname + " [" + currentloggedInUser.userId + "]";
                         }
+                        decimal currentCalculatedValue = 0;
+                        switch (selectedSysName)
+                        {
+                            case "Nec":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = (selectedYarnLen / 840m) * (1m / (current_stable_data / 7000m));
+                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            default:
+                                break;
+                        };
                         YCTestModelView ycTestModelView = new YCTestModelView()
                         {
                             testID = currentTestID,
                             userID = currentloggedInUser.ID,
                             userName = displayusername,
+                            machineID = selectedMachineID,
+                            machineCategory = selectedMachineCategory,
+                            machineName = selectedMachineName,
+                            apercent = selectedApercent,
+                            countsysname = selectedSysName,
+                            yarnlenunit = selectedCountUnit,
+                            yarnlength = selectedYarnLen,
+                            totaltestcount = selectedTestCount,
+                            testcount = i + 1,
+                            yarnweight = current_stable_data,
+                            yccalcval = currentCalculatedValue
                         };
-                        showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
+                        ycTestModelViewlist.Add(ycTestModelView);
+                        //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
+                        await refListView();
                     }
                     else
                     {
-                        showAlert("Test - [" + (i + 1) + "] Failed!!! Please start test from begining!!!");
+                        //showAlert("Test - [" + (i + 1) + "] Failed!!! Please start test from begining!!!");
                         reset(false);
                         break;
                     }
                 }
+                if (ycTestModelViewlist.Count > 0) { updateDB(); }
                 if (runResult)
                 {
                     reset();
@@ -417,7 +598,27 @@ namespace TQM
 
         private void picker_machinecategory_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            selectedMachineCategory = picker_machinecategory.SelectedItem.ToString();
+            if (selectedMachineCategory == "" || selectedMachineCategory == null)
+            {
+                picker_machinename.ItemsSource = null;
+            }
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                conn.CreateTable<MachineModel>();
+                List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
+                picker_machinename.ItemsSource = machineModelList;
+            }
         }
+
+        private void picker_machinename_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
+            selectedMachineID = (Guid)source[picker_machinename.SelectedIndex].ID;
+            MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
+            selectedMachineName = selectedMachine.machineName;
+        }
+
+
     }
 }

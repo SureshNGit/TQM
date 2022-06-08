@@ -17,9 +17,9 @@ namespace TQM.ModelView
         public string apercent { get; set; }
         public string countsysname { get; set; }
 
-        public int yarnlenunit { get; set; }
+        public string yarnlenunit { get; set; }
 
-        public int yarnlength { get; set; }
+        public decimal yarnlength { get; set; }
 
         public int totaltestcount { get; set; }
 
@@ -28,7 +28,5 @@ namespace TQM.ModelView
         public decimal yarnweight { get; set; }
 
         public decimal yccalcval { get; set; }
-
-        public DateTime createdate { get; set; }
     }
 }

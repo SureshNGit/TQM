@@ -14,14 +14,20 @@ namespace TQM.Model
         [ForeignKey(typeof(UserModel))]
         public Guid userID { get; set; }
 
+        public string userName { get; set; }
+
         [ForeignKey(typeof(MachineModel))]
         public Guid machineID { get; set; }
+
+        public string machineCategory { get; set; }
+        public string machineName { get; set; }
+
         public string apercent { get; set; }
         public string countsysname { get; set; }
 
-        public int yarnlenunit { get; set; }
+        public string yarnlenunit { get; set; }
 
-        public int yarnlength { get; set; }
+        public decimal yarnlength { get; set; }
 
         public int totaltestcount { get; set; }
 

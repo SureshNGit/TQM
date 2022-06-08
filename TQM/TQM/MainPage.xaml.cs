@@ -49,6 +49,7 @@ namespace TQM
                         return;
                     }
                 }
+                //conn.DropTable<YCTestModel>();
             }
             Navigation.PushAsync(new flyoutNavigation());
         }
