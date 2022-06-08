@@ -30,13 +30,27 @@ namespace TQM
             {
                 var selectedItem = machineSearchResultView.SelectedItem as MachineModel;
                 currentMachineID = selectedItem.ID;
+                IList<string> machinecategorylist = picker_machinecategory.Items;
+                int machinecategoryindex = 0;
+                foreach (string machinecategory in machinecategorylist)
+                {
+                    if (machinecategory != selectedItem.machineCategory)
+                    {
+                        machinecategoryindex++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                picker_machinecategory.SelectedIndex = machinecategoryindex;
                 entry_machinename.Text = selectedItem.machineName;
                 btn_save.Text = "Update";
                 machineSearchResultView.ScrollTo(entry_machinename, ScrollToPosition.Start, true);
             }
             catch (Exception ex)
             {
-                DisplayAlert("Error", "Erro Occurred!!! " + ex.Message.ToString(), "OK");
+                DisplayAlert("Error", "Error Occurred!!! " + ex.Message.ToString(), "OK");
             }
         }
 
@@ -78,6 +92,7 @@ namespace TQM
                 }
                 MachineModel machinemodel = new MachineModel()
                 {
+                    machineCategory = picker_machinecategory.SelectedItem.ToString(),
                     machineName = machinename,
                     createdate = DateTime.Now
                 };
@@ -119,6 +134,7 @@ namespace TQM
         {
             lbl_searchresultheader.IsVisible = false;
             btn_save.Text = "Save";
+            picker_machinecategory.SelectedItem = "";
             entry_machinename.Text = "";
             entry_machinesearch.Text = "";
             machineSearchResultView.ItemsSource = null;

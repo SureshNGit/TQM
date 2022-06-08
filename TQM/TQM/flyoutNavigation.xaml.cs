@@ -1,5 +1,7 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.ObjectModel;
+using TQM.Model;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -25,7 +27,38 @@ namespace TQM
                 if (item.Title == "Exit")
                 {
                     bool answer = await DisplayAlert("Attention", "Would you like to exit???", "Yes", "No");
-                    if (answer) { System.Diagnostics.Process.GetCurrentProcess().Kill(); } else { flyout.listview.SelectedItem = null; return; }
+                    if (answer)
+                    {
+                        using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                        {
+                            conn.CreateTable<UserModel>();
+                            UserModel userinfo = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                            if (userinfo == null)
+                            {
+                                await DisplayAlert("Attention", "Unable to retrieve logged in user information from database!!!", "OK");
+                                flyout.listview.SelectedItem = null;
+                                return;
+                            }
+                            else
+                            {
+
+                                userinfo.isloggedIn = false;
+                                int row = conn.Update(userinfo);
+                                if (row == 0)
+                                {
+                                    await DisplayAlert("Attention", "Unable to update logged out user information to database!!!", "OK");
+                                    flyout.listview.SelectedItem = null;
+                                    return;
+                                }
+                            }
+                        }
+                        System.Diagnostics.Process.GetCurrentProcess().Kill();
+                    }
+                    else
+                    {
+                        flyout.listview.SelectedItem = null;
+                        return;
+                    }
                 }
 
                 Detail = new NavigationPage((Page)Activator.CreateInstance(item.TargetPage));

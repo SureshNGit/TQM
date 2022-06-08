@@ -14,6 +14,7 @@ namespace TQM.Model
         public bool isAdmin { get; set; }
         public string password { get; set; }
         public bool isActive { get; set; }
+        public bool isloggedIn { get; set; }
         public DateTime createdate { get; set; }
         public DateTime lastLogin { get; set; }
 

@@ -8,6 +8,7 @@ namespace TQM.Model
         [PrimaryKey]
         public Guid ID { get; set; }
         [MaxLength(50)]
+        public string machineCategory { get; set; }
         public string machineName { get; set; }
         public DateTime createdate { get; set; }
     }

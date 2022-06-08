@@ -1,21 +1,19 @@
-﻿using SQLite;
-using SQLiteNetExtensions.Attributes;
-using System;
+﻿using System;
 
-namespace TQM.Model
+namespace TQM.ModelView
 {
-    public class YCTestModel
+    public class YCTestModelView
     {
-        [PrimaryKey]
-        public Guid ID { get; set; }
-
         public long testID { get; set; }
 
-        [ForeignKey(typeof(UserModel))]
         public Guid userID { get; set; }
 
-        [ForeignKey(typeof(MachineModel))]
+        public string userName { get; set; }
         public Guid machineID { get; set; }
+
+        public string machineCategory { get; set; }
+        public string machineName { get; set; }
+
         public string apercent { get; set; }
         public string countsysname { get; set; }
 
@@ -32,7 +30,5 @@ namespace TQM.Model
         public decimal yccalcval { get; set; }
 
         public DateTime createdate { get; set; }
-
-
     }
 }

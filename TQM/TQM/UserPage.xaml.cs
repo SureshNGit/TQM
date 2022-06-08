@@ -19,6 +19,7 @@ namespace TQM
             {
                 InitializeComponent();
                 SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                //conn.DropTable<UserModel>();
                 conn.CreateTable<CompanyModel>();
                 List<CompanyModel> companieslist = conn.Table<CompanyModel>().ToList();
                 picker_companyname.ItemsSource = companieslist;
@@ -86,6 +87,7 @@ namespace TQM
                                 (UserModel.userId.ToLower().Contains(entry_userid.Text.ToLower())));
                 conn.Close();
                 conn.Dispose();
+                bool isloggenin = false;
                 if (existingUserList.Count > 0)
                 {
                     if (btn_save.Text == "Save")
@@ -100,6 +102,12 @@ namespace TQM
                             DisplayAlert("Notice", "User already exists!!!", "OK");
                             return;
                         }
+                        using (SQLiteConnection cxn = new SQLiteConnection(App.DatabaseLocation))
+                        {
+                            cxn.CreateTable<UserModel>();
+                            UserModel currentuser = cxn.Table<UserModel>().Where(UserModel => UserModel.ID == currentID).FirstOrDefault();
+                            if (currentuser.isloggedIn) { isloggenin = true; }
+                        }
                     }
 
                 }
@@ -112,6 +120,7 @@ namespace TQM
                     password = entry_password.Text,
                     isAdmin = switch_admin.IsToggled,
                     isActive = switch_active.IsToggled,
+                    isloggedIn = isloggenin,
                     createdate = DateTime.Now,
                     lastLogin = DateTime.Now
                 };
@@ -167,6 +176,11 @@ namespace TQM
         {
             try
             {
+                if (entry_usersearch.Text.Trim().ToLower() == "")
+                {
+                    DisplayAlert("Attention", "Please enter user name to search!!!", "OK");
+                    return;
+                }
                 SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
                 conn.CreateTable<UserModel>();
                 List<UserModel> usersearchlist = conn.GetAllWithChildren<UserModel>().FindAll(UserModel =>

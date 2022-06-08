@@ -74,6 +74,8 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -86,25 +88,41 @@
             <BoxView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
             <BoxView Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
             <BoxView Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
-            <BoxView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+            <BoxView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+            <BoxView Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+            <BoxView Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
             
-            <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="6" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="6" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="6" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+            <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="8" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="8" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="8" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
             
             <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Count System Name" FontSize="20" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Yarn Count Unit" FontSize="20" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
             <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Yarn Length" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Count" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="A%" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="A%" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             
             <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" Text="Tex" FontSize="20" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" Text="Yard" FontSize="20" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Text="120" FontSize="20" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" Text="6" x:Name="entry_testcount" TextColor="Green" FontSize="20" Keyboard="Numeric"
                    VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_apercent" TextColor="Green" FontSize="20" 
-                   VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Picker Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1"  
+                    x:Name="picker_machinecategory" TextColor="Green" FontSize="20" SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Drawing</x:String>
+                        <x:String>Carding</x:String>
+                        <x:String>Simplex/SpeedFrame</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+            <Picker Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding machineName}" 
+                    x:Name="picker_machinename" TextColor="Green" FontSize="20"/>
+            <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_apercent" TextColor="Green" FontSize="20" 
+                  VerticalTextAlignment="End" HorizontalTextAlignment="End"/>
 
             <Frame Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="4" BackgroundColor="White" BorderColor="White" CornerRadius="25" HasShadow="False">
                 <Label x:Name="lbl_error" VerticalTextAlignment="Start" HorizontalTextAlignment="Start" Text="" TextColor="#E74C3C" FontSize="Medium"/>
