@@ -18,8 +18,6 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
-                <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalOptions="Center" Text="Send" 
-                        x:Name="btn_sendMessage"  Clicked="btn_sendMessage_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="25"/>
                 <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Start" 
                         x:Name="testYCButton"  Clicked="testYCButton_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="25"/>
             </Grid>
@@ -147,12 +145,19 @@
                 </Entry.Effects>
             </Entry>
 
-            <Frame Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0"
+            <Frame Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="3" Margin="10,0,0,0"
                    BackgroundColor="White" BorderColor="White" CornerRadius="25" HasShadow="False">
                 <Label x:Name="lbl_error" VerticalTextAlignment="Start" HorizontalTextAlignment="Start" Text="" TextColor="#E74C3C" FontSize="Medium"/>
             </Frame>
 
-            <Frame Grid.Row="2" Grid.RowSpan="7" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0"
+            <Frame Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" Grid.ColumnSpan="2" Margin="10,0,0,0" HorizontalOptions="End"
+                   BackgroundColor="White" BorderColor="White" CornerRadius="25" HasShadow="False">
+                <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="img_loading" IsVisible="True" 
+                       Source="start.gif" IsAnimationPlaying="True" HorizontalOptions="Center"
+                       Aspect="AspectFit" HeightRequest="80" WidthRequest="80"/>
+            </Frame>
+            
+            <Frame Grid.Row="2" Grid.RowSpan="6" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0"
                    BackgroundColor="White" BorderColor="White" CornerRadius="25" HasShadow="False">
                 <ListView x:Name="listview_testresult" 
                       HasUnevenRows="True"

@@ -66,22 +66,6 @@ namespace TQM
             }
         }
 
-        private void btn_sendMessage_Clicked(object sender, System.EventArgs e)
-        {
-            //try
-            //{
-            //    Uri uri = Uri.("http://www.google.com");
-            //    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            //    Chat.Open("+919790522299", "Message from SriSastha");
-            //}
-            //catch (Exception ex)
-            //{
-            //    DisplayAlert("Error", ex.Message, "OK");
-            //}
-        }
-
-
-
         private async void UpdateUserNotification(string msg)
         {
             Device.BeginInvokeOnMainThread(() =>
@@ -151,13 +135,16 @@ namespace TQM
                     if (ycTestModelViewlist[0].totaltestcount > 1)
                     {
                         mean = totalCalcCountVal / ycTestModelViewlist[0].totaltestcount;
+                        mean = Math.Round(mean, 3);
                         decimal IndividualCalValminusMean = 0m;
                         foreach (YCTestModelView test in ycTestModelViewlist)
                         {
                             IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
                         }
                         sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
+                        sd = Math.Round(sd, 3);
                         cv = (sd / mean) * 100; //Coefficient of Variation
+                        cv = Math.Round(cv, 3);
                     }
                     YCTestSummaryModel ycTestSummaryModel = new YCTestSummaryModel()
                     {
@@ -307,7 +294,7 @@ namespace TQM
                                 switch (selectedCountUnit)
                                 {
                                     case "Yard":
-                                        decimal drivedVal = (selectedYarnLen / 840m) * (1m / (current_stable_data / 7000m));
+                                        decimal drivedVal = (selectedYarnLen / 840m) * (1m / ((current_stable_data * 15.4324m) / 7000m));
                                         currentCalculatedValue = Math.Round(drivedVal, 3);
                                         break;
                                     default:
@@ -392,6 +379,7 @@ namespace TQM
                             else
                             {
                                 decimal s_op = decimal.Parse(balOutput);
+                                s_op = Math.Round(s_op, 3);
                                 if (!initialWeigthCheck)
                                 {
                                     if (s_op == ZERO || s_op <= MIN_VAL)
