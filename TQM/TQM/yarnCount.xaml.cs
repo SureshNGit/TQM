@@ -23,7 +23,7 @@ namespace TQM
         private BluetoothSocket _socket;
         BluetoothAdapter adapter;
         BluetoothDevice device;
-        const decimal MIN_VAL = 0.0m;
+        const decimal MIN_VAL = 0.400m;
         const decimal ZERO = 0.0m;
         const int PER_TEST_LOOP_COUNT = 100;
         const int DATA_READ_LOOP_COUNT = 100;
@@ -40,7 +40,8 @@ namespace TQM
         private decimal selectedYarnLen = 0m;
         private int selectedTestCount = 0;
         private string selectedApercent = null;
-
+        private const string RED = "#E74C3C";
+        private const string GREEN = "#3CE74C";
 
         public yarnCount()
         {
@@ -66,11 +67,22 @@ namespace TQM
             }
         }
 
-        private async void UpdateUserNotification(string msg)
+        private async void UpdateUserNotification(string msg, string color = RED)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                lbl_error.TextColor = Color.FromHex(color);
                 lbl_error.Text = msg;
+            });
+        }
+
+        private async void ImageNotification(string src, bool visibility = true)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                img_notification.Source = null;
+                img_notification.IsVisible = visibility;
+                img_notification.Source = src;
             });
         }
 
@@ -89,6 +101,17 @@ namespace TQM
                 listview_testresult.ItemsSource = null;
                 listview_testresult.IsVisible = visibility;
                 listview_testresult.ItemsSource = ycTestModelViewlist;
+            });
+        }
+
+        private async Task refOverallSummary(decimal mean, decimal sd, decimal cv, bool visibility = true)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                frame_overallSummary.IsVisible = visibility;
+                lbl_average.Text = mean.ToString();
+                lbl_sd.Text = sd.ToString();
+                lbl_cv.Text = cv.ToString();
             });
         }
 
@@ -173,6 +196,7 @@ namespace TQM
                     if (dbStatus)
                     {
                         await refListView();
+                        await refOverallSummary(mean, sd, cv);
                     }
                 }
 
@@ -184,7 +208,7 @@ namespace TQM
             try
             {
                 current_stable_data = 0;
-                if (fullreset) { UpdateUserNotification(""); disposeble(); }
+                if (fullreset) { ImageNotification(null); UpdateUserNotification(""); disposeble(); }
                 Device.BeginInvokeOnMainThread(() =>
                 {
                     testYCButton.IsEnabled = true;
@@ -199,8 +223,10 @@ namespace TQM
 
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
+            ImageNotification("null");
             UpdateUserNotification("");
             await refListView(false);
+            await refOverallSummary(0m, 0m, 0m, false);
             if (selectedMachineID == Guid.Empty || selectedMachineCategory == null)
             {
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
@@ -208,6 +234,7 @@ namespace TQM
             }
             if (!initializeBluetooth())
             {
+                ImageNotification("red.png");
                 UpdateUserNotification("Communication Error!!!");
                 return;
             }
@@ -215,6 +242,7 @@ namespace TQM
             int testCount = int.Parse(testCount_str);
             if (testCount_str == null || testCount_str == "")
             {
+                ImageNotification("red.png");
                 UpdateUserNotification("Test count cannot be zero!!!");
                 return;
             }
@@ -260,6 +288,7 @@ namespace TQM
         {
             try
             {
+                ImageNotification("loading.gif");
                 bool runResult = false;
                 for (int i = 0; i < testCount; i++)
                 {
@@ -367,11 +396,13 @@ namespace TQM
                         {
                             if (balOutput == "reset")
                             {
+                                ImageNotification("red.png");
                                 UpdateUserNotification("Remove weigth to ensure zero!!!");
                                 Debug.WriteLine("Remove weigth to ensure zero!!!");
                             }
                             else if (balOutput == "fail")
                             {
+                                ImageNotification("red.png");
                                 UpdateUserNotification("Read data failed!!!");
                                 Debug.WriteLine("Read data failed");
                                 return false;
@@ -382,14 +413,16 @@ namespace TQM
                                 s_op = Math.Round(s_op, 3);
                                 if (!initialWeigthCheck)
                                 {
-                                    if (s_op == ZERO || s_op <= MIN_VAL)
+                                    if (s_op == ZERO)
                                     {
                                         initialWeigthCheck = true;
-                                        UpdateUserNotification("Place object to start test!!!");
+                                        ImageNotification("green.png");
+                                        UpdateUserNotification("Place object to start test!!!", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     else
                                     {
+                                        ImageNotification("red.png");
                                         UpdateUserNotification("Remove weigth to ensure zero!!!");
                                         Debug.WriteLine("Remove weigth to ensure zero!!!");
                                     }
@@ -398,12 +431,21 @@ namespace TQM
                                 {
                                     if (s_op == ZERO)
                                     {
-                                        UpdateUserNotification("Place object to start test!!!");
+                                        ImageNotification("green.png");
+                                        UpdateUserNotification("Place object to start test!!!", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
+                                    }
+                                    else if (s_op < MIN_VAL)
+                                    {
+                                        initialWeigthCheck = false;
+                                        ImageNotification("red.png");
+                                        UpdateUserNotification("Weigth is below minimum value!!!");
+                                        Debug.WriteLine("Weigth is below minimum value!!!");
                                     }
                                     else
                                     {
                                         current_stable_data = s_op;
+                                        ImageNotification(null);
                                         UpdateUserNotification("");
                                         return true;
                                     }
@@ -412,11 +454,13 @@ namespace TQM
                         }
                         else
                         {
+                            ImageNotification("red.png");
                             UpdateUserNotification("Data is unstable!!! Ensure weighing machine is covered properly");
                             Debug.WriteLine("Data is unstable!!! Ensure weighing machine is covered properly");
                         }
                         if (perTestLoopCount > PER_TEST_LOOP_COUNT)
                         {
+                            ImageNotification("red.png");
                             UpdateUserNotification("Improper Test!!! Start new test");
                             Debug.WriteLine("Improper Test!!! Start new test");
                             return false;
@@ -426,6 +470,7 @@ namespace TQM
                 }
                 else
                 {
+                    ImageNotification("red.png");
                     UpdateUserNotification("Communication Error!!!");
                     return false;
                 }
