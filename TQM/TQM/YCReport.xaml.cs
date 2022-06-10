@@ -38,8 +38,9 @@ namespace TQM
                 {
                     if (startDate == endDate)
                     {
+                        endDate = startDate.AddDays(1);
                         ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                       YCTestSummaryModel.createdate == startDate).ToList();
+                       YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate < endDate).ToList();
                     }
                     else
                     {
