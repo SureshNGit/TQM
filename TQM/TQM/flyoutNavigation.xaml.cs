@@ -101,7 +101,7 @@ namespace TQM
                     {
                         Title = "Test Report",
                         ImageSource = "report.jpeg",
-                        TargetPage = typeof(YCReport)
+                        TargetPage = typeof(Report)
                     });
                     flyItems.Add(new MenuItem
                     {
@@ -145,7 +145,7 @@ namespace TQM
                     {
                         Title = "Test Report",
                         ImageSource = "report.jpeg",
-                        TargetPage = typeof(YCReport)
+                        TargetPage = typeof(Report)
                     });
                     flyItems.Add(new MenuItem
                     {
@@ -189,7 +189,7 @@ namespace TQM
                     {
                         Title = "Test Report",
                         ImageSource = "report.jpeg",
-                        TargetPage = typeof(YCReport)
+                        TargetPage = typeof(Report)
                     });
                     flyItems.Add(new MenuItem
                     {
@@ -233,7 +233,7 @@ namespace TQM
                     {
                         Title = "Test Report",
                         ImageSource = "report.jpeg",
-                        TargetPage = typeof(YCReport)
+                        TargetPage = typeof(Report)
                     });
                     flyItems.Add(new MenuItem
                     {
@@ -278,7 +278,7 @@ namespace TQM
                     {
                         Title = "Test Report",
                         ImageSource = "yarn.jpeg",
-                        TargetPage = typeof(YCReport)
+                        TargetPage = typeof(Report)
                     });
                     flyItems.Add(new MenuItem
                     {

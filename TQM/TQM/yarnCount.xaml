@@ -17,7 +17,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
-                <Label Grid.Row="0" Grid.Column="1" Text="Sri Satha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
+                <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
                 <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Start" 
                         x:Name="testYCButton"  Clicked="testYCButton_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="25"/>
             </Grid>

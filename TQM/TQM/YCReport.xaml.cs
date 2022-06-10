@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using System;
 using System.Collections.Generic;
 using TQM.Model;
 using TQM.ModelView;
@@ -17,12 +18,49 @@ namespace TQM
         public YCReport()
         {
             InitializeComponent();
+        }
+
+        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        {
+            InitializeComponent();
+            getReport(startDate, endDate, categoryName, machineID);
+        }
+
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        {
             List<OverallReportModelView> OVS = new List<OverallReportModelView>();
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                conn.CreateTable<YCTestModel>();
-                List<YCTestModel> allYCTest = conn.Table<YCTestModel>().ToList();
-                List<YCTestSummaryModel> ycTestSummaryModels = conn.Table<YCTestSummaryModel>().ToList();
+                //List<YCTestSummaryModel> ycTestSummaryModels = conn.Table<YCTestSummaryModel>().ToList();
+
+                List<YCTestSummaryModel> ycTestSummaryModels = null;
+                if (categoryName == null)
+                {
+                    if (startDate == endDate)
+                    {
+                        ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                       YCTestSummaryModel.createdate == startDate).ToList();
+                    }
+                    else
+                    {
+                        ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                       (YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate <= endDate)).ToList();
+                    }
+
+                }
+                else if (categoryName != null && machineID == Guid.Empty)
+                {
+                    ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                       (YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate <= endDate
+                       && YCTestSummaryModel.machineCategory == categoryName)).ToList();
+                }
+                else if (categoryName != null && machineID != Guid.Empty)
+                {
+                    ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                       (YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate <= endDate
+                       && YCTestSummaryModel.machineCategory == categoryName)
+                       && YCTestSummaryModel.machineID == machineID).ToList();
+                }
 
                 foreach (YCTestSummaryModel testsummary in ycTestSummaryModels)
                 {
