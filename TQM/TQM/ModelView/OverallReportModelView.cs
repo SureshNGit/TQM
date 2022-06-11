@@ -10,6 +10,7 @@ namespace TQM.ModelView
         public string userName { get; set; }
         public string machineCategory { get; set; }
         public string machineName { get; set; }
+        public string apercent { get; set; }
         public string countsysname { get; set; }
         public string yarnlenunit { get; set; }
         public decimal yarnlength { get; set; }

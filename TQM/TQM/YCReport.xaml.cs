@@ -1,8 +1,15 @@
 ﻿using SQLite;
+using Syncfusion.Drawing;
+using Syncfusion.Pdf;
+using Syncfusion.Pdf.Graphics;
+using Syncfusion.Pdf.Grid;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using TQM.Model;
 using TQM.ModelView;
+using TQM.SfPdfViewer;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -78,6 +85,7 @@ namespace TQM
                         report.userName = testsummary.userName;
                         report.machineCategory = testsummary.machineCategory;
                         report.machineName = testsummary.machineName;
+                        report.apercent = testsummary.apercent;
                         report.countsysname = testsummary.countsysname;
                         report.yarnlenunit = testsummary.yarnlenunit;
                         report.yarnlength = testsummary.yarnlength;
@@ -94,5 +102,65 @@ namespace TQM
             listview_tcreport.ItemsSource = null;
             listview_tcreport.ItemsSource = ListOfReport;
         }
+
+
+        private void btn_saveToPDF_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                PdfDocument pdfDocument = new PdfDocument();
+
+
+
+
+
+
+                PdfPage pdfPage = pdfDocument.Pages.Add();
+                PdfGrid pdfGrid = null;
+
+                List<OverallReportModelView> overallReportList = (List<OverallReportModelView>)listview_tcreport.ItemsSource;
+                foreach (OverallReportModelView orl in overallReportList)
+                {
+
+                    pdfGrid = new PdfGrid();
+                    pdfGrid.ApplyBuiltinStyle(PdfGridBuiltinStyle.GridTable1LightAccent1);
+                    DataTable dataTable = new DataTable();
+                    dataTable.Columns.Add("Test No");
+                    dataTable.Columns.Add("Weight");
+                    dataTable.Columns.Add("Hank");
+                    List<YCTestModel> testList = orl.yctestlist;
+                    foreach (YCTestModel test in testList)
+                    {
+
+
+
+
+                        dataTable.Rows.Add(new object[] { test.testcount, test.yarnweight, test.yccalcval });
+
+
+
+
+                    }
+                    pdfGrid.DataSource = dataTable;
+                    PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
+                    layoutFormat.Layout = PdfLayoutType.Paginate;
+                    PdfLayoutResult result = pdfGrid.Draw(pdfPage, new PointF(10, 10), layoutFormat);
+                };
+
+
+
+                MemoryStream stream = new MemoryStream();
+                pdfDocument.Save(stream);
+                pdfDocument.Close(true);
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream);
+                DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "Error occurred!!! Error: " + ex.Message.ToString(), "OK");
+            }
+        }
+
+
     }
 }

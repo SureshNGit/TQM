@@ -22,7 +22,7 @@ namespace TQM.Model
 
         public string machineCategory { get; set; }
         public string machineName { get; set; }
-
+        public string apercent { get; set; }
         public string countsysname { get; set; }
 
         public string yarnlenunit { get; set; }

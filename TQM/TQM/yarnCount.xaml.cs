@@ -178,6 +178,7 @@ namespace TQM
                         machineID = ycTestModelViewlist[0].machineID,
                         machineCategory = ycTestModelViewlist[0].machineCategory,
                         machineName = ycTestModelViewlist[0].machineName,
+                        apercent = ycTestModelViewlist[0].apercent,
                         countsysname = ycTestModelViewlist[0].countsysname,
                         yarnlenunit = ycTestModelViewlist[0].yarnlenunit,
                         yarnlength = ycTestModelViewlist[0].yarnlength,

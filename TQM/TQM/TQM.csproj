@@ -14,7 +14,9 @@
     <PackageReference Include="Plugin.BluetoothClassic" Version="1.1.5" />
     <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
     <PackageReference Include="SQLiteNetExtensions" Version="2.1.0" />
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2401" />
+    <PackageReference Include="Syncfusion.Licensing" Version="20.1.0.59" />
+    <PackageReference Include="Syncfusion.Xamarin.Pdf" Version="20.1.0.59" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2478" />
     <PackageReference Include="Xamarin.Essentials" Version="1.7.3" />
   </ItemGroup>
 
