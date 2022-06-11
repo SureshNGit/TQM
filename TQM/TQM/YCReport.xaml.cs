@@ -6,6 +6,7 @@ using Syncfusion.Pdf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using TQM.Model;
 using TQM.ModelView;
@@ -21,7 +22,7 @@ namespace TQM
 
         private List<OverallReportModelView> _listOfReports;
         public List<OverallReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
-
+        private string selectedCompanyName = null;
         public YCReport()
         {
             InitializeComponent();
@@ -111,40 +112,126 @@ namespace TQM
                 PdfDocument pdfDocument = new PdfDocument();
 
 
-
-
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<CompanyModel>();
+                    List<CompanyModel> companieslist = conn.Table<CompanyModel>().ToList();
+                    selectedCompanyName = companieslist[0].Name;
+                };
 
 
                 PdfPage pdfPage = pdfDocument.Pages.Add();
                 PdfGrid pdfGrid = null;
-
+                PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
+                layoutFormat.Layout = PdfLayoutType.Paginate;
                 List<OverallReportModelView> overallReportList = (List<OverallReportModelView>)listview_tcreport.ItemsSource;
+                PdfLayoutResult result = null;
+                PdfLayoutResult resultInfo = null;
+                float overallHeight = 0;
+                int tableNo = 1;
                 foreach (OverallReportModelView orl in overallReportList)
                 {
 
+                    PdfGrid pdfGridInfo = new PdfGrid();
+                    pdfGridInfo.Columns.Add(4);
+                    pdfGridInfo.Rows.Add();
+                    pdfGridInfo.Rows.Add();
+                    pdfGridInfo.Rows.Add();
+                    pdfGridInfo.Rows.Add();
+                    pdfGridInfo.Rows.Add();
+
+                    if (tableNo == 1)
+                    {
+                        pdfGridInfo.Rows[0].Cells[0].Value = selectedCompanyName;
+                        pdfGridInfo.Rows[0].Cells[0].ColumnSpan = 4;
+                        pdfGridInfo.Rows[0].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGridInfo.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGridInfo.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.Blue;
+                        pdfGridInfo.Rows[0].Cells[0].Style.TextPen = PdfPens.White;
+                        pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 16);
+                    }
+                    pdfGridInfo.Rows[1].Cells[0].Value = "Test ID: " + orl.testID;
+                    pdfGridInfo.Rows[1].Cells[1].Value = "Tester: " + orl.userName;
+                    pdfGridInfo.Rows[1].Cells[2].Value = "Machine Category: " + orl.machineCategory;
+                    pdfGridInfo.Rows[1].Cells[3].Value = "Machine Name: " + orl.machineName;
+                    pdfGridInfo.Rows[2].Cells[0].Value = "Count System: " + orl.countsysname;
+                    pdfGridInfo.Rows[2].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
+                    pdfGridInfo.Rows[2].Cells[2].Value = "Length: " + orl.yarnlength;
+                    pdfGridInfo.Rows[2].Cells[3].Value = "Total Test: " + orl.totaltestcount;
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Average: " + orl.testaverage;
+                    pdfGridInfo.Rows[3].Cells[1].Value = "SD: " + orl.testsd;
+                    pdfGridInfo.Rows[3].Cells[2].Value = "CV: " + orl.testcv;
+                    pdfGridInfo.Rows[3].Cells[3].Value = "A%: " + orl.apercent;
+                    pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
+
+                    pdfGridInfo.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[2].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[2].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[2].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[2].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[3].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[3].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[3].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[3].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[4].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[4].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[4].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[4].Cells[3].Style.Borders.All = PdfPens.Transparent;
+
+                    resultInfo = pdfGridInfo.Draw(pdfPage, new PointF(10, 10), layoutFormat);
+
                     pdfGrid = new PdfGrid();
-                    pdfGrid.ApplyBuiltinStyle(PdfGridBuiltinStyle.GridTable1LightAccent1);
+                    //pdfGrid.ApplyBuiltinStyle(PdfGridBuiltinStyle.GridTable1LightAccent1);
+
                     DataTable dataTable = new DataTable();
                     dataTable.Columns.Add("Test No");
                     dataTable.Columns.Add("Weight");
                     dataTable.Columns.Add("Hank");
+
                     List<YCTestModel> testList = orl.yctestlist;
                     foreach (YCTestModel test in testList)
                     {
-
-
-
-
                         dataTable.Rows.Add(new object[] { test.testcount, test.yarnweight, test.yccalcval });
-
-
-
-
                     }
+
                     pdfGrid.DataSource = dataTable;
-                    PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
-                    layoutFormat.Layout = PdfLayoutType.Paginate;
-                    PdfLayoutResult result = pdfGrid.Draw(pdfPage, new PointF(10, 10), layoutFormat);
+
+                    if (result == null)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, resultInfo.Bounds.Height + 10), layoutFormat);
+                        overallHeight = result.Bounds.Height + 30;
+                    }
+                    else
+                    {
+                        if (overallHeight == 0)
+                        {
+                            result = pdfGrid.Draw(pdfPage, new PointF(10, resultInfo.Bounds.Height + 10), layoutFormat);
+                            overallHeight = result.Bounds.Height + 30;
+                        }
+                        else
+                        {
+                            int prevPageCount = result.Page.Section.Pages.Count;
+                            result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight)));
+                            if (prevPageCount < result.Page.Section.Pages.Count)
+                            {
+                                overallHeight = 0;
+                                pdfPage = result.Page;
+                            }
+
+                        }
+                        overallHeight = overallHeight + result.Bounds.Height + 30;
+                    }
+
+                    Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
+                    Debug.WriteLine("Table NO==>" + tableNo + " ,tableHeigth ===>" + overallHeight);
+                    tableNo++;
                 };
 
 
@@ -154,6 +241,7 @@ namespace TQM
                 pdfDocument.Close(true);
                 string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream);
                 DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
+                //Process.Start(pdfPath);
             }
             catch (Exception ex)
             {
