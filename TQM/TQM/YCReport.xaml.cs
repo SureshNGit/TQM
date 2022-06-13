@@ -5,7 +5,6 @@ using Syncfusion.Pdf.Graphics;
 using Syncfusion.Pdf.Grid;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using TQM.Model;
@@ -129,9 +128,11 @@ namespace TQM
                 PdfLayoutResult resultInfo = null;
                 float overallHeight = 0;
                 int tableNo = 1;
+                bool newPageAdded_Header = false;
+                bool newPageAdded_Body = false;
                 foreach (OverallReportModelView orl in overallReportList)
                 {
-
+                    if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
                     pdfGridInfo.Columns.Add(4);
                     pdfGridInfo.Rows.Add();
@@ -185,43 +186,119 @@ namespace TQM
                     pdfGridInfo.Rows[4].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[3].Style.Borders.All = PdfPens.Transparent;
 
-                    resultInfo = pdfGridInfo.Draw(pdfPage, new PointF(10, 10), layoutFormat);
-
-                    pdfGrid = new PdfGrid();
-                    //pdfGrid.ApplyBuiltinStyle(PdfGridBuiltinStyle.GridTable1LightAccent1);
-
-                    DataTable dataTable = new DataTable();
-                    dataTable.Columns.Add("Test No");
-                    dataTable.Columns.Add("Weight");
-                    dataTable.Columns.Add("Hank");
-
-                    List<YCTestModel> testList = orl.yctestlist;
-                    foreach (YCTestModel test in testList)
+                    if (overallHeight == 0)
                     {
-                        dataTable.Rows.Add(new object[] { test.testcount, test.yarnweight, test.yccalcval });
+                        resultInfo = pdfGridInfo.Draw(pdfPage, new PointF(10, 10), layoutFormat);
+                        overallHeight = resultInfo.Bounds.Height + 5;
+                    }
+                    else
+                    {
+                        int prevPageCount = result.Page.Section.Pages.Count;
+                        float prevGridHeight = overallHeight;
+                        if (newPageAdded_Body)
+                        {
+                            newPageAdded_Body = false;
+                            resultInfo = pdfGridInfo.Draw(pdfPage, new PointF(10, overallHeight), layoutFormat);
+                        }
+                        else
+                        {
+                            resultInfo = pdfGridInfo.Draw(result.Page, new PointF(10, (overallHeight)));
+                        }
+
+                        if (prevPageCount < resultInfo.Page.Section.Pages.Count)
+                        {
+                            overallHeight = 0;
+                            newPageAdded_Header = true;
+                            pdfPage = resultInfo.Page;
+                            overallHeight = resultInfo.Bounds.Height + 5;
+                        }
+                        else
+                        {
+                            overallHeight = prevGridHeight + resultInfo.Bounds.Height + 5;
+                        }
                     }
 
-                    pdfGrid.DataSource = dataTable;
+                    pdfGrid = new PdfGrid();
 
-                    if (result == null)
+                    pdfGrid.Columns.Add(3);
+                    PdfGridRow row = new PdfGridRow(pdfGrid);
+                    pdfGrid.Rows.Add(row);
+
+                    pdfGrid.Rows[0].Cells[0].Value = "Test No";
+                    pdfGrid.Rows[0].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //pdfGrid.Rows[0].Cells[0].Style.TextPen = PdfPens.Black;
+                    pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                    pdfGrid.Rows[0].Cells[1].Value = "Weight";
+                    pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //pdfGrid.Rows[0].Cells[1].Style.TextPen = PdfPens.Black;
+                    pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                    pdfGrid.Rows[0].Cells[2].Value = "Hank";
+                    pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //pdfGrid.Rows[0].Cells[2].Style.TextPen = PdfPens.Black;
+                    pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                    pdfGrid.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    pdfGrid.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    pdfGrid.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
+
+
+                    List<YCTestModel> testList = orl.yctestlist;
+                    int rowCount = 1;
+                    foreach (YCTestModel test in testList)
                     {
-                        result = pdfGrid.Draw(pdfPage, new PointF(10, resultInfo.Bounds.Height + 10), layoutFormat);
+                        row = new PdfGridRow(pdfGrid);
+                        pdfGrid.Rows.Add(row);
+                        pdfGrid.Rows[rowCount].Cells[0].Value = test.testcount.ToString();
+                        pdfGrid.Rows[rowCount].Cells[1].Value = test.yarnweight.ToString();
+                        pdfGrid.Rows[rowCount].Cells[2].Value = test.yccalcval.ToString();
+                        pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[rowCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[rowCount].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[rowCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        rowCount++;
+                    }
+
+                    if (result == null && overallHeight == 0)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, result.Bounds.Height + 10), layoutFormat);
                         overallHeight = result.Bounds.Height + 30;
+                    }
+                    else if (result == null && overallHeight > 0)
+                    {
+                        float prevGridHeight = overallHeight;
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
+                        overallHeight = prevGridHeight + result.Bounds.Height + 30;
                     }
                     else
                     {
                         if (overallHeight == 0)
                         {
-                            result = pdfGrid.Draw(pdfPage, new PointF(10, resultInfo.Bounds.Height + 10), layoutFormat);
-                            overallHeight = result.Bounds.Height + 30;
+                            result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
                         }
                         else
                         {
                             int prevPageCount = result.Page.Section.Pages.Count;
-                            result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight)));
+                            if (newPageAdded_Header)
+                            {
+                                newPageAdded_Header = false;
+                                result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight), layoutFormat);
+                            }
+                            else
+                            {
+                                result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight)));
+                            }
+
                             if (prevPageCount < result.Page.Section.Pages.Count)
                             {
                                 overallHeight = 0;
+                                newPageAdded_Body = true;
                                 pdfPage = result.Page;
                             }
 

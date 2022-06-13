@@ -16,6 +16,7 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
+                <Entry Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="1" HorizontalOptions="Start" x:Name="entry_reportNo"/>
                 <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Save To PDF" 
                         x:Name="btn_saveToPDF"  Clicked="btn_saveToPDF_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="25"/>
             </Grid>

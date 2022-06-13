@@ -42,6 +42,7 @@ namespace TQM
         private string selectedApercent = null;
         private const string RED = "#E74C3C";
         private const string GREEN = "#3CE74C";
+        private const int BUFFER_WAIT_COUNT = 10;
 
         public yarnCount()
         {
@@ -65,6 +66,13 @@ namespace TQM
                     entry_testcount.Text = "";
                 }
             }
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            disposeble();
+            reset();
         }
 
         private async void UpdateUserNotification(string msg, string color = RED)
@@ -104,7 +112,7 @@ namespace TQM
             });
         }
 
-        private async Task refOverallSummary(decimal mean, decimal sd, decimal cv, bool visibility = true)
+        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
@@ -204,12 +212,13 @@ namespace TQM
             }
         }
 
-        private void reset(bool fullreset = true)
+        private void reset(bool fullreset = true, bool dispose = true)
         {
             try
             {
                 current_stable_data = 0;
-                if (fullreset) { ImageNotification(null); UpdateUserNotification(""); disposeble(); }
+                if (fullreset) { ImageNotification(null); UpdateUserNotification(""); }
+                if (dispose) { disposeble(); }
                 Device.BeginInvokeOnMainThread(() =>
                 {
                     testYCButton.IsEnabled = true;
@@ -291,6 +300,7 @@ namespace TQM
             {
                 ImageNotification("loading.gif");
                 bool runResult = false;
+                int passCount = 0;
                 for (int i = 0; i < testCount; i++)
                 {
                     runResult = false;
@@ -312,6 +322,7 @@ namespace TQM
                     src.Cancel();
                     if (runResult)
                     {
+                        passCount++;
                         string displayusername = currentloggedInUser.firstname + " [" + currentloggedInUser.userId + "]";
                         if (currentloggedInUser.firstname != "")
                         {
@@ -362,7 +373,19 @@ namespace TQM
                         break;
                     }
                 }
-                if (ycTestModelViewlist.Count > 0) { updateDB(); }
+
+                if (ycTestModelViewlist.Count > 0 && passCount == testCount)
+                {
+                    updateDB();
+                }
+                else
+                {
+                    if (passCount > 0)
+                    {
+                        await refListView();
+                        await refOverallSummary();
+                    }
+                }
                 if (runResult)
                 {
                     reset();
@@ -371,6 +394,7 @@ namespace TQM
                 {
                     reset(false);
                 }
+
             }
             catch (Exception ex)
             {
@@ -404,7 +428,7 @@ namespace TQM
                             else if (balOutput == "fail")
                             {
                                 ImageNotification("red.png");
-                                UpdateUserNotification("Read data failed!!!");
+                                UpdateUserNotification("Read data failed!!! Start new test");
                                 Debug.WriteLine("Read data failed");
                                 return false;
                             }
@@ -610,7 +634,7 @@ namespace TQM
                         }
                         else
                         {
-                            if (bufferfailedcount > 100)
+                            if (bufferfailedcount > BUFFER_WAIT_COUNT)
                             {
                                 Debug.WriteLine("Buffer is not ready!!!");
                                 return "fail";
