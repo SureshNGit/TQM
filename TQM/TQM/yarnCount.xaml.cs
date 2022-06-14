@@ -27,7 +27,7 @@ namespace TQM
         const decimal ZERO = 0.0m;
         const int PER_TEST_LOOP_COUNT = 100;
         const int DATA_READ_LOOP_COUNT = 100;
-        const int STABLE_DATA_CHECK = 25;
+        const int STABLE_DATA_CHECK = 15;
         private decimal current_stable_data = 0;
         private List<YCTestModelView> ycTestModelViewlist;
         private long currentTestID = 0;
@@ -237,6 +237,17 @@ namespace TQM
             UpdateUserNotification("");
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
+            if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
+                return;
+            }
+            if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
+                return;
+            }
+
             if (selectedMachineID == Guid.Empty || selectedMachineCategory == null)
             {
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
@@ -419,6 +430,11 @@ namespace TQM
                         Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
                         if (balOutput != "")
                         {
+                            if (balOutput == "reset" && initialWeigthCheck) //Added to ignore negative values after placing weight
+                            {
+                                continue;
+                            }
+
                             if (balOutput == "reset")
                             {
                                 ImageNotification("red.png");
@@ -454,19 +470,19 @@ namespace TQM
                                 }
                                 else
                                 {
-                                    if (s_op == ZERO)
+                                    if (s_op == ZERO || s_op < MIN_VAL)
                                     {
                                         ImageNotification("green.png");
                                         UpdateUserNotification("Place object to start test!!!", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
-                                    else if (s_op < MIN_VAL)
-                                    {
-                                        initialWeigthCheck = false;
-                                        ImageNotification("red.png");
-                                        UpdateUserNotification("Weigth is below minimum value!!!");
-                                        Debug.WriteLine("Weigth is below minimum value!!!");
-                                    }
+                                    //else if (s_op < MIN_VAL)
+                                    //{
+                                    //    initialWeigthCheck = false;
+                                    //    ImageNotification("red.png");
+                                    //    UpdateUserNotification("Weigth is below minimum value!!!");
+                                    //    Debug.WriteLine("Weigth is below minimum value!!!");
+                                    //}
                                     else
                                     {
                                         current_stable_data = s_op;
@@ -522,6 +538,7 @@ namespace TQM
             }
         }
 
+        [Obsolete]
         public bool initializeBluetooth()
         {
             try

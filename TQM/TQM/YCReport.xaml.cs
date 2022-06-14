@@ -125,14 +125,14 @@ namespace TQM
                 layoutFormat.Layout = PdfLayoutType.Paginate;
                 List<OverallReportModelView> overallReportList = (List<OverallReportModelView>)listview_tcreport.ItemsSource;
                 PdfLayoutResult result = null;
-                PdfLayoutResult resultInfo = null;
+                //PdfLayoutResult resultInfo = null;
                 float overallHeight = 0;
                 int tableNo = 1;
                 bool newPageAdded_Header = false;
                 bool newPageAdded_Body = false;
                 foreach (OverallReportModelView orl in overallReportList)
                 {
-                    if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
+                    //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
                     pdfGridInfo.Columns.Add(4);
                     pdfGridInfo.Rows.Add();
@@ -149,7 +149,7 @@ namespace TQM
                         pdfGridInfo.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGridInfo.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.Blue;
                         pdfGridInfo.Rows[0].Cells[0].Style.TextPen = PdfPens.White;
-                        pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.TimesRoman, 16);
+                        pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 18);
                     }
                     pdfGridInfo.Rows[1].Cells[0].Value = "Test ID: " + orl.testID;
                     pdfGridInfo.Rows[1].Cells[1].Value = "Tester: " + orl.userName;
@@ -188,33 +188,32 @@ namespace TQM
 
                     if (overallHeight == 0)
                     {
-                        resultInfo = pdfGridInfo.Draw(pdfPage, new PointF(10, 10), layoutFormat);
-                        overallHeight = resultInfo.Bounds.Height + 5;
+                        result = pdfGridInfo.Draw(pdfPage, new PointF(10, 10), layoutFormat);
+                        overallHeight = result.Bounds.Height + 5;
                     }
                     else
                     {
                         int prevPageCount = result.Page.Section.Pages.Count;
-                        float prevGridHeight = overallHeight;
                         if (newPageAdded_Body)
                         {
                             newPageAdded_Body = false;
-                            resultInfo = pdfGridInfo.Draw(pdfPage, new PointF(10, overallHeight), layoutFormat);
+                            result = pdfGridInfo.Draw(pdfPage, new PointF(10, overallHeight), layoutFormat);
                         }
                         else
                         {
-                            resultInfo = pdfGridInfo.Draw(result.Page, new PointF(10, (overallHeight)));
+                            result = pdfGridInfo.Draw(result.Page, new PointF(10, (overallHeight)));
                         }
 
-                        if (prevPageCount < resultInfo.Page.Section.Pages.Count)
+                        if (prevPageCount < result.Page.Section.Pages.Count)
                         {
                             overallHeight = 0;
                             newPageAdded_Header = true;
-                            pdfPage = resultInfo.Page;
-                            overallHeight = resultInfo.Bounds.Height + 5;
+                            pdfPage = result.Page;
+                            overallHeight = result.Bounds.Height + 5;
                         }
                         else
                         {
-                            overallHeight = prevGridHeight + resultInfo.Bounds.Height + 5;
+                            overallHeight = overallHeight + result.Bounds.Height + 5;
                         }
                     }
 
@@ -242,9 +241,9 @@ namespace TQM
                     pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[2].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
-                    pdfGrid.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
-                    pdfGrid.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    //pdfGrid.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    //pdfGrid.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    //pdfGrid.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
 
 
                     List<YCTestModel> testList = orl.yctestlist;
@@ -272,9 +271,9 @@ namespace TQM
                     }
                     else if (result == null && overallHeight > 0)
                     {
-                        float prevGridHeight = overallHeight;
+                        //float prevGridHeight = overallHeight;
                         result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
-                        overallHeight = prevGridHeight + result.Bounds.Height + 30;
+                        overallHeight = overallHeight + result.Bounds.Height + 30;
                     }
                     else
                     {
@@ -288,22 +287,35 @@ namespace TQM
                             if (newPageAdded_Header)
                             {
                                 newPageAdded_Header = false;
-                                result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight), layoutFormat);
+                                result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
                             }
                             else
                             {
-                                result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight)));
+                                result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight + 10)));
                             }
+
+
 
                             if (prevPageCount < result.Page.Section.Pages.Count)
                             {
-                                overallHeight = 0;
+                                if (result.Bounds.Height > 0)
+                                {
+                                    overallHeight = result.Bounds.Height + 30;
+                                }
+                                else //do not know when this condition will occur :( Need to analyze!!!
+                                {
+                                    overallHeight = overallHeight + result.Bounds.Height + 30;
+                                }
                                 newPageAdded_Body = true;
                                 pdfPage = result.Page;
                             }
+                            else
+                            {
+                                overallHeight = overallHeight + result.Bounds.Height + 30;
+                            }
 
                         }
-                        overallHeight = overallHeight + result.Bounds.Height + 30;
+
                     }
 
                     Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
