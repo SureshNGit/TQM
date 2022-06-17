@@ -11,7 +11,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\SasthaLogo.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\SasthaLogo.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="modernhttpclient" Version="2.4.2" />
     <PackageReference Include="Plugin.BluetoothClassic" Version="1.1.5" />
+    <PackageReference Include="RestSharp" Version="108.0.1" />
     <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
     <PackageReference Include="SQLiteNetExtensions" Version="2.1.0" />
     <PackageReference Include="Syncfusion.Licensing" Version="20.1.0.59" />

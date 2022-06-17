@@ -40,8 +40,8 @@ namespace TQM
         private decimal selectedYarnLen = 0m;
         private int selectedTestCount = 0;
         private string selectedApercent = null;
-        private const string RED = "#E74C3C";
-        private const string GREEN = "#3CE74C";
+        private const string RED = "#FF0000";
+        private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
 
         public yarnCount()
@@ -166,15 +166,15 @@ namespace TQM
                     if (ycTestModelViewlist[0].totaltestcount > 1)
                     {
                         mean = totalCalcCountVal / ycTestModelViewlist[0].totaltestcount;
-                        mean = Math.Round(mean, 3);
                         decimal IndividualCalValminusMean = 0m;
                         foreach (YCTestModelView test in ycTestModelViewlist)
                         {
                             IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
                         }
                         sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
-                        sd = Math.Round(sd, 3);
                         cv = (sd / mean) * 100; //Coefficient of Variation
+                        mean = Math.Round(mean, 3);
+                        sd = Math.Round(sd, 3);
                         cv = Math.Round(cv, 3);
                     }
                     YCTestSummaryModel ycTestSummaryModel = new YCTestSummaryModel()
@@ -231,6 +231,7 @@ namespace TQM
             }
         }
 
+        [Obsolete]
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
             ImageNotification("null");
@@ -248,7 +249,7 @@ namespace TQM
                 return;
             }
 
-            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null)
+            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
             {
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
                 return;
@@ -256,17 +257,17 @@ namespace TQM
             if (!initializeBluetooth())
             {
                 ImageNotification("red.png");
-                UpdateUserNotification("Communication Error!!!");
+                UpdateUserNotification("COMMUNICATION ERROR!!!");
                 return;
             }
             string testCount_str = entry_testcount.Text;
             int testCount = int.Parse(testCount_str);
-            if (testCount_str == null || testCount_str == "")
-            {
-                ImageNotification("red.png");
-                UpdateUserNotification("Test count cannot be zero!!!");
-                return;
-            }
+            //if (testCount_str == null || testCount_str == "")
+            //{
+            //    ImageNotification("red.png");
+            //    UpdateUserNotification("Test count cannot be zero!!!");
+            //    return;
+            //}
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 conn.CreateTable<YCTestModel>();
@@ -349,6 +350,55 @@ namespace TQM
                                         decimal drivedVal = (selectedYarnLen / 840m) * (1m / ((current_stable_data * 15.4324m) / 7000m));
                                         currentCalculatedValue = Math.Round(drivedVal, 3);
                                         break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = ((selectedYarnLen * 1.09361m) / 840m) * (1m / ((current_stable_data * 15.4324m) / 7000m));
+                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            case "Tex":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = current_stable_data * 1000m / (selectedYarnLen * 0.9144m) * 1m;
+                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = current_stable_data * 1000m / selectedYarnLen * 1m;
+                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            case "Den":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = current_stable_data * 9000m / (selectedYarnLen * 0.9144m) * 1m;
+                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = current_stable_data * 9000m / selectedYarnLen * 1m;
+                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            case "Nm":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = ((selectedYarnLen * 0.9144m) * 1m) / ((current_stable_data * 0.001m) * 1000m);
+                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = (selectedYarnLen * 1m) / ((current_stable_data * 0.001m) * 1000m);
+                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        break;
                                     default:
                                         break;
                                 };
@@ -410,7 +460,7 @@ namespace TQM
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
-                showAlert("Communication Error. Please start test from begining!!!");
+                showAlert("COMMUNICATION ERROR!!!");
                 reset();
             }
         }
@@ -438,13 +488,13 @@ namespace TQM
                             if (balOutput == "reset")
                             {
                                 ImageNotification("red.png");
-                                UpdateUserNotification("Remove weigth to ensure zero!!!");
+                                UpdateUserNotification("REMOVE WEIGHT");
                                 Debug.WriteLine("Remove weigth to ensure zero!!!");
                             }
                             else if (balOutput == "fail")
                             {
                                 ImageNotification("red.png");
-                                UpdateUserNotification("Read data failed!!! Start new test");
+                                UpdateUserNotification("COMMUNICATION ERROR!!!");
                                 Debug.WriteLine("Read data failed");
                                 return false;
                             }
@@ -458,13 +508,13 @@ namespace TQM
                                     {
                                         initialWeigthCheck = true;
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("Place object to start test!!!", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     else
                                     {
                                         ImageNotification("red.png");
-                                        UpdateUserNotification("Remove weigth to ensure zero!!!");
+                                        UpdateUserNotification("REMOVE WEIGHT");
                                         Debug.WriteLine("Remove weigth to ensure zero!!!");
                                     }
                                 }
@@ -473,7 +523,7 @@ namespace TQM
                                     if (s_op == ZERO || s_op < MIN_VAL)
                                     {
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("Place object to start test!!!", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     //else if (s_op < MIN_VAL)
@@ -496,13 +546,13 @@ namespace TQM
                         else
                         {
                             ImageNotification("red.png");
-                            UpdateUserNotification("Data is unstable!!! Ensure weighing machine is covered properly");
+                            UpdateUserNotification("UNSTABLE DATA!!!");
                             Debug.WriteLine("Data is unstable!!! Ensure weighing machine is covered properly");
                         }
                         if (perTestLoopCount > PER_TEST_LOOP_COUNT)
                         {
                             ImageNotification("red.png");
-                            UpdateUserNotification("Improper Test!!! Start new test");
+                            UpdateUserNotification("IMPROPER TEST!!!");
                             Debug.WriteLine("Improper Test!!! Start new test");
                             return false;
                         }
@@ -512,7 +562,7 @@ namespace TQM
                 else
                 {
                     ImageNotification("red.png");
-                    UpdateUserNotification("Communication Error!!!");
+                    UpdateUserNotification("COMMUNICATION ERROR!!!");
                     return false;
                 }
             }
@@ -673,25 +723,45 @@ namespace TQM
 
         private void picker_machinecategory_SelectedIndexChanged(object sender, EventArgs e)
         {
-            selectedMachineCategory = picker_machinecategory.SelectedItem.ToString();
-            if (selectedMachineCategory == "" || selectedMachineCategory == null)
+            try
             {
-                picker_machinename.ItemsSource = null;
+                selectedMachineCategory = picker_machinecategory.SelectedItem.ToString();
+                if (selectedMachineCategory == "" || selectedMachineCategory == null)
+                {
+                    picker_machinename.ItemsSource = null;
+                }
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<MachineModel>();
+                    List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
+                    picker_machinename.ItemsSource = machineModelList;
+                }
             }
-            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            catch (Exception ex)
             {
-                conn.CreateTable<MachineModel>();
-                List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
-                picker_machinename.ItemsSource = machineModelList;
+                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
             }
         }
 
         private void picker_machinename_SelectedIndexChanged(object sender, EventArgs e)
         {
-            List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
-            selectedMachineID = (Guid)source[picker_machinename.SelectedIndex].ID;
-            MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
-            selectedMachineName = selectedMachine.machineName;
+            try
+            {
+                List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
+                if (picker_machinename.SelectedIndex < 0)
+                {
+                    selectedMachineID = Guid.Empty;
+                    selectedMachineName = null;
+                    return;
+                }
+                selectedMachineID = (Guid)source[picker_machinename.SelectedIndex].ID;
+                MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
+                selectedMachineName = selectedMachine.machineName;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+            }
         }
 
 

@@ -62,6 +62,7 @@ namespace TQM
         {
             try
             {
+                bool isFirstUser = false;
                 var selectedItem = picker_companyname.SelectedItem as CompanyModel;
                 if (selectedItem == null)
                 {
@@ -72,10 +73,22 @@ namespace TQM
                     entry_userid.Text.Trim() == "" ||
                     entry_password.Text.Trim() == "")
                 {
-                    DisplayAlert("Notice", "Please fill firstname, userid and password to proceed!!!", "OK");
+                    DisplayAlert("Attention", "Please fill firstname, userid and password to proceed!!!", "OK");
                     return;
                 }
                 SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                conn.CreateTable<UserModel>();
+                var user = conn.Table<UserModel>().FirstOrDefault();
+                if (user == null)
+                {
+                    isFirstUser = true;
+                    if (!switch_admin.IsToggled)
+                    {
+                        conn.Close();
+                        DisplayAlert("Attention", "First user should be admin. So enable 'Is Admin' button!!!", "OK");
+                        return;
+                    }
+                }
                 conn.CreateTable<CompanyModel>();
                 List<CompanyModel> selectedCompany = conn.Table<CompanyModel>().Where(CompanyModel => CompanyModel.ID == selectedItem.ID).ToList();
                 conn.Close();
@@ -144,6 +157,10 @@ namespace TQM
                 {
                     reset();
                     DisplayAlert("Success", "User " + msg + " successfully!!!", "OK");
+                    if (isFirstUser)
+                    {
+                        Navigation.PushAsync(new MainPage());
+                    }
                 }
                 else
                 {

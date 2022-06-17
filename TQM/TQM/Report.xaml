@@ -48,6 +48,7 @@
                         SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged" TextColor="Green" FontSize="25">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
+                            <x:String></x:String>
                             <x:String>Drawing</x:String>
                             <x:String>Carding</x:String>
                             <x:String>Simplex/SpeedFrame</x:String>

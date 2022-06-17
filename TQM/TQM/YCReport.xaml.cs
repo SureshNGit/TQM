@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using RestSharp;
+using SQLite;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
@@ -7,11 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using TQM.Model;
 using TQM.ModelView;
 using TQM.SfPdfViewer;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Color = Xamarin.Forms.Color;
 
 namespace TQM
 {
@@ -22,6 +26,7 @@ namespace TQM
         private List<OverallReportModelView> _listOfReports;
         public List<OverallReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
         private string selectedCompanyName = null;
+        private const string BLUE = "#0e0273";
         public YCReport()
         {
             InitializeComponent();
@@ -35,76 +40,107 @@ namespace TQM
 
         private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
         {
-            List<OverallReportModelView> OVS = new List<OverallReportModelView>();
-            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            try
             {
-                //List<YCTestSummaryModel> ycTestSummaryModels = conn.Table<YCTestSummaryModel>().ToList();
-
-                List<YCTestSummaryModel> ycTestSummaryModels = null;
-                if (categoryName == null)
+                List<OverallReportModelView> OVS = new List<OverallReportModelView>();
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    if (startDate == endDate)
+                    //List<YCTestSummaryModel> ycTestSummaryModels = conn.Table<YCTestSummaryModel>().ToList();
+
+                    conn.CreateTable<YCTestModel>();
+                    conn.CreateTable<YCTestSummaryModel>();
+
+                    List<YCTestSummaryModel> ycTestSummaryModels = null;
+                    if (categoryName == null || categoryName == "")
                     {
-                        endDate = startDate.AddDays(1);
+                        endDate = endDate.AddDays(1);
                         ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                       YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate < endDate).ToList();
+                        YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate < endDate).ToList();
                     }
-                    else
+                    else if (categoryName != null && machineID == Guid.Empty)
                     {
+                        endDate = endDate.AddDays(1);
                         ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                       (YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate <= endDate)).ToList();
+                           (YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate < endDate
+                           && YCTestSummaryModel.machineCategory == categoryName)).ToList();
+                    }
+                    else if (categoryName != null && machineID != Guid.Empty)
+                    {
+                        endDate = endDate.AddDays(1);
+                        ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                           (YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate < endDate
+                           && YCTestSummaryModel.machineCategory == categoryName)
+                           && YCTestSummaryModel.machineID == machineID).ToList();
                     }
 
-                }
-                else if (categoryName != null && machineID == Guid.Empty)
-                {
-                    ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                       (YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate <= endDate
-                       && YCTestSummaryModel.machineCategory == categoryName)).ToList();
-                }
-                else if (categoryName != null && machineID != Guid.Empty)
-                {
-                    ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                       (YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate <= endDate
-                       && YCTestSummaryModel.machineCategory == categoryName)
-                       && YCTestSummaryModel.machineID == machineID).ToList();
-                }
-
-                foreach (YCTestSummaryModel testsummary in ycTestSummaryModels)
-                {
-                    OverallReportModelView report = new OverallReportModelView();
-                    List<YCTestModel> yctestlist = conn.Table<YCTestModel>().Where(YCTestModel => YCTestModel.testID == testsummary.testID).ToList();
-                    if (yctestlist != null)
+                    if (ycTestSummaryModels.Count == 0)
                     {
+                        DisplayAlert("Notice", "No records to display!!!", "OK");
+                        return;
+                    }
 
-                        foreach (YCTestModel test in yctestlist)
+                    foreach (YCTestSummaryModel testsummary in ycTestSummaryModels)
+                    {
+                        OverallReportModelView report = new OverallReportModelView();
+                        List<YCTestModel> yctestlist = conn.Table<YCTestModel>().Where(YCTestModel => YCTestModel.testID == testsummary.testID).ToList();
+                        if (yctestlist != null)
                         {
-                            report.Add(test);
+
+                            foreach (YCTestModel test in yctestlist)
+                            {
+                                report.Add(test);
+                            }
+                            report.testID = testsummary.testID;
+                            report.userName = testsummary.userName;
+                            report.machineCategory = testsummary.machineCategory;
+                            report.machineName = testsummary.machineName;
+                            report.apercent = testsummary.apercent;
+                            report.countsysname = testsummary.countsysname;
+                            report.yarnlenunit = testsummary.yarnlenunit;
+                            report.yarnlength = testsummary.yarnlength;
+                            report.totaltestcount = testsummary.totaltestcount;
+                            report.createdate = testsummary.createdate;
+                            report.testaverage = testsummary.testaverage;
+                            report.testsd = testsummary.testsd;
+                            report.testcv = testsummary.testcv;
                         }
-                        report.testID = testsummary.testID;
-                        report.userName = testsummary.userName;
-                        report.machineCategory = testsummary.machineCategory;
-                        report.machineName = testsummary.machineName;
-                        report.apercent = testsummary.apercent;
-                        report.countsysname = testsummary.countsysname;
-                        report.yarnlenunit = testsummary.yarnlenunit;
-                        report.yarnlength = testsummary.yarnlength;
-                        report.totaltestcount = testsummary.totaltestcount;
-                        report.createdate = testsummary.createdate;
-                        report.testaverage = testsummary.testaverage;
-                        report.testsd = testsummary.testsd;
-                        report.testcv = testsummary.testcv;
+                        OVS.Add(report);
                     }
-                    OVS.Add(report);
+                    ListOfReport = OVS;
                 }
-                ListOfReport = OVS;
+                listview_tcreport.ItemsSource = null;
+                listview_tcreport.ItemsSource = ListOfReport;
             }
-            listview_tcreport.ItemsSource = null;
-            listview_tcreport.ItemsSource = ListOfReport;
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
+            }
         }
 
+        private async Task resetBtn()
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                img_notification.IsVisible = false;
+                btn_saveToPDF.IsEnabled = true;
+                btn_saveToPDF.BackgroundColor = Color.FromHex(BLUE);
+            });
+        }
 
-        private void btn_saveToPDF_Clicked(object sender, EventArgs e)
+        [Obsolete]
+        private async void btn_saveToPDF_Clicked(object sender, EventArgs e)
+        {
+            btn_saveToPDF.IsEnabled = false;
+            btn_saveToPDF.BackgroundColor = Color.Gray;
+            img_notification.IsVisible = true;
+            CancellationTokenSource src = new CancellationTokenSource();
+            CancellationToken ct = src.Token;
+            ct.Register(() => Debug.WriteLine("Generate and Upload PDF Report"));
+            await Task.Run(async () => await UploadReport(), ct);
+            src.Cancel();
+        }
+
+        private bool generatePDFreport()
         {
             try
             {
@@ -132,9 +168,14 @@ namespace TQM
                 bool newPageAdded_Body = false;
                 foreach (OverallReportModelView orl in overallReportList)
                 {
+
+                    List<YCTestModel> testList = orl.yctestlist;
+
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
+                    pdfGridInfo.RepeatHeader = true;
                     pdfGridInfo.Columns.Add(4);
+                    pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
@@ -143,27 +184,35 @@ namespace TQM
 
                     if (tableNo == 1)
                     {
-                        pdfGridInfo.Rows[0].Cells[0].Value = selectedCompanyName;
-                        pdfGridInfo.Rows[0].Cells[0].ColumnSpan = 4;
-                        pdfGridInfo.Rows[0].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGridInfo.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGridInfo.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.Blue;
-                        pdfGridInfo.Rows[0].Cells[0].Style.TextPen = PdfPens.White;
-                        pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 18);
+                        //pdfGridInfo.Rows[0].Cells[0].Value = selectedCompanyName;
+                        //pdfGridInfo.Rows[0].Cells[0].ColumnSpan = 4;
+                        //pdfGridInfo.Rows[0].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                        //pdfGridInfo.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        //pdfGridInfo.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.Blue;
+                        //pdfGridInfo.Rows[0].Cells[0].Style.TextPen = PdfPens.White;
+                        //pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 18);
                     }
                     pdfGridInfo.Rows[1].Cells[0].Value = "Test ID: " + orl.testID;
-                    pdfGridInfo.Rows[1].Cells[1].Value = "Tester: " + orl.userName;
-                    pdfGridInfo.Rows[1].Cells[2].Value = "Machine Category: " + orl.machineCategory;
-                    pdfGridInfo.Rows[1].Cells[3].Value = "Machine Name: " + orl.machineName;
-                    pdfGridInfo.Rows[2].Cells[0].Value = "Count System: " + orl.countsysname;
-                    pdfGridInfo.Rows[2].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
-                    pdfGridInfo.Rows[2].Cells[2].Value = "Length: " + orl.yarnlength;
-                    pdfGridInfo.Rows[2].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[3].Cells[0].Value = "Average: " + orl.testaverage;
-                    pdfGridInfo.Rows[3].Cells[1].Value = "SD: " + orl.testsd;
-                    pdfGridInfo.Rows[3].Cells[2].Value = "CV: " + orl.testcv;
-                    pdfGridInfo.Rows[3].Cells[3].Value = "A%: " + orl.apercent;
-                    pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
+                    pdfGridInfo.Rows[1].Cells[0].ColumnSpan = 2;
+                    pdfGridInfo.Rows[1].Cells[2].Value = "Tester: " + orl.userName;
+                    pdfGridInfo.Rows[1].Cells[2].ColumnSpan = 2;
+                    pdfGridInfo.Rows[2].Cells[0].Value = "Machine Category: " + orl.machineCategory;
+                    pdfGridInfo.Rows[2].Cells[0].ColumnSpan = 2;
+                    pdfGridInfo.Rows[2].Cells[2].Value = "Machine Name: " + orl.machineName;
+                    pdfGridInfo.Rows[2].Cells[2].ColumnSpan = 2;
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Count System: " + orl.countsysname;
+                    pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
+                    pdfGridInfo.Rows[3].Cells[2].Value = "Length: " + orl.yarnlength;
+                    pdfGridInfo.Rows[3].Cells[3].Value = "Total Test: " + orl.totaltestcount;
+                    pdfGridInfo.Rows[4].Cells[0].Value = "Average: " + orl.testaverage;
+                    //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
+                    pdfGridInfo.Rows[4].Cells[1].Value = "SD: " + orl.testsd;
+                    //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
+                    pdfGridInfo.Rows[4].Cells[2].Value = "CV: " + orl.testcv;
+                    //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
+                    pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
+                    pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
+
 
                     pdfGridInfo.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
@@ -185,11 +234,18 @@ namespace TQM
                     pdfGridInfo.Rows[4].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[3].Style.Borders.All = PdfPens.Transparent;
+
+                    int totalRow_header = 6;
+                    int totalRow_header_height = totalRow_header * 18;
 
                     if (overallHeight == 0)
                     {
-                        result = pdfGridInfo.Draw(pdfPage, new PointF(10, 10), layoutFormat);
-                        overallHeight = result.Bounds.Height + 5;
+                        result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
+                        overallHeight = result.Bounds.Height + 35;
                     }
                     else
                     {
@@ -201,7 +257,19 @@ namespace TQM
                         }
                         else
                         {
-                            result = pdfGridInfo.Draw(result.Page, new PointF(10, (overallHeight)));
+                            if ((overallHeight + totalRow_header_height + (testList.Count * 18)) > 730)
+                            {
+                                pdfPage = pdfDocument.Pages.Add();
+                                result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
+                                overallHeight = 0;
+                                newPageAdded_Header = true;
+                                pdfPage = result.Page;
+                                overallHeight = result.Bounds.Height + 5;
+                            }
+                            else
+                            {
+                                result = pdfGridInfo.Draw(result.Page, new PointF(10, (overallHeight)));
+                            }
                         }
 
                         if (prevPageCount < result.Page.Section.Pages.Count)
@@ -246,7 +314,7 @@ namespace TQM
                     //pdfGrid.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
 
 
-                    List<YCTestModel> testList = orl.yctestlist;
+
                     int rowCount = 1;
                     foreach (YCTestModel test in testList)
                     {
@@ -264,6 +332,8 @@ namespace TQM
                         rowCount++;
                     }
 
+                    int totalRow_body_height = rowCount * 18;
+
                     if (result == null && overallHeight == 0)
                     {
                         result = pdfGrid.Draw(pdfPage, new PointF(10, result.Bounds.Height + 10), layoutFormat);
@@ -271,7 +341,6 @@ namespace TQM
                     }
                     else if (result == null && overallHeight > 0)
                     {
-                        //float prevGridHeight = overallHeight;
                         result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
                         overallHeight = overallHeight + result.Bounds.Height + 30;
                     }
@@ -291,7 +360,15 @@ namespace TQM
                             }
                             else
                             {
-                                result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight + 10)));
+                                if ((overallHeight + totalRow_body_height) > 730)
+                                {
+                                    pdfPage = pdfDocument.Pages.Add();
+                                    result = pdfGrid.Draw(pdfPage, new PointF(10, 30), layoutFormat);
+                                }
+                                else
+                                {
+                                    result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight + 10)));
+                                }
                             }
 
 
@@ -324,20 +401,126 @@ namespace TQM
                 };
 
 
-
+                addPageHeaderAndFooter(pdfDocument);
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
                 pdfDocument.Close(true);
                 string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream);
-                DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
+                //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
                 //Process.Start(pdfPath);
+                return true;
             }
             catch (Exception ex)
             {
-                DisplayAlert("Attention", "Error occurred!!! Error: " + ex.Message.ToString(), "OK");
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                return false;
             }
         }
 
+        private void addPageHeaderAndFooter(PdfDocument pdfDocument)
+        {
+            for (int i = 0; i < pdfDocument.PageCount; i++)
+            {
+                RectangleF bounds = new RectangleF(0, 0, pdfDocument.Pages[i].GetClientSize().Width, 50);
 
+                PdfPageTemplateElement header = new PdfPageTemplateElement(bounds);
+
+                ////Load the image file as stream
+                //Stream imageStream = App.Current.GetType().Assembly.GetManifestResourceStream("TQM.Assets.SasthaLogo.jpg");
+                //PdfImage image = new PdfBitmap(imageStream);
+                ////Draw the image in the header.
+                //header.Graphics.DrawImage(image, new PointF(0, 0), new SizeF(100, 50));
+
+                PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 20);
+
+                PdfBrush brush = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
+
+                header.Alignment = PdfAlignmentStyle.TopCenter;
+
+
+                header.Graphics.DrawString("Sri Sastha Textiles Private Limited", font, brush, new PointF(10, 0));
+
+
+
+                //Add the header at the top.
+
+                pdfDocument.Template.Top = header;
+
+                //Create a Page template that can be used as footer.
+
+                PdfPageTemplateElement footer = new PdfPageTemplateElement(bounds);
+
+                PdfFont font_footer = new PdfStandardFont(PdfFontFamily.Helvetica, 7);
+
+                PdfBrush brush_footer = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+
+                //Create page number field.
+
+                PdfPageNumberField pageNumber = new PdfPageNumberField(font_footer, brush_footer);
+
+                //Create page count field.
+
+                PdfPageCountField count = new PdfPageCountField(font_footer, brush_footer);
+
+                //Add the fields in composite fields.
+
+                PdfCompositeField compositeField = new PdfCompositeField(font_footer, brush_footer, "Page {0} of {1}", pageNumber, count);
+
+                compositeField.Bounds = footer.Bounds;
+
+                //Draw the composite field in footer.
+
+                compositeField.Draw(footer.Graphics, new PointF(470, 40));
+
+                //Add the footer template at the bottom.
+
+                pdfDocument.Template.Bottom = footer;
+            }
+
+        }
+
+        [Obsolete]
+        public async Task UploadReport()
+        {
+            try
+            {
+                if (!generatePDFreport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+                string fileName = "TQM_Report.pdf";
+                string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                Java.IO.File file = new Java.IO.File(myDir, fileName);
+                string filePath = file.Path;
+                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                var request = new RestRequest();
+                request.Method = Method.Post;
+                //request.Timeout = Timeout.Infinite;
+                request.AddParameter("uploadedby", "Sri Sastha Textiles Private Limited");
+                request.AddParameter("title", "TQMReports-" + DateTime.Now.ToString());
+                request.AddFile("reportpath", filePath);
+                RestResponse response = client.Execute(request);
+                if (response.IsSuccessful)
+                {
+                    showAlert("Report upload is sucessful!!!");
+                }
+                else
+                {
+                    showAlert("Upload Failed. Please try again!!!", "Error");
+                }
+                await resetBtn();
+            }
+            catch (Exception ex)
+            {
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                await resetBtn();
+            }
+        }
+
+        private async void showAlert(string msg, string title = "Notice")
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                DisplayAlert("Notice", msg, "Ok");
+            });
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using System;
 using TQM.Model;
 using Xamarin.Forms;
 
@@ -9,18 +10,35 @@ namespace TQM
         public MainPage()
         {
             InitializeComponent();
+
         }
 
 
-        private void btn_addcompany_Clicked(object sender, System.EventArgs e)
+        protected override void OnAppearing()
         {
-            Navigation.PushAsync(new companyPage());
+            try
+            {
+                base.OnAppearing();
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<UserModel>();
+                    UserModel userinfo = conn.Table<UserModel>().FirstOrDefault();
+                    if (userinfo == null)
+                    {
+                        btn_newUser.IsVisible = true;
+                    }
+                    else
+                    {
+                        btn_newUser.IsVisible = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice", ex.Message.ToString(), "Ok");
+            }
         }
 
-        private void btn_adduser_Clicked(object sender, System.EventArgs e)
-        {
-            Navigation.PushAsync(new UserPage());
-        }
 
         private void btn_login_Clicked(object sender, System.EventArgs e)
         {
@@ -52,6 +70,11 @@ namespace TQM
                 //conn.DropTable<YCTestModel>();
             }
             Navigation.PushAsync(new flyoutNavigation());
+        }
+
+        private void btn_newUser_Clicked(object sender, System.EventArgs e)
+        {
+            Navigation.PushAsync(new companyPage());
         }
     }
 }

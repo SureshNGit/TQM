@@ -17,34 +17,92 @@ namespace TQM
             InitializeComponent();
         }
 
+        protected override void OnAppearing()
+        {
+            try
+            {
+                base.OnAppearing();
+                reset();
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice-ReportSearch", ex.Message.ToString(), "Ok");
+            }
+        }
+
+        private void reset()
+        {
+            try
+            {
+                selectedMachineID = Guid.Empty;
+                selectedMachineName = null;
+                date_fromdate.Date = DateTime.Now;
+                date_enddate.Date = DateTime.Now;
+                picker_machinecategory.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice-ReportSearch", ex.Message.ToString(), "Ok");
+            }
+        }
+
         private void btn_getreport_Clicked(object sender, EventArgs e)
         {
-            if (date_enddate.Date < date_fromdate.Date)
+            try
             {
-                DisplayAlert("Attention", "Report End Date cannot be less than Report Start Date", "OK");
-                return;
+                if (date_enddate.Date < date_fromdate.Date)
+                {
+                    DisplayAlert("Attention", "Report End Date cannot be less than Report Start Date", "OK");
+                    return;
+                }
+                if (date_fromdate.Date > date_fromdate.Date)
+                {
+                    DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
+                    return;
+                }
+                string selectedCategory = null;
+                if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
+                Navigation.PushAsync(new YCReport(date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID));
             }
-            string selectedCategory = null;
-            if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
-            Navigation.PushAsync(new YCReport(date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID));
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice-ReportSearch", ex.Message.ToString(), "Ok");
+            }
         }
 
         private void picker_machinename_SelectedIndexChanged(object sender, EventArgs e)
         {
-            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            try
             {
-                conn.CreateTable<MachineModel>();
-                List<MachineModel> machineNames = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == picker_machinename.SelectedItem).ToList();
-                picker_machinecategory.ItemsSource = machineNames;
+                List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
+                if (picker_machinename.SelectedIndex < 0) { return; }
+                selectedMachineID = (Guid)source[picker_machinename.SelectedIndex].ID;
+                MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
+                selectedMachineName = selectedMachine.machineName;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice-ReportSearch", ex.Message.ToString(), "Ok");
             }
         }
 
         private void picker_machinecategory_SelectedIndexChanged(object sender, EventArgs e)
         {
-            List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
-            selectedMachineID = (Guid)source[picker_machinename.SelectedIndex].ID;
-            MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
-            selectedMachineName = selectedMachine.machineName;
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    string selectedCategory = picker_machinecategory.SelectedItem.ToString();
+                    conn.CreateTable<MachineModel>();
+                    List<MachineModel> machines = conn.Table<MachineModel>().Where(
+                        MachineModel => MachineModel.machineCategory == selectedCategory).ToList();
+                    picker_machinename.ItemsSource = machines;
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice-ReportSearch", ex.Message.ToString(), "Ok");
+            }
         }
     }
 }

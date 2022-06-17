@@ -52,6 +52,7 @@
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String>Yard</x:String>
+                            <x:String>Meter</x:String>
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>

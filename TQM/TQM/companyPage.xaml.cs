@@ -68,6 +68,16 @@ namespace TQM
                 if (row > 0)
                 {
                     DisplayAlert("Success", "Company " + msg + " successfully!!!", "OK");
+                    UserModel user = null;
+                    using (SQLiteConnection conn1 = new SQLiteConnection(App.DatabaseLocation))
+                    {
+                        conn1.CreateTable<UserModel>();
+                        user = conn1.Table<UserModel>().FirstOrDefault();
+                    }
+                    if (user == null)
+                    {
+                        Navigation.PushAsync(new UserPage());
+                    }
                 }
                 else
                 {
