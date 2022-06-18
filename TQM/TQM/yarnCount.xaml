@@ -140,7 +140,7 @@
                 </Picker.Effects>
             </Picker>
             <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_apercent" TextColor="Green" FontSize="20" 
-                  VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+                  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Numeric">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>

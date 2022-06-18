@@ -130,6 +130,11 @@ namespace TQM
         [Obsolete]
         private async void btn_saveToPDF_Clicked(object sender, EventArgs e)
         {
+            if (listview_tcreport.ItemsSource == null)
+            {
+                await DisplayAlert("Notice", "No records to generate PDF!!!", "OK");
+                return;
+            }
             btn_saveToPDF.IsEnabled = false;
             btn_saveToPDF.BackgroundColor = Color.Gray;
             img_notification.IsVisible = true;
@@ -422,58 +427,23 @@ namespace TQM
             for (int i = 0; i < pdfDocument.PageCount; i++)
             {
                 RectangleF bounds = new RectangleF(0, 0, pdfDocument.Pages[i].GetClientSize().Width, 50);
-
                 PdfPageTemplateElement header = new PdfPageTemplateElement(bounds);
-
-                ////Load the image file as stream
                 //Stream imageStream = App.Current.GetType().Assembly.GetManifestResourceStream("TQM.Assets.SasthaLogo.jpg");
                 //PdfImage image = new PdfBitmap(imageStream);
-                ////Draw the image in the header.
                 //header.Graphics.DrawImage(image, new PointF(0, 0), new SizeF(100, 50));
-
                 PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 20);
-
                 PdfBrush brush = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
-
                 header.Alignment = PdfAlignmentStyle.TopCenter;
-
-
                 header.Graphics.DrawString("Sri Sastha Textiles Private Limited", font, brush, new PointF(10, 0));
-
-
-
-                //Add the header at the top.
-
                 pdfDocument.Template.Top = header;
-
-                //Create a Page template that can be used as footer.
-
                 PdfPageTemplateElement footer = new PdfPageTemplateElement(bounds);
-
                 PdfFont font_footer = new PdfStandardFont(PdfFontFamily.Helvetica, 7);
-
                 PdfBrush brush_footer = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
-
-                //Create page number field.
-
                 PdfPageNumberField pageNumber = new PdfPageNumberField(font_footer, brush_footer);
-
-                //Create page count field.
-
                 PdfPageCountField count = new PdfPageCountField(font_footer, brush_footer);
-
-                //Add the fields in composite fields.
-
                 PdfCompositeField compositeField = new PdfCompositeField(font_footer, brush_footer, "Page {0} of {1}", pageNumber, count);
-
                 compositeField.Bounds = footer.Bounds;
-
-                //Draw the composite field in footer.
-
                 compositeField.Draw(footer.Graphics, new PointF(470, 40));
-
-                //Add the footer template at the bottom.
-
                 pdfDocument.Template.Bottom = footer;
             }
 
@@ -485,28 +455,31 @@ namespace TQM
             try
             {
                 if (!generatePDFreport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
-                string fileName = "TQM_Report.pdf";
-                string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
-                Java.IO.File file = new Java.IO.File(myDir, fileName);
-                string filePath = file.Path;
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                //request.Timeout = Timeout.Infinite;
-                request.AddParameter("uploadedby", "Sri Sastha Textiles Private Limited");
-                request.AddParameter("title", "TQMReports-" + DateTime.Now.ToString());
-                request.AddFile("reportpath", filePath);
-                RestResponse response = client.Execute(request);
-                if (response.IsSuccessful)
-                {
-                    showAlert("Report upload is sucessful!!!");
-                }
                 else
                 {
-                    showAlert("Upload Failed. Please try again!!!", "Error");
+                    string fileName = "TQM_Report.pdf";
+                    string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                    Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                    Java.IO.File file = new Java.IO.File(myDir, fileName);
+                    string filePath = file.Path;
+                    var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                    var request = new RestRequest();
+                    request.Method = Method.Post;
+                    //request.Timeout = Timeout.Infinite;
+                    request.AddParameter("uploadedby", "Sri Sastha Textiles Private Limited");
+                    request.AddParameter("title", "TQMReports-" + DateTime.Now.ToString());
+                    request.AddFile("reportpath", filePath);
+                    RestResponse response = client.Execute(request);
+                    if (response.IsSuccessful)
+                    {
+                        showAlert("Report upload is sucessful!!!");
+                    }
+                    else
+                    {
+                        showAlert("Upload Failed. Please try again!!!", "Error");
+                    }
+                    await resetBtn();
                 }
-                await resetBtn();
             }
             catch (Exception ex)
             {

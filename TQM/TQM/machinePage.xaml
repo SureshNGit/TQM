@@ -46,13 +46,13 @@
                                    Placeholder="Enter machine name to search" x:Name="entry_machinesearch" FontSize="25" TextColor="Green"/>
                             <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="1" Text = "Search" 
                                     x:Name="btn_usermachine" Clicked="btn_searchmachine_Clicked" 
-                                    BackgroundColor="#239B56" TextColor="White" CornerRadius="25"/>
+                                    BackgroundColor="#0e0273" TextColor="White" CornerRadius="25"/>
                             <Button Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="1"  Text = "View All" 
                                     x:Name="btn_viewall" Clicked="btn_viewall_Clicked" 
-                                    BackgroundColor="#85C1E9 " TextColor="Black" CornerRadius="25"/>
+                                    BackgroundColor="Orange" TextColor="Black" CornerRadius="25"/>
                             <Button Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="1" Text = "Clear" 
                                     x:Name="btn_clear" Clicked="btn_clear_Clicked" 
-                                    BackgroundColor="#7B241C" TextColor="White" CornerRadius="25"/>
+                                    BackgroundColor="Red" TextColor="White" CornerRadius="25"/>
                         </Grid>
                         <Grid Margin="35,0">
                             <Grid.RowDefinitions>
@@ -78,7 +78,7 @@
                             </Picker>
                             <Label Grid.Row="1" Grid.Column="0" Text="Machine Name" TextColor="#0e0273" FontSize="25" Margin="0,25"/>
                             <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Placeholder="Enter machine name to add" PlaceholderColor="#E5E8E8"
-                                   x:Name="entry_machinename" TextColor="Green" FontSize="25" Margin="5" />
+                                   x:Name="entry_machinename" TextColor="Green" FontSize="25" Margin="5" Keyboard="Chat"/>
                             <Button Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="1" Margin="0,15" 
                                     Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked" 
                                     BackgroundColor="#0e0273" TextColor="White" CornerRadius="25"/>

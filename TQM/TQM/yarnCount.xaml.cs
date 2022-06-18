@@ -43,6 +43,8 @@ namespace TQM
         private const string RED = "#FF0000";
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
+        private int TESTCOUNT = 0;
+        private bool isTestStarted = false;
 
         public yarnCount()
         {
@@ -57,6 +59,7 @@ namespace TQM
                     lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
                     lbl_yarnlen.Text = yarncountconfigmodel.yarnlength.ToString();
                     entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
+                    TESTCOUNT = yarncountconfigmodel.testcount;
                 }
                 else
                 {
@@ -223,6 +226,18 @@ namespace TQM
                 {
                     testYCButton.IsEnabled = true;
                     testYCButton.BackgroundColor = Color.Green;
+                    entry_testcount.IsEnabled = true;
+                    entry_testcount.Text = TESTCOUNT.ToString();
+                    entry_apercent.IsEnabled = true;
+                    entry_apercent.Text = "";
+                    picker_machinecategory.IsEnabled = true;
+                    picker_machinecategory.SelectedIndex = 0;
+                    picker_machinename.IsEnabled = true;
+                    if (isTestStarted)
+                    {
+                        isTestStarted = false;
+                        showAlert("Test Completed!!! Start new test");
+                    }
                 });
             }
             catch (Exception ex)
@@ -234,6 +249,8 @@ namespace TQM
         [Obsolete]
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
+
+            isTestStarted = true;
             ImageNotification("null");
             UpdateUserNotification("");
             await refListView(false);
@@ -299,6 +316,10 @@ namespace TQM
             ycTestModelViewlist = new List<YCTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
+            entry_testcount.IsEnabled = false;
+            entry_apercent.IsEnabled = false;
+            picker_machinecategory.IsEnabled = false;
+            picker_machinename.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));

@@ -31,6 +31,31 @@ namespace TQM
             }
         }
 
+        protected override void OnAppearing()
+        {
+            try
+            {
+                base.OnAppearing();
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<UserModel>();
+                    UserModel userinfo = conn.Table<UserModel>().FirstOrDefault();
+                    if (userinfo == null)
+                    {
+                        grid_searchuser.IsVisible = false;
+                    }
+                    else
+                    {
+                        grid_searchuser.IsVisible = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice", ex.Message.ToString(), "Ok");
+            }
+        }
+
         public UserPage(UserModelView selectedItem)
         {
             try
@@ -124,6 +149,35 @@ namespace TQM
                     }
 
                 }
+                conn = new SQLiteConnection(App.DatabaseLocation);
+                conn.CreateTable<UserModel>();
+                List<UserModel> adminUserList = conn.GetAllWithChildren<UserModel>().FindAll(UserModel => UserModel.isAdmin == true);
+                conn.Close();
+                conn.Dispose();
+                conn = new SQLiteConnection(App.DatabaseLocation);
+                conn.CreateTable<UserModel>();
+                string enteredUserID = entry_userid.Text.Trim();
+                List<UserModel> existingUserIDList = conn.GetAllWithChildren<UserModel>().FindAll(UserModel => UserModel.userId.ToLower() == enteredUserID.ToLower());
+                conn.Close();
+                conn.Dispose();
+                if (existingUserIDList.Count > 0 && btn_save.Text == "Save")
+                {
+                    DisplayAlert("Notice", "UserID already exists!!!", "OK");
+                    return;
+                }
+                if (existingUserIDList.Count > 0 && btn_save.Text == "Update")
+                {
+                    if (existingUserIDList.Count == 1 && existingUserIDList[0].ID != currentID)
+                    {
+                        DisplayAlert("Notice", "UserID already exists!!!", "OK");
+                        return;
+                    }
+                    else if (existingUserIDList.Count > 1)
+                    {
+                        DisplayAlert("Notice", "UserID already exists!!!", "OK");
+                        return;
+                    }
+                }
                 UserModel usermodel = new UserModel()
                 {
                     companyID = selectedCompany[0].ID,
@@ -150,6 +204,17 @@ namespace TQM
                 else if (btn_save.Text == "Update")
                 {
                     if (currentID == Guid.Empty) { DisplayAlert("Failure", "User failed to be " + msg + "!!!", "OK"); return; }
+                    if (adminUserList.Count == 1)
+                    {
+                        if (adminUserList[0].ID == currentID && switch_admin.IsToggled == false)
+                        {
+                            DisplayAlert("Failure", "Primary admin cannot be removed. Please add another admin user to remove admin role for this user!!!", "OK"); return;
+                        }
+                        if (adminUserList[0].ID == currentID && switch_active.IsToggled == false)
+                        {
+                            DisplayAlert("Failure", "Primary admin cannot be deactivated. Please add another admin user to deactivate this user!!!", "OK"); return;
+                        }
+                    }
                     usermodel.ID = currentID;
                     row = conn1.Update(usermodel);
                 }
@@ -193,7 +258,13 @@ namespace TQM
         {
             try
             {
-                if (entry_usersearch.Text.Trim().ToLower() == "")
+                if (entry_usersearch.Text == null)
+                {
+                    DisplayAlert("Attention", "Please enter user name to search!!!", "OK");
+                    return;
+                }
+
+                if (entry_usersearch.Text.Trim() == "")
                 {
                     DisplayAlert("Attention", "Please enter user name to search!!!", "OK");
                     return;
@@ -251,9 +322,65 @@ namespace TQM
             }
         }
 
-        private void btn_home_Clicked(object sender, EventArgs e)
+        private void btn_viewall_Clicked(object sender, EventArgs e)
         {
+            try
+            {
+                SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                conn.CreateTable<UserModel>();
+                List<UserModel> usersearchlist = conn.GetAllWithChildren<UserModel>().FindAll(UserModel => UserModel.ID != Guid.Empty);
+                List<UserModelView> usersearchlistmodified = new List<UserModelView>();
 
+                foreach (UserModel user in usersearchlist)
+                {
+                    string dn = "";
+                    if (user.lastname.ToString() != "")
+                    {
+                        dn = user.firstname + ", " + user.lastname + " [" + user.userId + "]";
+                    }
+                    else
+                    {
+                        dn = user.firstname + " [" + user.userId + "]";
+                    }
+                    if (user.companyID == Guid.Empty)
+                    {
+                        DisplayAlert("Notice", "Invalid record!!!", "Ok");
+                        return;
+                    }
+                    UserModelView userModelView = new UserModelView()
+                    {
+                        ID = user.ID,
+                        firstname = user.firstname,
+                        lastname = user.lastname,
+                        displayname = dn,
+                        userId = user.userId,
+                        password = user.password,
+                        isAdmin = user.isAdmin,
+                        isActive = user.isActive,
+                        companyID = user.companyID
+                    };
+                    usersearchlistmodified.Add(userModelView);
+                }
+                conn.Close();
+                conn.Dispose();
+                if (usersearchlist.Count > 0)
+                {
+                    Navigation.PushAsync(new UserSearch(usersearchlistmodified));
+                }
+                else
+                {
+                    DisplayAlert("Notice", "No record found!!!", "Ok");
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice", "Search failed!!! Error: " + ex.Message.ToString(), "Ok");
+            }
+        }
+
+        private void btn_reset_Clicked(object sender, EventArgs e)
+        {
+            reset();
         }
     }
 }

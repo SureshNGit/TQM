@@ -8,19 +8,22 @@
     <StackLayout>
         <ListView x:Name="listview" x:FieldModifier="public">
             <ListView.ItemsSource>
-                <x:Array Type="{x:Type local:MenuItem}">
+                <x:Array Type="{x:Type local:MenuItem}" x:Name="lst_array" >
                     <!--<local:MenuItem Title="Company" ImageSource="company.jpg" TargetPage="{x:Type local:companyPage}" />
                     <local:MenuItem Title="User Management" ImageSource="user.png" TargetPage="{x:Type local:UserPage}" />
                     <local:MenuItem Title="Add Machine" ImageSource="machine.png" TargetPage="{x:Type local:machinePage}" />
                     <local:MenuItem Title="Yarn Count Settings" ImageSource="ycsettings.png" TargetPage="{x:Type local:YCSettings}" />
                     <local:MenuItem Title="Exit" ImageSource="logout.png" TargetPage="{x:Type local:MainPage}" />-->
                     <!--<local:flyoutItemPage Title="Bluetooth Settings" ImageSource="bluetooth.png" TargetPage="{x:Type local:BluetoothConfig}" />-->
-                    <local:MenuItem Title="Company"  TargetPage="{x:Type local:companyPage}" />
-                    <local:MenuItem Title="User Management"  TargetPage="{x:Type local:UserPage}" />
-                    <local:MenuItem Title="Add Machine"  TargetPage="{x:Type local:machinePage}" />
+                    
+                    <!--<local:MenuItem Title="" ImageSource="user.png" x:Name="menu_loggedinuser"/>
+                    <local:MenuItem Title="Company" x:Name="menu_company"  TargetPage="{x:Type local:companyPage}" />
+                    <local:MenuItem Title="User Management" x:Name="menu_usermanagement" TargetPage="{x:Type local:UserPage}" />
+                    <local:MenuItem Title="Add Machine" x:Name="menu_machine" TargetPage="{x:Type local:machinePage}" />
                     <local:MenuItem Title="Yarn Count Settings"  TargetPage="{x:Type local:YCSettings}" />
+                    <local:MenuItem Title="Yarn Count"  TargetPage="{x:Type local:yarnCount}" />
                     <local:MenuItem Title="Test Report"  TargetPage="{x:Type local:Report}" />
-                    <local:MenuItem Title="Exit"  TargetPage="{x:Type local:MainPage}" />
+                    <local:MenuItem Title="Exit"  TargetPage="{x:Type local:MainPage}" />-->
 
                 </x:Array>
             </ListView.ItemsSource>
@@ -30,12 +33,12 @@
                     <ViewCell>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <!--<ColumnDefinition Width="33"/>-->
+                                <ColumnDefinition Width="33"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             
-                            <!--<Image Source="{Binding ImageSource}"/>-->
-                            <Label Grid.Column="0" Margin="10,0,0,1"
+                            <Image Source="{Binding ImageSource}"/>
+                            <Label Grid.Column="1" Margin="10,0,0,1"
                                    Text="{Binding Title}" 
                                    FontSize="25"
                                    TextColor="#0e0273"

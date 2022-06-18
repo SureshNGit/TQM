@@ -20,11 +20,12 @@ namespace TQM
         private async void OnSelectedItem(object sender, SelectedItemChangedEventArgs e)
         {
             var item = e.SelectedItem as MenuItem;
-
+            UserModel userinfo = null;
 
             if (item != null)
             {
-                if (item.Title == "Exit")
+                if (item.TargetPage == null) { return; }
+                if (item.Title == "Log Out")
                 {
                     bool answer = await DisplayAlert("Attention", "Would you like to exit???", "Yes", "No");
                     if (answer)
@@ -32,7 +33,7 @@ namespace TQM
                         using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                         {
                             conn.CreateTable<UserModel>();
-                            UserModel userinfo = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                            userinfo = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                             if (userinfo == null)
                             {
                                 await DisplayAlert("Attention", "Unable to retrieve logged in user information from database!!!", "OK");
@@ -52,7 +53,9 @@ namespace TQM
                                 }
                             }
                         }
-                        System.Diagnostics.Process.GetCurrentProcess().Kill();
+                        //System.Diagnostics.Process.GetCurrentProcess().Kill();
+                        await Navigation.PushAsync(new MainPage());
+                        return;
                     }
                     else
                     {
@@ -64,280 +67,460 @@ namespace TQM
                 Detail = new NavigationPage((Page)Activator.CreateInstance(item.TargetPage));
                 flyout.listview.SelectedItem = null;
                 IsPresented = false;
-
-                if (item.Title == "Add Machine")
+                bool isAdmin = false;
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
+                    conn.CreateTable<UserModel>();
+                    userinfo = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                    if (userinfo == null)
+                    {
+                        await DisplayAlert("Attention", "Unable to retrieve logged in user information from database!!!", "OK");
+                        flyout.listview.SelectedItem = null;
+                        return;
+                    }
+                    else
+                    {
 
-                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
+                        if (userinfo.isAdmin) { isAdmin = true; }
+                    }
+                }
 
-                    flyout.listview.ItemsSource = flyItems;
+                //if (item.Title == "Add Machine")
+                //{
+                ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
+                flyout.listview.ItemsSource = flyItems;
+                string displayName = userinfo.firstname;
+                if (userinfo.lastname != null)
+                {
+                    displayName = userinfo.firstname + ", " + userinfo.lastname;
+                }
+                if (isAdmin)
+                {
+                    flyItems.Add(new MenuItem
+                    {
 
-
+                        Title = displayName,
+                        ImageSource = "user.png",
+                        TargetPage = null
+                    });
                     flyItems.Add(new MenuItem
                     {
                         Title = "Company",
-                        ImageSource = "company.jpg",
+                        ImageSource = "",
                         TargetPage = typeof(companyPage)
                     });
                     flyItems.Add(new MenuItem
                     {
                         Title = "User Management",
-                        ImageSource = "user.png",
-                        TargetPage = typeof(UserPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Yarn Count Settings",
-                        ImageSource = "ycsettings.png",
-                        TargetPage = typeof(YCSettings)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Yarn Count",
-                        ImageSource = "yarn.jpeg",
-                        TargetPage = typeof(yarnCount)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Test Report",
-                        ImageSource = "report.jpeg",
-                        TargetPage = typeof(Report)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Exit",
-                        ImageSource = "logout.png",
-                        TargetPage = typeof(MainPage)
-                    });
-                }
-                else if (item.Title == "User Management")
-                {
-
-                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
-
-                    flyout.listview.ItemsSource = flyItems;
-
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Company",
-                        ImageSource = "company.jpg",
-                        TargetPage = typeof(companyPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Add Machine",
-                        ImageSource = "machine.png",
-                        TargetPage = typeof(machinePage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Yarn Count Settings",
-                        ImageSource = "ycsettings.png",
-                        TargetPage = typeof(YCSettings)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Yarn Count",
-                        ImageSource = "yarn.jpeg",
-                        TargetPage = typeof(yarnCount)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Test Report",
-                        ImageSource = "report.jpeg",
-                        TargetPage = typeof(Report)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Exit",
-                        ImageSource = "logout.png",
-                        TargetPage = typeof(MainPage)
-                    });
-                }
-                else if (item.Title == "Company")
-                {
-
-                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
-
-                    flyout.listview.ItemsSource = flyItems;
-
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "User Management",
-                        ImageSource = "user.png",
+                        ImageSource = "",
                         TargetPage = typeof(UserPage)
                     });
                     flyItems.Add(new MenuItem
                     {
                         Title = "Add Machine",
-                        ImageSource = "machine.png",
+                        ImageSource = "",
                         TargetPage = typeof(machinePage)
                     });
                     flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count Settings",
-                        ImageSource = "ycsettings.png",
+                        ImageSource = "",
                         TargetPage = typeof(YCSettings)
                     });
                     flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count",
-                        ImageSource = "yarn.jpeg",
+                        ImageSource = "",
                         TargetPage = typeof(yarnCount)
                     });
                     flyItems.Add(new MenuItem
                     {
                         Title = "Test Report",
-                        ImageSource = "report.jpeg",
+                        ImageSource = "",
                         TargetPage = typeof(Report)
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Exit",
-                        ImageSource = "logout.png",
+                        Title = "Log Out",
+                        ImageSource = "",
                         TargetPage = typeof(MainPage)
                     });
                 }
-                else if (item.Title == "Yarn Count Settings")
+                else
                 {
-
-                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
-
-                    flyout.listview.ItemsSource = flyItems;
-
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Company",
-                        ImageSource = "company.jpg",
-                        TargetPage = typeof(companyPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "User Management",
+
+                        Title = displayName,
                         ImageSource = "user.png",
-                        TargetPage = typeof(UserPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Add Machine",
-                        ImageSource = "machine.png",
-                        TargetPage = typeof(machinePage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Yarn Count",
-                        ImageSource = "yarn.jpeg",
-                        TargetPage = typeof(yarnCount)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Test Report",
-                        ImageSource = "report.jpeg",
-                        TargetPage = typeof(Report)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Exit",
-                        ImageSource = "logout.png",
-                        TargetPage = typeof(MainPage)
-                    });
-                }
-
-                if (item.Title == "Yarn Count")
-                {
-
-                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
-
-                    flyout.listview.ItemsSource = flyItems;
-
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Company",
-                        ImageSource = "company.jpg",
-                        TargetPage = typeof(companyPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "User Management",
-                        ImageSource = "user.png",
-                        TargetPage = typeof(UserPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Add Machine",
-                        ImageSource = "machine.png",
-                        TargetPage = typeof(machinePage)
+                        TargetPage = null
                     });
                     flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count Settings",
-                        ImageSource = "ycsettings.png",
-                        TargetPage = typeof(YCSettings)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Test Report",
-                        ImageSource = "yarn.jpeg",
-                        TargetPage = typeof(Report)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Exit",
-                        ImageSource = "logout.png",
-                        TargetPage = typeof(MainPage)
-                    });
-
-
-                }
-
-                if (item.Title == "Test Report")
-                {
-
-                    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
-
-                    flyout.listview.ItemsSource = flyItems;
-
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Company",
-                        ImageSource = "company.jpg",
-                        TargetPage = typeof(companyPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "User Management",
-                        ImageSource = "user.png",
-                        TargetPage = typeof(UserPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Add Machine",
-                        ImageSource = "machine.png",
-                        TargetPage = typeof(machinePage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Yarn Count Settings",
-                        ImageSource = "ycsettings.png",
+                        ImageSource = "",
                         TargetPage = typeof(YCSettings)
                     });
                     flyItems.Add(new MenuItem
                     {
                         Title = "Yarn Count",
-                        ImageSource = "yarn.jpeg",
+                        ImageSource = "",
                         TargetPage = typeof(yarnCount)
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Exit",
-                        ImageSource = "logout.png",
+                        Title = "Test Report",
+                        ImageSource = "",
+                        TargetPage = typeof(Report)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "Log Out",
+                        ImageSource = "",
                         TargetPage = typeof(MainPage)
                     });
-
-
                 }
+                //}
+                //else if (item.Title == "User Management")
+                //{
+                //    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
+                //    flyout.listview.ItemsSource = flyItems;
+                //    if (isAdmin)
+                //    {
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Company",
+                //            ImageSource = "company.jpg",
+                //            TargetPage = typeof(companyPage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Add Machine",
+                //            ImageSource = "machine.png",
+                //            TargetPage = typeof(machinePage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count Settings",
+                //            ImageSource = "ycsettings.png",
+                //            TargetPage = typeof(YCSettings)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count",
+                //            ImageSource = "yarn.jpeg",
+                //            TargetPage = typeof(yarnCount)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Test Report",
+                //            ImageSource = "report.jpeg",
+                //            TargetPage = typeof(Report)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Exit",
+                //            ImageSource = "logout.png",
+                //            TargetPage = typeof(MainPage)
+                //        });
+                //    }
+                //    else
+                //    {
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count Settings",
+                //            ImageSource = "ycsettings.png",
+                //            TargetPage = typeof(YCSettings)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count",
+                //            ImageSource = "yarn.jpeg",
+                //            TargetPage = typeof(yarnCount)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Test Report",
+                //            ImageSource = "report.jpeg",
+                //            TargetPage = typeof(Report)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Exit",
+                //            ImageSource = "logout.png",
+                //            TargetPage = typeof(MainPage)
+                //        });
+                //    }
+                //}
+                //else if (item.Title == "Company")
+                //{
+                //    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
+                //    flyout.listview.ItemsSource = flyItems;
+                //    if (isAdmin)
+                //    {
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "User Management",
+                //            ImageSource = "user.png",
+                //            TargetPage = typeof(UserPage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Add Machine",
+                //            ImageSource = "machine.png",
+                //            TargetPage = typeof(machinePage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count Settings",
+                //            ImageSource = "ycsettings.png",
+                //            TargetPage = typeof(YCSettings)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count",
+                //            ImageSource = "yarn.jpeg",
+                //            TargetPage = typeof(yarnCount)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Test Report",
+                //            ImageSource = "report.jpeg",
+                //            TargetPage = typeof(Report)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Exit",
+                //            ImageSource = "logout.png",
+                //            TargetPage = typeof(MainPage)
+                //        });
+                //    }
+                //    else
+                //    {
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count Settings",
+                //            ImageSource = "ycsettings.png",
+                //            TargetPage = typeof(YCSettings)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count",
+                //            ImageSource = "yarn.jpeg",
+                //            TargetPage = typeof(yarnCount)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Test Report",
+                //            ImageSource = "report.jpeg",
+                //            TargetPage = typeof(Report)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Exit",
+                //            ImageSource = "logout.png",
+                //            TargetPage = typeof(MainPage)
+                //        });
+                //    }
+                //}
+                //else if (item.Title == "Yarn Count Settings")
+                //{
+                //    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
+                //    flyout.listview.ItemsSource = flyItems;
+                //    if (isAdmin)
+                //    {
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Company",
+                //            ImageSource = "company.jpg",
+                //            TargetPage = typeof(companyPage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "User Management",
+                //            ImageSource = "user.png",
+                //            TargetPage = typeof(UserPage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Add Machine",
+                //            ImageSource = "machine.png",
+                //            TargetPage = typeof(machinePage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count",
+                //            ImageSource = "yarn.jpeg",
+                //            TargetPage = typeof(yarnCount)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Test Report",
+                //            ImageSource = "report.jpeg",
+                //            TargetPage = typeof(Report)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Exit",
+                //            ImageSource = "logout.png",
+                //            TargetPage = typeof(MainPage)
+                //        });
+                //    }
+                //    else
+                //    {
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count",
+                //            ImageSource = "yarn.jpeg",
+                //            TargetPage = typeof(yarnCount)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Test Report",
+                //            ImageSource = "report.jpeg",
+                //            TargetPage = typeof(Report)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Exit",
+                //            ImageSource = "logout.png",
+                //            TargetPage = typeof(MainPage)
+                //        });
+                //    }
+                //}
 
+                //if (item.Title == "Yarn Count")
+                //{
+                //    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
+                //    flyout.listview.ItemsSource = flyItems;
+                //    if (isAdmin)
+                //    {
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Company",
+                //            ImageSource = "company.jpg",
+                //            TargetPage = typeof(companyPage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "User Management",
+                //            ImageSource = "user.png",
+                //            TargetPage = typeof(UserPage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Add Machine",
+                //            ImageSource = "machine.png",
+                //            TargetPage = typeof(machinePage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count Settings",
+                //            ImageSource = "ycsettings.png",
+                //            TargetPage = typeof(YCSettings)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Test Report",
+                //            ImageSource = "yarn.jpeg",
+                //            TargetPage = typeof(Report)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Exit",
+                //            ImageSource = "logout.png",
+                //            TargetPage = typeof(MainPage)
+                //        });
+                //    }
+                //    else
+                //    {
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count Settings",
+                //            ImageSource = "ycsettings.png",
+                //            TargetPage = typeof(YCSettings)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Test Report",
+                //            ImageSource = "yarn.jpeg",
+                //            TargetPage = typeof(Report)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Exit",
+                //            ImageSource = "logout.png",
+                //            TargetPage = typeof(MainPage)
+                //        });
+                //    }
 
+                //}
+
+                //if (item.Title == "Test Report")
+                //{
+                //    ObservableCollection<MenuItem> flyItems = new ObservableCollection<MenuItem>();
+                //    flyout.listview.ItemsSource = flyItems;
+                //    if (isAdmin)
+                //    {
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Company",
+                //            ImageSource = "company.jpg",
+                //            TargetPage = typeof(companyPage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "User Management",
+                //            ImageSource = "user.png",
+                //            TargetPage = typeof(UserPage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Add Machine",
+                //            ImageSource = "machine.png",
+                //            TargetPage = typeof(machinePage)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count Settings",
+                //            ImageSource = "ycsettings.png",
+                //            TargetPage = typeof(YCSettings)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count",
+                //            ImageSource = "yarn.jpeg",
+                //            TargetPage = typeof(yarnCount)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Exit",
+                //            ImageSource = "logout.png",
+                //            TargetPage = typeof(MainPage)
+                //        });
+                //    }
+                //    else
+                //    {
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count Settings",
+                //            ImageSource = "ycsettings.png",
+                //            TargetPage = typeof(YCSettings)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Yarn Count",
+                //            ImageSource = "yarn.jpeg",
+                //            TargetPage = typeof(yarnCount)
+                //        });
+                //        flyItems.Add(new MenuItem
+                //        {
+                //            Title = "Exit",
+                //            ImageSource = "logout.png",
+                //            TargetPage = typeof(MainPage)
+                //        });
+                //    }
+                //}
             }
         }
     }

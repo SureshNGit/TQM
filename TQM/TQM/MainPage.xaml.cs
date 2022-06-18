@@ -19,6 +19,8 @@ namespace TQM
             try
             {
                 base.OnAppearing();
+                entry_username.Text = "";
+                entry_password.Text = "";
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     conn.CreateTable<UserModel>();
@@ -48,13 +50,25 @@ namespace TQM
             {
                 conn.CreateTable<UserModel>();
                 UserModel userinfo = conn.Table<UserModel>().Where(
-                    UserModel => UserModel.userId == username &&
+                    UserModel => UserModel.userId.ToLower() == username.ToLower() &&
                     UserModel.password == passwrod &&
                     UserModel.isActive == true).FirstOrDefault();
                 if (userinfo == null)
                 {
-                    DisplayAlert("Attention", "Incorrect username/password!!!", "OK");
-                    return;
+                    userinfo = conn.Table<UserModel>().Where(
+                    UserModel => UserModel.userId.ToLower() == username.ToLower() &&
+                    UserModel.password == passwrod &&
+                    UserModel.isActive == false).FirstOrDefault();
+                    if (userinfo == null)
+                    {
+                        DisplayAlert("Attention", "Incorrect username/password!!!", "OK");
+                        return;
+                    }
+                    else
+                    {
+                        DisplayAlert("Attention", "Your ID is deactivated. Please contact admin to activate!!!", "OK");
+                        return;
+                    }
                 }
                 else
                 {
