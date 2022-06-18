@@ -110,7 +110,13 @@ namespace TQM
                     if (!switch_admin.IsToggled)
                     {
                         conn.Close();
-                        DisplayAlert("Attention", "First user should be admin. So enable 'Is Admin' button!!!", "OK");
+                        DisplayAlert("Attention", "First user should be admin. So enable 'Admin' button!!!", "OK");
+                        return;
+                    }
+                    if (!switch_active.IsToggled)
+                    {
+                        conn.Close();
+                        DisplayAlert("Attention", "First user should be active. So enable 'Active' button!!!", "OK");
                         return;
                     }
                 }

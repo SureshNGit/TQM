@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TQM.YCSettings" BackgroundColor="White" >
+             x:Class="TQM.YCSettings" BackgroundColor="White" NavigationPage.HasBackButton="False">
 
     <NavigationPage.TitleView>
         <StackLayout BackgroundColor="White">
@@ -36,8 +36,9 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Text="Count System" TextColor="#0e0273" FontSize="25"/>
-                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_countsysname" TextColor="Green" FontSize="25" >   
+                <Label Grid.Row="0" Grid.Column="0" Text="Count System" TextColor="#0e0273" FontSize="25" Margin="0,10,0,0"/>
+                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_countsysname" TextColor="Green" FontSize="25"
+                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center">   
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String>Nec</x:String>
@@ -47,8 +48,9 @@
                         </x:Array>
                     </Picker.ItemsSource>       
                 </Picker>
-                <Label Grid.Row="1" Grid.Column="0" Text="Yarn Length Unit" TextColor="#0e0273" FontSize="25"/>
-                <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_yarnlengthunit" TextColor="Green" FontSize="25">
+                <Label Grid.Row="1" Grid.Column="0" Text="Yarn Length Unit" TextColor="#0e0273" FontSize="25" Margin="0,10,0,0"/>
+                <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_yarnlengthunit" TextColor="Green" FontSize="25"
+                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String>Yard</x:String>
@@ -56,10 +58,12 @@
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>
-                <Label Grid.Row="2" Grid.Column="0" Text="Yarn Length" TextColor="#0e0273" FontSize="25"/>
-                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_yarnlength" Keyboard="Numeric" TextColor="Green" FontSize="25"/>
-                <Label Grid.Row="3" Grid.Column="0" Text="Test Count" TextColor="#0e0273" FontSize="25"/>
-                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcount" Keyboard="Numeric" TextColor="Green" FontSize="25"/>
+                <Label Grid.Row="2" Grid.Column="0" Text="Yarn Length" TextColor="#0e0273" FontSize="25" Margin="0,10,0,0"/>
+                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_yarnlength" Keyboard="Numeric" TextColor="Green" FontSize="25"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                <Label Grid.Row="3" Grid.Column="0" Text="Test Count" TextColor="#0e0273" FontSize="25" Margin="0,10,0,0"/>
+                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcount" Keyboard="Numeric" TextColor="Green" FontSize="25"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
                 <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,15" 
                         Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked"
                         BackgroundColor="#0e0273" TextColor="White" CornerRadius="25"/>

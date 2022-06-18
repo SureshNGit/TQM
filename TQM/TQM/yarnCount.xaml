@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TQM.yarnCount" BackgroundColor="white" 
-             xmlns:effects="clr-namespace:TQM.Effects">
+             xmlns:effects="clr-namespace:TQM.Effects" NavigationPage.HasBackButton="False">
     
     <NavigationPage.TitleView>
         <StackLayout BackgroundColor="White">

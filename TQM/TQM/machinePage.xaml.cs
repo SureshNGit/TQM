@@ -171,6 +171,7 @@ namespace TQM
         {
             try
             {
+                if (entry_machinesearch.Text == null) { DisplayAlert("Notice", "Please enter machine name to search!!!", "OK"); return; }
                 if (entry_machinesearch.Text.Trim() == "") { DisplayAlert("Notice", "Please enter machine name to search!!!", "OK"); return; }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {

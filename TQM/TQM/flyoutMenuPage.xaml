@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:TQM"
              Title="FlyoutMenu"
-             x:Class="TQM.flyoutMenuPage">
+             x:Class="TQM.flyoutMenuPage" NavigationPage.HasNavigationBar="False" NavigationPage.HasBackButton="False">
 
     <StackLayout>
         <ListView x:Name="listview" x:FieldModifier="public">
@@ -35,12 +35,18 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="33"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             
                             <Image Source="{Binding ImageSource}"/>
-                            <Label Grid.Column="1" Margin="10,0,0,1"
+                            <Label Grid.Column="1" Grid.ColumnSpan="6" Margin="10,0,0,1"
                                    Text="{Binding Title}" 
-                                   FontSize="25"
+                                   FontSize="18"
                                    TextColor="#0e0273"
                                    VerticalTextAlignment="Center"/>
                         </Grid>
