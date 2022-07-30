@@ -39,7 +39,8 @@ namespace TQM
         private string selectedCountUnit = null;
         private decimal selectedYarnLen = 0m;
         private int selectedTestCount = 0;
-        private string selectedApercent = null;
+        private string selectedShift = null;
+        private string selectedProcess = null;
         private const string RED = "#FF0000";
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
@@ -145,6 +146,8 @@ namespace TQM
                         machineCategory = test.machineCategory,
                         machineName = test.machineName,
                         apercent = test.apercent,
+                        shift = test.shift,
+                        process = test.process,
                         countsysname = test.countsysname,
                         yarnlenunit = test.yarnlenunit,
                         yarnlength = test.yarnlength,
@@ -189,7 +192,8 @@ namespace TQM
                         machineID = ycTestModelViewlist[0].machineID,
                         machineCategory = ycTestModelViewlist[0].machineCategory,
                         machineName = ycTestModelViewlist[0].machineName,
-                        apercent = ycTestModelViewlist[0].apercent,
+                        shift = ycTestModelViewlist[0].shift,
+                        process = ycTestModelViewlist[0].process,
                         countsysname = ycTestModelViewlist[0].countsysname,
                         yarnlenunit = ycTestModelViewlist[0].yarnlenunit,
                         yarnlength = ycTestModelViewlist[0].yarnlength,
@@ -228,8 +232,9 @@ namespace TQM
                     testYCButton.BackgroundColor = Color.Green;
                     entry_testcount.IsEnabled = true;
                     entry_testcount.Text = TESTCOUNT.ToString();
-                    entry_apercent.IsEnabled = true;
-                    entry_apercent.Text = "";
+                    picker_shift.IsEnabled = true;
+                    picker_shift.SelectedIndex = 0;
+                    entry_process.Text = "";
                     picker_machinecategory.IsEnabled = true;
                     picker_machinecategory.SelectedIndex = 0;
                     picker_machinename.IsEnabled = true;
@@ -312,12 +317,13 @@ namespace TQM
             selectedCountUnit = lbl_yarncountunit.Text;
             selectedYarnLen = int.Parse(lbl_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
-            selectedApercent = entry_apercent.Text.Trim();
+            selectedShift = picker_shift.SelectedItem.ToString();
+            selectedProcess = entry_process.Text;
             ycTestModelViewlist = new List<YCTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
             entry_testcount.IsEnabled = false;
-            entry_apercent.IsEnabled = false;
+            picker_shift.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
@@ -435,7 +441,8 @@ namespace TQM
                             machineID = selectedMachineID,
                             machineCategory = selectedMachineCategory,
                             machineName = selectedMachineName,
-                            apercent = selectedApercent,
+                            shift = selectedShift,
+                            process = selectedProcess,
                             countsysname = selectedSysName,
                             yarnlenunit = selectedCountUnit,
                             yarnlength = selectedYarnLen,

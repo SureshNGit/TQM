@@ -424,6 +424,23 @@ namespace TQM
 
         private void addPageHeaderAndFooter(PdfDocument pdfDocument)
         {
+            String companyName = null;
+            try
+            {
+                SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                conn.CreateTable<CompanyModel>();
+                var company = conn.Table<CompanyModel>().FirstOrDefault();
+                if (company != null)
+                {
+                    companyName = company.Name;
+                }
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+            }
+
             for (int i = 0; i < pdfDocument.PageCount; i++)
             {
                 RectangleF bounds = new RectangleF(0, 0, pdfDocument.Pages[i].GetClientSize().Width, 50);
@@ -434,7 +451,7 @@ namespace TQM
                 PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 20);
                 PdfBrush brush = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
                 header.Alignment = PdfAlignmentStyle.TopCenter;
-                header.Graphics.DrawString("Sri Sastha Textiles Private Limited", font, brush, new PointF(10, 0));
+                header.Graphics.DrawString(companyName, font, brush, new PointF(10, 0));
                 pdfDocument.Template.Top = header;
                 PdfPageTemplateElement footer = new PdfPageTemplateElement(bounds);
                 PdfFont font_footer = new PdfStandardFont(PdfFontFamily.Helvetica, 7);

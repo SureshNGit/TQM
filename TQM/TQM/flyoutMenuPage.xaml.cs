@@ -60,6 +60,24 @@ namespace TQM
                             });
                             flyItems.Add(new MenuItem
                             {
+                                Title = "Apercent",
+                                ImageSource = "",
+                                TargetPage = typeof(ApercentPage)
+                            });
+                            flyItems.Add(new MenuItem
+                            {
+                                Title = "Stretch",
+                                ImageSource = "",
+                                TargetPage = typeof(StretchPage)
+                            });
+                            flyItems.Add(new MenuItem
+                            {
+                                Title = "Comber",
+                                ImageSource = "",
+                                TargetPage = typeof(ComberPage)
+                            });
+                            flyItems.Add(new MenuItem
+                            {
                                 Title = "Test Report",
                                 ImageSource = "",
                                 TargetPage = typeof(Report)
@@ -109,6 +127,24 @@ namespace TQM
                                 Title = "Yarn Count",
                                 ImageSource = "",
                                 TargetPage = typeof(yarnCount)
+                            });
+                            flyItems.Add(new MenuItem
+                            {
+                                Title = "Apercent",
+                                ImageSource = "",
+                                TargetPage = typeof(ApercentPage)
+                            });
+                            flyItems.Add(new MenuItem
+                            {
+                                Title = "Stretch",
+                                ImageSource = "",
+                                TargetPage = typeof(StretchPage)
+                            });
+                            flyItems.Add(new MenuItem
+                            {
+                                Title = "Comber",
+                                ImageSource = "",
+                                TargetPage = typeof(ComberPage)
                             });
                             flyItems.Add(new MenuItem
                             {

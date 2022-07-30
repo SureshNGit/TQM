@@ -81,6 +81,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -95,11 +96,12 @@
             <BoxView Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
             <BoxView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
             <BoxView Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
-            <BoxView Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+            <BoxView Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+            <BoxView Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
             
-            <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="8" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="8" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="8" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+            <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="9" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="9" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="9" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
             
             
             <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Count System Name" FontSize="20" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Margin="5"/>
@@ -108,7 +110,8 @@
             <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Count" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="A%" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Process" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             
             <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_countsysname" Text="" FontSize="20" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
             <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarncountunit" Text="" FontSize="20" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
@@ -139,8 +142,29 @@
                     <effects:PlainEntry/>
                 </Picker.Effects>
             </Picker>
-            <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_apercent" TextColor="Green" FontSize="20" 
+            <!--<Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_apercent" TextColor="Green" FontSize="20" 
                   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Numeric">
+                <Entry.Effects>
+                    <effects:PlainEntry/>
+                </Entry.Effects>
+            </Entry>-->
+            <Picker Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                    x:Name="picker_shift" TextColor="Green" FontSize="20">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String></x:String>
+                        <x:String>Shift-1</x:String>
+                        <x:String>Shift-2</x:String>
+                        <x:String>Shift-3</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+                <Picker.Effects>
+                    <effects:PlainEntry/>
+                </Picker.Effects>
+            </Picker>
+
+            <Entry Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_process" TextColor="Green" FontSize="20" 
+                  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Text">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>

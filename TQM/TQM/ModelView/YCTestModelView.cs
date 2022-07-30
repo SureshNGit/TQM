@@ -15,6 +15,9 @@ namespace TQM.ModelView
         public string machineName { get; set; }
 
         public string apercent { get; set; }
+        public string shift { get; set; }
+
+        public string process { get; set; }
         public string countsysname { get; set; }
 
         public string yarnlenunit { get; set; }
