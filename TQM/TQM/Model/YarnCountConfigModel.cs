@@ -16,6 +16,12 @@ namespace TQM.Model
 
         public int testcount { get; set; }
 
+        public int testcountApercent { get; set; }
+
+        public int testcountStretch { get; set; }
+
+        public int testcountComber { get; set; }
+
 
     }
 }

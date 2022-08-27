@@ -54,6 +54,9 @@ namespace TQM
                         picker_yarnlengthunit.SelectedIndex = yarncountlenindex;
                         entry_yarnlength.Text = ycConfigList[0].yarnlength.ToString();
                         entry_testcount.Text = ycConfigList[0].testcount.ToString();
+                        entry_testcountApercent.Text = ycConfigList[0].testcountApercent.ToString();
+                        entry_testcountStretch.Text = ycConfigList[0].testcountStretch.ToString();
+                        entry_testcountComber.Text = ycConfigList[0].testcountComber.ToString();
                     }
                     else
                     {
@@ -74,7 +77,10 @@ namespace TQM
                 if (picker_countsysname.SelectedItem.ToString() == "" ||
                     picker_yarnlengthunit.SelectedItem.ToString() == "" ||
                     entry_yarnlength.Text.Trim().ToString() == "" ||
-                    entry_testcount.Text.Trim().ToString() == "")
+                    entry_testcount.Text.Trim().ToString() == "" ||
+                    entry_testcountApercent.Text.Trim().ToString() == "" ||
+                    entry_testcountStretch.Text.Trim().ToString() == "" ||
+                    entry_testcountComber.Text.Trim().ToString() == "")
                 {
                     DisplayAlert("Attention", "Please fill all fields with valid data to proceed!!!", "OK");
                     return;
@@ -89,7 +95,10 @@ namespace TQM
                     countsysname = picker_countsysname.SelectedItem.ToString(),
                     yarnlenunit = picker_yarnlengthunit.SelectedItem.ToString(),
                     yarnlength = int.Parse(entry_yarnlength.Text.ToString()),
-                    testcount = int.Parse(entry_testcount.Text.ToString())
+                    testcount = int.Parse(entry_testcount.Text.ToString()),
+                    testcountApercent = int.Parse(entry_testcountApercent.Text.ToString()),
+                    testcountStretch = int.Parse(entry_testcountStretch.Text.ToString()),
+                    testcountComber = int.Parse(entry_testcountComber.Text.ToString()),
                 };
 
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))

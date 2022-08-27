@@ -68,6 +68,8 @@ namespace TQM
                     lbl_yarncountunit.Text = "";
                     lbl_yarnlen.Text = "";
                     entry_testcount.Text = "";
+                    picker_shift.SelectedIndex = 0;
+                    entry_process.Text = "";
                 }
             }
         }

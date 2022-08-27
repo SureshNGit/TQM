@@ -13,9 +13,12 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
+                <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="1" Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked"
+                        BackgroundColor="#0e0273" TextColor="White" CornerRadius="25"/>
             </Grid>
         </StackLayout>
     </NavigationPage.TitleView>
@@ -30,14 +33,16 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Text="Count System" TextColor="#0e0273" FontSize="25" Margin="0,10,0,0"/>
-                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_countsysname" TextColor="Green" FontSize="25"
+                <Label Grid.Row="0" Grid.Column="0" Text="Count System" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_countsysname" TextColor="Green" FontSize="16"
                         VerticalTextAlignment="Center" HorizontalTextAlignment="Center">   
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
@@ -48,8 +53,8 @@
                         </x:Array>
                     </Picker.ItemsSource>       
                 </Picker>
-                <Label Grid.Row="1" Grid.Column="0" Text="Yarn Length Unit" TextColor="#0e0273" FontSize="25" Margin="0,10,0,0"/>
-                <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_yarnlengthunit" TextColor="Green" FontSize="25"
+                <Label Grid.Row="1" Grid.Column="0" Text="Yarn Length Unit" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_yarnlengthunit" TextColor="Green" FontSize="16"
                         VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
@@ -58,15 +63,22 @@
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>
-                <Label Grid.Row="2" Grid.Column="0" Text="Yarn Length" TextColor="#0e0273" FontSize="25" Margin="0,10,0,0"/>
-                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_yarnlength" Keyboard="Numeric" TextColor="Green" FontSize="25"
+                <Label Grid.Row="2" Grid.Column="0" Text="Yarn Length" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_yarnlength" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-                <Label Grid.Row="3" Grid.Column="0" Text="Test Count" TextColor="#0e0273" FontSize="25" Margin="0,10,0,0"/>
-                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcount" Keyboard="Numeric" TextColor="Green" FontSize="25"
+                <Label Grid.Row="3" Grid.Column="0" Text="Test Count (Yarn Count)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcount" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-                <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,15" 
-                        Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked"
-                        BackgroundColor="#0e0273" TextColor="White" CornerRadius="25"/>
+                <Label Grid.Row="4" Grid.Column="0" Text="Test Count (A%)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountApercent" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                <Label Grid.Row="5" Grid.Column="0" Text="Test Count (Stretch)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountStretch" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                <Label Grid.Row="6" Grid.Column="0" Text="Test Count (Comber)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountComber" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+               
             </Grid>
         </StackLayout>
     </ContentPage.Content>

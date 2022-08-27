@@ -34,6 +34,7 @@ namespace TQM
         {
             try
             {
+                picker_reportName.SelectedIndex = 0;
                 selectedMachineID = Guid.Empty;
                 selectedMachineName = null;
                 date_fromdate.Date = DateTime.Now;
@@ -50,6 +51,11 @@ namespace TQM
         {
             try
             {
+                if (picker_reportName.SelectedIndex <= 0)
+                {
+                    DisplayAlert("Attention", "Please select report name to proceed!!!", "OK");
+                    return;
+                }
                 if (date_enddate.Date < date_fromdate.Date)
                 {
                     DisplayAlert("Attention", "Report End Date cannot be less than Report Start Date", "OK");
