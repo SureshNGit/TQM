@@ -40,6 +40,9 @@
     <Compile Update="ApercentPage.xaml.cs">
       <DependentUpon>ApercentPage.xaml</DependentUpon>
     </Compile>
+    <Compile Update="YCApercentReport.xaml.cs">
+      <DependentUpon>YCApercentReport.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

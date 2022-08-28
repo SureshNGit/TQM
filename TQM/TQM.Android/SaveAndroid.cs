@@ -7,10 +7,10 @@ namespace TQM.Droid
 {
     public class SaveAndroid : ISave
     {
-        public string Save(MemoryStream stream)
+        public string Save(MemoryStream stream, string fileName)
         {
             string root = null;
-            string fileName = "TQM_Report.pdf";
+            //string fileName = "TQM_Report.pdf";
             root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
             Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
             if (myDir.Exists()) { myDir.Delete(); }

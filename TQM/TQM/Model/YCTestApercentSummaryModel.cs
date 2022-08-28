@@ -31,6 +31,8 @@ namespace TQM.Model
 
         public int totaltestcount { get; set; }
 
+        public decimal avg_weight { get; set; }
+
         public decimal testaverage { get; set; }
 
         public decimal testsd { get; set; }

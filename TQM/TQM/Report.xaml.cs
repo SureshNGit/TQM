@@ -68,7 +68,14 @@ namespace TQM
                 }
                 string selectedCategory = null;
                 if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
-                Navigation.PushAsync(new YCReport(date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID));
+                if (picker_reportName.SelectedItem.ToString() == "Yarn Count")
+                {
+                    Navigation.PushAsync(new YCReport(date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID));
+                }
+                else if (picker_reportName.SelectedItem.ToString() == "A%")
+                {
+                    Navigation.PushAsync(new YCApercentReport(date_fromdate.Date, date_enddate.Date));
+                }
             }
             catch (Exception ex)
             {

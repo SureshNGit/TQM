@@ -50,9 +50,9 @@ namespace TQM
             InitializeComponent();
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                conn.DropTable<YCTestApercentModel>();
-                conn.DropTable<YCTestApercentSummaryModel>();
-                conn.DropTable<YCTestApercentCalculatedModel>();
+                //conn.DropTable<YCTestApercentModel>();
+                //conn.DropTable<YCTestApercentSummaryModel>();
+                //conn.DropTable<YCTestApercentCalculatedModel>();
 
                 conn.CreateTable<YarnCountConfigModel>();
                 YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
@@ -204,9 +204,11 @@ namespace TQM
             {
                 bool dbStatus = true;
                 decimal totalCalcCountVal = 0m;
+                decimal totalWeight = 0m;
                 conn.CreateTable<YCTestApercentModel>();
                 List<YCTestApercentModel> ycTestApercentModelList = conn.Table<YCTestApercentModel>().Where(
-                                YCTestApercentModel => (YCTestApercentModel.status == true)).ToList();
+                                YCTestApercentModel => (YCTestApercentModel.status == true && YCTestApercentModel.testID != currentTestID)).ToList();
+
                 foreach (YCTestApercentModel ycTestApercentModel in ycTestApercentModelList)
                 {
                     ycTestApercentModel.status = false;
@@ -215,6 +217,8 @@ namespace TQM
                         dbStatus = false;
                     }
                 }
+
+
                 if (dbStatus)
                 {
                     foreach (YCTestApercentModelView test in ycTestApercentModelViewlist)
@@ -244,15 +248,18 @@ namespace TQM
                             dbStatus = false;
                         }
                         totalCalcCountVal = totalCalcCountVal + test.yccalcval;
+                        totalWeight = totalWeight + test.yarnweight;
                     }
                 }
                 if (dbStatus)
                 {
+                    decimal avg_weight = 0m;
                     decimal mean = 0m;
                     decimal sd = 0m;
                     decimal cv = 0m;
                     if (ycTestApercentModelViewlist[0].totaltestcount > 1)
                     {
+                        avg_weight = totalWeight / ycTestApercentModelViewlist[0].totaltestcount;
                         mean = totalCalcCountVal / ycTestApercentModelViewlist[0].totaltestcount;
                         decimal IndividualCalValminusMean = 0m;
                         foreach (YCTestApercentModelView test in ycTestApercentModelViewlist)
@@ -261,6 +268,7 @@ namespace TQM
                         }
                         sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestApercentModelViewlist[0].totaltestcount - 1));//Standard Deviation
                         cv = (sd / mean) * 100; //Coefficient of Variation
+                        avg_weight = Math.Round(avg_weight, 3);
                         mean = Math.Round(mean, 3);
                         sd = Math.Round(sd, 3);
                         cv = Math.Round(cv, 3);
@@ -278,6 +286,7 @@ namespace TQM
                         shift = ycTestApercentModelViewlist[0].shift,
                         testType = ycTestApercentModelViewlist[0].testType,
                         totaltestcount = ycTestApercentModelViewlist[0].totaltestcount,
+                        avg_weight = avg_weight,
                         testaverage = mean,
                         testsd = sd,
                         testcv = cv,
@@ -292,11 +301,21 @@ namespace TQM
                     }
                     if (dbStatus)
                     {
-                        await enableTestButton();
-                        await refListView();
-                        await refOverallSummary(mean, sd, cv);
+                        //await enableTestButton();
+                        //await refListView();
+                        //await refOverallSummary(mean, sd, cv);
                         if (currentTestType == "nPlus1")
                         {
+                            List<YCTestApercentCalculatedModel> apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(
+                               YCTestApercentCalculatedModel => (YCTestApercentCalculatedModel.status == true)).ToList();
+                            foreach (YCTestApercentCalculatedModel apercent in apercentCalcList)
+                            {
+                                apercent.status = false;
+                                if (conn.Update(apercent) < 1)
+                                {
+                                    //to be decided if apercent calculated active records failed to deactive
+                                }
+                            }
                             YCTestApercentSummaryModel nMinus1Summary = conn.Table<YCTestApercentSummaryModel>().Where(
                                                             YCTestApercentSummaryModel => (
                                                             YCTestApercentSummaryModel.testType == "nMinus1" && YCTestApercentSummaryModel.status == true)
@@ -317,7 +336,41 @@ namespace TQM
                                     {
                                         decimal apercent_nMinus1 = ((nMinus1Summary.testaverage - NSummary.testaverage) / nMinus1Summary.testaverage) * 100;
                                         apercent_nMinus1 = Math.Round(apercent_nMinus1, 3);
-
+                                        decimal apercent_nPlus1 = ((nPlus1Summary.testaverage - NSummary.testaverage) / nPlus1Summary.testaverage) * 100;
+                                        apercent_nPlus1 = Math.Round(apercent_nPlus1, 3);
+                                        YCTestApercentModel Max_nMinus1 = conn.Table<YCTestApercentModel>().Where(
+                                            YCTestApercentModel =>
+                                            (YCTestApercentModel.testID == currentTestID &&
+                                            YCTestApercentModel.status == true &&
+                                            YCTestApercentModel.testType == "nMinus1")).OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                        YCTestApercentModel Min_nMinus1 = conn.Table<YCTestApercentModel>().Where(
+                                            YCTestApercentModel =>
+                                            (YCTestApercentModel.testID == currentTestID &&
+                                            YCTestApercentModel.status == true &&
+                                            YCTestApercentModel.testType == "nMinus1")).OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                        YCTestApercentModel Max_N = conn.Table<YCTestApercentModel>().Where(
+                                            YCTestApercentModel =>
+                                            (YCTestApercentModel.testID == currentTestID &&
+                                            YCTestApercentModel.status == true &&
+                                            YCTestApercentModel.testType == "N")).OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                        YCTestApercentModel Min_N = conn.Table<YCTestApercentModel>().Where(
+                                            YCTestApercentModel =>
+                                            (YCTestApercentModel.testID == currentTestID &&
+                                            YCTestApercentModel.status == true &&
+                                            YCTestApercentModel.testType == "N")).OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                        YCTestApercentModel Max_nPlus1 = conn.Table<YCTestApercentModel>().Where(
+                                           YCTestApercentModel =>
+                                           (YCTestApercentModel.testID == currentTestID &&
+                                           YCTestApercentModel.status == true &&
+                                           YCTestApercentModel.testType == "nPlus1")).OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                        YCTestApercentModel Min_nPlus1 = conn.Table<YCTestApercentModel>().Where(
+                                            YCTestApercentModel =>
+                                            (YCTestApercentModel.testID == currentTestID &&
+                                            YCTestApercentModel.status == true &&
+                                            YCTestApercentModel.testType == "nPlus1")).OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                        decimal range_nMinus1 = Max_nMinus1.yarnweight - Min_nMinus1.yarnweight;
+                                        decimal range_N = Max_N.yarnweight - Min_N.yarnweight;
+                                        decimal range_nPlus1 = Max_nPlus1.yarnweight - Min_nPlus1.yarnweight;
                                         YCTestApercentCalculatedModel yCTestApercentCalculatedModel = new YCTestApercentCalculatedModel()
                                         {
                                             ID = Guid.NewGuid(),
@@ -331,13 +384,29 @@ namespace TQM
                                             shift = nMinus1Summary.shift,
                                             testType = nMinus1Summary.testType,
                                             totaltestcount = nMinus1Summary.totaltestcount,
-                                            testaverage = nMinus1Summary.testaverage,
-                                            testsd = nMinus1Summary.testsd,
-                                            testcv = nMinus1Summary.testcv,
+                                            avg_weight_nMinus1 = nMinus1Summary.avg_weight,
+                                            testaverage_nMinus1 = nMinus1Summary.testaverage,
+                                            testsd_nMinus1 = nMinus1Summary.testsd,
+                                            testcv_nMinus1 = nMinus1Summary.testcv,
+                                            max_nMinus1 = Max_nMinus1.yarnweight,
+                                            min_nMinus1 = Min_nMinus1.yarnweight,
+                                            range_nMinus1 = range_nMinus1,
+                                            apercent_nMinus1 = apercent_nMinus1,
+                                            avg_weight_N = NSummary.avg_weight,
                                             testaverage_N = NSummary.testaverage,
                                             testsd_N = NSummary.testsd,
                                             testcv_N = NSummary.testcv,
-                                            apercent = apercent_nMinus1,
+                                            max_N = Max_N.yarnweight,
+                                            min_N = Min_N.yarnweight,
+                                            range_N = range_N,
+                                            avg_weight_nPlus1 = nPlus1Summary.avg_weight,
+                                            testaverage_nPlus1 = nPlus1Summary.testaverage,
+                                            testsd_nPlus1 = nPlus1Summary.testsd,
+                                            testcv_nPlus1 = nPlus1Summary.testcv,
+                                            max_nPlus1 = Max_nPlus1.yarnweight,
+                                            min_nPlus1 = Min_nPlus1.yarnweight,
+                                            range_nPlus1 = range_nPlus1,
+                                            apercent_nPlus1 = apercent_nPlus1,
                                             status = true,
                                             createdate = DateTime.Now
                                         };
@@ -345,39 +414,6 @@ namespace TQM
                                         if (row_nMinus1 < 1)
                                         {
                                             // To be decieded if nMinus1Summary failed to insert to db
-                                        }
-                                        else
-                                        {
-                                            decimal apercent_nPlus1 = ((nPlus1Summary.testaverage - NSummary.testaverage) / nPlus1Summary.testaverage) * 100;
-                                            apercent_nPlus1 = Math.Round(apercent_nPlus1, 3);
-                                            yCTestApercentCalculatedModel = new YCTestApercentCalculatedModel()
-                                            {
-                                                ID = Guid.NewGuid(),
-                                                testID = nPlus1Summary.testID,
-                                                userID = nPlus1Summary.userID,
-                                                userName = nPlus1Summary.userName,
-                                                process = nPlus1Summary.process,
-                                                countsysname = nPlus1Summary.countsysname,
-                                                yarnlenunit = nPlus1Summary.yarnlenunit,
-                                                yarnlength = nPlus1Summary.yarnlength,
-                                                shift = nPlus1Summary.shift,
-                                                testType = nPlus1Summary.testType,
-                                                totaltestcount = nPlus1Summary.totaltestcount,
-                                                testaverage = nPlus1Summary.testaverage,
-                                                testsd = nPlus1Summary.testsd,
-                                                testcv = nPlus1Summary.testcv,
-                                                testaverage_N = NSummary.testaverage,
-                                                testsd_N = NSummary.testsd,
-                                                testcv_N = NSummary.testcv,
-                                                apercent = apercent_nPlus1,
-                                                status = true,
-                                                createdate = DateTime.Now
-                                            };
-                                            int row_nPlus1 = conn.Insert(yCTestApercentCalculatedModel);
-                                            if (row_nPlus1 < 1)
-                                            {
-                                                // To be decieded if nPlus1Summary failed to insert to db
-                                            }
                                         }
                                     }
                                     else
@@ -395,6 +431,9 @@ namespace TQM
                                 // To be decieded if nMinus1Summary active record is not available in db
                             }
                         }
+                        await enableTestButton();
+                        await refListView();
+                        await refOverallSummary(mean, sd, cv);
                     }
                 }
 
@@ -441,17 +480,32 @@ namespace TQM
                 if (dispose) { disposeble(); }
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    //startTestNm1Button.IsEnabled = true;
-                    //startTestNm1Button.BackgroundColor = Color.Green;
-                    entry_testcount.IsEnabled = true;
-                    entry_testcount.Text = TESTCOUNT.ToString();
-                    picker_shift.IsEnabled = true;
-                    picker_shift.SelectedIndex = 0;
-                    entry_process.Text = "";
+
+                    if (currentTestType == "nPlus1")
+                    {
+                        entry_testcount.IsEnabled = true;
+                        entry_testcount.Text = TESTCOUNT.ToString();
+                        picker_shift.IsEnabled = true;
+                        picker_shift.SelectedIndex = 0;
+                        entry_process.Text = "";
+                    }
+                    string str_testType = "";
+                    if (currentTestType == "nMinus1")
+                    {
+                        str_testType = "Test Completed for (N-1)!!! Start test for (N)";
+                    }
+                    else if (currentTestType == "N")
+                    {
+                        str_testType = "Test Completed for (N)!!! Start test for (N+1)";
+                    }
+                    else if (currentTestType == "nPlus1")
+                    {
+                        str_testType = "All Test Completed!!!";
+                    }
                     if (isTestStarted)
                     {
                         isTestStarted = false;
-                        showAlert("Test Completed!!! Start new test");
+                        showAlert(str_testType);
                     }
                 });
             }
@@ -534,6 +588,7 @@ namespace TQM
             startTestNm1Button.BackgroundColor = Color.SlateGray;
             entry_testcount.IsEnabled = false;
             picker_shift.IsEnabled = false;
+            entry_process.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -998,7 +1053,7 @@ namespace TQM
                 YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
-                    currentTestID = lastTestRecord.testID + 1;
+                    currentTestID = lastTestRecord.testID;
                 }
                 else
                 {
@@ -1026,6 +1081,7 @@ namespace TQM
             startTestNButton.BackgroundColor = Color.SlateGray;
             entry_testcount.IsEnabled = false;
             picker_shift.IsEnabled = false;
+            entry_process.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -1076,7 +1132,7 @@ namespace TQM
                 YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
-                    currentTestID = lastTestRecord.testID + 1;
+                    currentTestID = lastTestRecord.testID;
                 }
                 else
                 {
@@ -1104,6 +1160,7 @@ namespace TQM
             startTestNp1Button.BackgroundColor = Color.SlateGray;
             entry_testcount.IsEnabled = false;
             picker_shift.IsEnabled = false;
+            entry_process.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));

@@ -1,22 +1,12 @@
-﻿using SQLite;
-using SQLiteNetExtensions.Attributes;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
-namespace TQM.Model
+namespace TQM.ModelView
 {
-    public class YCTestApercentCalculatedModel
+    public class OverallApercentReportModelView : List<ApercentReportModelView>
     {
-        [PrimaryKey]
-        public Guid ID { get; set; }
-
-        [ForeignKey(typeof(YCTestModel))]
         public long testID { get; set; }
-
-        [ForeignKey(typeof(UserModel))]
-        public Guid userID { get; set; }
-
         public string userName { get; set; }
-
         public string countsysname { get; set; }
 
         public string yarnlenunit { get; set; }
@@ -31,23 +21,19 @@ namespace TQM.Model
 
         public int totaltestcount { get; set; }
 
-        public decimal avg_weight_nMinus1 { get; set; }
-
         public decimal testaverage_nMinus1 { get; set; }
 
         public decimal testsd_nMinus1 { get; set; }
 
         public decimal testcv_nMinus1 { get; set; }
 
-        public decimal max_nMinus1 { get; set; }
+        //public decimal max_nMinus1 { get; set; }
 
-        public decimal min_nMinus1 { get; set; }
+        //public decimal min_nMinus1 { get; set; }
 
-        public decimal range_nMinus1 { get; set; }
+        //public decimal range_nMinus1 { get; set; }
 
         public decimal apercent_nMinus1 { get; set; }
-
-        public decimal avg_weight_N { get; set; }
 
         public decimal testaverage_N { get; set; }
 
@@ -55,13 +41,11 @@ namespace TQM.Model
 
         public decimal testcv_N { get; set; }
 
-        public decimal max_N { get; set; }
+        //public decimal max_N { get; set; }
 
-        public decimal min_N { get; set; }
+        //public decimal min_N { get; set; }
 
-        public decimal range_N { get; set; }
-
-        public decimal avg_weight_nPlus1 { get; set; }
+        //public decimal range_N { get; set; }
 
         public decimal testaverage_nPlus1 { get; set; }
 
@@ -69,16 +53,16 @@ namespace TQM.Model
 
         public decimal testcv_nPlus1 { get; set; }
 
-        public decimal max_nPlus1 { get; set; }
+        //public decimal max_nPlus1 { get; set; }
 
-        public decimal min_nPlus1 { get; set; }
+        //public decimal min_nPlus1 { get; set; }
 
-        public decimal range_nPlus1 { get; set; }
+        //public decimal range_nPlus1 { get; set; }
 
         public decimal apercent_nPlus1 { get; set; }
-
-        public bool status { get; set; }
-
         public DateTime createdate { get; set; }
+        public List<ApercentReportModelView> apercentReportMV => this;
     }
+
+
 }
