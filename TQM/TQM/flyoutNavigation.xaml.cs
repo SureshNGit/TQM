@@ -147,9 +147,9 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Comber",
+                        Title = "NOILS",
                         ImageSource = "",
-                        TargetPage = typeof(ComberPage)
+                        TargetPage = typeof(NOILS)
                     });
                     flyItems.Add(new MenuItem
                     {
@@ -199,9 +199,9 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Comber",
+                        Title = "NOILS",
                         ImageSource = "",
-                        TargetPage = typeof(ComberPage)
+                        TargetPage = typeof(NOILS)
                     });
                     flyItems.Add(new MenuItem
                     {

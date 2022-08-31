@@ -4,12 +4,11 @@ using System;
 
 namespace TQM.Model
 {
-    public class YCTestApercentSummaryModel
+    public class NoilsTestModel
     {
         [PrimaryKey]
         public Guid ID { get; set; }
 
-        [ForeignKey(typeof(YCTestModel))]
         public long testID { get; set; }
 
         [ForeignKey(typeof(UserModel))]
@@ -23,30 +22,29 @@ namespace TQM.Model
         public string machineCategory { get; set; }
         public string machineName { get; set; }
 
+        public string testType { get; set; }
+
+        public string shift { get; set; }
+
+        public string process { get; set; }
         public string countsysname { get; set; }
 
         public string yarnlenunit { get; set; }
 
         public decimal yarnlength { get; set; }
 
-        public string shift { get; set; }
-
-        public string process { get; set; }
-
-        public string testType { get; set; }
-
         public int totaltestcount { get; set; }
 
-        public decimal avg_weight { get; set; }
+        public int testcount { get; set; }
 
-        public decimal testaverage { get; set; }
+        public decimal yarnweight { get; set; }
 
-        public decimal testsd { get; set; }
-
-        public decimal testcv { get; set; }
+        public decimal yccalcval { get; set; }
 
         public bool status { get; set; }
 
         public DateTime createdate { get; set; }
+
+
     }
 }

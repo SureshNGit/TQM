@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TQM.StretchPage" BackgroundColor="white"
+             x:Class="TQM.NOILS" BackgroundColor="white"
              xmlns:effects="clr-namespace:TQM.Effects" NavigationPage.HasBackButton="False">
     
     <NavigationPage.TitleView>
@@ -19,11 +19,11 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
-                <Label Grid.Row="0" Grid.Column="2" Text="Stretch %" FontSize="30" TextColor="Red" VerticalTextAlignment="Center" HorizontalOptions="End" />
-                <Button Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Initial Bobbin" IsVisible="false"
-                        x:Name="startInitialBobbinButton"  Clicked="startInitialBobbinButton_Clicked" BackgroundColor="Green" TextColor="white" CornerRadius="25"/>
-                <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Full Bobbin" IsVisible="false"
-                        x:Name="startFullBobbinButton"  Clicked="startFullBobbinButton_Clicked" BackgroundColor="Green" TextColor="white" CornerRadius="25"/>
+                <Label Grid.Row="0" Grid.Column="2" Text="NOILS" FontSize="30" TextColor="Red" VerticalTextAlignment="Center" HorizontalOptions="End" />
+                <Button Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Sliver" IsVisible="false"
+                        x:Name="startSliverButton"  Clicked="startSliverButton_Clicked" BackgroundColor="Green" TextColor="white" CornerRadius="25"/>
+                <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" HorizontalOptions="End" Text="NOILS" IsVisible="false"
+                        x:Name="startNoilsButton"  Clicked="startNoilsButton_Clicked" BackgroundColor="Green" TextColor="white" CornerRadius="25"/>
             </Grid>
         </StackLayout>
     </NavigationPage.TitleView>

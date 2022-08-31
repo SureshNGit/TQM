@@ -20,19 +20,19 @@ using Color = Xamarin.Forms.Color;
 namespace TQM
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class YCApercentReport : ContentPage
+    public partial class NoilsReport : ContentPage
     {
 
-        private List<OverallApercentReportModelView> _listOfReports;
-        public List<OverallApercentReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
+        private List<OverallNoilsReportModelView> _listOfReports;
+        public List<OverallNoilsReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
         private string selectedCompanyName = null;
         private const string BLUE = "#0e0273";
-        public YCApercentReport()
+        public NoilsReport()
         {
             InitializeComponent();
         }
 
-        public YCApercentReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        public NoilsReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
         {
             InitializeComponent();
             getReport(startDate, endDate, categoryName, machineID);
@@ -42,186 +42,156 @@ namespace TQM
         {
             try
             {
-                List<OverallApercentReportModelView> OVS = new List<OverallApercentReportModelView>();
+                List<OverallNoilsReportModelView> OVS = new List<OverallNoilsReportModelView>();
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
 
-                    conn.CreateTable<YCTestApercentModel>();
-                    conn.CreateTable<YCTestApercentCalculatedModel>();
+                    conn.CreateTable<NoilsTestModel>();
+                    conn.CreateTable<NoilsTestCalculatedModel>();
 
-
-
-                    List<YCTestApercentCalculatedModel> apercentCalcList = null;
+                    List<NoilsTestCalculatedModel> noilsCalcList = null;
                     if (categoryName == null || categoryName == "")
                     {
                         endDate = endDate.AddDays(1);
-                        apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                        YCTestApercentCalculatedModel.createdate >= startDate &&
-                        YCTestApercentCalculatedModel.createdate < endDate &&
-                        YCTestApercentCalculatedModel.status == true).ToList();
+                        noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                        NoilsTestCalculatedModel.createdate >= startDate &&
+                        NoilsTestCalculatedModel.createdate < endDate &&
+                        NoilsTestCalculatedModel.status == true).ToList();
                     }
                     else if (categoryName != null && machineID == Guid.Empty)
                     {
                         endDate = endDate.AddDays(1);
-                        apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                           (YCTestApercentCalculatedModel.createdate >= startDate && YCTestApercentCalculatedModel.createdate < endDate
-                           && YCTestApercentCalculatedModel.machineCategory == categoryName) && YCTestApercentCalculatedModel.status == true).ToList();
+                        noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                           (NoilsTestCalculatedModel.createdate >= startDate && NoilsTestCalculatedModel.createdate < endDate
+                           && NoilsTestCalculatedModel.machineCategory == categoryName) && NoilsTestCalculatedModel.status == true).ToList();
                     }
                     else if (categoryName != null && machineID != Guid.Empty)
                     {
                         endDate = endDate.AddDays(1);
-                        apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                           (YCTestApercentCalculatedModel.createdate >= startDate && YCTestApercentCalculatedModel.createdate < endDate
-                           && YCTestApercentCalculatedModel.machineCategory == categoryName)
-                           && YCTestApercentCalculatedModel.machineID == machineID && YCTestApercentCalculatedModel.status == true).ToList();
+                        noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                           (NoilsTestCalculatedModel.createdate >= startDate && NoilsTestCalculatedModel.createdate < endDate
+                           && NoilsTestCalculatedModel.machineCategory == categoryName)
+                           && NoilsTestCalculatedModel.machineID == machineID && NoilsTestCalculatedModel.status == true).ToList();
                     }
 
-                    //List<YCTestApercentCalculatedModel> apercentCalcList = null;
+                    //List<StretchTestCalculatedModel> stretchCalcList = null;
 
-                    //apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(
-                    //      YCTestApercentCalculatedModel =>
-                    //      (YCTestApercentCalculatedModel.status == true)).ToList();
+                    //stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(
+                    //      StretchTestCalculatedModel =>
+                    //      (StretchTestCalculatedModel.status == true)).ToList();
 
-
-
-
-
-                    if (apercentCalcList.Count == 0)
+                    if (noilsCalcList.Count == 0)
                     {
                         DisplayAlert("Notice", "No records to display!!!", "OK");
                         return;
                     }
 
-                    foreach (YCTestApercentCalculatedModel apercentCalc in apercentCalcList)
+                    foreach (NoilsTestCalculatedModel noilsCalc in noilsCalcList)
                     {
-                        OverallApercentReportModelView report = new OverallApercentReportModelView();
-                        List<YCTestApercentModel> yctestApercentlist_nMinus1 = conn.Table<YCTestApercentModel>().Where(
-                            YCTestApercentModel =>
-                            (YCTestApercentModel.testType == "nMinus1" && YCTestApercentModel.status == true)).ToList();
-                        List<YCTestApercentModel> yctestApercentlist_N = conn.Table<YCTestApercentModel>().Where(
-                            YCTestApercentModel =>
-                            (YCTestApercentModel.testType == "N" && YCTestApercentModel.status == true)).ToList();
-                        List<YCTestApercentModel> yctestApercentlist_nPlus1 = conn.Table<YCTestApercentModel>().Where(
-                            YCTestApercentModel =>
-                            (YCTestApercentModel.testType == "nPlus1" && YCTestApercentModel.status == true)).ToList();
-                        if (yctestApercentlist_nMinus1 != null && yctestApercentlist_N != null && yctestApercentlist_nPlus1 != null)
+                        OverallNoilsReportModelView report = new OverallNoilsReportModelView();
+                        List<NoilsTestFinalModel> list_finalNoils = conn.Table<NoilsTestFinalModel>().Where(
+                            NoilsTestFinalModel =>
+                            (NoilsTestFinalModel.testID == noilsCalc.testID && NoilsTestFinalModel.status == true)).ToList();
+
+
+                        if (list_finalNoils != null)
                         {
 
                             int loopCount = 0;
-                            foreach (YCTestApercentModel test in yctestApercentlist_nMinus1)
+                            foreach (NoilsTestFinalModel test in list_finalNoils)
                             {
-                                ApercentReportModelView apercentReportMV = new ApercentReportModelView()
+                                NoilsReportModelView noilsReportMV = new NoilsReportModelView()
                                 {
                                     testID = test.testID,
                                     description = test.testcount.ToString(),
-                                    nMinus1 = test.yarnweight,
-                                    N = yctestApercentlist_N[loopCount].yarnweight,
-                                    nPlus1 = yctestApercentlist_nPlus1[loopCount].yarnweight,
+                                    silver_wt = test.weigth_sliver,
+                                    noils_wt = test.weigth_noils,
+                                    noils = test.noils
                                 };
-                                report.Add(apercentReportMV);
+                                report.Add(noilsReportMV);
                                 loopCount += 1;
                             }
 
-                            ApercentReportModelView apercentReportModelView = new ApercentReportModelView()
+                            NoilsReportModelView noilsReportModelView = new NoilsReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = noilsCalc.testID,
                                 description = "Average Weight",
-                                nMinus1 = apercentCalc.avg_weight_nMinus1,
-                                N = apercentCalc.avg_weight_N,
-                                nPlus1 = apercentCalc.avg_weight_nPlus1,
+                                silver_wt = noilsCalc.average_wt_sliverwt,
+                                noils_wt = noilsCalc.average_wt_noilswt,
+                                noils = noilsCalc.average_wt_noils
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(noilsReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            noilsReportModelView = new NoilsReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = noilsCalc.testID,
                                 description = "Weight (Max)",
-                                nMinus1 = apercentCalc.max_nMinus1,
-                                N = apercentCalc.max_N,
-                                nPlus1 = apercentCalc.max_nPlus1,
+                                silver_wt = noilsCalc.max_sliverwt,
+                                noils_wt = noilsCalc.max_noilswt,
+                                noils = noilsCalc.max_noils
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(noilsReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            noilsReportModelView = new NoilsReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = noilsCalc.testID,
                                 description = "Weight (Min)",
-                                nMinus1 = apercentCalc.min_nMinus1,
-                                N = apercentCalc.min_N,
-                                nPlus1 = apercentCalc.min_nPlus1,
+                                silver_wt = noilsCalc.min_sliverwt,
+                                noils_wt = noilsCalc.min_noilswt,
+                                noils = noilsCalc.min_noils
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(noilsReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            noilsReportModelView = new NoilsReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = noilsCalc.testID,
                                 description = "Range",
-                                nMinus1 = apercentCalc.range_nMinus1,
-                                N = apercentCalc.range_N,
-                                nPlus1 = apercentCalc.range_nPlus1,
+                                silver_wt = noilsCalc.range_sliverwt,
+                                noils_wt = noilsCalc.range_noilswt,
+                                noils = noilsCalc.range_noils
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(noilsReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
-                            {
-                                testID = apercentCalc.testID,
-                                description = "HANK",
-                                nMinus1 = apercentCalc.testaverage_nMinus1,
-                                N = apercentCalc.testaverage_N,
-                                nPlus1 = apercentCalc.testaverage_nPlus1,
-                            };
-                            report.Add(apercentReportModelView);
+                            //noilsReportModelView = new NoilsReportModelView()
+                            //{
+                            //    testID = noilsCalc.testID,
+                            //    description = "HANK",
+                            //    silver_wt = noilsCalc.testaverage_sliverwt,
+                            //    noils_wt = noilsCalc.testaverage_noilswt,
+                            //    noils = 0.00m
+                            //};
+                            //report.Add(noilsReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            noilsReportModelView = new NoilsReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = noilsCalc.testID,
                                 description = "SD",
-                                nMinus1 = apercentCalc.testsd_nMinus1,
-                                N = apercentCalc.testsd_N,
-                                nPlus1 = apercentCalc.testsd_nPlus1,
+                                silver_wt = noilsCalc.testsd_sliverwt,
+                                noils_wt = noilsCalc.testsd_noilswt,
+                                noils = noilsCalc.testsd_noils
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(noilsReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            noilsReportModelView = new NoilsReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = noilsCalc.testID,
                                 description = "CV",
-                                nMinus1 = apercentCalc.testcv_nMinus1,
-                                N = apercentCalc.testcv_N,
-                                nPlus1 = apercentCalc.testcv_nPlus1,
+                                silver_wt = noilsCalc.testcv_sliverwt,
+                                noils_wt = noilsCalc.testcv_noilswt,
+                                noils = noilsCalc.testcv_noils
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(noilsReportModelView);
 
 
-                            report.testID = apercentCalc.testID;
-                            report.userName = apercentCalc.userName;
-                            report.machineCategory = apercentCalc.machineCategory;
-                            report.machineName = apercentCalc.machineName;
-                            report.countsysname = apercentCalc.countsysname;
-                            report.yarnlenunit = apercentCalc.yarnlenunit;
-                            report.yarnlength = apercentCalc.yarnlength;
-                            report.totaltestcount = apercentCalc.totaltestcount;
-                            report.testaverage_nMinus1 = apercentCalc.testaverage_nMinus1;
-                            report.testsd_nMinus1 = apercentCalc.testsd_nMinus1;
-                            report.testcv_nMinus1 = apercentCalc.testcv_nMinus1;
-                            //report.max_nMinus1 = apercentCalc.max_nMinus1;
-                            //report.min_nMinus1 = apercentCalc.min_nMinus1;
-                            //report.range_nMinus1 = apercentCalc.range_nMinus1;
-                            report.apercent_nMinus1 = apercentCalc.apercent_nMinus1;
-                            report.testaverage_N = apercentCalc.testaverage_N;
-                            report.testsd_N = apercentCalc.testsd_N;
-                            report.testcv_N = apercentCalc.testcv_N;
-                            //report.max_N = apercentCalc.max_N;
-                            //report.min_N = apercentCalc.min_N;
-                            //report.range_N = apercentCalc.range_N;
-                            report.testaverage_nPlus1 = apercentCalc.testaverage_nPlus1;
-                            report.testsd_nPlus1 = apercentCalc.testsd_nPlus1;
-                            report.testcv_nPlus1 = apercentCalc.testcv_nPlus1;
-                            //report.max_nPlus1 = apercentCalc.max_nPlus1;
-                            //report.min_nPlus1 = apercentCalc.min_nPlus1;
-                            //report.range_nPlus1 = apercentCalc.range_nPlus1;
-                            report.apercent_nPlus1 = apercentCalc.apercent_nPlus1;
-                            report.createdate = apercentCalc.createdate;
+                            report.testID = noilsCalc.testID;
+                            report.userName = noilsCalc.userName;
+                            report.machineCategory = noilsCalc.machineCategory;
+                            report.machineName = noilsCalc.machineName;
+                            report.countsysname = noilsCalc.countsysname;
+                            report.yarnlenunit = noilsCalc.yarnlenunit;
+                            report.yarnlength = noilsCalc.yarnlength;
+                            report.totaltestcount = noilsCalc.totaltestcount;
+                            report.createdate = noilsCalc.createdate;
                         }
                         OVS.Add(report);
                     }
@@ -283,17 +253,17 @@ namespace TQM
                 PdfGrid pdfGrid = null;
                 PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
                 layoutFormat.Layout = PdfLayoutType.Paginate;
-                List<OverallApercentReportModelView> overallReportList = (List<OverallApercentReportModelView>)listview_tcreport.ItemsSource;
+                List<OverallNoilsReportModelView> overallReportList = (List<OverallNoilsReportModelView>)listview_tcreport.ItemsSource;
                 PdfLayoutResult result = null;
                 //PdfLayoutResult resultInfo = null;
                 float overallHeight = 0;
                 int tableNo = 1;
                 bool newPageAdded_Header = false;
                 bool newPageAdded_Body = false;
-                foreach (OverallApercentReportModelView orl in overallReportList)
+                foreach (OverallNoilsReportModelView orl in overallReportList)
                 {
 
-                    List<ApercentReportModelView> testList = orl.apercentReportMV;
+                    List<NoilsReportModelView> testList = orl.noilsTestList;
 
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
@@ -303,7 +273,7 @@ namespace TQM
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
-                    pdfGridInfo.Rows.Add();
+                    //pdfGridInfo.Rows.Add();
                     //pdfGridInfo.Rows.Add();
 
                     if (tableNo == 1)
@@ -324,13 +294,13 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     pdfGridInfo.Rows[2].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[2].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[3].Cells[0].Value = "A% (N-1): " + orl.apercent_nMinus1;
+                    //pdfGridInfo.Rows[3].Cells[0].Value = "Stretch %: " + orl.stretch;
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[3].Cells[1].Value = "A% (N+1): " + orl.apercent_nPlus1;
+                    //pdfGridInfo.Rows[3].Cells[1].Value = "A% (N+1): " + orl.apercent_nPlus1;
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
-                    pdfGridInfo.Rows[4].Cells[1].Value = "Tester: " + orl.userName;
-                    pdfGridInfo.Rows[4].Cells[1].ColumnSpan = 2;
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Date: " + orl.createdate;
+                    pdfGridInfo.Rows[3].Cells[1].Value = "Tester: " + orl.userName;
+                    pdfGridInfo.Rows[3].Cells[1].ColumnSpan = 2;
 
 
                     pdfGridInfo.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
@@ -349,10 +319,10 @@ namespace TQM
                     pdfGridInfo.Rows[3].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[3].Style.Borders.All = PdfPens.Transparent;
-                    pdfGridInfo.Rows[4].Cells[0].Style.Borders.All = PdfPens.Transparent;
-                    pdfGridInfo.Rows[4].Cells[1].Style.Borders.All = PdfPens.Transparent;
-                    pdfGridInfo.Rows[4].Cells[2].Style.Borders.All = PdfPens.Transparent;
-                    pdfGridInfo.Rows[4].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    //pdfGridInfo.Rows[4].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    //pdfGridInfo.Rows[4].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    //pdfGridInfo.Rows[4].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    //pdfGridInfo.Rows[4].Cells[3].Style.Borders.All = PdfPens.Transparent;
                     //pdfGridInfo.Rows[5].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     //pdfGridInfo.Rows[5].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     //pdfGridInfo.Rows[5].Cells[2].Style.Borders.All = PdfPens.Transparent;
@@ -416,22 +386,26 @@ namespace TQM
                     pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[0].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[1].Value = "N-1";
+
+                    pdfGrid.Rows[0].Cells[1].Value = "Sliver Wt";
                     pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[1].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[2].Value = "N";
+
+                    pdfGrid.Rows[0].Cells[2].Value = "Noils Wt";
                     pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[2].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+
                     //pdfGrid.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     //pdfGrid.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     //pdfGrid.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
-                    pdfGrid.Rows[0].Cells[3].Value = "N+1";
+
+                    pdfGrid.Rows[0].Cells[3].Value = "Noils %";
                     pdfGrid.Rows[0].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -440,14 +414,14 @@ namespace TQM
 
 
                     int rowCount = 1;
-                    foreach (ApercentReportModelView test in testList)
+                    foreach (NoilsReportModelView test in testList)
                     {
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
                         pdfGrid.Rows[rowCount].Cells[0].Value = test.description.ToString();
-                        pdfGrid.Rows[rowCount].Cells[1].Value = test.nMinus1.ToString();
-                        pdfGrid.Rows[rowCount].Cells[2].Value = test.N.ToString();
-                        pdfGrid.Rows[rowCount].Cells[3].Value = test.nPlus1.ToString();
+                        pdfGrid.Rows[rowCount].Cells[1].Value = test.silver_wt.ToString();
+                        pdfGrid.Rows[rowCount].Cells[2].Value = test.noils_wt.ToString();
+                        pdfGrid.Rows[rowCount].Cells[3].Value = test.noils.ToString();
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -532,7 +506,7 @@ namespace TQM
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
                 pdfDocument.Close(true);
-                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "TQM_Report(A Percent).pdf");
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "TQM_Report(NOILS).pdf");
                 //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
                 //Process.Start(pdfPath);
                 return true;
@@ -612,7 +586,7 @@ namespace TQM
                     {
                         showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
                     }
-                    string fileName = "TQM_Report(A Percent).pdf";
+                    string fileName = "TQM_Report(NOILS).pdf";
                     string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
                     Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
                     Java.IO.File file = new Java.IO.File(myDir, fileName);
@@ -622,7 +596,7 @@ namespace TQM
                     request.Method = Method.Post;
                     //request.Timeout = Timeout.Infinite;
                     request.AddParameter("uploadedby", companyName);
-                    request.AddParameter("title", "TQMReports(A Percent)-" + DateTime.Now.ToString());
+                    request.AddParameter("title", "TQMReports(NOILS)-" + DateTime.Now.ToString());
                     request.AddFile("reportpath", filePath);
                     RestResponse response = client.Execute(request);
                     if (response.IsSuccessful)

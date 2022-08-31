@@ -22,7 +22,6 @@ namespace TQM.Model
 
         public string machineCategory { get; set; }
         public string machineName { get; set; }
-        public string apercent { get; set; }
 
         public string shift { get; set; }
 

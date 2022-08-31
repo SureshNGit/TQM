@@ -2,7 +2,7 @@
 
 namespace TQM.ModelView
 {
-    public class YCTestModelView
+    public class NoilsTestModelView
     {
         public long testID { get; set; }
 
@@ -13,6 +13,8 @@ namespace TQM.ModelView
 
         public string machineCategory { get; set; }
         public string machineName { get; set; }
+
+        public string testType { get; set; }
 
         public string shift { get; set; }
 
@@ -30,5 +32,6 @@ namespace TQM.ModelView
         public decimal yarnweight { get; set; }
 
         public decimal yccalcval { get; set; }
+
     }
 }

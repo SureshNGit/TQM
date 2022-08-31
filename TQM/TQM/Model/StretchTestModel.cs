@@ -4,12 +4,11 @@ using System;
 
 namespace TQM.Model
 {
-    public class YCTestApercentSummaryModel
+    public class StretchTestModel
     {
         [PrimaryKey]
         public Guid ID { get; set; }
 
-        [ForeignKey(typeof(YCTestModel))]
         public long testID { get; set; }
 
         [ForeignKey(typeof(UserModel))]
@@ -37,16 +36,16 @@ namespace TQM.Model
 
         public int totaltestcount { get; set; }
 
-        public decimal avg_weight { get; set; }
+        public int testcount { get; set; }
 
-        public decimal testaverage { get; set; }
+        public decimal yarnweight { get; set; }
 
-        public decimal testsd { get; set; }
-
-        public decimal testcv { get; set; }
+        public decimal yccalcval { get; set; }
 
         public bool status { get; set; }
 
         public DateTime createdate { get; set; }
+
+
     }
 }

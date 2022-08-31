@@ -20,19 +20,19 @@ using Color = Xamarin.Forms.Color;
 namespace TQM
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class YCApercentReport : ContentPage
+    public partial class StretchReport : ContentPage
     {
 
-        private List<OverallApercentReportModelView> _listOfReports;
-        public List<OverallApercentReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
+        private List<OverallStretchReportModelView> _listOfReports;
+        public List<OverallStretchReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
         private string selectedCompanyName = null;
         private const string BLUE = "#0e0273";
-        public YCApercentReport()
+        public StretchReport()
         {
             InitializeComponent();
         }
 
-        public YCApercentReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        public StretchReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
         {
             InitializeComponent();
             getReport(startDate, endDate, categoryName, machineID);
@@ -42,186 +42,157 @@ namespace TQM
         {
             try
             {
-                List<OverallApercentReportModelView> OVS = new List<OverallApercentReportModelView>();
+                List<OverallStretchReportModelView> OVS = new List<OverallStretchReportModelView>();
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
 
-                    conn.CreateTable<YCTestApercentModel>();
-                    conn.CreateTable<YCTestApercentCalculatedModel>();
+                    conn.CreateTable<StretchTestModel>();
+                    conn.CreateTable<StretchTestCalculatedModel>();
 
-
-
-                    List<YCTestApercentCalculatedModel> apercentCalcList = null;
+                    List<StretchTestCalculatedModel> stretchCalcList = null;
                     if (categoryName == null || categoryName == "")
                     {
                         endDate = endDate.AddDays(1);
-                        apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                        YCTestApercentCalculatedModel.createdate >= startDate &&
-                        YCTestApercentCalculatedModel.createdate < endDate &&
-                        YCTestApercentCalculatedModel.status == true).ToList();
+                        stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                        StretchTestCalculatedModel.createdate >= startDate &&
+                        StretchTestCalculatedModel.createdate < endDate &&
+                        StretchTestCalculatedModel.status == true).ToList();
                     }
                     else if (categoryName != null && machineID == Guid.Empty)
                     {
                         endDate = endDate.AddDays(1);
-                        apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                           (YCTestApercentCalculatedModel.createdate >= startDate && YCTestApercentCalculatedModel.createdate < endDate
-                           && YCTestApercentCalculatedModel.machineCategory == categoryName) && YCTestApercentCalculatedModel.status == true).ToList();
+                        stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                           (StretchTestCalculatedModel.createdate >= startDate && StretchTestCalculatedModel.createdate < endDate
+                           && StretchTestCalculatedModel.machineCategory == categoryName) && StretchTestCalculatedModel.status == true).ToList();
                     }
                     else if (categoryName != null && machineID != Guid.Empty)
                     {
                         endDate = endDate.AddDays(1);
-                        apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                           (YCTestApercentCalculatedModel.createdate >= startDate && YCTestApercentCalculatedModel.createdate < endDate
-                           && YCTestApercentCalculatedModel.machineCategory == categoryName)
-                           && YCTestApercentCalculatedModel.machineID == machineID && YCTestApercentCalculatedModel.status == true).ToList();
+                        stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                           (StretchTestCalculatedModel.createdate >= startDate && StretchTestCalculatedModel.createdate < endDate
+                           && StretchTestCalculatedModel.machineCategory == categoryName)
+                           && StretchTestCalculatedModel.machineID == machineID && StretchTestCalculatedModel.status == true).ToList();
                     }
 
-                    //List<YCTestApercentCalculatedModel> apercentCalcList = null;
+                    //List<StretchTestCalculatedModel> stretchCalcList = null;
 
-                    //apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(
-                    //      YCTestApercentCalculatedModel =>
-                    //      (YCTestApercentCalculatedModel.status == true)).ToList();
+                    //stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(
+                    //      StretchTestCalculatedModel =>
+                    //      (StretchTestCalculatedModel.status == true)).ToList();
 
-
-
-
-
-                    if (apercentCalcList.Count == 0)
+                    if (stretchCalcList.Count == 0)
                     {
                         DisplayAlert("Notice", "No records to display!!!", "OK");
                         return;
                     }
 
-                    foreach (YCTestApercentCalculatedModel apercentCalc in apercentCalcList)
+                    foreach (StretchTestCalculatedModel stretchCalc in stretchCalcList)
                     {
-                        OverallApercentReportModelView report = new OverallApercentReportModelView();
-                        List<YCTestApercentModel> yctestApercentlist_nMinus1 = conn.Table<YCTestApercentModel>().Where(
-                            YCTestApercentModel =>
-                            (YCTestApercentModel.testType == "nMinus1" && YCTestApercentModel.status == true)).ToList();
-                        List<YCTestApercentModel> yctestApercentlist_N = conn.Table<YCTestApercentModel>().Where(
-                            YCTestApercentModel =>
-                            (YCTestApercentModel.testType == "N" && YCTestApercentModel.status == true)).ToList();
-                        List<YCTestApercentModel> yctestApercentlist_nPlus1 = conn.Table<YCTestApercentModel>().Where(
-                            YCTestApercentModel =>
-                            (YCTestApercentModel.testType == "nPlus1" && YCTestApercentModel.status == true)).ToList();
-                        if (yctestApercentlist_nMinus1 != null && yctestApercentlist_N != null && yctestApercentlist_nPlus1 != null)
+                        OverallStretchReportModelView report = new OverallStretchReportModelView();
+                        List<StretchTestModel> yctestStretchlist_IB = conn.Table<StretchTestModel>().Where(
+                            StretchTestModel =>
+                            (StretchTestModel.testType == "IB" && StretchTestModel.status == true)).ToList();
+
+                        List<StretchTestModel> yctestStretchlist_FB = conn.Table<StretchTestModel>().Where(
+                            StretchTestModel =>
+                            (StretchTestModel.testType == "FB" && StretchTestModel.status == true)).ToList();
+                        if (yctestStretchlist_IB != null && yctestStretchlist_FB != null)
                         {
 
                             int loopCount = 0;
-                            foreach (YCTestApercentModel test in yctestApercentlist_nMinus1)
+                            foreach (StretchTestModel test in yctestStretchlist_IB)
                             {
-                                ApercentReportModelView apercentReportMV = new ApercentReportModelView()
+                                StretchReportModelView stretchReportMV = new StretchReportModelView()
                                 {
                                     testID = test.testID,
                                     description = test.testcount.ToString(),
-                                    nMinus1 = test.yarnweight,
-                                    N = yctestApercentlist_N[loopCount].yarnweight,
-                                    nPlus1 = yctestApercentlist_nPlus1[loopCount].yarnweight,
+                                    IB = yctestStretchlist_IB[loopCount].yarnweight,
+                                    FB = yctestStretchlist_FB[loopCount].yarnweight,
                                 };
-                                report.Add(apercentReportMV);
+                                report.Add(stretchReportMV);
                                 loopCount += 1;
                             }
 
-                            ApercentReportModelView apercentReportModelView = new ApercentReportModelView()
+                            StretchReportModelView StretchReportModelView = new StretchReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = stretchCalc.testID,
                                 description = "Average Weight",
-                                nMinus1 = apercentCalc.avg_weight_nMinus1,
-                                N = apercentCalc.avg_weight_N,
-                                nPlus1 = apercentCalc.avg_weight_nPlus1,
+                                IB = stretchCalc.avg_weight_IB,
+                                FB = stretchCalc.avg_weight_FB,
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(StretchReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            StretchReportModelView = new StretchReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = stretchCalc.testID,
                                 description = "Weight (Max)",
-                                nMinus1 = apercentCalc.max_nMinus1,
-                                N = apercentCalc.max_N,
-                                nPlus1 = apercentCalc.max_nPlus1,
+                                IB = stretchCalc.max_IB,
+                                FB = stretchCalc.max_FB,
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(StretchReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            StretchReportModelView = new StretchReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = stretchCalc.testID,
                                 description = "Weight (Min)",
-                                nMinus1 = apercentCalc.min_nMinus1,
-                                N = apercentCalc.min_N,
-                                nPlus1 = apercentCalc.min_nPlus1,
+                                IB = stretchCalc.min_IB,
+                                FB = stretchCalc.min_FB,
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(StretchReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            StretchReportModelView = new StretchReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = stretchCalc.testID,
                                 description = "Range",
-                                nMinus1 = apercentCalc.range_nMinus1,
-                                N = apercentCalc.range_N,
-                                nPlus1 = apercentCalc.range_nPlus1,
+                                IB = stretchCalc.range_IB,
+                                FB = stretchCalc.range_FB,
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(StretchReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            StretchReportModelView = new StretchReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = stretchCalc.testID,
                                 description = "HANK",
-                                nMinus1 = apercentCalc.testaverage_nMinus1,
-                                N = apercentCalc.testaverage_N,
-                                nPlus1 = apercentCalc.testaverage_nPlus1,
+                                IB = stretchCalc.testaverage_IB,
+                                FB = stretchCalc.testaverage_FB,
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(StretchReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            StretchReportModelView = new StretchReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = stretchCalc.testID,
                                 description = "SD",
-                                nMinus1 = apercentCalc.testsd_nMinus1,
-                                N = apercentCalc.testsd_N,
-                                nPlus1 = apercentCalc.testsd_nPlus1,
+                                IB = stretchCalc.testsd_IB,
+                                FB = stretchCalc.testsd_FB,
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(StretchReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            StretchReportModelView = new StretchReportModelView()
                             {
-                                testID = apercentCalc.testID,
+                                testID = stretchCalc.testID,
                                 description = "CV",
-                                nMinus1 = apercentCalc.testcv_nMinus1,
-                                N = apercentCalc.testcv_N,
-                                nPlus1 = apercentCalc.testcv_nPlus1,
+                                IB = stretchCalc.testcv_IB,
+                                FB = stretchCalc.testcv_FB,
                             };
-                            report.Add(apercentReportModelView);
+                            report.Add(StretchReportModelView);
 
 
-                            report.testID = apercentCalc.testID;
-                            report.userName = apercentCalc.userName;
-                            report.machineCategory = apercentCalc.machineCategory;
-                            report.machineName = apercentCalc.machineName;
-                            report.countsysname = apercentCalc.countsysname;
-                            report.yarnlenunit = apercentCalc.yarnlenunit;
-                            report.yarnlength = apercentCalc.yarnlength;
-                            report.totaltestcount = apercentCalc.totaltestcount;
-                            report.testaverage_nMinus1 = apercentCalc.testaverage_nMinus1;
-                            report.testsd_nMinus1 = apercentCalc.testsd_nMinus1;
-                            report.testcv_nMinus1 = apercentCalc.testcv_nMinus1;
-                            //report.max_nMinus1 = apercentCalc.max_nMinus1;
-                            //report.min_nMinus1 = apercentCalc.min_nMinus1;
-                            //report.range_nMinus1 = apercentCalc.range_nMinus1;
-                            report.apercent_nMinus1 = apercentCalc.apercent_nMinus1;
-                            report.testaverage_N = apercentCalc.testaverage_N;
-                            report.testsd_N = apercentCalc.testsd_N;
-                            report.testcv_N = apercentCalc.testcv_N;
-                            //report.max_N = apercentCalc.max_N;
-                            //report.min_N = apercentCalc.min_N;
-                            //report.range_N = apercentCalc.range_N;
-                            report.testaverage_nPlus1 = apercentCalc.testaverage_nPlus1;
-                            report.testsd_nPlus1 = apercentCalc.testsd_nPlus1;
-                            report.testcv_nPlus1 = apercentCalc.testcv_nPlus1;
-                            //report.max_nPlus1 = apercentCalc.max_nPlus1;
-                            //report.min_nPlus1 = apercentCalc.min_nPlus1;
-                            //report.range_nPlus1 = apercentCalc.range_nPlus1;
-                            report.apercent_nPlus1 = apercentCalc.apercent_nPlus1;
-                            report.createdate = apercentCalc.createdate;
+                            report.testID = stretchCalc.testID;
+                            report.userName = stretchCalc.userName;
+                            report.machineCategory = stretchCalc.machineCategory;
+                            report.machineName = stretchCalc.machineName;
+                            report.countsysname = stretchCalc.countsysname;
+                            report.yarnlenunit = stretchCalc.yarnlenunit;
+                            report.yarnlength = stretchCalc.yarnlength;
+                            report.totaltestcount = stretchCalc.totaltestcount;
+                            report.testaverage_IB = stretchCalc.testaverage_IB;
+                            report.testsd_IB = stretchCalc.testsd_IB;
+                            report.testcv_IB = stretchCalc.testcv_IB;
+                            report.testaverage_FB = stretchCalc.testaverage_FB;
+                            report.testsd_FB = stretchCalc.testsd_FB;
+                            report.testcv_FB = stretchCalc.testcv_FB;
+                            report.stretch = stretchCalc.stretch;
+                            report.createdate = stretchCalc.createdate;
                         }
                         OVS.Add(report);
                     }
@@ -283,17 +254,17 @@ namespace TQM
                 PdfGrid pdfGrid = null;
                 PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
                 layoutFormat.Layout = PdfLayoutType.Paginate;
-                List<OverallApercentReportModelView> overallReportList = (List<OverallApercentReportModelView>)listview_tcreport.ItemsSource;
+                List<OverallStretchReportModelView> overallReportList = (List<OverallStretchReportModelView>)listview_tcreport.ItemsSource;
                 PdfLayoutResult result = null;
                 //PdfLayoutResult resultInfo = null;
                 float overallHeight = 0;
                 int tableNo = 1;
                 bool newPageAdded_Header = false;
                 bool newPageAdded_Body = false;
-                foreach (OverallApercentReportModelView orl in overallReportList)
+                foreach (OverallStretchReportModelView orl in overallReportList)
                 {
 
-                    List<ApercentReportModelView> testList = orl.apercentReportMV;
+                    List<StretchReportModelView> testList = orl.stretchReportMV;
 
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
@@ -324,9 +295,9 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     pdfGridInfo.Rows[2].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[2].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[3].Cells[0].Value = "A% (N-1): " + orl.apercent_nMinus1;
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Stretch %: " + orl.stretch;
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[3].Cells[1].Value = "A% (N+1): " + orl.apercent_nPlus1;
+                    //pdfGridInfo.Rows[3].Cells[1].Value = "A% (N+1): " + orl.apercent_nPlus1;
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
                     pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
                     pdfGridInfo.Rows[4].Cells[1].Value = "Tester: " + orl.userName;
@@ -406,7 +377,7 @@ namespace TQM
 
                     pdfGrid = new PdfGrid();
 
-                    pdfGrid.Columns.Add(4);
+                    pdfGrid.Columns.Add(3);
                     PdfGridRow row = new PdfGridRow(pdfGrid);
                     pdfGrid.Rows.Add(row);
 
@@ -416,46 +387,50 @@ namespace TQM
                     pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[0].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[1].Value = "N-1";
+
+                    pdfGrid.Rows[0].Cells[1].Value = "Initial Bobbin";
                     pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[1].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[2].Value = "N";
-                    pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
-                    pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
+
+                    //pdfGrid.Rows[0].Cells[2].Value = "N";
+                    //pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[2].Style.TextPen = PdfPens.Black;
-                    pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                    //pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+
                     //pdfGrid.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     //pdfGrid.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     //pdfGrid.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
-                    pdfGrid.Rows[0].Cells[3].Value = "N+1";
-                    pdfGrid.Rows[0].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
-                    pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    pdfGrid.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+
+                    pdfGrid.Rows[0].Cells[2].Value = "Full Bobbin";
+                    pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
 
 
 
                     int rowCount = 1;
-                    foreach (ApercentReportModelView test in testList)
+                    foreach (StretchReportModelView test in testList)
                     {
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
                         pdfGrid.Rows[rowCount].Cells[0].Value = test.description.ToString();
-                        pdfGrid.Rows[rowCount].Cells[1].Value = test.nMinus1.ToString();
-                        pdfGrid.Rows[rowCount].Cells[2].Value = test.N.ToString();
-                        pdfGrid.Rows[rowCount].Cells[3].Value = test.nPlus1.ToString();
+                        pdfGrid.Rows[rowCount].Cells[1].Value = test.IB.ToString();
+                        //pdfGrid.Rows[rowCount].Cells[2].Value = test.N.ToString();
+                        pdfGrid.Rows[rowCount].Cells[2].Value = test.FB.ToString();
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[rowCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[rowCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        //pdfGrid.Rows[rowCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                        //pdfGrid.Rows[rowCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         rowCount++;
                     }
 
@@ -532,7 +507,7 @@ namespace TQM
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
                 pdfDocument.Close(true);
-                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "TQM_Report(A Percent).pdf");
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "TQM_Report(Stretch).pdf");
                 //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
                 //Process.Start(pdfPath);
                 return true;
@@ -612,7 +587,7 @@ namespace TQM
                     {
                         showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
                     }
-                    string fileName = "TQM_Report(A Percent).pdf";
+                    string fileName = "TQM_Report(Stretch).pdf";
                     string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
                     Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
                     Java.IO.File file = new Java.IO.File(myDir, fileName);
@@ -622,7 +597,7 @@ namespace TQM
                     request.Method = Method.Post;
                     //request.Timeout = Timeout.Infinite;
                     request.AddParameter("uploadedby", companyName);
-                    request.AddParameter("title", "TQMReports(A Percent)-" + DateTime.Now.ToString());
+                    request.AddParameter("title", "TQMReports(Stretch)-" + DateTime.Now.ToString());
                     request.AddFile("reportpath", filePath);
                     RestResponse response = client.Execute(request);
                     if (response.IsSuccessful)

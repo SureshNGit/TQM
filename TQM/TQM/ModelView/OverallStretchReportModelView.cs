@@ -1,20 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TQM.ModelView
 {
-    public class YCTestApercentModelView
+    public class OverallStretchReportModelView : List<StretchReportModelView>
     {
         public long testID { get; set; }
-
-        public Guid userID { get; set; }
-
         public string userName { get; set; }
-
-        public Guid machineID { get; set; }
 
         public string machineCategory { get; set; }
         public string machineName { get; set; }
-
         public string countsysname { get; set; }
 
         public string yarnlenunit { get; set; }
@@ -29,12 +24,22 @@ namespace TQM.ModelView
 
         public int totaltestcount { get; set; }
 
-        public int testcount { get; set; }
+        public decimal testaverage_IB { get; set; }
 
-        public decimal yarnweight { get; set; }
+        public decimal testsd_IB { get; set; }
 
-        public decimal yccalcval { get; set; }
+        public decimal testcv_IB { get; set; }
 
-        public decimal noils { get; set; }
+        public decimal testaverage_FB { get; set; }
+
+        public decimal testsd_FB { get; set; }
+
+        public decimal testcv_FB { get; set; }
+
+        public decimal stretch { get; set; }
+        public DateTime createdate { get; set; }
+        public List<StretchReportModelView> stretchReportMV => this;
     }
+
+
 }

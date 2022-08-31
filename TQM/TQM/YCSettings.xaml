@@ -75,8 +75,8 @@
                 <Label Grid.Row="5" Grid.Column="0" Text="Test Count (Stretch)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
                 <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountStretch" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-                <Label Grid.Row="6" Grid.Column="0" Text="Test Count (Comber)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountComber" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="6" Grid.Column="0" Text="Test Count (Noils)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountNoils" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
                
             </Grid>

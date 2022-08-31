@@ -44,7 +44,7 @@
                             <x:String>Yarn Count</x:String>
                             <x:String>A%</x:String>
                             <x:String>Stretch</x:String>
-                            <x:String>Comber</x:String>
+                            <x:String>NOILS</x:String>
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>

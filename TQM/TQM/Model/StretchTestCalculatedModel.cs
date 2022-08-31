@@ -4,7 +4,7 @@ using System;
 
 namespace TQM.Model
 {
-    public class YCTestApercentSummaryModel
+    public class StretchTestCalculatedModel
     {
         [PrimaryKey]
         public Guid ID { get; set; }
@@ -37,13 +37,35 @@ namespace TQM.Model
 
         public int totaltestcount { get; set; }
 
-        public decimal avg_weight { get; set; }
+        public decimal avg_weight_IB { get; set; }
 
-        public decimal testaverage { get; set; }
+        public decimal testaverage_IB { get; set; }
 
-        public decimal testsd { get; set; }
+        public decimal testsd_IB { get; set; }
 
-        public decimal testcv { get; set; }
+        public decimal testcv_IB { get; set; }
+
+        public decimal max_IB { get; set; }
+
+        public decimal min_IB { get; set; }
+
+        public decimal range_IB { get; set; }
+
+        public decimal avg_weight_FB { get; set; }
+
+        public decimal testaverage_FB { get; set; }
+
+        public decimal testsd_FB { get; set; }
+
+        public decimal testcv_FB { get; set; }
+
+        public decimal max_FB { get; set; }
+
+        public decimal min_FB { get; set; }
+
+        public decimal range_FB { get; set; }
+
+        public decimal stretch { get; set; }
 
         public bool status { get; set; }
 

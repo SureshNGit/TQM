@@ -17,6 +17,12 @@ namespace TQM.Model
 
         public string userName { get; set; }
 
+        [ForeignKey(typeof(MachineModel))]
+        public Guid machineID { get; set; }
+
+        public string machineCategory { get; set; }
+        public string machineName { get; set; }
+
         public string countsysname { get; set; }
 
         public string yarnlenunit { get; set; }

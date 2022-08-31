@@ -1,23 +1,15 @@
-﻿using SQLite;
-using SQLiteNetExtensions.Attributes;
-using System;
+﻿using System;
 
-namespace TQM.Model
+namespace TQM.ModelView
 {
-    public class YCTestApercentSummaryModel
+    public class StretchTestModelView
     {
-        [PrimaryKey]
-        public Guid ID { get; set; }
-
-        [ForeignKey(typeof(YCTestModel))]
         public long testID { get; set; }
 
-        [ForeignKey(typeof(UserModel))]
         public Guid userID { get; set; }
 
         public string userName { get; set; }
 
-        [ForeignKey(typeof(MachineModel))]
         public Guid machineID { get; set; }
 
         public string machineCategory { get; set; }
@@ -37,16 +29,10 @@ namespace TQM.Model
 
         public int totaltestcount { get; set; }
 
-        public decimal avg_weight { get; set; }
+        public int testcount { get; set; }
 
-        public decimal testaverage { get; set; }
+        public decimal yarnweight { get; set; }
 
-        public decimal testsd { get; set; }
-
-        public decimal testcv { get; set; }
-
-        public bool status { get; set; }
-
-        public DateTime createdate { get; set; }
+        public decimal yccalcval { get; set; }
     }
 }

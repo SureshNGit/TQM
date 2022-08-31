@@ -56,7 +56,7 @@ namespace TQM
                         entry_testcount.Text = ycConfigList[0].testcount.ToString();
                         entry_testcountApercent.Text = ycConfigList[0].testcountApercent.ToString();
                         entry_testcountStretch.Text = ycConfigList[0].testcountStretch.ToString();
-                        entry_testcountComber.Text = ycConfigList[0].testcountComber.ToString();
+                        entry_testcountNoils.Text = ycConfigList[0].testcountNoils.ToString();
                     }
                     else
                     {
@@ -80,7 +80,7 @@ namespace TQM
                     entry_testcount.Text.Trim().ToString() == "" ||
                     entry_testcountApercent.Text.Trim().ToString() == "" ||
                     entry_testcountStretch.Text.Trim().ToString() == "" ||
-                    entry_testcountComber.Text.Trim().ToString() == "")
+                    entry_testcountNoils.Text.Trim().ToString() == "")
                 {
                     DisplayAlert("Attention", "Please fill all fields with valid data to proceed!!!", "OK");
                     return;
@@ -98,7 +98,7 @@ namespace TQM
                     testcount = int.Parse(entry_testcount.Text.ToString()),
                     testcountApercent = int.Parse(entry_testcountApercent.Text.ToString()),
                     testcountStretch = int.Parse(entry_testcountStretch.Text.ToString()),
-                    testcountComber = int.Parse(entry_testcountComber.Text.ToString()),
+                    testcountNoils = int.Parse(entry_testcountNoils.Text.ToString()),
                 };
 
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))

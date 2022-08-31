@@ -70,9 +70,13 @@
                             <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_machinecategory" TextColor="Green" FontSize="25" >
                                 <Picker.ItemsSource>
                                     <x:Array Type="{x:Type x:String}">
-                                        <x:String>Drawing</x:String>
+                                        <x:String></x:String>
                                         <x:String>Carding</x:String>
+                                        <x:String>Drawing</x:String>
+                                        <x:String>Comber</x:String>
+                                        <x:String>RSB</x:String>
                                         <x:String>Simplex/SpeedFrame</x:String>
+                                        <x:String>Spinning</x:String>
                                     </x:Array>
                                 </Picker.ItemsSource>
                             </Picker>

@@ -1,5 +1,4 @@
-﻿
-using Android.Bluetooth;
+﻿using Android.Bluetooth;
 using Java.IO;
 using Java.Util;
 using SQLite;
@@ -18,7 +17,7 @@ using Xamarin.Forms.Xaml;
 namespace TQM
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ApercentPage : ContentPage
+    public partial class NOILS : ContentPage
     {
         private BluetoothSocket _socket;
         BluetoothAdapter adapter;
@@ -29,7 +28,7 @@ namespace TQM
         const int DATA_READ_LOOP_COUNT = 100;
         const int STABLE_DATA_CHECK = 15;
         private decimal current_stable_data = 0;
-        private List<YCTestApercentModelView> ycTestApercentModelViewlist;
+        private List<NoilsTestModelView> noilsTestModelViewList;
         private long currentTestID = 0;
         private UserModel currentloggedInUser = null;
         private string selectedSysName = null;
@@ -48,14 +47,15 @@ namespace TQM
         private int TESTCOUNT = 0;
         private bool isTestStarted = false;
 
-        public ApercentPage()
+        public NOILS()
         {
             InitializeComponent();
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                //conn.DropTable<YCTestApercentModel>();
-                //conn.DropTable<YCTestApercentSummaryModel>();
-                //conn.DropTable<YCTestApercentCalculatedModel>();
+                //conn.DropTable<NoilsTestModel>();
+                //conn.DropTable<NoilsTestSummaryModel>();
+                //conn.DropTable<NoilsTestCalculatedModel>();
+                //conn.DropTable<NoilsTestFinalModel>();
 
                 conn.CreateTable<YarnCountConfigModel>();
                 YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
@@ -64,8 +64,8 @@ namespace TQM
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
                     lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
                     lbl_yarnlen.Text = yarncountconfigmodel.yarnlength.ToString();
-                    entry_testcount.Text = yarncountconfigmodel.testcountApercent.ToString();
-                    TESTCOUNT = yarncountconfigmodel.testcountApercent;
+                    entry_testcount.Text = yarncountconfigmodel.testcountNoils.ToString();
+                    TESTCOUNT = yarncountconfigmodel.testcountNoils;
                 }
                 else
                 {
@@ -76,45 +76,21 @@ namespace TQM
                     picker_shift.SelectedIndex = 0;
                     entry_process.Text = "";
                 }
-                conn.CreateTable<YCTestApercentCalculatedModel>();
-                YCTestApercentCalculatedModel ycTestApercentCalculatedModel = conn.Table<YCTestApercentCalculatedModel>().Where(
-                    YCTestApercentCalculatedModel => (YCTestApercentCalculatedModel.testType == "nMinus1" &&
-                    YCTestApercentCalculatedModel.status == false)).FirstOrDefault();
-                if (ycTestApercentCalculatedModel != null)
+                conn.CreateTable<NoilsTestSummaryModel>();
+                NoilsTestSummaryModel noilsTestSummaryModel = conn.Table<NoilsTestSummaryModel>().Where(
+                    NoilsTestSummaryModel => (NoilsTestSummaryModel.testType == "Sliver" &&
+                    NoilsTestSummaryModel.status == false)).FirstOrDefault();
+                if (noilsTestSummaryModel != null)
                 {
-                    startTestNm1Button.IsVisible = true;
+                    startNoilsButton.IsVisible = true;
                 }
                 else
                 {
-                    ycTestApercentCalculatedModel = conn.Table<YCTestApercentCalculatedModel>().Where(
-                        YCTestApercentCalculatedModel =>
-                        (YCTestApercentCalculatedModel.testType == "nMinus1" && YCTestApercentCalculatedModel.status == true) &&
-                        (YCTestApercentCalculatedModel.testType == "N" && YCTestApercentCalculatedModel.status == false)
-                        ).FirstOrDefault();
-                    if (ycTestApercentCalculatedModel != null)
-                    {
-                        startTestNButton.IsVisible = true;
-                    }
-                    else
-                    {
-                        ycTestApercentCalculatedModel = conn.Table<YCTestApercentCalculatedModel>().Where(
-                       YCTestApercentCalculatedModel =>
-                       (YCTestApercentCalculatedModel.testType == "nMinus1" && YCTestApercentCalculatedModel.status == true) &&
-                       (YCTestApercentCalculatedModel.testType == "N" && YCTestApercentCalculatedModel.status == true) &&
-                       (YCTestApercentCalculatedModel.testType == "nPlus1" && YCTestApercentCalculatedModel.status == false)
-                       ).FirstOrDefault();
-                        if (ycTestApercentCalculatedModel != null)
-                        {
-                            startTestNp1Button.IsVisible = true;
-                        }
-                        else
-                        {
-                            startTestNm1Button.IsVisible = true;
-                        }
-                    }
+                    startSliverButton.IsVisible = true;
                 }
             }
         }
+
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
@@ -153,29 +129,19 @@ namespace TQM
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                if (currentTestType == "nMinus1")
+                if (currentTestType == "Sliver")
                 {
-                    startTestNm1Button.IsVisible = false;
-                    startTestNButton.IsVisible = true;
-                    startTestNButton.IsEnabled = true;
-                    startTestNButton.BackgroundColor = Color.Green;
-                    startTestNp1Button.IsVisible = false;
+                    startSliverButton.IsVisible = false;
+                    startNoilsButton.IsVisible = true;
+                    startNoilsButton.IsEnabled = true;
+                    startNoilsButton.BackgroundColor = Color.Green;
                 }
-                else if (currentTestType == "N")
+                else
                 {
-                    startTestNm1Button.IsVisible = false;
-                    startTestNButton.IsVisible = false;
-                    startTestNp1Button.IsVisible = true;
-                    startTestNp1Button.IsEnabled = true;
-                    startTestNp1Button.BackgroundColor = Color.Green;
-                }
-                else if (currentTestType == "nPlus1")
-                {
-                    startTestNm1Button.IsVisible = true;
-                    startTestNm1Button.IsEnabled = true;
-                    startTestNm1Button.BackgroundColor = Color.Green;
-                    startTestNButton.IsVisible = false;
-                    startTestNp1Button.IsVisible = false;
+                    startNoilsButton.IsVisible = false;
+                    startSliverButton.IsVisible = true;
+                    startSliverButton.IsEnabled = true;
+                    startSliverButton.BackgroundColor = Color.Green;
                 }
             });
         }
@@ -186,7 +152,7 @@ namespace TQM
             {
                 listview_testresult.ItemsSource = null;
                 listview_testresult.IsVisible = visibility;
-                listview_testresult.ItemsSource = ycTestApercentModelViewlist;
+                listview_testresult.ItemsSource = noilsTestModelViewList;
             });
         }
 
@@ -208,17 +174,16 @@ namespace TQM
                 bool dbStatus = true;
                 decimal totalCalcCountVal = 0m;
                 decimal totalWeight = 0m;
-                conn.CreateTable<YCTestApercentModel>();
-                List<YCTestApercentModel> ycTestApercentModelList = conn.Table<YCTestApercentModel>().Where(
-                                YCTestApercentModel => (
-                                YCTestApercentModel.status == true &&
-                                YCTestApercentModel.testID != currentTestID &&
-                                 YCTestApercentModel.machineID == selectedMachineID)).ToList();
+                conn.CreateTable<NoilsTestModel>();
+                List<NoilsTestModel> noilsTestModelList = conn.Table<NoilsTestModel>().Where(
+                                NoilsTestModel => (NoilsTestModel.status == true &&
+                                NoilsTestModel.testID != currentTestID &&
+                                NoilsTestModel.machineID == selectedMachineID)).ToList();
 
-                foreach (YCTestApercentModel ycTestApercentModel in ycTestApercentModelList)
+                foreach (NoilsTestModel noilsTestModel in noilsTestModelList)
                 {
-                    ycTestApercentModel.status = false;
-                    if (conn.Update(ycTestApercentModel) < 1)
+                    noilsTestModel.status = false;
+                    if (conn.Update(noilsTestModel) < 1)
                     {
                         dbStatus = false;
                     }
@@ -227,9 +192,9 @@ namespace TQM
 
                 if (dbStatus)
                 {
-                    foreach (YCTestApercentModelView test in ycTestApercentModelViewlist)
+                    foreach (NoilsTestModelView test in noilsTestModelViewList)
                     {
-                        YCTestApercentModel ycTestApercentModel = new YCTestApercentModel()
+                        NoilsTestModel noilsTestModel = new NoilsTestModel()
                         {
                             ID = Guid.NewGuid(),
                             testID = test.testID,
@@ -251,7 +216,7 @@ namespace TQM
                             status = true,
                             createdate = DateTime.Now
                         };
-                        int row = conn.Insert(ycTestApercentModel);
+                        int row = conn.Insert(noilsTestModel);
                         if (row < 1)
                         {
                             dbStatus = false;
@@ -262,17 +227,16 @@ namespace TQM
                 }
                 if (dbStatus)
                 {
-                    conn.CreateTable<YCTestApercentSummaryModel>();
-                    List<YCTestApercentSummaryModel> apercentSummaryModelList = conn.Table<YCTestApercentSummaryModel>().Where(
-                               YCTestApercentSummaryModel => (
-                               YCTestApercentSummaryModel.status == true &&
-                               YCTestApercentSummaryModel.testID != currentTestID &&
-                                YCTestApercentSummaryModel.machineID == selectedMachineID)).ToList();
+                    conn.CreateTable<NoilsTestSummaryModel>();
+                    List<NoilsTestSummaryModel> noilsTestSMList = conn.Table<NoilsTestSummaryModel>().Where(
+                                    NoilsTestSummaryModel => (NoilsTestSummaryModel.status == true &&
+                                    NoilsTestSummaryModel.testID != currentTestID &&
+                                    NoilsTestSummaryModel.machineID == selectedMachineID)).ToList();
 
-                    foreach (YCTestApercentSummaryModel apercentSummaryModel in apercentSummaryModelList)
+                    foreach (NoilsTestSummaryModel noilsTestSM in noilsTestSMList)
                     {
-                        apercentSummaryModel.status = false;
-                        if (conn.Update(apercentSummaryModel) < 1)
+                        noilsTestSM.status = false;
+                        if (conn.Update(noilsTestSM) < 1)
                         {
                             dbStatus = false;
                         }
@@ -282,38 +246,38 @@ namespace TQM
                     decimal mean = 0m;
                     decimal sd = 0m;
                     decimal cv = 0m;
-                    if (ycTestApercentModelViewlist[0].totaltestcount > 1)
+                    if (noilsTestModelViewList[0].totaltestcount > 1)
                     {
-                        avg_weight = totalWeight / ycTestApercentModelViewlist[0].totaltestcount;
-                        mean = totalCalcCountVal / ycTestApercentModelViewlist[0].totaltestcount;
+                        avg_weight = totalWeight / noilsTestModelViewList[0].totaltestcount;
+                        mean = totalCalcCountVal / noilsTestModelViewList[0].totaltestcount;
                         decimal IndividualCalValminusMean = 0m;
-                        foreach (YCTestApercentModelView test in ycTestApercentModelViewlist)
+                        foreach (NoilsTestModelView test in noilsTestModelViewList)
                         {
                             IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
                         }
-                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestApercentModelViewlist[0].totaltestcount - 1));//Standard Deviation
+                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(noilsTestModelViewList[0].totaltestcount - 1));//Standard Deviation
                         cv = (sd / mean) * 100; //Coefficient of Variation
                         avg_weight = Math.Round(avg_weight, 3);
                         mean = Math.Round(mean, 3);
                         sd = Math.Round(sd, 3);
                         cv = Math.Round(cv, 3);
                     }
-                    YCTestApercentSummaryModel ycTestApercentSummaryModel = new YCTestApercentSummaryModel()
+                    NoilsTestSummaryModel noilsTestSummaryModel = new NoilsTestSummaryModel()
                     {
                         ID = Guid.NewGuid(),
-                        testID = ycTestApercentModelViewlist[0].testID,
-                        userID = ycTestApercentModelViewlist[0].userID,
-                        userName = ycTestApercentModelViewlist[0].userName,
-                        machineID = ycTestApercentModelViewlist[0].machineID,
-                        machineCategory = ycTestApercentModelViewlist[0].machineCategory,
-                        machineName = ycTestApercentModelViewlist[0].machineName,
-                        process = ycTestApercentModelViewlist[0].process,
-                        countsysname = ycTestApercentModelViewlist[0].countsysname,
-                        yarnlenunit = ycTestApercentModelViewlist[0].yarnlenunit,
-                        yarnlength = ycTestApercentModelViewlist[0].yarnlength,
-                        shift = ycTestApercentModelViewlist[0].shift,
-                        testType = ycTestApercentModelViewlist[0].testType,
-                        totaltestcount = ycTestApercentModelViewlist[0].totaltestcount,
+                        testID = noilsTestModelViewList[0].testID,
+                        userID = noilsTestModelViewList[0].userID,
+                        userName = noilsTestModelViewList[0].userName,
+                        machineID = noilsTestModelViewList[0].machineID,
+                        machineCategory = noilsTestModelViewList[0].machineCategory,
+                        machineName = noilsTestModelViewList[0].machineName,
+                        process = noilsTestModelViewList[0].process,
+                        countsysname = noilsTestModelViewList[0].countsysname,
+                        yarnlenunit = noilsTestModelViewList[0].yarnlenunit,
+                        yarnlength = noilsTestModelViewList[0].yarnlength,
+                        shift = noilsTestModelViewList[0].shift,
+                        testType = noilsTestModelViewList[0].testType,
+                        totaltestcount = noilsTestModelViewList[0].totaltestcount,
                         avg_weight = avg_weight,
                         testaverage = mean,
                         testsd = sd,
@@ -321,8 +285,8 @@ namespace TQM
                         status = true,
                         createdate = DateTime.Now
                     };
-                    conn.CreateTable<YCTestApercentSummaryModel>();
-                    int row = conn.Insert(ycTestApercentSummaryModel);
+                    conn.CreateTable<NoilsTestSummaryModel>();
+                    int row = conn.Insert(noilsTestSummaryModel);
                     if (row < 1)
                     {
                         dbStatus = false;
@@ -332,138 +296,192 @@ namespace TQM
                         //await enableTestButton();
                         //await refListView();
                         //await refOverallSummary(mean, sd, cv);
-                        if (currentTestType == "nPlus1")
+                        if (currentTestType == "Noils")
                         {
-                            conn.CreateTable<YCTestApercentCalculatedModel>();
-                            List<YCTestApercentCalculatedModel> apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(
-                               YCTestApercentCalculatedModel => (
-                               YCTestApercentCalculatedModel.status == true &&
-                                YCTestApercentCalculatedModel.testID != currentTestID &&
-                               YCTestApercentCalculatedModel.machineID == selectedMachineID)).ToList();
-                            foreach (YCTestApercentCalculatedModel apercent in apercentCalcList)
+                            conn.CreateTable<NoilsTestCalculatedModel>();
+                            List<NoilsTestCalculatedModel> noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(
+                               NoilsTestCalculatedModel =>
+                               (NoilsTestCalculatedModel.status == true &&
+                               NoilsTestCalculatedModel.testID != currentTestID &&
+                               NoilsTestCalculatedModel.machineID == selectedMachineID)).ToList();
+
+                            foreach (NoilsTestCalculatedModel noilsCalc in noilsCalcList)
                             {
-                                apercent.status = false;
-                                if (conn.Update(apercent) < 1)
+                                noilsCalc.status = false;
+                                if (conn.Update(noilsCalc) < 1)
                                 {
-                                    //to be decided if apercent calculated active records failed to deactive
+                                    //to be decided if noils calculated active records failed to deactive
                                 }
                             }
-                            YCTestApercentSummaryModel nMinus1Summary = conn.Table<YCTestApercentSummaryModel>().Where(
-                                                            YCTestApercentSummaryModel => (
-                                                            YCTestApercentSummaryModel.testType == "nMinus1" && YCTestApercentSummaryModel.status == true)
+                            NoilsTestSummaryModel sliver_Summary = conn.Table<NoilsTestSummaryModel>().Where(
+                                                            NoilsTestSummaryModel => (
+                                                            NoilsTestSummaryModel.testType == "Sliver" &&
+                                                            NoilsTestSummaryModel.status == true &&
+                                                            NoilsTestSummaryModel.testID == currentTestID)
                                                             ).FirstOrDefault();
-                            if (nMinus1Summary != null)
+                            if (sliver_Summary != null)
                             {
-                                YCTestApercentSummaryModel NSummary = conn.Table<YCTestApercentSummaryModel>().Where(
-                                                            YCTestApercentSummaryModel => (
-                                                            YCTestApercentSummaryModel.testType == "N" && YCTestApercentSummaryModel.status == true)
+                                NoilsTestSummaryModel noils_Summary = conn.Table<NoilsTestSummaryModel>().Where(
+                                                            NoilsTestSummaryModel => (
+                                                            NoilsTestSummaryModel.testType == "Noils" &&
+                                                            NoilsTestSummaryModel.status == true &&
+                                                            NoilsTestSummaryModel.testID == currentTestID)
                                                             ).FirstOrDefault();
-                                if (NSummary != null)
+                                if (noils_Summary != null)
                                 {
-                                    YCTestApercentSummaryModel nPlus1Summary = conn.Table<YCTestApercentSummaryModel>().Where(
-                                                                YCTestApercentSummaryModel => (
-                                                                YCTestApercentSummaryModel.testType == "nPlus1" && YCTestApercentSummaryModel.status == true)
-                                                                ).FirstOrDefault();
-                                    if (nPlus1Summary != null)
+                                    List<NoilsTestModel> noilsTest_sliverList = conn.Table<NoilsTestModel>().Where(
+                                                            NoilsTestModel => (
+                                                            NoilsTestModel.testType == "Sliver" &&
+                                                            NoilsTestModel.status == true &&
+                                                            NoilsTestModel.testID == currentTestID)
+                                                            ).ToList();
+
+                                    List<NoilsTestModel> noilsTest_noilsList = conn.Table<NoilsTestModel>().Where(
+                                                           NoilsTestModel => (
+                                                           NoilsTestModel.testType == "Noils" &&
+                                                           NoilsTestModel.status == true &&
+                                                           NoilsTestModel.testID == currentTestID)
+                                                           ).ToList();
+
+                                    if (noilsTest_sliverList.Count == 0 || noilsTest_noilsList.Count == 0)
                                     {
-                                        decimal apercent_nMinus1 = ((nMinus1Summary.testaverage - NSummary.testaverage) / nMinus1Summary.testaverage) * 100;
-                                        apercent_nMinus1 = Math.Round(apercent_nMinus1, 3);
-                                        decimal apercent_nPlus1 = ((nPlus1Summary.testaverage - NSummary.testaverage) / nPlus1Summary.testaverage) * 100;
-                                        apercent_nPlus1 = Math.Round(apercent_nPlus1, 3);
-                                        YCTestApercentModel Max_nMinus1 = conn.Table<YCTestApercentModel>().Where(
-                                            YCTestApercentModel =>
-                                            (YCTestApercentModel.testID == currentTestID &&
-                                            YCTestApercentModel.status == true &&
-                                            YCTestApercentModel.testType == "nMinus1")).OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
-                                        YCTestApercentModel Min_nMinus1 = conn.Table<YCTestApercentModel>().Where(
-                                            YCTestApercentModel =>
-                                            (YCTestApercentModel.testID == currentTestID &&
-                                            YCTestApercentModel.status == true &&
-                                            YCTestApercentModel.testType == "nMinus1")).OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
-                                        YCTestApercentModel Max_N = conn.Table<YCTestApercentModel>().Where(
-                                            YCTestApercentModel =>
-                                            (YCTestApercentModel.testID == currentTestID &&
-                                            YCTestApercentModel.status == true &&
-                                            YCTestApercentModel.testType == "N")).OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
-                                        YCTestApercentModel Min_N = conn.Table<YCTestApercentModel>().Where(
-                                            YCTestApercentModel =>
-                                            (YCTestApercentModel.testID == currentTestID &&
-                                            YCTestApercentModel.status == true &&
-                                            YCTestApercentModel.testType == "N")).OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
-                                        YCTestApercentModel Max_nPlus1 = conn.Table<YCTestApercentModel>().Where(
-                                           YCTestApercentModel =>
-                                           (YCTestApercentModel.testID == currentTestID &&
-                                           YCTestApercentModel.status == true &&
-                                           YCTestApercentModel.testType == "nPlus1")).OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
-                                        YCTestApercentModel Min_nPlus1 = conn.Table<YCTestApercentModel>().Where(
-                                            YCTestApercentModel =>
-                                            (YCTestApercentModel.testID == currentTestID &&
-                                            YCTestApercentModel.status == true &&
-                                            YCTestApercentModel.testType == "nPlus1")).OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
-                                        decimal range_nMinus1 = Max_nMinus1.yarnweight - Min_nMinus1.yarnweight;
-                                        decimal range_N = Max_N.yarnweight - Min_N.yarnweight;
-                                        decimal range_nPlus1 = Max_nPlus1.yarnweight - Min_nPlus1.yarnweight;
-                                        YCTestApercentCalculatedModel yCTestApercentCalculatedModel = new YCTestApercentCalculatedModel()
-                                        {
-                                            ID = Guid.NewGuid(),
-                                            testID = nMinus1Summary.testID,
-                                            userID = nMinus1Summary.userID,
-                                            userName = nMinus1Summary.userName,
-                                            machineID = nMinus1Summary.machineID,
-                                            machineCategory = nMinus1Summary.machineCategory,
-                                            machineName = nMinus1Summary.machineName,
-                                            process = nMinus1Summary.process,
-                                            countsysname = nMinus1Summary.countsysname,
-                                            yarnlenunit = nMinus1Summary.yarnlenunit,
-                                            yarnlength = nMinus1Summary.yarnlength,
-                                            shift = nMinus1Summary.shift,
-                                            testType = nMinus1Summary.testType,
-                                            totaltestcount = nMinus1Summary.totaltestcount,
-                                            avg_weight_nMinus1 = nMinus1Summary.avg_weight,
-                                            testaverage_nMinus1 = nMinus1Summary.testaverage,
-                                            testsd_nMinus1 = nMinus1Summary.testsd,
-                                            testcv_nMinus1 = nMinus1Summary.testcv,
-                                            max_nMinus1 = Max_nMinus1.yarnweight,
-                                            min_nMinus1 = Min_nMinus1.yarnweight,
-                                            range_nMinus1 = range_nMinus1,
-                                            apercent_nMinus1 = apercent_nMinus1,
-                                            avg_weight_N = NSummary.avg_weight,
-                                            testaverage_N = NSummary.testaverage,
-                                            testsd_N = NSummary.testsd,
-                                            testcv_N = NSummary.testcv,
-                                            max_N = Max_N.yarnweight,
-                                            min_N = Min_N.yarnweight,
-                                            range_N = range_N,
-                                            avg_weight_nPlus1 = nPlus1Summary.avg_weight,
-                                            testaverage_nPlus1 = nPlus1Summary.testaverage,
-                                            testsd_nPlus1 = nPlus1Summary.testsd,
-                                            testcv_nPlus1 = nPlus1Summary.testcv,
-                                            max_nPlus1 = Max_nPlus1.yarnweight,
-                                            min_nPlus1 = Min_nPlus1.yarnweight,
-                                            range_nPlus1 = range_nPlus1,
-                                            apercent_nPlus1 = apercent_nPlus1,
-                                            status = true,
-                                            createdate = DateTime.Now
-                                        };
-                                        int row_nMinus1 = conn.Insert(yCTestApercentCalculatedModel);
-                                        if (row_nMinus1 < 1)
-                                        {
-                                            // To be decieded if nMinus1Summary failed to insert to db
-                                        }
+
+                                        // to be decided if sliver and noils test are blank
                                     }
                                     else
                                     {
-                                        // To be decieded if nPlus1Summary active record is not available in db
+                                        int testRecCount = 0;
+                                        decimal totalWeight_Noils = 0.00m;
+                                        foreach (NoilsTestModel noilsTest_sliver in noilsTest_sliverList)
+                                        {
+                                            decimal noils = (noilsTest_noilsList[testRecCount].yarnweight / (noilsTest_noilsList[testRecCount].yarnweight + noilsTest_sliver.yarnweight)) * 100;
+                                            noils = Math.Round(noils, 3);
+                                            totalWeight_Noils = totalWeight_Noils + noils;
+                                            NoilsTestFinalModel noilsTestFinalModel = new NoilsTestFinalModel()
+                                            {
+                                                ID = Guid.NewGuid(),
+                                                testID = noilsTest_sliver.testID,
+                                                testcount = noilsTest_sliver.testcount,
+                                                weigth_sliver = noilsTest_sliver.yarnweight,
+                                                weigth_noils = noilsTest_noilsList[testRecCount].yarnweight,
+                                                noils = noils,
+                                                status = true,
+                                                createdate = DateTime.Now
+                                            };
+                                            conn.CreateTable<NoilsTestFinalModel>();
+                                            int row_final = conn.Insert(noilsTestFinalModel);
+                                            if (row_final < 1)
+                                            {
+                                                // to be decided if final rec failed to insert
+                                            }
+                                            testRecCount += 1;
+                                        }
+
+                                        decimal avg_weight_noils = totalWeight_Noils / noilsTest_sliverList[0].totaltestcount;
+                                        avg_weight_noils = Math.Round(avg_weight_noils, 3);
+
+
+
+                                        NoilsTestFinalModel Max_noils = conn.Table<NoilsTestFinalModel>().Where(
+                                            NoilsTestFinalModel =>
+                                            (NoilsTestFinalModel.testID == currentTestID &&
+                                            NoilsTestFinalModel.status == true)).OrderByDescending(NoilsTestFinalModel => NoilsTestFinalModel.noils).First();
+                                        NoilsTestFinalModel Min_noils = conn.Table<NoilsTestFinalModel>().Where(
+                                            NoilsTestFinalModel =>
+                                            (NoilsTestFinalModel.testID == currentTestID &&
+                                            NoilsTestFinalModel.status == true)).OrderBy(NoilsTestFinalModel => NoilsTestFinalModel.noils).First();
+
+                                        NoilsTestFinalModel Max_sliver = conn.Table<NoilsTestFinalModel>().Where(
+                                             NoilsTestFinalModel =>
+                                             (NoilsTestFinalModel.testID == currentTestID &&
+                                             NoilsTestFinalModel.status == true)).OrderByDescending(NoilsTestFinalModel => NoilsTestFinalModel.weigth_sliver).First();
+                                        NoilsTestFinalModel Min_sliver = conn.Table<NoilsTestFinalModel>().Where(
+                                            NoilsTestFinalModel =>
+                                            (NoilsTestFinalModel.testID == currentTestID &&
+                                            NoilsTestFinalModel.status == true)).OrderBy(NoilsTestFinalModel => NoilsTestFinalModel.weigth_sliver).First();
+
+                                        NoilsTestFinalModel Max_noilswt = conn.Table<NoilsTestFinalModel>().Where(
+                                            NoilsTestFinalModel =>
+                                            (NoilsTestFinalModel.testID == currentTestID &&
+                                            NoilsTestFinalModel.status == true)).OrderByDescending(NoilsTestFinalModel => NoilsTestFinalModel.weigth_noils).First();
+                                        NoilsTestFinalModel Min_noilswt = conn.Table<NoilsTestFinalModel>().Where(
+                                            NoilsTestFinalModel =>
+                                            (NoilsTestFinalModel.testID == currentTestID &&
+                                            NoilsTestFinalModel.status == true)).OrderBy(NoilsTestFinalModel => NoilsTestFinalModel.weigth_noils).First();
+
+                                        decimal range_sliver = Max_sliver.weigth_sliver - Min_sliver.weigth_sliver;
+                                        decimal range_noilswt = Max_noilswt.weigth_noils - Min_noilswt.weigth_noils;
+                                        decimal range_noils = Max_noils.noils - Min_noils.noils;
+
+                                        List<NoilsTestFinalModel> noilsFinal_list = conn.Table<NoilsTestFinalModel>().Where(
+                                                          NoilsTestFinalModel => (
+                                                          NoilsTestFinalModel.status == true &&
+                                                          NoilsTestFinalModel.testID != currentTestID)
+                                                          ).ToList();
+
+                                        decimal IndividualCalValminusMean = 0m;
+                                        foreach (NoilsTestFinalModel test in noilsFinal_list)
+                                        {
+                                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.noils - avg_weight_noils) * (test.noils - avg_weight_noils));
+                                        }
+                                        decimal sd_noils = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(noilsTest_sliverList[0].totaltestcount - 1));//Standard Deviation
+                                        decimal cv_noils = (sd / avg_weight_noils) * 100; //Coefficient of Variation
+                                        sd_noils = Math.Round(sd_noils, 3);
+                                        cv_noils = Math.Round(cv_noils, 3);
+
+                                        NoilsTestCalculatedModel noilsTestCalculatedModel = new NoilsTestCalculatedModel()
+                                        {
+                                            ID = Guid.NewGuid(),
+                                            testID = sliver_Summary.testID,
+                                            userID = sliver_Summary.userID,
+                                            userName = sliver_Summary.userName,
+                                            machineID = sliver_Summary.machineID,
+                                            machineCategory = sliver_Summary.machineCategory,
+                                            machineName = sliver_Summary.machineName,
+                                            process = sliver_Summary.process,
+                                            countsysname = sliver_Summary.countsysname,
+                                            yarnlenunit = sliver_Summary.yarnlenunit,
+                                            yarnlength = sliver_Summary.yarnlength,
+                                            shift = sliver_Summary.shift,
+                                            totaltestcount = sliver_Summary.totaltestcount,
+                                            average_wt_sliverwt = sliver_Summary.avg_weight,
+                                            max_sliverwt = Max_sliver.weigth_sliver,
+                                            min_sliverwt = Min_sliver.weigth_sliver,
+                                            range_sliverwt = range_sliver,
+                                            testaverage_sliverwt = sliver_Summary.testaverage,
+                                            testsd_sliverwt = sliver_Summary.testsd,
+                                            testcv_sliverwt = sliver_Summary.testcv,
+                                            average_wt_noilswt = noils_Summary.avg_weight,
+                                            max_noilswt = Max_noilswt.weigth_noils,
+                                            min_noilswt = Min_noilswt.weigth_noils,
+                                            range_noilswt = range_noilswt,
+                                            testaverage_noilswt = noils_Summary.testaverage,
+                                            testsd_noilswt = noils_Summary.testsd,
+                                            testcv_noilswt = noils_Summary.testcv,
+                                            average_wt_noils = avg_weight_noils,
+                                            max_noils = Max_noils.noils,
+                                            min_noils = Min_noils.noils,
+                                            range_noils = range_noils,
+                                            testsd_noils = sd_noils,
+                                            testcv_noils = cv_noils,
+                                            status = true,
+                                            createdate = DateTime.Now
+                                        };
+                                        int row_TestCalc = conn.Insert(noilsTestCalculatedModel);
+                                        if (row_TestCalc < 1)
+                                        {
+                                            // To be decieded if noils test calculated value failed to insert to db
+                                        }
                                     }
                                 }
                                 else
                                 {
-                                    // To be decieded if NSummary active record is not available in db
+                                    // To be decieded if FB Summary active record is not available in db
                                 }
                             }
                             else
                             {
-                                // To be decieded if nMinus1Summary active record is not available in db
+                                // To be decieded if IB Summary active record is not available in db
                             }
                         }
                         await enableTestButton();
@@ -487,36 +505,26 @@ namespace TQM
                 }
                 else
                 {
-                    if (currentTestType == "nMinus1")
+                    if (currentTestType == "Sliver")
                     {
-                        startTestNm1Button.IsVisible = true;
-                        startTestNm1Button.IsEnabled = true;
-                        startTestNm1Button.BackgroundColor = Color.Green;
-                        startTestNButton.IsVisible = false;
-                        startTestNp1Button.IsVisible = false;
+                        startSliverButton.IsVisible = false;
+                        startNoilsButton.IsVisible = true;
+                        startNoilsButton.IsEnabled = true;
+                        startNoilsButton.BackgroundColor = Color.Green;
                     }
-                    else if (currentTestType == "N")
+                    else
                     {
-                        startTestNButton.IsVisible = true;
-                        startTestNButton.IsEnabled = true;
-                        startTestNButton.BackgroundColor = Color.Green;
-                        startTestNm1Button.IsVisible = false;
-                        startTestNp1Button.IsVisible = false;
-                    }
-                    else if (currentTestType == "nPlus1")
-                    {
-                        startTestNp1Button.IsVisible = true;
-                        startTestNp1Button.IsEnabled = true;
-                        startTestNp1Button.BackgroundColor = Color.Green;
-                        startTestNm1Button.IsVisible = false;
-                        startTestNButton.IsVisible = false;
+                        startNoilsButton.IsVisible = false;
+                        startSliverButton.IsVisible = true;
+                        startSliverButton.IsEnabled = true;
+                        startSliverButton.BackgroundColor = Color.Green;
                     }
                 }
                 if (dispose) { disposeble(); }
                 Device.BeginInvokeOnMainThread(() =>
                 {
 
-                    if (currentTestType == "nPlus1")
+                    if (currentTestType == "Noils")
                     {
                         entry_testcount.IsEnabled = true;
                         entry_testcount.Text = TESTCOUNT.ToString();
@@ -527,15 +535,11 @@ namespace TQM
                         entry_process.Text = "";
                     }
                     string str_testType = "";
-                    if (currentTestType == "nMinus1")
+                    if (currentTestType == "Sliver")
                     {
-                        str_testType = "Test Completed for (N-1)!!! Start test for (N)";
+                        str_testType = "Test Completed for Sliver!!! Start test for Noils";
                     }
-                    else if (currentTestType == "N")
-                    {
-                        str_testType = "Test Completed for (N)!!! Start test for (N+1)";
-                    }
-                    else if (currentTestType == "nPlus1")
+                    else
                     {
                         str_testType = "All Test Completed!!!";
                     }
@@ -553,11 +557,11 @@ namespace TQM
         }
 
         [Obsolete]
-        private async void startTestNm1Button_Clicked(object sender, EventArgs e)
+        private async void startSliverButton_Clicked(object sender, EventArgs e)
         {
 
             isTestStarted = true;
-            currentTestType = "nMinus1";
+            currentTestType = "Sliver";
             ImageNotification("null");
             UpdateUserNotification("");
             await refListView(false);
@@ -593,8 +597,8 @@ namespace TQM
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                conn.CreateTable<YCTestApercentModel>();
-                YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
+                conn.CreateTable<NoilsTestModel>();
+                NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>().OrderByDescending(NoilsTestModel => NoilsTestModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
                     currentTestID = lastTestRecord.testID + 1;
@@ -620,9 +624,9 @@ namespace TQM
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
             selectedProcess = entry_process.Text;
-            ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
-            startTestNm1Button.IsEnabled = false;
-            startTestNm1Button.BackgroundColor = Color.SlateGray;
+            noilsTestModelViewList = new List<NoilsTestModelView>();
+            startSliverButton.IsEnabled = false;
+            startSliverButton.BackgroundColor = Color.SlateGray;
             entry_testcount.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
@@ -735,7 +739,7 @@ namespace TQM
                             default:
                                 break;
                         };
-                        YCTestApercentModelView ycTestApercentModelView = new YCTestApercentModelView()
+                        NoilsTestModelView noilsTestModelView = new NoilsTestModelView()
                         {
                             testID = currentTestID,
                             userID = currentloggedInUser.ID,
@@ -752,9 +756,9 @@ namespace TQM
                             totaltestcount = selectedTestCount,
                             testcount = i + 1,
                             yarnweight = current_stable_data,
-                            yccalcval = currentCalculatedValue
+                            yccalcval = currentCalculatedValue,
                         };
-                        ycTestApercentModelViewlist.Add(ycTestApercentModelView);
+                        noilsTestModelViewList.Add(noilsTestModelView);
                         //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
                         await refListView();
                     }
@@ -766,7 +770,7 @@ namespace TQM
                     }
                 }
 
-                if (ycTestApercentModelViewlist.Count > 0 && passCount == testCount)
+                if (noilsTestModelViewList.Count > 0 && passCount == testCount)
                 {
                     updateDB();
                 }
@@ -1052,10 +1056,10 @@ namespace TQM
             return op;
         }
 
-        private async void startTestNButton_Clicked(object sender, EventArgs e)
+        private async void startNoilsButton_Clicked(object sender, EventArgs e)
         {
             isTestStarted = true;
-            currentTestType = "N";
+            currentTestType = "Noils";
             ImageNotification("null");
             UpdateUserNotification("");
             await refListView(false);
@@ -1091,8 +1095,8 @@ namespace TQM
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                conn.CreateTable<YCTestApercentModel>();
-                YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
+                conn.CreateTable<NoilsTestModel>();
+                NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>().OrderByDescending(NoilsTestModel => NoilsTestModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
                     currentTestID = lastTestRecord.testID;
@@ -1118,90 +1122,9 @@ namespace TQM
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
             selectedProcess = entry_process.Text;
-            ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
-            startTestNButton.IsEnabled = false;
-            startTestNButton.BackgroundColor = Color.SlateGray;
-            entry_testcount.IsEnabled = false;
-            picker_machinecategory.IsEnabled = false;
-            picker_machinename.IsEnabled = false;
-            picker_shift.IsEnabled = false;
-            entry_process.IsEnabled = false;
-            CancellationTokenSource src = new CancellationTokenSource();
-            CancellationToken ct = src.Token;
-            ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-            await Task.Run(async () => await HandleTest(testCount), ct);
-            src.Cancel();
-        }
-
-        private async void startTestNp1Button_Clicked(object sender, EventArgs e)
-        {
-            isTestStarted = true;
-            currentTestType = "nPlus1";
-            ImageNotification("null");
-            UpdateUserNotification("");
-            await refListView(false);
-            await refOverallSummary(0m, 0m, 0m, false);
-            if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
-            {
-                await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
-                return;
-            }
-            if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
-            {
-                await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
-                return;
-            }
-            if (picker_shift.SelectedIndex <= 0)
-            {
-                await DisplayAlert("Attention", "Please select shift!!!", "Ok");
-                return;
-            }
-            if (entry_process.Text.Trim() == "")
-            {
-                await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
-                return;
-            }
-            if (!initializeBluetooth())
-            {
-                ImageNotification("red.png");
-                UpdateUserNotification("COMMUNICATION ERROR!!!");
-                return;
-            }
-            string testCount_str = entry_testcount.Text;
-            int testCount = int.Parse(testCount_str);
-
-            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-            {
-                conn.CreateTable<YCTestApercentModel>();
-                YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
-                if (lastTestRecord != null)
-                {
-                    currentTestID = lastTestRecord.testID;
-                }
-                else
-                {
-                    currentTestID = 1;
-                }
-                UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
-                if (loggedInUser == null)
-                {
-                    await DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
-                    return;
-                }
-                else
-                {
-                    currentloggedInUser = loggedInUser;
-                }
-            }
-            selectedSysName = lbl_countsysname.Text;
-            selectedCountUnit = lbl_yarncountunit.Text;
-            selectedYarnLen = int.Parse(lbl_yarnlen.Text);
-            selectedTestCount = int.Parse(entry_testcount.Text);
-            selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = entry_process.Text;
-            ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
-            startTestNp1Button.IsEnabled = false;
-            startTestNp1Button.BackgroundColor = Color.SlateGray;
+            noilsTestModelViewList = new List<NoilsTestModelView>();
+            startNoilsButton.IsEnabled = false;
+            startNoilsButton.BackgroundColor = Color.SlateGray;
             entry_testcount.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;

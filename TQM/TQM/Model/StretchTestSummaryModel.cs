@@ -4,7 +4,7 @@ using System;
 
 namespace TQM.Model
 {
-    public class YCTestApercentSummaryModel
+    public class StretchTestSummaryModel
     {
         [PrimaryKey]
         public Guid ID { get; set; }

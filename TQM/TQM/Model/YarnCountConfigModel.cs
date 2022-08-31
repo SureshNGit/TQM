@@ -20,7 +20,7 @@ namespace TQM.Model
 
         public int testcountStretch { get; set; }
 
-        public int testcountComber { get; set; }
+        public int testcountNoils { get; set; }
 
 
     }

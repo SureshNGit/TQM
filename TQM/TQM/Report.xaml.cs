@@ -74,7 +74,15 @@ namespace TQM
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
-                    Navigation.PushAsync(new YCApercentReport(date_fromdate.Date, date_enddate.Date));
+                    Navigation.PushAsync(new YCApercentReport(date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID));
+                }
+                else if (picker_reportName.SelectedItem.ToString() == "Stretch")
+                {
+                    Navigation.PushAsync(new StretchReport(date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID));
+                }
+                else if (picker_reportName.SelectedItem.ToString() == "NOILS")
+                {
+                    Navigation.PushAsync(new NoilsReport(date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID));
                 }
             }
             catch (Exception ex)

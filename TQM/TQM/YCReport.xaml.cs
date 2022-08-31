@@ -94,7 +94,7 @@ namespace TQM
                             report.userName = testsummary.userName;
                             report.machineCategory = testsummary.machineCategory;
                             report.machineName = testsummary.machineName;
-                            report.apercent = testsummary.apercent;
+                            //report.apercent = testsummary.apercent;
                             report.countsysname = testsummary.countsysname;
                             report.yarnlenunit = testsummary.yarnlenunit;
                             report.yarnlength = testsummary.yarnlength;
@@ -215,7 +215,7 @@ namespace TQM
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
                     pdfGridInfo.Rows[4].Cells[2].Value = "CV: " + orl.testcv;
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
+                    //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
                     pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
 
 

@@ -147,7 +147,7 @@ namespace TQM
                         machineID = test.machineID,
                         machineCategory = test.machineCategory,
                         machineName = test.machineName,
-                        apercent = test.apercent,
+                        //apercent = test.apercent,
                         shift = test.shift,
                         process = test.process,
                         countsysname = test.countsysname,

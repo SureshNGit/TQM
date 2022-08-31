@@ -7,6 +7,10 @@ namespace TQM.ModelView
     {
         public long testID { get; set; }
         public string userName { get; set; }
+
+        public string machineCategory { get; set; }
+        public string machineName { get; set; }
+
         public string countsysname { get; set; }
 
         public string yarnlenunit { get; set; }
