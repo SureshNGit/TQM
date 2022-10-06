@@ -110,26 +110,26 @@
             <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="9" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
 
 
-            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Count System Name" FontSize="20" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Margin="5"/>
-            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Yarn Count Unit" FontSize="20" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
-            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Yarn Length" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Count" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Process" FontSize="20" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Count System Name" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Margin="5"/>
+            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Yarn Count Unit" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
+            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Yarn Length" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Count" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Process" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
-            <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_countsysname" Text="" FontSize="20" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
-            <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarncountunit" Text="" FontSize="20" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
-            <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarnlen" Text="" FontSize="20" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50" />
-            <Entry Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_testcount" TextColor="Green" FontSize="20" Keyboard="Numeric"
-                 HorizontalOptions="Start" WidthRequest="580"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+            <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_countsysname" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
+            <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarncountunit" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
+            <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarnlen" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50" />
+            <Entry Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_testcount" TextColor="Green" FontSize="16" Keyboard="Numeric"
+                 HorizontalOptions="Start" WidthRequest="500"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
             </Entry>
             <Picker Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
-                    x:Name="picker_machinecategory" TextColor="Green" FontSize="20" SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged">
+                    x:Name="picker_machinecategory" TextColor="Green" FontSize="16" SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
                         <x:String></x:String>
@@ -146,7 +146,7 @@
                 </Picker.Effects>
             </Picker>
             <Picker Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding machineName}" SelectedIndexChanged="picker_machinename_SelectedIndexChanged" 
-                    x:Name="picker_machinename" TextColor="Green" FontSize="20" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+                    x:Name="picker_machinename" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Picker.Effects>
                     <effects:PlainEntry/>
                 </Picker.Effects>
@@ -158,7 +158,7 @@
                 </Entry.Effects>
             </Entry>-->
             <Picker Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
-                    x:Name="picker_shift" TextColor="Green" FontSize="20">
+                    x:Name="picker_shift" TextColor="Green" FontSize="16">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
                         <x:String></x:String>
@@ -172,7 +172,7 @@
                 </Picker.Effects>
             </Picker>
 
-            <Entry Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_process" TextColor="Green" FontSize="20" 
+            <Entry Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_process" TextColor="Green" FontSize="16" 
                   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Text">
                 <Entry.Effects>
                     <effects:PlainEntry/>
@@ -180,7 +180,7 @@
             </Entry>
 
             <Frame Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="10,0,0,0" HorizontalOptions="Start"
-                   BackgroundColor="White" BorderColor="White" CornerRadius="25" HasShadow="False">
+                   BackgroundColor="White" BorderColor="White" CornerRadius="16" HasShadow="False">
                 <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="img_notification" IsVisible="False" 
                        Source="green.png" IsAnimationPlaying="True" HorizontalOptions="Center"
                        Aspect="AspectFit" HeightRequest="40" WidthRequest="80"/>
@@ -217,16 +217,16 @@
                 </Grid>
             </Frame>
 
-            <Frame Grid.Row="3" Grid.RowSpan="6" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2"
-                   BackgroundColor="White" BorderColor="White" CornerRadius="25" HasShadow="False">
-                <ListView x:Name="listview_testresult" 
+            <Frame Grid.Row="3" Grid.RowSpan="9" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2"
+                   BackgroundColor="White" BorderColor="White" CornerRadius="25" HasShadow="False" x:Name="individualTestResultFrame" IsVisible="false">
+                <ListView x:Name="listview_testresult_individual" 
                       HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always"
                        IsVisible="false">
                     <ListView.Header>
                         <StackLayout Orientation="Horizontal" VerticalOptions="Start">
-                            <Label Text="Test No" WidthRequest="150" TextColor="#0e0273" FontSize="20"/>
-                            <Label Text="Yarn Weigth" WidthRequest="230" TextColor="#0e0273" FontSize="20"/>
-                            <Label Text="Yarn Count" WidthRequest="200" TextColor="#0e0273" FontSize="20"/>
+                            <Label Text="Sample No" WidthRequest="150" TextColor="#0e0273" FontSize="20"/>
+                            <Label Text="Weigth" WidthRequest="230" TextColor="#0e0273" FontSize="20"/>
+                            <Label Text="Hank" WidthRequest="170" TextColor="#0e0273" FontSize="20"/>
                         </StackLayout>
                     </ListView.Header>
                     <ListView.ItemTemplate>
@@ -245,6 +245,71 @@
                                        Text="{Binding yarnweight}" FontSize="20"/>
                                     <Label Grid.Column="2" Grid.Row="0" 
                                        Text="{Binding yccalcval}" FontSize="20"/>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Frame>
+
+
+            <Frame Grid.Row="0" Grid.RowSpan="1" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,10,2,2" x:Name="frame_overallTestSummary"
+                   BackgroundColor="Lavender" BorderColor="Lavender" CornerRadius="0" HasShadow="False" HeightRequest="2" IsVisible="false">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1"
+                                       Text="A% (N-1) :" FontSize="20" TextColor="#0e0273"/>
+                    <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_ApercentNminus1" HorizontalTextAlignment="Start" Margin="0,0"
+                                       Text="2.274" FontSize="22" TextColor="ForestGreen"/>
+                    <!--<Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="0,0"
+                                       Text="SD:" FontSize="20" TextColor="#0e0273"/>
+                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_sd" 
+                           HorizontalTextAlignment="Start" Margin="35,2" Text="2.135" FontSize="18" TextColor="Red"/>-->
+                    <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="2" HorizontalTextAlignment="End" Margin="40,0"
+                                       Text="A% (N+1) :" FontSize="20" TextColor="#0e0273"/>
+                    <Label Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_ApercentNplus1"
+                           HorizontalTextAlignment="Start" Margin="60,0" Text="2.135" FontSize="22" TextColor="ForestGreen"/>
+                </Grid>
+            </Frame>
+
+            <Frame Grid.Row="1" Grid.RowSpan="9" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2"
+                   BackgroundColor="White" BorderColor="White" CornerRadius="0" HasShadow="False" x:Name="overallTestResultFrame" IsVisible="false">
+                <ListView x:Name="listview_testresult_overall" 
+                      HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always"
+                       IsVisible="false">
+                    <ListView.Header>
+                        <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273"> 
+                            <Label Text="Sample No" WidthRequest="150" TextColor="white" FontSize="20"/>
+                            <Label Text="N-1" WidthRequest="150" TextColor="white" FontSize="20"/>
+                            <Label Text="N" WidthRequest="150"  TextColor="white" FontSize="20"/>
+                            <Label Text="N+1" WidthRequest="150" TextColor="white" FontSize="20"/>
+                        </StackLayout>
+                    </ListView.Header>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid ColumnSpacing="2"
+                                         RowSpacing="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="148"/>
+                                        <ColumnDefinition Width="146"/>
+                                        <ColumnDefinition Width="148"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Column="0" Grid.Row="0"
+                                       Text="{Binding description}" FontSize="18"/>
+                                    <Label Grid.Column="1" Grid.Row="0" 
+                                       Text="{Binding nMinus1}" FontSize="18"/>
+                                    <Label Grid.Column="2" Grid.Row="0" 
+                                       Text="{Binding N}" FontSize="18"/>
+                                    <Label Grid.Column="3" Grid.Row="0" 
+                                       Text="{Binding nPlus1}" FontSize="18"/>
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>

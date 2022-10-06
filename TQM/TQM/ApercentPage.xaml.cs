@@ -47,7 +47,7 @@ namespace TQM
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
         private bool isTestStarted = false;
-
+        private YCTestApercentCalculatedModel apercentCalc = null;
         public ApercentPage()
         {
             InitializeComponent();
@@ -180,29 +180,176 @@ namespace TQM
             });
         }
 
-        private async Task refListView(bool visibility = true)
+        private async Task refListView(bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                listview_testresult.ItemsSource = null;
-                listview_testresult.IsVisible = visibility;
-                listview_testresult.ItemsSource = ycTestApercentModelViewlist;
+
+                if (currentTestType == "nPlus1" && showFinalOut)
+                {
+                    overallTestResultFrame.IsVisible = visibility;
+                    listview_testresult_overall.ItemsSource = null;
+                    listview_testresult_overall.IsVisible = visibility;
+                    listview_testresult_overall.ItemsSource = generateResultView();
+                }
+                else
+                {
+                    individualTestResultFrame.IsVisible = visibility;
+                    listview_testresult_individual.ItemsSource = null;
+                    listview_testresult_individual.IsVisible = visibility;
+                    listview_testresult_individual.ItemsSource = ycTestApercentModelViewlist;
+                }
             });
         }
 
-        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true)
+        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                frame_overallSummary.IsVisible = visibility;
-                lbl_average.Text = mean.ToString();
-                lbl_sd.Text = sd.ToString();
-                lbl_cv.Text = cv.ToString();
+                if (showFinalOut == false)
+                {
+                    frame_overallSummary.IsVisible = visibility;
+                    lbl_average.Text = mean.ToString();
+                    lbl_sd.Text = sd.ToString();
+                    lbl_cv.Text = cv.ToString();
+                }
+                else if (currentTestType == "nPlus1" && showFinalOut)
+                {
+                    frame_overallTestSummary.IsVisible = visibility;
+                    lbl_ApercentNminus1.Text = apercentCalc.apercent_nMinus1.ToString();
+                    lbl_ApercentNplus1.Text = apercentCalc.apercent_nPlus1.ToString();
+                }
             });
         }
 
+        private List<ApercentReportModelView> generateResultView()
+        {
+            List<ApercentReportModelView> OVS = new List<ApercentReportModelView>();
+            //YCTestApercentCalculatedModel apercentCalc = null;
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                //apercentCalc = conn.Table<YCTestApercentCalculatedModel>()
+                //    .Where(YCTestApercentCalculatedModel =>
+                //    (YCTestApercentCalculatedModel.testID == currentTestID &&
+                //    YCTestApercentCalculatedModel.status == true)).FirstOrDefault();
+                if (apercentCalc == null) return null;
+                //OverallApercentReportModelView report = new OverallApercentReportModelView();
+                List<YCTestApercentModel> yctestApercentlist_nMinus1 = conn.Table<YCTestApercentModel>().Where(
+                    YCTestApercentModel =>
+                    (YCTestApercentModel.testID == currentTestID
+                    && YCTestApercentModel.testType == "nMinus1"
+                    && YCTestApercentModel.status == true)).ToList();
+                List<YCTestApercentModel> yctestApercentlist_N = conn.Table<YCTestApercentModel>().Where(
+                    YCTestApercentModel =>
+                    (YCTestApercentModel.testID == currentTestID
+                    && YCTestApercentModel.testType == "N"
+                    && YCTestApercentModel.status == true)).ToList();
+                List<YCTestApercentModel> yctestApercentlist_nPlus1 = conn.Table<YCTestApercentModel>().Where(
+                    YCTestApercentModel =>
+                    (YCTestApercentModel.testID == currentTestID
+                    && YCTestApercentModel.testType == "nPlus1"
+                    && YCTestApercentModel.status == true)).ToList();
+                if (yctestApercentlist_nMinus1 != null && yctestApercentlist_N != null && yctestApercentlist_nPlus1 != null)
+                {
+
+                    int loopCount = 0;
+                    foreach (YCTestApercentModel test in yctestApercentlist_nMinus1)
+                    {
+                        ApercentReportModelView apercentReportMV = new ApercentReportModelView()
+                        {
+                            testID = test.testID,
+                            description = test.testcount.ToString(),
+                            nMinus1 = test.yarnweight,
+                            N = yctestApercentlist_N[loopCount].yarnweight,
+                            nPlus1 = yctestApercentlist_nPlus1[loopCount].yarnweight,
+                        };
+                        OVS.Add(apercentReportMV);
+                        loopCount += 1;
+                    }
+
+                    ApercentReportModelView apercentReportModelView = new ApercentReportModelView()
+                    {
+                        testID = apercentCalc.testID,
+                        description = "Average Weight",
+                        nMinus1 = apercentCalc.avg_weight_nMinus1,
+                        N = apercentCalc.avg_weight_N,
+                        nPlus1 = apercentCalc.avg_weight_nPlus1,
+                    };
+                    OVS.Add(apercentReportModelView);
+
+                    apercentReportModelView = new ApercentReportModelView()
+                    {
+                        testID = apercentCalc.testID,
+                        description = "Weight (Max)",
+                        nMinus1 = apercentCalc.max_nMinus1,
+                        N = apercentCalc.max_N,
+                        nPlus1 = apercentCalc.max_nPlus1,
+                    };
+                    OVS.Add(apercentReportModelView);
+
+                    apercentReportModelView = new ApercentReportModelView()
+                    {
+                        testID = apercentCalc.testID,
+                        description = "Weight (Min)",
+                        nMinus1 = apercentCalc.min_nMinus1,
+                        N = apercentCalc.min_N,
+                        nPlus1 = apercentCalc.min_nPlus1,
+                    };
+                    OVS.Add(apercentReportModelView);
+
+                    apercentReportModelView = new ApercentReportModelView()
+                    {
+                        testID = apercentCalc.testID,
+                        description = "Range",
+                        nMinus1 = apercentCalc.range_nMinus1,
+                        N = apercentCalc.range_N,
+                        nPlus1 = apercentCalc.range_nPlus1,
+                    };
+                    OVS.Add(apercentReportModelView);
+
+                    apercentReportModelView = new ApercentReportModelView()
+                    {
+                        testID = apercentCalc.testID,
+                        description = "HANK",
+                        nMinus1 = apercentCalc.testaverage_nMinus1,
+                        N = apercentCalc.testaverage_N,
+                        nPlus1 = apercentCalc.testaverage_nPlus1,
+                    };
+                    OVS.Add(apercentReportModelView);
+
+                    apercentReportModelView = new ApercentReportModelView()
+                    {
+                        testID = apercentCalc.testID,
+                        description = "SD",
+                        nMinus1 = apercentCalc.testsd_nMinus1,
+                        N = apercentCalc.testsd_N,
+                        nPlus1 = apercentCalc.testsd_nPlus1,
+                    };
+                    OVS.Add(apercentReportModelView);
+
+                    apercentReportModelView = new ApercentReportModelView()
+                    {
+                        testID = apercentCalc.testID,
+                        description = "CV",
+                        nMinus1 = apercentCalc.testcv_nMinus1,
+                        N = apercentCalc.testcv_N,
+                        nPlus1 = apercentCalc.testcv_nPlus1,
+                    };
+                    OVS.Add(apercentReportModelView);
+
+
+
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return OVS;
+        }
         private async void updateDB()
         {
+
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 bool dbStatus = true;
@@ -350,19 +497,25 @@ namespace TQM
                             }
                             YCTestApercentSummaryModel nMinus1Summary = conn.Table<YCTestApercentSummaryModel>().Where(
                                                             YCTestApercentSummaryModel => (
-                                                            YCTestApercentSummaryModel.testType == "nMinus1" && YCTestApercentSummaryModel.status == true)
+                                                            YCTestApercentSummaryModel.testType == "nMinus1"
+                                                            && YCTestApercentSummaryModel.status == true
+                                                            && YCTestApercentSummaryModel.testID == currentTestID)
                                                             ).FirstOrDefault();
                             if (nMinus1Summary != null)
                             {
                                 YCTestApercentSummaryModel NSummary = conn.Table<YCTestApercentSummaryModel>().Where(
                                                             YCTestApercentSummaryModel => (
-                                                            YCTestApercentSummaryModel.testType == "N" && YCTestApercentSummaryModel.status == true)
+                                                            YCTestApercentSummaryModel.testType == "N"
+                                                            && YCTestApercentSummaryModel.status == true
+                                                            && YCTestApercentSummaryModel.testID == currentTestID)
                                                             ).FirstOrDefault();
                                 if (NSummary != null)
                                 {
                                     YCTestApercentSummaryModel nPlus1Summary = conn.Table<YCTestApercentSummaryModel>().Where(
                                                                 YCTestApercentSummaryModel => (
-                                                                YCTestApercentSummaryModel.testType == "nPlus1" && YCTestApercentSummaryModel.status == true)
+                                                                YCTestApercentSummaryModel.testType == "nPlus1"
+                                                                && YCTestApercentSummaryModel.status == true
+                                                                && YCTestApercentSummaryModel.testID == currentTestID)
                                                                 ).FirstOrDefault();
                                     if (nPlus1Summary != null)
                                     {
@@ -450,6 +603,10 @@ namespace TQM
                                         {
                                             // To be decieded if nMinus1Summary failed to insert to db
                                         }
+                                        else
+                                        {
+                                            apercentCalc = yCTestApercentCalculatedModel;
+                                        }
                                     }
                                     else
                                     {
@@ -467,8 +624,8 @@ namespace TQM
                             }
                         }
                         await enableTestButton();
-                        await refListView();
-                        await refOverallSummary(mean, sd, cv);
+                        await refListView(true, true);
+                        await refOverallSummary(mean, sd, cv, true, true);
                     }
                 }
 
@@ -521,10 +678,13 @@ namespace TQM
                         entry_testcount.IsEnabled = true;
                         entry_testcount.Text = TESTCOUNT.ToString();
                         picker_machinecategory.IsEnabled = true;
+                        picker_machinecategory.SelectedIndex = 0;
                         picker_machinename.IsEnabled = true;
+                        picker_machinename.SelectedIndex = 0;
                         picker_shift.IsEnabled = true;
                         picker_shift.SelectedIndex = 0;
                         entry_process.Text = "";
+                        entry_process.IsEnabled = true;
                     }
                     string str_testType = "";
                     if (currentTestType == "nMinus1")
@@ -537,6 +697,7 @@ namespace TQM
                     }
                     else if (currentTestType == "nPlus1")
                     {
+                        currentTestID = 0;
                         str_testType = "All Test Completed!!!";
                     }
                     if (isTestStarted)
@@ -597,7 +758,14 @@ namespace TQM
                 YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
-                    currentTestID = lastTestRecord.testID + 1;
+                    if (currentTestID == 0)
+                    {
+                        currentTestID = lastTestRecord.testID + 1;
+                    }
+                    else if (currentTestID == lastTestRecord.testID)
+                    {
+                        currentTestID = lastTestRecord.testID;
+                    }
                 }
                 else
                 {
@@ -1095,7 +1263,14 @@ namespace TQM
                 YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
-                    currentTestID = lastTestRecord.testID;
+                    if (currentTestID == 0)
+                    {
+                        currentTestID = lastTestRecord.testID + 1;
+                    }
+                    else if (currentTestID == lastTestRecord.testID)
+                    {
+                        currentTestID = lastTestRecord.testID;
+                    }
                 }
                 else
                 {
@@ -1176,7 +1351,14 @@ namespace TQM
                 YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
-                    currentTestID = lastTestRecord.testID;
+                    if (currentTestID == 0)
+                    {
+                        currentTestID = lastTestRecord.testID + 1;
+                    }
+                    else if (currentTestID == lastTestRecord.testID)
+                    {
+                        currentTestID = lastTestRecord.testID;
+                    }
                 }
                 else
                 {

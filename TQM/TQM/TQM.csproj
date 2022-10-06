@@ -46,9 +46,9 @@
     <Compile Update="NoilsRepor.xaml.cs">
       <DependentUpon>NoilsRepor.xaml</DependentUpon>
     </Compile>
-    <Compile Update="StretchRepor.xaml.cs">
+    <Compile Update="StretchReport.xaml.cs">
       <SubType>Code</SubType>
-      <DependentUpon>StretchRepor.xaml</DependentUpon>
+      <DependentUpon>StretchReport.xaml</DependentUpon>
     </Compile>
     <Compile Update="YCApercentReport.xaml.cs">
       <DependentUpon>YCApercentReport.xaml</DependentUpon>
@@ -98,7 +98,7 @@
     <EmbeddedResource Update="yarnCount.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="StretchRepor.xaml">
+    <EmbeddedResource Update="StretchReport.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

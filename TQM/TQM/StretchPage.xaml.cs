@@ -46,6 +46,7 @@ namespace TQM
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
         private bool isTestStarted = false;
+        private StretchTestCalculatedModel stretchCalcList_finalOut = null;
 
         public StretchPage()
         {
@@ -145,25 +146,169 @@ namespace TQM
             });
         }
 
-        private async Task refListView(bool visibility = true)
+        private async Task refListView(bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                listview_testresult.ItemsSource = null;
-                listview_testresult.IsVisible = visibility;
-                listview_testresult.ItemsSource = stretchTestModelViewList;
+                if (currentTestType == "FB" && showFinalOut)
+                {
+                    overallTestResultFrame.IsVisible = visibility;
+                    listview_testresult_overall.ItemsSource = null;
+                    listview_testresult_overall.IsVisible = visibility;
+                    listview_testresult_overall.ItemsSource = generateResultView();
+                }
+                else
+                {
+                    individualTestResultFrame.IsVisible = visibility;
+                    listview_testresult_individual.ItemsSource = null;
+                    listview_testresult_individual.IsVisible = visibility;
+                    listview_testresult_individual.ItemsSource = stretchTestModelViewList;
+                }
             });
         }
 
-        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true)
+        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                frame_overallSummary.IsVisible = visibility;
-                lbl_average.Text = mean.ToString();
-                lbl_sd.Text = sd.ToString();
-                lbl_cv.Text = cv.ToString();
+                if (showFinalOut == false)
+                {
+                    frame_overallSummary.IsVisible = visibility;
+                    lbl_average.Text = mean.ToString();
+                    lbl_sd.Text = sd.ToString();
+                    lbl_cv.Text = cv.ToString();
+                }
+                else if (currentTestType == "FB" && showFinalOut)
+                {
+                    frame_overallTestSummary.IsVisible = visibility;
+                    lbl_stretchPercent.Text = stretchCalcList_finalOut.stretch.ToString();
+                }
             });
+        }
+
+
+        private List<StretchReportModelView> generateResultView()
+        {
+            try
+            {
+                List<StretchReportModelView> OVS = new List<StretchReportModelView>();
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+
+                    conn.CreateTable<StretchTestModel>();
+                    conn.CreateTable<StretchTestCalculatedModel>();
+
+
+                    if (stretchCalcList_finalOut == null)
+                    {
+                        return null;
+                    }
+
+                    List<StretchTestModel> yctestStretchlist_IB = conn.Table<StretchTestModel>().Where(
+                        StretchTestModel =>
+                        (StretchTestModel.testType == "IB"
+                        && StretchTestModel.status == true
+                        && StretchTestModel.testID == currentTestID)).ToList();
+
+                    List<StretchTestModel> yctestStretchlist_FB = conn.Table<StretchTestModel>().Where(
+                        StretchTestModel =>
+                        (StretchTestModel.testType == "FB"
+                        && StretchTestModel.status == true
+                        && StretchTestModel.testID == currentTestID)).ToList();
+
+                    if (yctestStretchlist_IB != null && yctestStretchlist_FB != null)
+                    {
+
+                        int loopCount = 0;
+                        foreach (StretchTestModel test in yctestStretchlist_IB)
+                        {
+                            StretchReportModelView stretchReportMV = new StretchReportModelView()
+                            {
+                                testID = test.testID,
+                                description = test.testcount.ToString(),
+                                IB = yctestStretchlist_IB[loopCount].yarnweight,
+                                FB = yctestStretchlist_FB[loopCount].yarnweight,
+                            };
+                            OVS.Add(stretchReportMV);
+                            loopCount += 1;
+                        }
+
+                        StretchReportModelView StretchReportModelView = new StretchReportModelView()
+                        {
+                            testID = stretchCalcList_finalOut.testID,
+                            description = "Average Weight",
+                            IB = stretchCalcList_finalOut.avg_weight_IB,
+                            FB = stretchCalcList_finalOut.avg_weight_FB,
+                        };
+                        OVS.Add(StretchReportModelView);
+
+                        StretchReportModelView = new StretchReportModelView()
+                        {
+                            testID = stretchCalcList_finalOut.testID,
+                            description = "Weight (Max)",
+                            IB = stretchCalcList_finalOut.max_IB,
+                            FB = stretchCalcList_finalOut.max_FB,
+                        };
+                        OVS.Add(StretchReportModelView);
+
+                        StretchReportModelView = new StretchReportModelView()
+                        {
+                            testID = stretchCalcList_finalOut.testID,
+                            description = "Weight (Min)",
+                            IB = stretchCalcList_finalOut.min_IB,
+                            FB = stretchCalcList_finalOut.min_FB,
+                        };
+                        OVS.Add(StretchReportModelView);
+
+                        StretchReportModelView = new StretchReportModelView()
+                        {
+                            testID = stretchCalcList_finalOut.testID,
+                            description = "Range",
+                            IB = stretchCalcList_finalOut.range_IB,
+                            FB = stretchCalcList_finalOut.range_FB,
+                        };
+                        OVS.Add(StretchReportModelView);
+
+                        StretchReportModelView = new StretchReportModelView()
+                        {
+                            testID = stretchCalcList_finalOut.testID,
+                            description = "HANK",
+                            IB = stretchCalcList_finalOut.testaverage_IB,
+                            FB = stretchCalcList_finalOut.testaverage_FB,
+                        };
+                        OVS.Add(StretchReportModelView);
+
+                        StretchReportModelView = new StretchReportModelView()
+                        {
+                            testID = stretchCalcList_finalOut.testID,
+                            description = "SD",
+                            IB = stretchCalcList_finalOut.testsd_IB,
+                            FB = stretchCalcList_finalOut.testsd_FB,
+                        };
+                        OVS.Add(StretchReportModelView);
+
+                        StretchReportModelView = new StretchReportModelView()
+                        {
+                            testID = stretchCalcList_finalOut.testID,
+                            description = "CV",
+                            IB = stretchCalcList_finalOut.testcv_IB,
+                            FB = stretchCalcList_finalOut.testcv_FB,
+                        };
+                        OVS.Add(StretchReportModelView);
+
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                return OVS;
+            }
+            catch (Exception ex)
+            {
+                //DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
+                return null;
+            }
         }
 
         private async void updateDB()
@@ -314,13 +459,17 @@ namespace TQM
                             }
                             StretchTestSummaryModel ibSummary = conn.Table<StretchTestSummaryModel>().Where(
                                                             StretchTestSummaryModel => (
-                                                            StretchTestSummaryModel.testType == "IB" && StretchTestSummaryModel.status == true)
+                                                            StretchTestSummaryModel.testType == "IB"
+                                                            && StretchTestSummaryModel.status == true
+                                                            && StretchTestSummaryModel.testID == currentTestID)
                                                             ).FirstOrDefault();
                             if (ibSummary != null)
                             {
                                 StretchTestSummaryModel fbSummary = conn.Table<StretchTestSummaryModel>().Where(
                                                             StretchTestSummaryModel => (
-                                                            StretchTestSummaryModel.testType == "FB" && StretchTestSummaryModel.status == true)
+                                                            StretchTestSummaryModel.testType == "FB"
+                                                            && StretchTestSummaryModel.status == true
+                                                            && StretchTestSummaryModel.testID == currentTestID)
                                                             ).FirstOrDefault();
                                 if (fbSummary != null)
                                 {
@@ -350,6 +499,7 @@ namespace TQM
 
                                     decimal range_IB = Max_IB.yarnweight - Min_IB.yarnweight;
                                     decimal range_FB = Max_FB.yarnweight - Min_FB.yarnweight;
+
                                     StretchTestCalculatedModel stretchTestCalculatedModel = new StretchTestCalculatedModel()
                                     {
                                         ID = Guid.NewGuid(),
@@ -389,6 +539,10 @@ namespace TQM
                                     {
                                         // To be decieded if stretch test calculated value failed to insert to db
                                     }
+                                    else
+                                    {
+                                        stretchCalcList_finalOut = stretchTestCalculatedModel;
+                                    }
                                 }
                                 else
                                 {
@@ -401,8 +555,8 @@ namespace TQM
                             }
                         }
                         await enableTestButton();
-                        await refListView();
-                        await refOverallSummary(mean, sd, cv);
+                        await refListView(true, true);
+                        await refOverallSummary(mean, sd, cv, true, true);
                     }
                 }
 
@@ -445,10 +599,13 @@ namespace TQM
                         entry_testcount.IsEnabled = true;
                         entry_testcount.Text = TESTCOUNT.ToString();
                         picker_machinecategory.IsEnabled = true;
+                        picker_machinecategory.SelectedIndex = 0;
                         picker_machinename.IsEnabled = true;
+                        picker_machinename.SelectedIndex = 0;
                         picker_shift.IsEnabled = true;
                         picker_shift.SelectedIndex = 0;
                         entry_process.Text = "";
+                        entry_process.IsEnabled = true;
                     }
                     string str_testType = "";
                     if (currentTestType == "IB")
@@ -457,6 +614,7 @@ namespace TQM
                     }
                     else
                     {
+                        currentTestID = 0;
                         str_testType = "All Test Completed!!!";
                     }
                     if (isTestStarted)
@@ -517,7 +675,14 @@ namespace TQM
                 StretchTestModel lastTestRecord = conn.Table<StretchTestModel>().OrderByDescending(StretchTestModel => StretchTestModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
-                    currentTestID = lastTestRecord.testID + 1;
+                    if (currentTestID == 0)
+                    {
+                        currentTestID = lastTestRecord.testID + 1;
+                    }
+                    else if (currentTestID == lastTestRecord.testID)
+                    {
+                        currentTestID = lastTestRecord.testID;
+                    }
                 }
                 else
                 {
@@ -1015,7 +1180,14 @@ namespace TQM
                 StretchTestModel lastTestRecord = conn.Table<StretchTestModel>().OrderByDescending(StretchTestModel => StretchTestModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
-                    currentTestID = lastTestRecord.testID;
+                    if (currentTestID == 0)
+                    {
+                        currentTestID = lastTestRecord.testID + 1;
+                    }
+                    else if (currentTestID == lastTestRecord.testID)
+                    {
+                        currentTestID = lastTestRecord.testID;
+                    }
                 }
                 else
                 {
