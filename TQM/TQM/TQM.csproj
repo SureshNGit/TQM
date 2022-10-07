@@ -43,8 +43,8 @@
     <Compile Update="NOILS.xaml.cs">
       <DependentUpon>NOILS.xaml</DependentUpon>
     </Compile>
-    <Compile Update="NoilsRepor.xaml.cs">
-      <DependentUpon>NoilsRepor.xaml</DependentUpon>
+    <Compile Update="NoilsReport.xaml.cs">
+      <DependentUpon>NoilsReport.xaml</DependentUpon>
     </Compile>
     <Compile Update="StretchReport.xaml.cs">
       <SubType>Code</SubType>

@@ -46,7 +46,7 @@ namespace TQM
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
         private bool isTestStarted = false;
-
+        private NoilsTestCalculatedModel noilsCalcList_finalOut = null;
         public NOILS()
         {
             InitializeComponent();
@@ -146,25 +146,166 @@ namespace TQM
             });
         }
 
-        private async Task refListView(bool visibility = true)
+        private async Task refListView(bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                listview_testresult.ItemsSource = null;
-                listview_testresult.IsVisible = visibility;
-                listview_testresult.ItemsSource = noilsTestModelViewList;
+                if (currentTestType == "Noils" && showFinalOut)
+                {
+                    overallTestResultFrame.IsVisible = visibility;
+                    listview_testresult_overall.ItemsSource = null;
+                    listview_testresult_overall.IsVisible = visibility;
+                    listview_testresult_overall.ItemsSource = generateResultView();
+                }
+                else
+                {
+                    individualTestResultFrame.IsVisible = visibility;
+                    listview_testresult_individual.ItemsSource = null;
+                    listview_testresult_individual.IsVisible = visibility;
+                    listview_testresult_individual.ItemsSource = noilsTestModelViewList;
+                }
             });
         }
 
-        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true)
+        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                frame_overallSummary.IsVisible = visibility;
-                lbl_average.Text = mean.ToString();
-                lbl_sd.Text = sd.ToString();
-                lbl_cv.Text = cv.ToString();
+                if (showFinalOut == false)
+                {
+                    frame_overallSummary.IsVisible = visibility;
+                    lbl_average.Text = mean.ToString();
+                    lbl_sd.Text = sd.ToString();
+                    lbl_cv.Text = cv.ToString();
+                }
+                else if (currentTestType == "Noils" && showFinalOut)
+                {
+                    frame_overallTestSummary.IsVisible = visibility;
+                    lbl_noilsPercent.Text = noilsCalcList_finalOut.average_wt_noils.ToString();
+                }
             });
+        }
+
+        private List<NoilsReportModelView> generateResultView()
+        {
+            try
+            {
+                List<NoilsReportModelView> OVS = new List<NoilsReportModelView>();
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+
+                    conn.CreateTable<NoilsTestModel>();
+                    conn.CreateTable<NoilsTestCalculatedModel>();
+
+                    if (noilsCalcList_finalOut == null)
+                    {
+                        return null;
+                    }
+
+                    List<NoilsTestFinalModel> list_finalNoils = conn.Table<NoilsTestFinalModel>().Where(
+                        NoilsTestFinalModel =>
+                        (NoilsTestFinalModel.testID == currentTestID && NoilsTestFinalModel.status == true)).ToList();
+
+                    if (list_finalNoils != null)
+                    {
+
+                        int loopCount = 0;
+                        foreach (NoilsTestFinalModel test in list_finalNoils)
+                        {
+                            NoilsReportModelView noilsReportMV = new NoilsReportModelView()
+                            {
+                                testID = test.testID,
+                                description = test.testcount.ToString(),
+                                silver_wt = test.weigth_sliver,
+                                noils_wt = test.weigth_noils,
+                                noils = test.noils
+                            };
+                            OVS.Add(noilsReportMV);
+                            loopCount += 1;
+                        }
+
+                        NoilsReportModelView noilsReportModelView = new NoilsReportModelView()
+                        {
+                            testID = noilsCalcList_finalOut.testID,
+                            description = "Average Weight",
+                            silver_wt = noilsCalcList_finalOut.average_wt_sliverwt,
+                            noils_wt = noilsCalcList_finalOut.average_wt_noilswt,
+                            noils = noilsCalcList_finalOut.average_wt_noils
+                        };
+                        OVS.Add(noilsReportModelView);
+
+                        noilsReportModelView = new NoilsReportModelView()
+                        {
+                            testID = noilsCalcList_finalOut.testID,
+                            description = "Weight (Max)",
+                            silver_wt = noilsCalcList_finalOut.max_sliverwt,
+                            noils_wt = noilsCalcList_finalOut.max_noilswt,
+                            noils = noilsCalcList_finalOut.max_noils
+                        };
+                        OVS.Add(noilsReportModelView);
+
+                        noilsReportModelView = new NoilsReportModelView()
+                        {
+                            testID = noilsCalcList_finalOut.testID,
+                            description = "Weight (Min)",
+                            silver_wt = noilsCalcList_finalOut.min_sliverwt,
+                            noils_wt = noilsCalcList_finalOut.min_noilswt,
+                            noils = noilsCalcList_finalOut.min_noils
+                        };
+                        OVS.Add(noilsReportModelView);
+
+                        noilsReportModelView = new NoilsReportModelView()
+                        {
+                            testID = noilsCalcList_finalOut.testID,
+                            description = "Range",
+                            silver_wt = noilsCalcList_finalOut.range_sliverwt,
+                            noils_wt = noilsCalcList_finalOut.range_noilswt,
+                            noils = noilsCalcList_finalOut.range_noils
+                        };
+                        OVS.Add(noilsReportModelView);
+
+                        //noilsReportModelView = new NoilsReportModelView()
+                        //{
+                        //    testID = noilsCalcList_finalOut.testID,
+                        //    description = "HANK",
+                        //    silver_wt = noilsCalcList_finalOut.testaverage_sliverwt,
+                        //    noils_wt = noilsCalcList_finalOut.testaverage_noilswt,
+                        //    noils = 0.00m
+                        //};
+                        //OVS.Add(noilsReportModelView);
+
+                        noilsReportModelView = new NoilsReportModelView()
+                        {
+                            testID = noilsCalcList_finalOut.testID,
+                            description = "SD",
+                            silver_wt = noilsCalcList_finalOut.testsd_sliverwt,
+                            noils_wt = noilsCalcList_finalOut.testsd_noilswt,
+                            noils = noilsCalcList_finalOut.testsd_noils
+                        };
+                        OVS.Add(noilsReportModelView);
+
+                        noilsReportModelView = new NoilsReportModelView()
+                        {
+                            testID = noilsCalcList_finalOut.testID,
+                            description = "CV",
+                            silver_wt = noilsCalcList_finalOut.testcv_sliverwt,
+                            noils_wt = noilsCalcList_finalOut.testcv_noilswt,
+                            noils = noilsCalcList_finalOut.testcv_noils
+                        };
+                        OVS.Add(noilsReportModelView);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                return OVS;
+            }
+            catch (Exception ex)
+            {
+                //DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
+                return null;
+            }
         }
 
         private async void updateDB()
@@ -472,6 +613,10 @@ namespace TQM
                                         {
                                             // To be decieded if noils test calculated value failed to insert to db
                                         }
+                                        else
+                                        {
+                                            noilsCalcList_finalOut = noilsTestCalculatedModel;
+                                        }
                                     }
                                 }
                                 else
@@ -485,8 +630,8 @@ namespace TQM
                             }
                         }
                         await enableTestButton();
-                        await refListView();
-                        await refOverallSummary(mean, sd, cv);
+                        await refListView(true, true);
+                        await refOverallSummary(mean, sd, cv, true, true);
                     }
                 }
 
@@ -529,10 +674,13 @@ namespace TQM
                         entry_testcount.IsEnabled = true;
                         entry_testcount.Text = TESTCOUNT.ToString();
                         picker_machinecategory.IsEnabled = true;
+                        picker_machinecategory.SelectedIndex = 0;
                         picker_machinename.IsEnabled = true;
+                        picker_machinename.SelectedIndex = 0;
                         picker_shift.IsEnabled = true;
                         picker_shift.SelectedIndex = 0;
                         entry_process.Text = "";
+                        entry_process.IsEnabled = true;
                     }
                     string str_testType = "";
                     if (currentTestType == "Sliver")
@@ -541,6 +689,7 @@ namespace TQM
                     }
                     else
                     {
+                        currentTestID = 0;
                         str_testType = "All Test Completed!!!";
                     }
                     if (isTestStarted)
@@ -601,7 +750,14 @@ namespace TQM
                 NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>().OrderByDescending(NoilsTestModel => NoilsTestModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
-                    currentTestID = lastTestRecord.testID + 1;
+                    if (currentTestID == 0)
+                    {
+                        currentTestID = lastTestRecord.testID + 1;
+                    }
+                    else if (currentTestID == lastTestRecord.testID)
+                    {
+                        currentTestID = lastTestRecord.testID;
+                    }
                 }
                 else
                 {
@@ -1099,7 +1255,14 @@ namespace TQM
                 NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>().OrderByDescending(NoilsTestModel => NoilsTestModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
-                    currentTestID = lastTestRecord.testID;
+                    if (currentTestID == 0)
+                    {
+                        currentTestID = lastTestRecord.testID + 1;
+                    }
+                    else if (currentTestID == lastTestRecord.testID)
+                    {
+                        currentTestID = lastTestRecord.testID;
+                    }
                 }
                 else
                 {

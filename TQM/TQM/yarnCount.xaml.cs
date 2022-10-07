@@ -52,6 +52,9 @@ namespace TQM
             InitializeComponent();
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
+                //conn.DropTable<YCTestModel>();
+                //conn.DropTable<YCTestSummaryModel>();
+
                 conn.CreateTable<YarnCountConfigModel>();
                 YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
                 if (yarncountconfigmodel != null)
@@ -108,24 +111,56 @@ namespace TQM
             });
         }
 
-        private async Task refListView(bool visibility = true)
+        private async void hideFrames()
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                listview_testresult.ItemsSource = null;
-                listview_testresult.IsVisible = visibility;
-                listview_testresult.ItemsSource = ycTestModelViewlist;
+                individualTestResultFrame_FinalOut.IsVisible = false;
+                individualTestResultFrame.IsVisible = false;
+                frame_overallSummary_FinalOut.IsVisible = false;
+                frame_overallSummary.IsVisible = false;
             });
         }
 
-        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true)
+        private async Task refListView(bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                frame_overallSummary.IsVisible = visibility;
-                lbl_average.Text = mean.ToString();
-                lbl_sd.Text = sd.ToString();
-                lbl_cv.Text = cv.ToString();
+                if (showFinalOut)
+                {
+                    individualTestResultFrame_FinalOut.IsVisible = true;
+                    listview_testresult_FinalOut.ItemsSource = null;
+                    listview_testresult_FinalOut.IsVisible = visibility;
+                    listview_testresult_FinalOut.ItemsSource = ycTestModelViewlist;
+                }
+                else
+                {
+                    individualTestResultFrame.IsVisible = true;
+                    listview_testresult.ItemsSource = null;
+                    listview_testresult.IsVisible = visibility;
+                    listview_testresult.ItemsSource = ycTestModelViewlist;
+                }
+            });
+        }
+
+        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true, bool showFinalOut = false)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                if (showFinalOut)
+                {
+                    frame_overallSummary_FinalOut.IsVisible = visibility;
+                    lbl_average_FinalOut.Text = mean.ToString();
+                    lbl_sd_FinalOut.Text = sd.ToString();
+                    lbl_cv_FinalOut.Text = cv.ToString();
+                }
+                else
+                {
+                    frame_overallSummary.IsVisible = visibility;
+                    lbl_average.Text = mean.ToString();
+                    lbl_sd.Text = sd.ToString();
+                    lbl_cv.Text = cv.ToString();
+                }
             });
         }
 
@@ -213,8 +248,8 @@ namespace TQM
                     }
                     if (dbStatus)
                     {
-                        await refListView();
-                        await refOverallSummary(mean, sd, cv);
+                        await refListView(true, true);
+                        await refOverallSummary(mean, sd, cv, true, true);
                     }
                 }
 
@@ -234,14 +269,17 @@ namespace TQM
                     testYCButton.BackgroundColor = Color.Green;
                     entry_testcount.IsEnabled = true;
                     entry_testcount.Text = TESTCOUNT.ToString();
-                    picker_shift.IsEnabled = true;
-                    picker_shift.SelectedIndex = 0;
-                    entry_process.Text = "";
                     picker_machinecategory.IsEnabled = true;
                     picker_machinecategory.SelectedIndex = 0;
                     picker_machinename.IsEnabled = true;
+                    picker_machinename.SelectedIndex = 0;
+                    picker_shift.IsEnabled = true;
+                    picker_shift.SelectedIndex = 0;
+                    entry_process.Text = "";
+                    entry_process.IsEnabled = true;
                     if (isTestStarted)
                     {
+                        currentTestID = 0;
                         isTestStarted = false;
                         showAlert("Test Completed!!! Start new test");
                     }
@@ -260,6 +298,7 @@ namespace TQM
             isTestStarted = true;
             ImageNotification("null");
             UpdateUserNotification("");
+            hideFrames();
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
@@ -326,6 +365,7 @@ namespace TQM
             testYCButton.BackgroundColor = Color.SlateGray;
             entry_testcount.IsEnabled = false;
             picker_shift.IsEnabled = false;
+            entry_process.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
