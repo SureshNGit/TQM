@@ -180,6 +180,17 @@ namespace TQM
             });
         }
 
+        private async void hideFrames()
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                frame_overallSummary.IsVisible = false;
+                individualTestResultFrame.IsVisible = false;
+                frame_overallTestSummary.IsVisible = false;
+                overallTestResultFrame.IsVisible = false;
+            });
+        }
+
         private async Task refListView(bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
@@ -436,10 +447,10 @@ namespace TQM
                         decimal IndividualCalValminusMean = 0m;
                         foreach (YCTestApercentModelView test in ycTestApercentModelViewlist)
                         {
-                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
+                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
                         }
                         sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestApercentModelViewlist[0].totaltestcount - 1));//Standard Deviation
-                        cv = (sd / mean) * 100; //Coefficient of Variation
+                        cv = (sd / avg_weight) * 100; //Coefficient of Variation
                         avg_weight = Math.Round(avg_weight, 3);
                         mean = Math.Round(mean, 3);
                         sd = Math.Round(sd, 3);
@@ -519,9 +530,9 @@ namespace TQM
                                                                 ).FirstOrDefault();
                                     if (nPlus1Summary != null)
                                     {
-                                        decimal apercent_nMinus1 = ((nMinus1Summary.testaverage - NSummary.testaverage) / nMinus1Summary.testaverage) * 100;
+                                        decimal apercent_nMinus1 = ((nMinus1Summary.avg_weight - NSummary.avg_weight) / nMinus1Summary.avg_weight) * 100m;
                                         apercent_nMinus1 = Math.Round(apercent_nMinus1, 3);
-                                        decimal apercent_nPlus1 = ((nPlus1Summary.testaverage - NSummary.testaverage) / nPlus1Summary.testaverage) * 100;
+                                        decimal apercent_nPlus1 = ((nPlus1Summary.avg_weight - NSummary.avg_weight) / nPlus1Summary.avg_weight) * 100m;
                                         apercent_nPlus1 = Math.Round(apercent_nPlus1, 3);
                                         YCTestApercentModel Max_nMinus1 = conn.Table<YCTestApercentModel>().Where(
                                             YCTestApercentModel =>
@@ -716,11 +727,11 @@ namespace TQM
         [Obsolete]
         private async void startTestNm1Button_Clicked(object sender, EventArgs e)
         {
-
             isTestStarted = true;
             currentTestType = "nMinus1";
             ImageNotification("null");
             UpdateUserNotification("");
+            hideFrames();
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))

@@ -190,7 +190,7 @@
                        Text="" TextColor="Black" FontSize="Large" />
             </Frame>
 
-            <Frame Grid.Row="2" Grid.RowSpan="1" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,10,2,2" x:Name="frame_overallSummary"
+            <Frame Grid.Row="1" Grid.RowSpan="1" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,10,2,2" x:Name="frame_overallSummary"
                    BackgroundColor="Lavender" BorderColor="Lavender" CornerRadius="25" HasShadow="False" HeightRequest="2" IsVisible="false">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -215,16 +215,16 @@
                 </Grid>
             </Frame>
 
-            <Frame Grid.Row="3" Grid.RowSpan="9" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2"
+            <Frame Grid.Row="2" Grid.RowSpan="9" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2"
                    BackgroundColor="White" BorderColor="White" CornerRadius="0" HasShadow="False" x:Name="individualTestResultFrame" IsVisible="false">
                 <ListView x:Name="listview_testresult_individual" 
                       HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always"
                        IsVisible="false">
                     <ListView.Header>
-                        <StackLayout Orientation="Horizontal" VerticalOptions="Start">
-                            <Label Text="Sample No" WidthRequest="150" TextColor="#0e0273" FontSize="20"/>
-                            <Label Text="Weigth" WidthRequest="230" TextColor="#0e0273" FontSize="20"/>
-                            <Label Text="Hank" WidthRequest="200" TextColor="#0e0273" FontSize="20"/>
+                        <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273">
+                            <Label Text="Sample No" WidthRequest="150" TextColor="White" FontSize="16"/>
+                            <Label Text="Weigth" WidthRequest="150" TextColor="White" FontSize="16"/>
+                            <Label Text="Hank" WidthRequest="150" TextColor="White" FontSize="16"/>
                         </StackLayout>
                     </ListView.Header>
                     <ListView.ItemTemplate>
@@ -233,16 +233,16 @@
                                 <Grid ColumnSpacing="2"
                                          RowSpacing="2">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="215"/>
+                                        <ColumnDefinition Width="155"/>
+                                        <ColumnDefinition Width="155"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Label Grid.Column="0" Grid.Row="0"
-                                       Text="{Binding testcount}" FontSize="20"/>
+                                       Text="{Binding testcount}" FontSize="16"/>
                                     <Label Grid.Column="1" Grid.Row="0" 
-                                       Text="{Binding yarnweight}" FontSize="20"/>
+                                       Text="{Binding yarnweight}" FontSize="16"/>
                                     <Label Grid.Column="2" Grid.Row="0" 
-                                       Text="{Binding yccalcval}" FontSize="20"/>
+                                       Text="{Binding yccalcval}" FontSize="16"/>
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>

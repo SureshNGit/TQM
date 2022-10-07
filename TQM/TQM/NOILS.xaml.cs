@@ -146,6 +146,17 @@ namespace TQM
             });
         }
 
+        private async void hideFrames()
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                frame_overallSummary.IsVisible = false;
+                individualTestResultFrame.IsVisible = false;
+                frame_overallTestSummary.IsVisible = false;
+                overallTestResultFrame.IsVisible = false;
+            });
+        }
+
         private async Task refListView(bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
@@ -394,10 +405,10 @@ namespace TQM
                         decimal IndividualCalValminusMean = 0m;
                         foreach (NoilsTestModelView test in noilsTestModelViewList)
                         {
-                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
+                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
                         }
                         sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(noilsTestModelViewList[0].totaltestcount - 1));//Standard Deviation
-                        cv = (sd / mean) * 100; //Coefficient of Variation
+                        cv = (sd / avg_weight) * 100m; //Coefficient of Variation
                         avg_weight = Math.Round(avg_weight, 3);
                         mean = Math.Round(mean, 3);
                         sd = Math.Round(sd, 3);
@@ -495,7 +506,7 @@ namespace TQM
                                         decimal totalWeight_Noils = 0.00m;
                                         foreach (NoilsTestModel noilsTest_sliver in noilsTest_sliverList)
                                         {
-                                            decimal noils = (noilsTest_noilsList[testRecCount].yarnweight / (noilsTest_noilsList[testRecCount].yarnweight + noilsTest_sliver.yarnweight)) * 100;
+                                            decimal noils = (noilsTest_noilsList[testRecCount].yarnweight / (noilsTest_noilsList[testRecCount].yarnweight + noilsTest_sliver.yarnweight)) * 100m;
                                             noils = Math.Round(noils, 3);
                                             totalWeight_Noils = totalWeight_Noils + noils;
                                             NoilsTestFinalModel noilsTestFinalModel = new NoilsTestFinalModel()
@@ -557,7 +568,7 @@ namespace TQM
                                         List<NoilsTestFinalModel> noilsFinal_list = conn.Table<NoilsTestFinalModel>().Where(
                                                           NoilsTestFinalModel => (
                                                           NoilsTestFinalModel.status == true &&
-                                                          NoilsTestFinalModel.testID != currentTestID)
+                                                          NoilsTestFinalModel.testID == currentTestID)
                                                           ).ToList();
 
                                         decimal IndividualCalValminusMean = 0m;
@@ -566,7 +577,7 @@ namespace TQM
                                             IndividualCalValminusMean = IndividualCalValminusMean + ((test.noils - avg_weight_noils) * (test.noils - avg_weight_noils));
                                         }
                                         decimal sd_noils = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(noilsTest_sliverList[0].totaltestcount - 1));//Standard Deviation
-                                        decimal cv_noils = (sd / avg_weight_noils) * 100; //Coefficient of Variation
+                                        decimal cv_noils = (sd_noils / avg_weight_noils) * 100m; //Coefficient of Variation
                                         sd_noils = Math.Round(sd_noils, 3);
                                         cv_noils = Math.Round(cv_noils, 3);
 
@@ -713,6 +724,7 @@ namespace TQM
             currentTestType = "Sliver";
             ImageNotification("null");
             UpdateUserNotification("");
+            hideFrames();
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))

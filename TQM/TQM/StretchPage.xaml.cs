@@ -146,6 +146,17 @@ namespace TQM
             });
         }
 
+        private async void hideFrames()
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                frame_overallSummary.IsVisible = false;
+                individualTestResultFrame.IsVisible = false;
+                frame_overallTestSummary.IsVisible = false;
+                overallTestResultFrame.IsVisible = false;
+            });
+        }
+
         private async Task refListView(bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
@@ -397,10 +408,10 @@ namespace TQM
                         decimal IndividualCalValminusMean = 0m;
                         foreach (StretchTestModelView test in stretchTestModelViewList)
                         {
-                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
+                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
                         }
                         sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(stretchTestModelViewList[0].totaltestcount - 1));//Standard Deviation
-                        cv = (sd / mean) * 100; //Coefficient of Variation
+                        cv = (sd / avg_weight) * 100; //Coefficient of Variation
                         avg_weight = Math.Round(avg_weight, 3);
                         mean = Math.Round(mean, 3);
                         sd = Math.Round(sd, 3);
@@ -473,7 +484,7 @@ namespace TQM
                                                             ).FirstOrDefault();
                                 if (fbSummary != null)
                                 {
-                                    decimal stretch = ((ibSummary.avg_weight - fbSummary.avg_weight) / ((ibSummary.avg_weight + fbSummary.avg_weight) / 2)) * 100;
+                                    decimal stretch = ((ibSummary.avg_weight - fbSummary.avg_weight) / ((ibSummary.avg_weight + fbSummary.avg_weight) / 2m)) * 100m;
                                     stretch = Math.Round(stretch, 3);
 
                                     StretchTestModel Max_IB = conn.Table<StretchTestModel>().Where(
@@ -638,6 +649,7 @@ namespace TQM
             currentTestType = "IB";
             ImageNotification("null");
             UpdateUserNotification("");
+            hideFrames();
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
