@@ -55,15 +55,18 @@ namespace TQM
                         endDate = endDate.AddDays(1);
                         stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
                         StretchTestCalculatedModel.createdate >= startDate &&
-                        StretchTestCalculatedModel.createdate < endDate &&
-                        StretchTestCalculatedModel.status == true).ToList();
+                        StretchTestCalculatedModel.createdate < endDate
+                        //&& StretchTestCalculatedModel.status == true
+                        ).ToList();
                     }
                     else if (categoryName != null && machineID == Guid.Empty)
                     {
                         endDate = endDate.AddDays(1);
                         stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
                            (StretchTestCalculatedModel.createdate >= startDate && StretchTestCalculatedModel.createdate < endDate
-                           && StretchTestCalculatedModel.machineCategory == categoryName) && StretchTestCalculatedModel.status == true).ToList();
+                           && StretchTestCalculatedModel.machineCategory == categoryName)
+                           //&& StretchTestCalculatedModel.status == true
+                           ).ToList();
                     }
                     else if (categoryName != null && machineID != Guid.Empty)
                     {
@@ -71,7 +74,9 @@ namespace TQM
                         stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
                            (StretchTestCalculatedModel.createdate >= startDate && StretchTestCalculatedModel.createdate < endDate
                            && StretchTestCalculatedModel.machineCategory == categoryName)
-                           && StretchTestCalculatedModel.machineID == machineID && StretchTestCalculatedModel.status == true).ToList();
+                           && StretchTestCalculatedModel.machineID == machineID
+                           //&& StretchTestCalculatedModel.status == true
+                           ).ToList();
                     }
 
                     //List<StretchTestCalculatedModel> stretchCalcList = null;
@@ -91,11 +96,15 @@ namespace TQM
                         OverallStretchReportModelView report = new OverallStretchReportModelView();
                         List<StretchTestModel> yctestStretchlist_IB = conn.Table<StretchTestModel>().Where(
                             StretchTestModel =>
-                            (StretchTestModel.testType == "IB" && StretchTestModel.status == true)).ToList();
+                            (StretchTestModel.testType == "IB"
+                            //&& StretchTestModel.status == true
+                            && StretchTestModel.testID == stretchCalc.testID)).ToList();
 
                         List<StretchTestModel> yctestStretchlist_FB = conn.Table<StretchTestModel>().Where(
                             StretchTestModel =>
-                            (StretchTestModel.testType == "FB" && StretchTestModel.status == true)).ToList();
+                            (StretchTestModel.testType == "FB"
+                            //&& StretchTestModel.status == true
+                            && StretchTestModel.testID == stretchCalc.testID)).ToList();
                         if (yctestStretchlist_IB != null && yctestStretchlist_FB != null)
                         {
 

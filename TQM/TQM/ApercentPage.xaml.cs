@@ -51,6 +51,7 @@ namespace TQM
         public ApercentPage()
         {
             InitializeComponent();
+            lbl_TestID.Text = "";
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 //conn.DropTable<YCTestApercentModel>();
@@ -76,45 +77,232 @@ namespace TQM
                     picker_shift.SelectedIndex = 0;
                     entry_process.Text = "";
                 }
+
+                conn.CreateTable<YCTestApercentModel>();
+                conn.CreateTable<YCTestApercentSummaryModel>();
                 conn.CreateTable<YCTestApercentCalculatedModel>();
-                YCTestApercentCalculatedModel ycTestApercentCalculatedModel = conn.Table<YCTestApercentCalculatedModel>().Where(
-                    YCTestApercentCalculatedModel => (YCTestApercentCalculatedModel.testType == "nMinus1" &&
-                    YCTestApercentCalculatedModel.status == false)).FirstOrDefault();
-                if (ycTestApercentCalculatedModel != null)
+
+                int recordCount = conn.Table<YCTestApercentModel>().Count();
+
+                if (recordCount == 0)
                 {
                     startTestNm1Button.IsVisible = true;
                 }
                 else
                 {
-                    ycTestApercentCalculatedModel = conn.Table<YCTestApercentCalculatedModel>().Where(
-                        YCTestApercentCalculatedModel =>
-                        (YCTestApercentCalculatedModel.testType == "nMinus1" && YCTestApercentCalculatedModel.status == true) &&
-                        (YCTestApercentCalculatedModel.testType == "N" && YCTestApercentCalculatedModel.status == false)
-                        ).FirstOrDefault();
-                    if (ycTestApercentCalculatedModel != null)
+                    DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+                    YCTestApercentModel lastTest = conn.Table<YCTestApercentModel>()
+                        .Where(YCTestApercentModel => YCTestApercentModel.createdate == maxDate).FirstOrDefault();
+
+                    if (lastTest == null)
                     {
-                        startTestNButton.IsVisible = true;
+                        //to be decided
                     }
                     else
                     {
-                        ycTestApercentCalculatedModel = conn.Table<YCTestApercentCalculatedModel>().Where(
-                       YCTestApercentCalculatedModel =>
-                       (YCTestApercentCalculatedModel.testType == "nMinus1" && YCTestApercentCalculatedModel.status == true) &&
-                       (YCTestApercentCalculatedModel.testType == "N" && YCTestApercentCalculatedModel.status == true) &&
-                       (YCTestApercentCalculatedModel.testType == "nPlus1" && YCTestApercentCalculatedModel.status == false)
-                       ).FirstOrDefault();
-                        if (ycTestApercentCalculatedModel != null)
+                        long lastTestID = lastTest.testID;
+                        if (lastTest.testType == "nMinus1")
                         {
-                            startTestNp1Button.IsVisible = true;
+                            // check nMinus1 is having entry in YCTestApercentSummaryModel table
+                            YCTestApercentSummaryModel lastTestSummary = conn.Table<YCTestApercentSummaryModel>().
+                                            Where(YCTestApercentSummaryModel =>
+                                            (YCTestApercentSummaryModel.testID == lastTest.testID
+                                            && YCTestApercentSummaryModel.testType == "nMinus1")).FirstOrDefault();
+                            if (lastTestSummary == null)
+                            {
+                                //get all test for nMinus1 from YCTestApercentModel table and delete 
+
+                                List<YCTestApercentModel> allTest_nMinus1 = conn.Table<YCTestApercentModel>()
+                                                                .Where(YCTestApercentModel =>
+                                                                (YCTestApercentModel.testID == lastTestID
+                                                                && YCTestApercentModel.testType == "nMinus1")).ToList();
+                                foreach (YCTestApercentModel test in allTest_nMinus1)
+                                {
+                                    conn.Delete(test);
+                                }
+                                startTestNm1Button.IsVisible = true;
+                            }
+                            else
+                            {
+                                //Start with N Test
+                                picker_machinecategory.SelectedItem = lastTest.machineCategory;
+                                List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
+                                int machineIndex = 0;
+                                foreach (MachineModel item in source)
+                                {
+                                    if (item.machineName == lastTest.machineName)
+                                    {
+                                        machineIndex = machineIndex + 1;
+                                        break;
+                                    }
+                                }
+                                picker_machinename.SelectedIndex = machineIndex - 1;
+                                picker_shift.SelectedItem = lastTest.shift;
+                                entry_process.Text = lastTest.process;
+                                picker_machinecategory.IsEnabled = false;
+                                picker_machinename.IsEnabled = false;
+                                picker_shift.IsEnabled = false;
+                                entry_process.IsEnabled = false;
+                                currentTestID = lastTest.testID;
+                                lbl_TestID.Text = currentTestID.ToString();
+                                startTestNButton.IsVisible = true;
+                            }
                         }
-                        else
+                        else if (lastTest.testType == "N")
                         {
-                            startTestNm1Button.IsVisible = true;
+                            // check N is having entry in YCTestApercentSummaryModel table
+                            YCTestApercentSummaryModel lastTestSummary = conn.Table<YCTestApercentSummaryModel>().
+                                            Where(YCTestApercentSummaryModel =>
+                                            (YCTestApercentSummaryModel.testID == lastTest.testID
+                                            && YCTestApercentSummaryModel.testType == "N")).FirstOrDefault();
+                            if (lastTestSummary == null)
+                            {
+                                //get all test for N from YCTestApercentModel table and delete 
+
+                                List<YCTestApercentModel> allTest_N = conn.Table<YCTestApercentModel>()
+                                                                .Where(YCTestApercentModel =>
+                                                                (YCTestApercentModel.testID == lastTestID
+                                                                 && YCTestApercentModel.testType == "N")).ToList();
+                                foreach (YCTestApercentModel test in allTest_N)
+                                {
+                                    conn.Delete(test);
+                                }
+                                picker_machinecategory.SelectedItem = lastTest.machineCategory;
+                                List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
+                                int machineIndex = 0;
+                                foreach (MachineModel item in source)
+                                {
+                                    if (item.machineName == lastTest.machineName)
+                                    {
+                                        machineIndex = machineIndex + 1;
+                                        break;
+                                    }
+                                }
+                                picker_machinename.SelectedIndex = machineIndex - 1;
+                                picker_shift.SelectedItem = lastTest.shift;
+                                entry_process.Text = lastTest.process;
+                                picker_machinecategory.IsEnabled = false;
+                                picker_machinename.IsEnabled = false;
+                                picker_shift.IsEnabled = false;
+                                entry_process.IsEnabled = false;
+                                currentTestID = lastTest.testID;
+                                lbl_TestID.Text = currentTestID.ToString();
+                                startTestNButton.IsVisible = true;
+                            }
+                            else
+                            {
+                                //Start with N+1 Test
+                                picker_machinecategory.SelectedItem = lastTest.machineCategory;
+                                List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
+                                int machineIndex = 0;
+                                foreach (MachineModel item in source)
+                                {
+                                    if (item.machineName == lastTest.machineName)
+                                    {
+                                        machineIndex = machineIndex + 1;
+                                        break;
+                                    }
+                                }
+                                picker_machinename.SelectedIndex = machineIndex - 1;
+                                picker_shift.SelectedItem = lastTest.shift;
+                                entry_process.Text = lastTest.process;
+                                picker_machinecategory.IsEnabled = false;
+                                picker_machinename.IsEnabled = false;
+                                picker_shift.IsEnabled = false;
+                                entry_process.IsEnabled = false;
+                                currentTestID = lastTest.testID;
+                                lbl_TestID.Text = currentTestID.ToString();
+                                startTestNp1Button.IsVisible = true;
+                            }
+                        }
+                        else if (lastTest.testType == "nPlus1")
+                        {
+                            // check N+1 is having entry in YCTestApercentSummaryModel table
+                            YCTestApercentSummaryModel lastTestSummary = conn.Table<YCTestApercentSummaryModel>().
+                                            Where(YCTestApercentSummaryModel =>
+                                            (YCTestApercentSummaryModel.testID == lastTest.testID
+                                            && YCTestApercentSummaryModel.testType == "nPlus1")).FirstOrDefault();
+                            if (lastTestSummary == null)
+                            {
+                                //get all test for N+1 from YCTestApercentModel table and delete 
+
+                                List<YCTestApercentModel> allTest_nPlus1 = conn.Table<YCTestApercentModel>()
+                                                                .Where(YCTestApercentModel =>
+                                                                (YCTestApercentModel.testID == lastTestID
+                                                                 && YCTestApercentModel.testType == "nPlus1")).ToList();
+                                foreach (YCTestApercentModel test in allTest_nPlus1)
+                                {
+                                    conn.Delete(test);
+                                }
+                                picker_machinecategory.SelectedItem = lastTest.machineCategory;
+                                List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
+                                int machineIndex = 0;
+                                foreach (MachineModel item in source)
+                                {
+                                    if (item.machineName == lastTest.machineName)
+                                    {
+                                        machineIndex = machineIndex + 1;
+                                        break;
+                                    }
+                                }
+                                picker_machinename.SelectedIndex = machineIndex - 1;
+                                picker_shift.SelectedItem = lastTest.shift;
+                                entry_process.Text = lastTest.process;
+                                picker_machinecategory.IsEnabled = false;
+                                picker_machinename.IsEnabled = false;
+                                picker_shift.IsEnabled = false;
+                                entry_process.IsEnabled = false;
+                                currentTestID = lastTest.testID;
+                                lbl_TestID.Text = currentTestID.ToString();
+                                startTestNp1Button.IsVisible = true;
+                            }
+                            else
+                            {
+                                //Check IB and FB data stored in YCTestApercentCalculatedModel table
+
+                                YCTestApercentCalculatedModel calculatedApercentTest = conn.Table<YCTestApercentCalculatedModel>().
+                                                Where(YCTestApercentCalculatedModel =>
+                                                YCTestApercentCalculatedModel.testID == lastTest.testID).FirstOrDefault();
+                                if (calculatedApercentTest != null)
+                                {
+                                    startTestNm1Button.IsVisible = true;
+                                }
+                                else
+                                {
+                                    //delete records in YCTestApercentModel Table
+
+                                    List<YCTestApercentModel> allLastTest = conn.Table<YCTestApercentModel>().
+                                        Where(YCTestApercentModel =>
+                                        (YCTestApercentModel.testID == lastTestID)).ToList();
+                                    foreach (YCTestApercentModel test in allLastTest)
+                                    {
+                                        conn.Delete(test);
+                                    }
+
+                                    // delete records in StretchTestSummaryModel Table
+
+                                    List<StretchTestSummaryModel> allLastTest_Summary = conn.Table<StretchTestSummaryModel>().
+                                        Where(StretchTestSummaryModel =>
+                                        (StretchTestSummaryModel.testID == lastTestID)).ToList();
+                                    foreach (StretchTestSummaryModel test in allLastTest_Summary)
+                                    {
+                                        conn.Delete(test);
+                                    }
+
+                                    //start new test
+
+                                    startTestNm1Button.IsVisible = true;
+
+                                }
+                            }
                         }
                     }
                 }
+
+
             }
         }
+
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
@@ -727,6 +915,7 @@ namespace TQM
         [Obsolete]
         private async void startTestNm1Button_Clicked(object sender, EventArgs e)
         {
+            lbl_TestID.Text = "";
             isTestStarted = true;
             currentTestType = "nMinus1";
             ImageNotification("null");
@@ -782,6 +971,7 @@ namespace TQM
                 {
                     currentTestID = 1;
                 }
+                lbl_TestID.Text = currentTestID.ToString();
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
                 {

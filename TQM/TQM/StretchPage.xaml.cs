@@ -51,6 +51,7 @@ namespace TQM
         public StretchPage()
         {
             InitializeComponent();
+            lbl_TestID.Text = "";
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 //conn.DropTable<StretchTestModel>();
@@ -76,18 +77,162 @@ namespace TQM
                     picker_shift.SelectedIndex = 0;
                     entry_process.Text = "";
                 }
+                conn.CreateTable<StretchTestModel>();
+                conn.CreateTable<StretchTestSummaryModel>();
                 conn.CreateTable<StretchTestCalculatedModel>();
-                StretchTestCalculatedModel stretchTestCalculatedModel = conn.Table<StretchTestCalculatedModel>().Where(
-                    StretchTestCalculatedModel => (StretchTestCalculatedModel.testType == "IB" &&
-                    StretchTestCalculatedModel.status == false)).FirstOrDefault();
-                if (stretchTestCalculatedModel != null)
-                {
-                    startFullBobbinButton.IsVisible = true;
-                }
-                else
+
+                int recordCount = conn.Table<StretchTestModel>().Count();
+
+                if (recordCount == 0)
                 {
                     startInitialBobbinButton.IsVisible = true;
                 }
+                else
+                {
+                    DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+                    StretchTestModel lastTest = conn.Table<StretchTestModel>().Where(StretchTestModel => StretchTestModel.createdate == maxDate).FirstOrDefault();
+                    //StretchTestModel lastTest = conn.Table<StretchTestModel>().
+                    //    Where(StretchTestModel => StretchTestModel.ID == maxTest.ID).FirstOrDefault();
+
+                    if (lastTest.testType == "IB")
+                    {
+                        StretchTestSummaryModel lastTestSummary = conn.Table<StretchTestSummaryModel>().
+                                            Where(StretchTestSummaryModel =>
+                                            (StretchTestSummaryModel.testID == lastTest.testID
+                                            && StretchTestSummaryModel.testType == "IB")).FirstOrDefault();
+                        if (lastTestSummary == null)
+                        {
+                            lastTest.status = false;
+                            if (conn.Update(lastTest) < 1)
+                            {
+                                //to be decided
+                            }
+                            else
+                            {
+                                startInitialBobbinButton.IsVisible = true;
+                            }
+                        }
+                        else
+                        {
+                            //resume with full bobbin test
+                            picker_machinecategory.SelectedItem = lastTest.machineCategory;
+                            List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
+                            int machineIndex = 0;
+                            foreach (MachineModel item in source)
+                            {
+                                if (item.machineName == lastTest.machineName)
+                                {
+                                    machineIndex = machineIndex + 1;
+                                    break;
+                                }
+                            }
+                            picker_machinename.SelectedIndex = machineIndex - 1;
+                            picker_shift.SelectedItem = lastTest.shift;
+                            entry_process.Text = lastTest.process;
+                            picker_machinecategory.IsEnabled = false;
+                            picker_machinename.IsEnabled = false;
+                            picker_shift.IsEnabled = false;
+                            entry_process.IsEnabled = false;
+                            currentTestID = lastTest.testID;
+                            lbl_TestID.Text = currentTestID.ToString();
+                            startFullBobbinButton.IsVisible = true;
+                        }
+                    }
+                    else // to check last full bobbin test was completed properly
+                    {
+                        long lastTestID = lastTest.testID;
+                        StretchTestSummaryModel lastTestSummary = conn.Table<StretchTestSummaryModel>().
+                                            Where(StretchTestSummaryModel =>
+                                            (StretchTestSummaryModel.testID == lastTest.testID
+                                            && StretchTestSummaryModel.testType == "FB")).FirstOrDefault();
+                        if (lastTestSummary == null)
+                        {
+                            if (conn.Delete(lastTest) < 1)
+                            {
+                                //to be decided
+                            }
+                            else
+                            {
+                                //start new full bobbin test
+                                StretchTestModel lastTest_IB = conn.Table<StretchTestModel>().
+                                    Where(StretchTestModel =>
+                                    (StretchTestModel.testID == lastTestID && StretchTestModel.testType == "IB")).FirstOrDefault();
+                                picker_machinecategory.SelectedItem = lastTest_IB.machineCategory;
+                                picker_machinename.SelectedItem = lastTest_IB.machineName;
+                                picker_shift.SelectedItem = lastTest_IB.shift;
+                                entry_process.Text = lastTest_IB.process;
+                                picker_machinecategory.IsEnabled = false;
+                                picker_machinename.IsEnabled = false;
+                                picker_shift.IsEnabled = false;
+                                entry_process.IsEnabled = false;
+                                currentTestID = lastTest_IB.testID;
+                                lbl_TestID.Text = currentTestID.ToString();
+                                startFullBobbinButton.IsVisible = true;
+                            }
+                        }
+                        else
+                        {
+                            //Check IB and FB data stored in StretchTestCalculatedModel table
+
+                            StretchTestCalculatedModel calculatedStretchTest = conn.Table<StretchTestCalculatedModel>().
+                                            Where(StretchTestCalculatedModel =>
+                                            StretchTestCalculatedModel.testID == lastTest.testID).FirstOrDefault();
+                            if (calculatedStretchTest != null)
+                            {
+                                startInitialBobbinButton.IsVisible = true;
+                            }
+                            else
+                            {
+                                StretchTestModel lastTest_IB = conn.Table<StretchTestModel>().
+                                    Where(StretchTestModel =>
+                                    (StretchTestModel.testID == lastTestID && StretchTestModel.testType == "IB")).FirstOrDefault();
+                                if (conn.Delete(lastTest_IB) < 1)
+                                {
+                                    //to be decided
+                                }
+                                else
+                                {
+                                    StretchTestModel lastTest_FB = conn.Table<StretchTestModel>().
+                                    Where(StretchTestModel =>
+                                    (StretchTestModel.testID == lastTestID && StretchTestModel.testType == "FB")).FirstOrDefault();
+                                    if (conn.Delete(lastTest_FB) < 1)
+                                    {
+                                        //to be decided
+                                    }
+                                    else
+                                    {
+                                        StretchTestSummaryModel lastTestSummary_IB = conn.Table<StretchTestSummaryModel>().
+                                            Where(StretchTestSummaryModel =>
+                                            (StretchTestSummaryModel.testID == lastTestID
+                                            && StretchTestSummaryModel.testType == "IB")).FirstOrDefault();
+                                        if (conn.Delete(lastTestSummary_IB) < 1)
+                                        {
+                                            //to be decided
+                                        }
+                                        else
+                                        {
+                                            StretchTestSummaryModel lastTestSummary_FB = conn.Table<StretchTestSummaryModel>().
+                                            Where(StretchTestSummaryModel =>
+                                            (StretchTestSummaryModel.testID == lastTestID
+                                            && StretchTestSummaryModel.testType == "FB")).FirstOrDefault();
+                                            if (conn.Delete(lastTestSummary_FB) < 1)
+                                            {
+                                                //to be decided
+                                            }
+                                            else
+                                            {
+                                                startInitialBobbinButton.IsVisible = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
             }
         }
 
@@ -644,7 +789,7 @@ namespace TQM
         [Obsolete]
         private async void startInitialBobbinButton_Clicked(object sender, EventArgs e)
         {
-
+            lbl_TestID.Text = "";
             isTestStarted = true;
             currentTestType = "IB";
             ImageNotification("null");
@@ -700,6 +845,7 @@ namespace TQM
                 {
                     currentTestID = 1;
                 }
+                lbl_TestID.Text = currentTestID.ToString();
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
                 {

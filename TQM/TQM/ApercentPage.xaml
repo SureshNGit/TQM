@@ -19,7 +19,12 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
-                <Label Grid.Row="0" Grid.Column="2" Text="A %" FontSize="30" TextColor="Red" VerticalTextAlignment="Center" HorizontalOptions="End" />
+                <Label Grid.Row="0" Grid.Column="2" Text="A %" FontSize="25" TextColor="ForestGreen" 
+                       VerticalTextAlignment="Center" HorizontalOptions="Start" />
+                <Label Grid.Row="0" Grid.Column="3" Text="Test ID :" FontSize="18" TextColor="#0e0273" 
+                       VerticalTextAlignment="Center" HorizontalOptions="Start" />
+                <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Text="" FontSize="16" TextColor="ForestGreen" Margin="65,0"
+                       VerticalTextAlignment="Center" HorizontalOptions="Start" x:Name="lbl_TestID" />
                 <Button Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" HorizontalOptions="End" Text="N-1 Start" IsVisible="false"
                         x:Name="startTestNm1Button"  Clicked="startTestNm1Button_Clicked" BackgroundColor="green" TextColor="white" CornerRadius="25"/>
                 <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" HorizontalOptions="End" Text="N - Start" IsVisible="false"

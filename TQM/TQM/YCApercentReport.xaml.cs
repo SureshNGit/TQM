@@ -97,13 +97,19 @@ namespace TQM
                         OverallApercentReportModelView report = new OverallApercentReportModelView();
                         List<YCTestApercentModel> yctestApercentlist_nMinus1 = conn.Table<YCTestApercentModel>().Where(
                             YCTestApercentModel =>
-                            (YCTestApercentModel.testType == "nMinus1" && YCTestApercentModel.status == true)).ToList();
+                            (YCTestApercentModel.testType == "nMinus1"
+                            && YCTestApercentModel.status == true
+                            && YCTestApercentModel.testID == apercentCalc.testID)).ToList();
                         List<YCTestApercentModel> yctestApercentlist_N = conn.Table<YCTestApercentModel>().Where(
                             YCTestApercentModel =>
-                            (YCTestApercentModel.testType == "N" && YCTestApercentModel.status == true)).ToList();
+                            (YCTestApercentModel.testType == "N"
+                            && YCTestApercentModel.status == true
+                            && YCTestApercentModel.testID == apercentCalc.testID)).ToList();
                         List<YCTestApercentModel> yctestApercentlist_nPlus1 = conn.Table<YCTestApercentModel>().Where(
                             YCTestApercentModel =>
-                            (YCTestApercentModel.testType == "nPlus1" && YCTestApercentModel.status == true)).ToList();
+                            (YCTestApercentModel.testType == "nPlus1"
+                            && YCTestApercentModel.status == true
+                            && YCTestApercentModel.testID == apercentCalc.testID)).ToList();
                         if (yctestApercentlist_nMinus1 != null && yctestApercentlist_N != null && yctestApercentlist_nPlus1 != null)
                         {
 
