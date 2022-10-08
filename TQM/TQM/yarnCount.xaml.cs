@@ -50,6 +50,7 @@ namespace TQM
         public yarnCount()
         {
             InitializeComponent();
+            lbl_TestID.Text = "";
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 //conn.DropTable<YCTestModel>();
@@ -215,7 +216,7 @@ namespace TQM
                             IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
                         }
                         sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
-                        cv = (sd / mean) * 100; //Coefficient of Variation
+                        cv = (sd / mean) * 100m; //Coefficient of Variation
                         mean = Math.Round(mean, 3);
                         sd = Math.Round(sd, 3);
                         cv = Math.Round(cv, 3);
@@ -294,7 +295,7 @@ namespace TQM
         [Obsolete]
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
-
+            lbl_TestID.Text = "";
             isTestStarted = true;
             ImageNotification("null");
             UpdateUserNotification("");
@@ -333,16 +334,36 @@ namespace TQM
             //}
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
+                YCTestModel lastTestRecord = null;
                 conn.CreateTable<YCTestModel>();
-                YCTestModel lastTestRecord = conn.Table<YCTestModel>().OrderByDescending(YCTestModel => YCTestModel.testID).FirstOrDefault();
-                if (lastTestRecord != null)
-                {
-                    currentTestID = lastTestRecord.testID + 1;
-                }
-                else
+                int recordCount = conn.Table<YCTestModel>().Count();
+
+                if (recordCount == 0)
                 {
                     currentTestID = 1;
                 }
+                else
+                {
+                    DateTime maxDate = conn.Table<YCTestModel>().Max(YCTestModel => YCTestModel.createdate);
+                    lastTestRecord = conn.Table<YCTestModel>()
+                        .Where(YCTestModel => YCTestModel.createdate == maxDate).FirstOrDefault();
+                    if (lastTestRecord != null)
+                    {
+                        if (currentTestID == 0)
+                        {
+                            currentTestID = lastTestRecord.testID + 1;
+                        }
+                        else if (currentTestID == lastTestRecord.testID)
+                        {
+                            currentTestID = lastTestRecord.testID;
+                        }
+                    }
+                    else
+                    {
+                        ///to be decided
+                    }
+                }
+                lbl_TestID.Text = currentTestID.ToString();
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
                 {

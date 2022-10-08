@@ -25,6 +25,10 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -73,6 +77,28 @@
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
                 <Picker Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" ItemDisplayBinding="{Binding machineName}" SelectedIndexChanged="picker_machinename_SelectedIndexChanged" 
                     x:Name="picker_machinename" TextColor="Green" FontSize="20" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                
+                <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift:"  
+                       FontSize="20" TextColor="#0e0273" Margin="0,10"/>
+                <Picker Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalTextAlignment="Center"
+                    x:Name="picker_shift" TextColor="Green" FontSize="20">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String></x:String>
+                            <x:String>Shift-1</x:String>
+                            <x:String>Shift-2</x:String>
+                            <x:String>Shift-3</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+
+                <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Process:"  
+                       FontSize="20" TextColor="#0e0273" Margin="0,10"/>
+                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_process" TextColor="Green" FontSize="20" 
+                  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Text">
+                </Entry>
+
+
                 <Button Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="1" Text = "Search" 
                         x:Name="btn_getreport" Clicked="btn_getreport_Clicked" 
                         BackgroundColor="#0e0273" TextColor="White" CornerRadius="25" />

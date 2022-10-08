@@ -16,6 +16,8 @@ using TQM.SfPdfViewer;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Color = Xamarin.Forms.Color;
+using Exception = Java.Lang.Exception;
+using String = System.String;
 
 namespace TQM
 {
@@ -32,13 +34,13 @@ namespace TQM
             InitializeComponent();
         }
 
-        public StretchReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        public StretchReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process)
         {
             InitializeComponent();
-            getReport(startDate, endDate, categoryName, machineID);
+            getReport(startDate, endDate, categoryName, machineID, shift, process);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process)
         {
             try
             {
@@ -53,30 +55,120 @@ namespace TQM
                     if (categoryName == null || categoryName == "")
                     {
                         endDate = endDate.AddDays(1);
-                        stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                        StretchTestCalculatedModel.createdate >= startDate &&
-                        StretchTestCalculatedModel.createdate < endDate
-                        //&& StretchTestCalculatedModel.status == true
-                        ).ToList();
+
+
+                        if (shift != "" && process != null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                            (StretchTestCalculatedModel.createdate >= startDate
+                                            && StretchTestCalculatedModel.createdate < endDate
+                                             && StretchTestCalculatedModel.shift == shift
+                                            && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift == "" && process != null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                            (StretchTestCalculatedModel.createdate >= startDate
+                                            && StretchTestCalculatedModel.createdate < endDate
+                                            && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift != "" && process == null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                            (StretchTestCalculatedModel.createdate >= startDate
+                                            && StretchTestCalculatedModel.createdate < endDate
+                                            && StretchTestCalculatedModel.shift == shift)).ToList();
+                        }
+                        else if (shift == "" && process == null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                            (StretchTestCalculatedModel.createdate >= startDate
+                                            && StretchTestCalculatedModel.createdate < endDate)).ToList();
+                        }
+
+
                     }
                     else if (categoryName != null && machineID == Guid.Empty)
                     {
                         endDate = endDate.AddDays(1);
-                        stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                           (StretchTestCalculatedModel.createdate >= startDate && StretchTestCalculatedModel.createdate < endDate
-                           && StretchTestCalculatedModel.machineCategory == categoryName)
-                           //&& StretchTestCalculatedModel.status == true
-                           ).ToList();
+
+                        if (shift != "" && process != null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                          (StretchTestCalculatedModel.createdate >= startDate
+                                          && StretchTestCalculatedModel.createdate < endDate
+                                          && StretchTestCalculatedModel.machineCategory == categoryName
+                                          && StretchTestCalculatedModel.shift == shift
+                                          && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift == "" && process != null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                          (StretchTestCalculatedModel.createdate >= startDate
+                                          && StretchTestCalculatedModel.createdate < endDate
+                                          && StretchTestCalculatedModel.machineCategory == categoryName
+                                          && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift != "" && process == null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                          (StretchTestCalculatedModel.createdate >= startDate
+                                          && StretchTestCalculatedModel.createdate < endDate
+                                          && StretchTestCalculatedModel.machineCategory == categoryName
+                                          && StretchTestCalculatedModel.shift == shift)).ToList();
+                        }
+                        else if (shift == "" && process == null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                          (StretchTestCalculatedModel.createdate >= startDate
+                                          && StretchTestCalculatedModel.createdate < endDate
+                                          && StretchTestCalculatedModel.machineCategory == categoryName)).ToList();
+                        }
+
+
                     }
                     else if (categoryName != null && machineID != Guid.Empty)
                     {
                         endDate = endDate.AddDays(1);
-                        stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                           (StretchTestCalculatedModel.createdate >= startDate && StretchTestCalculatedModel.createdate < endDate
-                           && StretchTestCalculatedModel.machineCategory == categoryName)
-                           && StretchTestCalculatedModel.machineID == machineID
-                           //&& StretchTestCalculatedModel.status == true
-                           ).ToList();
+
+                        if (shift != "" && process != null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                           (StretchTestCalculatedModel.createdate >= startDate
+                                           && StretchTestCalculatedModel.createdate < endDate
+                                           && StretchTestCalculatedModel.machineCategory == categoryName
+                                           && StretchTestCalculatedModel.machineID == machineID
+                                           && StretchTestCalculatedModel.shift == shift
+                                           && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift == "" && process != null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                           (StretchTestCalculatedModel.createdate >= startDate
+                                           && StretchTestCalculatedModel.createdate < endDate
+                                           && StretchTestCalculatedModel.machineCategory == categoryName
+                                           && StretchTestCalculatedModel.machineID == machineID
+                                           && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift != "" && process == null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                           (StretchTestCalculatedModel.createdate >= startDate
+                                           && StretchTestCalculatedModel.createdate < endDate
+                                           && StretchTestCalculatedModel.machineCategory == categoryName
+                                           && StretchTestCalculatedModel.machineID == machineID
+                                           && StretchTestCalculatedModel.shift == shift)).ToList();
+                        }
+                        else if (shift == "" && process == null)
+                        {
+                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                           (StretchTestCalculatedModel.createdate >= startDate
+                                           && StretchTestCalculatedModel.createdate < endDate
+                                           && StretchTestCalculatedModel.machineCategory == categoryName
+                                           && StretchTestCalculatedModel.machineID == machineID)).ToList();
+                        }
+
+
                     }
 
                     //List<StretchTestCalculatedModel> stretchCalcList = null;
@@ -190,6 +282,8 @@ namespace TQM
                             report.userName = stretchCalc.userName;
                             report.machineCategory = stretchCalc.machineCategory;
                             report.machineName = stretchCalc.machineName;
+                            report.shift = stretchCalc.shift;
+                            report.process = stretchCalc.process;
                             report.countsysname = stretchCalc.countsysname;
                             report.yarnlenunit = stretchCalc.yarnlenunit;
                             report.yarnlength = stretchCalc.yarnlength;
@@ -278,7 +372,7 @@ namespace TQM
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
                     pdfGridInfo.RepeatHeader = true;
-                    pdfGridInfo.Columns.Add(4);
+                    pdfGridInfo.Columns.Add(5);
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
@@ -311,28 +405,35 @@ namespace TQM
                     pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
                     pdfGridInfo.Rows[4].Cells[1].Value = "Tester: " + orl.userName;
                     pdfGridInfo.Rows[4].Cells[1].ColumnSpan = 2;
+                    pdfGridInfo.Rows[4].Cells[3].Value = "Shift: " + orl.shift;
+                    pdfGridInfo.Rows[4].Cells[4].Value = "Process: " + orl.process;
 
 
                     pdfGridInfo.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[0].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[4].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[4].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[2].Cells[4].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[3].Cells[4].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[4].Cells[4].Style.Borders.All = PdfPens.Transparent;
                     //pdfGridInfo.Rows[5].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     //pdfGridInfo.Rows[5].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     //pdfGridInfo.Rows[5].Cells[2].Style.Borders.All = PdfPens.Transparent;

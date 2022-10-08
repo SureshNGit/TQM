@@ -67,22 +67,36 @@ namespace TQM
                     return;
                 }
                 string selectedCategory = null;
+                string shift = "";
+                if (picker_shift.SelectedItem != null)
+                {
+                    shift = picker_shift.SelectedItem.ToString();
+                }
+                string process = null;
+                if (entry_process.Text.Trim() != "")
+                {
+                    process = entry_process.Text.Trim();
+                }
                 if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
                 if (picker_reportName.SelectedItem.ToString() == "Yarn Count")
                 {
-                    Navigation.PushAsync(new YCReport(date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID));
+                    Navigation.PushAsync(new YCReport
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
-                    Navigation.PushAsync(new YCApercentReport(date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID));
+                    Navigation.PushAsync(new YCApercentReport
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "Stretch")
                 {
-                    Navigation.PushAsync(new StretchReport(date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID));
+                    Navigation.PushAsync(new StretchReport
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "NOILS")
                 {
-                    Navigation.PushAsync(new NoilsReport(date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID));
+                    Navigation.PushAsync(new NoilsReport
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process));
                 }
             }
             catch (Exception ex)

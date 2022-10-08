@@ -828,22 +828,34 @@ namespace TQM
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
+                StretchTestModel lastTestRecord = null;
                 conn.CreateTable<StretchTestModel>();
-                StretchTestModel lastTestRecord = conn.Table<StretchTestModel>().OrderByDescending(StretchTestModel => StretchTestModel.testID).FirstOrDefault();
-                if (lastTestRecord != null)
+                int recordCount = conn.Table<StretchTestModel>().Count();
+
+                if (recordCount == 0)
                 {
-                    if (currentTestID == 0)
-                    {
-                        currentTestID = lastTestRecord.testID + 1;
-                    }
-                    else if (currentTestID == lastTestRecord.testID)
-                    {
-                        currentTestID = lastTestRecord.testID;
-                    }
+                    currentTestID = 1;
                 }
                 else
                 {
-                    currentTestID = 1;
+                    DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+                    lastTestRecord = conn.Table<StretchTestModel>()
+                        .Where(StretchTestModel => StretchTestModel.createdate == maxDate).FirstOrDefault();
+                    if (lastTestRecord != null)
+                    {
+                        if (currentTestID == 0)
+                        {
+                            currentTestID = lastTestRecord.testID + 1;
+                        }
+                        else if (currentTestID == lastTestRecord.testID)
+                        {
+                            currentTestID = lastTestRecord.testID;
+                        }
+                    }
+                    else
+                    {
+                        ///to be decided
+                    }
                 }
                 lbl_TestID.Text = currentTestID.ToString();
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
@@ -1335,7 +1347,9 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 conn.CreateTable<StretchTestModel>();
-                StretchTestModel lastTestRecord = conn.Table<StretchTestModel>().OrderByDescending(StretchTestModel => StretchTestModel.testID).FirstOrDefault();
+                DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+                StretchTestModel lastTestRecord = conn.Table<StretchTestModel>().Where(StretchTestModel => StretchTestModel.createdate == maxDate).FirstOrDefault();
+                //StretchTestModel lastTestRecord = conn.Table<StretchTestModel>().OrderByDescending(StretchTestModel => StretchTestModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
                     if (currentTestID == 0)

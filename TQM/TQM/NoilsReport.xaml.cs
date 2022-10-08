@@ -16,6 +16,8 @@ using TQM.SfPdfViewer;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Color = Xamarin.Forms.Color;
+using Exception = Java.Lang.Exception;
+using String = System.String;
 
 namespace TQM
 {
@@ -32,13 +34,13 @@ namespace TQM
             InitializeComponent();
         }
 
-        public NoilsReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        public NoilsReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process)
         {
             InitializeComponent();
-            getReport(startDate, endDate, categoryName, machineID);
+            getReport(startDate, endDate, categoryName, machineID, shift, process);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process)
         {
             try
             {
@@ -53,25 +55,134 @@ namespace TQM
                     if (categoryName == null || categoryName == "")
                     {
                         endDate = endDate.AddDays(1);
-                        noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                        NoilsTestCalculatedModel.createdate >= startDate &&
-                        NoilsTestCalculatedModel.createdate < endDate &&
-                        NoilsTestCalculatedModel.status == true).ToList();
+
+
+                        if (shift != "" && process != null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.status == true
+                                        && NoilsTestCalculatedModel.shift == shift
+                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift == "" && process != null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.status == true
+                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift != "" && process == null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.status == true
+                                        && NoilsTestCalculatedModel.shift == shift)).ToList();
+                        }
+                        else if (shift == "" && process == null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.status == true)).ToList();
+                        }
+
+
+
                     }
                     else if (categoryName != null && machineID == Guid.Empty)
                     {
                         endDate = endDate.AddDays(1);
-                        noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                           (NoilsTestCalculatedModel.createdate >= startDate && NoilsTestCalculatedModel.createdate < endDate
-                           && NoilsTestCalculatedModel.machineCategory == categoryName) && NoilsTestCalculatedModel.status == true).ToList();
+
+                        if (shift != "" && process != null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.machineCategory == categoryName
+                                        && NoilsTestCalculatedModel.status == true
+                                        && NoilsTestCalculatedModel.shift == shift
+                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift == "" && process != null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.machineCategory == categoryName
+                                        && NoilsTestCalculatedModel.status == true
+                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift != "" && process == null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.machineCategory == categoryName
+                                        && NoilsTestCalculatedModel.status == true
+                                        && NoilsTestCalculatedModel.shift == shift)).ToList();
+                        }
+                        else if (shift == "" && process == null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.machineCategory == categoryName
+                                        && NoilsTestCalculatedModel.status == true)).ToList();
+                        }
+
+
                     }
                     else if (categoryName != null && machineID != Guid.Empty)
                     {
                         endDate = endDate.AddDays(1);
-                        noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                           (NoilsTestCalculatedModel.createdate >= startDate && NoilsTestCalculatedModel.createdate < endDate
-                           && NoilsTestCalculatedModel.machineCategory == categoryName)
-                           && NoilsTestCalculatedModel.machineID == machineID && NoilsTestCalculatedModel.status == true).ToList();
+
+                        if (shift != "" && process != null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.machineCategory == categoryName
+                                        && NoilsTestCalculatedModel.machineID == machineID
+                                        && NoilsTestCalculatedModel.status == true
+                                        && NoilsTestCalculatedModel.shift == shift
+                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift == "" && process != null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.machineCategory == categoryName
+                                        && NoilsTestCalculatedModel.machineID == machineID
+                                        && NoilsTestCalculatedModel.status == true
+                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift != "" && process == null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.machineCategory == categoryName
+                                        && NoilsTestCalculatedModel.machineID == machineID
+                                        && NoilsTestCalculatedModel.status == true
+                                        && NoilsTestCalculatedModel.shift == shift)).ToList();
+                        }
+                        else if (shift == "" && process == null)
+                        {
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                        (NoilsTestCalculatedModel.createdate >= startDate
+                                        && NoilsTestCalculatedModel.createdate < endDate
+                                        && NoilsTestCalculatedModel.machineCategory == categoryName
+                                        && NoilsTestCalculatedModel.machineID == machineID
+                                        && NoilsTestCalculatedModel.status == true)).ToList();
+                        }
+
+
+
                     }
 
                     //List<StretchTestCalculatedModel> stretchCalcList = null;
@@ -187,6 +298,8 @@ namespace TQM
                             report.userName = noilsCalc.userName;
                             report.machineCategory = noilsCalc.machineCategory;
                             report.machineName = noilsCalc.machineName;
+                            report.shift = noilsCalc.shift;
+                            report.process = noilsCalc.process;
                             report.countsysname = noilsCalc.countsysname;
                             report.yarnlenunit = noilsCalc.yarnlenunit;
                             report.yarnlength = noilsCalc.yarnlength;
@@ -268,7 +381,7 @@ namespace TQM
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
                     pdfGridInfo.RepeatHeader = true;
-                    pdfGridInfo.Columns.Add(4);
+                    pdfGridInfo.Columns.Add(5);
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
@@ -301,24 +414,30 @@ namespace TQM
                     pdfGridInfo.Rows[3].Cells[0].Value = "Date: " + orl.createdate;
                     pdfGridInfo.Rows[3].Cells[1].Value = "Tester: " + orl.userName;
                     pdfGridInfo.Rows[3].Cells[1].ColumnSpan = 2;
+                    pdfGridInfo.Rows[3].Cells[3].Value = "Shift: " + orl.shift;
+                    pdfGridInfo.Rows[3].Cells[4].Value = "Process: " + orl.process;
 
 
                     pdfGridInfo.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[0].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[4].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[4].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[2].Cells[4].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[3].Cells[4].Style.Borders.All = PdfPens.Transparent;
                     //pdfGridInfo.Rows[4].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     //pdfGridInfo.Rows[4].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     //pdfGridInfo.Rows[4].Cells[2].Style.Borders.All = PdfPens.Transparent;

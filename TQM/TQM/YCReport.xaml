@@ -107,6 +107,14 @@
                                     Text="Date" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="0" Grid.Row="4"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
                                     Text="{Binding createdate}" FontSize="14" TextColor="Green"/>
+                                    <Label Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="1" 
+                                    Text="Shift" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="2" Grid.Row="4"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="40,0,0,0"
+                                    Text="{Binding shift}" FontSize="14" TextColor="Green"/>
+                                    <Label Grid.Column="3" Grid.Row="4" Grid.ColumnSpan="1" 
+                                    Text="Process" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="3" Grid.Row="4"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    Text="{Binding process}" FontSize="14" TextColor="Green"/>
                                 </Grid>
                       
 

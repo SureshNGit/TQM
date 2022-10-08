@@ -279,7 +279,8 @@ namespace TQM
                 conn.CreateTable<UserModel>();
                 List<UserModel> usersearchlist = conn.GetAllWithChildren<UserModel>().FindAll(UserModel =>
                                 (UserModel.firstname.ToLower().Contains(entry_usersearch.Text.ToLower()) ||
-                                UserModel.lastname.ToLower().Contains(entry_usersearch.Text.ToLower())));
+                                UserModel.lastname.ToLower().Contains(entry_usersearch.Text.ToLower()) ||
+                                UserModel.userId.ToLower().Contains(entry_usersearch.Text.ToLower())));
                 List<UserModelView> usersearchlistmodified = new List<UserModelView>();
 
                 foreach (UserModel user in usersearchlist)

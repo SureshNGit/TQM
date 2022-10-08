@@ -61,7 +61,7 @@
                                     Text="{Binding machineCategory}" FontSize="14" TextColor="Green"/>
                                     <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1"
                                     Text="Machine Name" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-75,0,0,0" HorizontalOptions="StartAndExpand"
+                                    <Label Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-55,0,0,0" HorizontalOptions="StartAndExpand"
                                     Text="{Binding machineName}" FontSize="14" TextColor="Green"/>
                                     
                                     <!--<Label Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="1"
@@ -148,12 +148,23 @@
 
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" 
                                     Text="Date" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="0" Grid.Row="3"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    <Label Grid.Column="0" Grid.Row="3"  Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="40,0,0,0"
                                     Text="{Binding createdate}" FontSize="14" TextColor="Green"/>
-                                    <Label Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="1"
+                                    <Label Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1"
                                     Text="Tester" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="End" Margin="50,0,0,0" HorizontalOptions="StartAndExpand"
+                                    <Label Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="End" Margin="50,0,0,0" HorizontalOptions="StartAndExpand"
                                     Text="{Binding userName}" FontSize="14" TextColor="Green"/>
+
+                                    <Label Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="1" 
+                                    Text="Shift" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="3" Grid.Row="3"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="40,0,0,0"
+                                    Text="{Binding shift}" FontSize="14" TextColor="Green"/>
+                                    <Label Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="1" HorizontalOptions="End"
+                                    Text="Process" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="3" Grid.Row="3"  Grid.ColumnSpan="2"
+                                           HorizontalTextAlignment="Start" Margin="20,0,0,0" HorizontalOptions="Center"
+                                    Text="{Binding process}" FontSize="14" TextColor="Green"/>
+
                                 </Grid>
                       
 

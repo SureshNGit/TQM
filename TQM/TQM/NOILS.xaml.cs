@@ -50,6 +50,7 @@ namespace TQM
         public NOILS()
         {
             InitializeComponent();
+            lbl_TestID.Text = "";
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 //conn.DropTable<NoilsTestModel>();
@@ -76,18 +77,192 @@ namespace TQM
                     picker_shift.SelectedIndex = 0;
                     entry_process.Text = "";
                 }
+                conn.CreateTable<NoilsTestModel>();
                 conn.CreateTable<NoilsTestSummaryModel>();
-                NoilsTestSummaryModel noilsTestSummaryModel = conn.Table<NoilsTestSummaryModel>().Where(
-                    NoilsTestSummaryModel => (NoilsTestSummaryModel.testType == "Sliver" &&
-                    NoilsTestSummaryModel.status == false)).FirstOrDefault();
-                if (noilsTestSummaryModel != null)
-                {
-                    startNoilsButton.IsVisible = true;
-                }
-                else
+                conn.CreateTable<NoilsTestFinalModel>();
+                conn.CreateTable<NoilsTestCalculatedModel>();
+
+                int recordCount = conn.Table<NoilsTestModel>().Count();
+
+                if (recordCount == 0)
                 {
                     startSliverButton.IsVisible = true;
                 }
+                else
+                {
+                    DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+                    NoilsTestModel lastTest = conn.Table<NoilsTestModel>()
+                        .Where(NoilsTestModel => NoilsTestModel.createdate == maxDate).FirstOrDefault();
+
+                    if (lastTest == null)
+                    {
+                        //to be decided
+                    }
+                    else
+                    {
+                        long lastTestID = lastTest.testID;
+                        if (lastTest.testType == "Sliver")
+                        {
+                            // check Sliver is having entry in NoilsTestSummaryModel table
+                            NoilsTestSummaryModel lastTestSummary = conn.Table<NoilsTestSummaryModel>().
+                                            Where(NoilsTestSummaryModel =>
+                                            (NoilsTestSummaryModel.testID == lastTest.testID
+                                            && NoilsTestSummaryModel.testType == "Sliver")).FirstOrDefault();
+                            if (lastTestSummary == null)
+                            {
+                                //get all test for Sliver from NoilsTestModel table and delete 
+
+                                List<NoilsTestModel> allTest_Sliver = conn.Table<NoilsTestModel>()
+                                                                .Where(NoilsTestModel =>
+                                                                (NoilsTestModel.testID == lastTestID
+                                                                && NoilsTestModel.testType == "Sliver")).ToList();
+                                foreach (NoilsTestModel test in allTest_Sliver)
+                                {
+                                    conn.Delete(test);
+                                }
+                                startSliverButton.IsVisible = true;
+                            }
+                            else
+                            {
+                                //Start with Noils Test
+                                picker_machinecategory.SelectedItem = lastTest.machineCategory;
+                                List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
+                                int machineIndex = 0;
+                                foreach (MachineModel item in source)
+                                {
+                                    if (item.machineName == lastTest.machineName)
+                                    {
+                                        machineIndex = machineIndex + 1;
+                                        break;
+                                    }
+                                }
+                                picker_machinename.SelectedIndex = machineIndex - 1;
+                                picker_shift.SelectedItem = lastTest.shift;
+                                entry_process.Text = lastTest.process;
+                                picker_machinecategory.IsEnabled = false;
+                                picker_machinename.IsEnabled = false;
+                                picker_shift.IsEnabled = false;
+                                entry_process.IsEnabled = false;
+                                currentTestID = lastTest.testID;
+                                lbl_TestID.Text = currentTestID.ToString();
+                                startNoilsButton.IsVisible = true;
+                            }
+                        }
+                        else if (lastTest.testType == "Noils")
+                        {
+                            // check Noils is having entry in NoilsTestSummaryModel table
+                            NoilsTestSummaryModel lastTestSummary = conn.Table<NoilsTestSummaryModel>().
+                                            Where(NoilsTestSummaryModel =>
+                                            (NoilsTestSummaryModel.testID == lastTest.testID
+                                            && NoilsTestSummaryModel.testType == "Noils")).FirstOrDefault();
+                            if (lastTestSummary == null)
+                            {
+                                //get all test for Noils from NoilsTestModel table and delete 
+
+                                List<NoilsTestModel> allTest_Noils = conn.Table<NoilsTestModel>()
+                                                                .Where(NoilsTestModel =>
+                                                                (NoilsTestModel.testID == lastTestID
+                                                                 && NoilsTestModel.testType == "Noils")).ToList();
+                                foreach (NoilsTestModel test in allTest_Noils)
+                                {
+                                    conn.Delete(test);
+                                }
+                                picker_machinecategory.SelectedItem = lastTest.machineCategory;
+                                List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
+                                int machineIndex = 0;
+                                foreach (MachineModel item in source)
+                                {
+                                    if (item.machineName == lastTest.machineName)
+                                    {
+                                        machineIndex = machineIndex + 1;
+                                        break;
+                                    }
+                                }
+                                picker_machinename.SelectedIndex = machineIndex - 1;
+                                picker_shift.SelectedItem = lastTest.shift;
+                                entry_process.Text = lastTest.process;
+                                picker_machinecategory.IsEnabled = false;
+                                picker_machinename.IsEnabled = false;
+                                picker_shift.IsEnabled = false;
+                                entry_process.IsEnabled = false;
+                                currentTestID = lastTest.testID;
+                                lbl_TestID.Text = currentTestID.ToString();
+                                startNoilsButton.IsVisible = true;
+                            }
+                            else
+                            {
+                                //Check Sliver and Noils data stored in NoilsTestFinalModel & NoilsTestCalculatedModel table
+
+                                List<NoilsTestFinalModel> NoilsTestFinal = conn.Table<NoilsTestFinalModel>().
+                                               Where(NoilsTestFinalModel =>
+                                               NoilsTestFinalModel.testID == lastTest.testID).ToList();
+
+                                bool deleteLastTest = false;
+
+                                if (NoilsTestFinal != null)
+                                {
+                                    NoilsTestCalculatedModel calculatedNoilsTest = conn.Table<NoilsTestCalculatedModel>().
+                                                Where(NoilsTestCalculatedModel =>
+                                                NoilsTestCalculatedModel.testID == lastTest.testID).FirstOrDefault();
+                                    if (calculatedNoilsTest != null)
+                                    {
+                                        startSliverButton.IsVisible = true;
+                                    }
+                                    else
+                                    {
+                                        deleteLastTest = true;
+
+                                        // delete records in NoilsTestFinalModel Table
+
+                                        List<NoilsTestFinalModel> allLastTest_Final = conn.Table<NoilsTestFinalModel>().
+                                            Where(NoilsTestFinalModel =>
+                                            (NoilsTestFinalModel.testID == lastTestID)).ToList();
+                                        foreach (NoilsTestFinalModel test in allLastTest_Final)
+                                        {
+                                            conn.Delete(test);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    deleteLastTest = true;
+                                }
+
+
+
+                                //delete records in NoilsTestModel Table
+
+                                List<NoilsTestModel> allLastTest = conn.Table<NoilsTestModel>().
+                                    Where(NoilsTestModel =>
+                                    (NoilsTestModel.testID == lastTestID)).ToList();
+                                foreach (NoilsTestModel test in allLastTest)
+                                {
+                                    conn.Delete(test);
+                                }
+
+                                // delete records in NoilsTestSummaryModel Table
+
+                                List<NoilsTestSummaryModel> allLastTest_Summary = conn.Table<NoilsTestSummaryModel>().
+                                    Where(NoilsTestSummaryModel =>
+                                    (NoilsTestSummaryModel.testID == lastTestID)).ToList();
+                                foreach (NoilsTestSummaryModel test in allLastTest_Summary)
+                                {
+                                    conn.Delete(test);
+                                }
+
+
+
+                                //start new test
+
+                                startSliverButton.IsVisible = true;
+
+
+                            }
+                        }
+                    }
+                }
+
+
             }
         }
 
@@ -719,7 +894,7 @@ namespace TQM
         [Obsolete]
         private async void startSliverButton_Clicked(object sender, EventArgs e)
         {
-
+            lbl_TestID.Text = "";
             isTestStarted = true;
             currentTestType = "Sliver";
             ImageNotification("null");
@@ -758,23 +933,36 @@ namespace TQM
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
+                NoilsTestModel lastTestRecord = null;
                 conn.CreateTable<NoilsTestModel>();
-                NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>().OrderByDescending(NoilsTestModel => NoilsTestModel.testID).FirstOrDefault();
-                if (lastTestRecord != null)
-                {
-                    if (currentTestID == 0)
-                    {
-                        currentTestID = lastTestRecord.testID + 1;
-                    }
-                    else if (currentTestID == lastTestRecord.testID)
-                    {
-                        currentTestID = lastTestRecord.testID;
-                    }
-                }
-                else
+                int recordCount = conn.Table<NoilsTestModel>().Count();
+
+                if (recordCount == 0)
                 {
                     currentTestID = 1;
                 }
+                else
+                {
+                    DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+                    lastTestRecord = conn.Table<NoilsTestModel>()
+                        .Where(NoilsTestModel => NoilsTestModel.createdate == maxDate).FirstOrDefault();
+                    if (lastTestRecord != null)
+                    {
+                        if (currentTestID == 0)
+                        {
+                            currentTestID = lastTestRecord.testID + 1;
+                        }
+                        else if (currentTestID == lastTestRecord.testID)
+                        {
+                            currentTestID = lastTestRecord.testID;
+                        }
+                    }
+                    else
+                    {
+                        ///to be decided
+                    }
+                }
+                lbl_TestID.Text = currentTestID.ToString();
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
                 {
@@ -1264,7 +1452,10 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 conn.CreateTable<NoilsTestModel>();
-                NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>().OrderByDescending(NoilsTestModel => NoilsTestModel.testID).FirstOrDefault();
+                DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+                NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>()
+                    .Where(NoilsTestModel => NoilsTestModel.createdate == maxDate).FirstOrDefault();
+                //NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>().OrderByDescending(NoilsTestModel => NoilsTestModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
                     if (currentTestID == 0)

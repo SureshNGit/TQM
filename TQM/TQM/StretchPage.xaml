@@ -196,7 +196,7 @@
             </Frame>
 
             <Frame Grid.Row="1" Grid.RowSpan="1" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,10,2,2" x:Name="frame_overallSummary"
-                   BackgroundColor="Lavender" BorderColor="Lavender" CornerRadius="25" HasShadow="False" HeightRequest="2" IsVisible="false">
+                   BackgroundColor="Lavender" BorderColor="Lavender" CornerRadius="0" HasShadow="False" HeightRequest="2" IsVisible="false">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>

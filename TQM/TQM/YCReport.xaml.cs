@@ -16,6 +16,8 @@ using TQM.SfPdfViewer;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Color = Xamarin.Forms.Color;
+using Exception = Java.Lang.Exception;
+using String = System.String;
 
 namespace TQM
 {
@@ -32,13 +34,13 @@ namespace TQM
             InitializeComponent();
         }
 
-        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process)
         {
             InitializeComponent();
-            getReport(startDate, endDate, categoryName, machineID);
+            getReport(startDate, endDate, categoryName, machineID, shift, process);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process)
         {
             try
             {
@@ -54,23 +56,117 @@ namespace TQM
                     if (categoryName == null || categoryName == "")
                     {
                         endDate = endDate.AddDays(1);
-                        ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                        YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate < endDate).ToList();
+
+                        if (shift != "" && process != null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                (YCTestSummaryModel.createdate >= startDate
+                                                && YCTestSummaryModel.createdate < endDate
+                                                && YCTestSummaryModel.shift == shift
+                                                && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift == "" && process != null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                (YCTestSummaryModel.createdate >= startDate
+                                                && YCTestSummaryModel.createdate < endDate
+                                                && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift != "" && process == null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                (YCTestSummaryModel.createdate >= startDate
+                                                && YCTestSummaryModel.createdate < endDate
+                                                && YCTestSummaryModel.shift == shift)).ToList();
+                        }
+                        else if (shift == "" && process == null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                (YCTestSummaryModel.createdate >= startDate
+                                                && YCTestSummaryModel.createdate < endDate)).ToList();
+                        }
+
                     }
                     else if (categoryName != null && machineID == Guid.Empty)
                     {
                         endDate = endDate.AddDays(1);
-                        ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                           (YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate < endDate
-                           && YCTestSummaryModel.machineCategory == categoryName)).ToList();
+
+                        if (shift != "" && process != null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                 (YCTestSummaryModel.createdate >= startDate
+                                                 && YCTestSummaryModel.createdate < endDate
+                                                 && YCTestSummaryModel.machineCategory == categoryName
+                                                 && YCTestSummaryModel.shift == shift
+                                                 && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift == "" && process != null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                 (YCTestSummaryModel.createdate >= startDate
+                                                 && YCTestSummaryModel.createdate < endDate
+                                                 && YCTestSummaryModel.machineCategory == categoryName
+                                                 && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                        }
+                        else if (shift != "" && process == null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                 (YCTestSummaryModel.createdate >= startDate
+                                                 && YCTestSummaryModel.createdate < endDate
+                                                 && YCTestSummaryModel.machineCategory == categoryName
+                                                 && YCTestSummaryModel.shift == shift)).ToList();
+                        }
+                        else if (shift == "" && process == null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                (YCTestSummaryModel.createdate >= startDate
+                                                && YCTestSummaryModel.createdate < endDate
+                                                && YCTestSummaryModel.machineCategory == categoryName)).ToList();
+                        }
+
+
                     }
                     else if (categoryName != null && machineID != Guid.Empty)
                     {
                         endDate = endDate.AddDays(1);
-                        ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                           (YCTestSummaryModel.createdate >= startDate && YCTestSummaryModel.createdate < endDate
-                           && YCTestSummaryModel.machineCategory == categoryName)
-                           && YCTestSummaryModel.machineID == machineID).ToList();
+
+                        if (shift != "" && process != null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                    (YCTestSummaryModel.createdate >= startDate
+                                                    && YCTestSummaryModel.createdate < endDate
+                                                    && YCTestSummaryModel.machineCategory == categoryName)
+                                                    && YCTestSummaryModel.machineID == machineID
+                                                    && YCTestSummaryModel.shift == shift
+                                                    && YCTestSummaryModel.process.ToLower() == process.ToLower()).ToList();
+                        }
+                        else if (shift == "" && process != null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                    (YCTestSummaryModel.createdate >= startDate
+                                                    && YCTestSummaryModel.createdate < endDate
+                                                    && YCTestSummaryModel.machineCategory == categoryName)
+                                                    && YCTestSummaryModel.machineID == machineID
+                                                    && YCTestSummaryModel.process.ToLower() == process.ToLower()).ToList();
+                        }
+                        else if (shift != "" && process == null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                    (YCTestSummaryModel.createdate >= startDate
+                                                    && YCTestSummaryModel.createdate < endDate
+                                                    && YCTestSummaryModel.machineCategory == categoryName)
+                                                    && YCTestSummaryModel.machineID == machineID
+                                                    && YCTestSummaryModel.shift == shift).ToList();
+                        }
+                        else if (shift == "" && process == null)
+                        {
+                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                    (YCTestSummaryModel.createdate >= startDate
+                                                    && YCTestSummaryModel.createdate < endDate
+                                                    && YCTestSummaryModel.machineCategory == categoryName)
+                                                    && YCTestSummaryModel.machineID == machineID).ToList();
+                        }
+
                     }
 
                     if (ycTestSummaryModels.Count == 0)
@@ -94,6 +190,8 @@ namespace TQM
                             report.userName = testsummary.userName;
                             report.machineCategory = testsummary.machineCategory;
                             report.machineName = testsummary.machineName;
+                            report.shift = testsummary.shift;
+                            report.process = testsummary.process;
                             //report.apercent = testsummary.apercent;
                             report.countsysname = testsummary.countsysname;
                             report.yarnlenunit = testsummary.yarnlenunit;
@@ -217,6 +315,9 @@ namespace TQM
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
                     pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
+                    pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 2;
+                    pdfGridInfo.Rows[5].Cells[2].Value = "Shift: " + orl.shift;
+                    pdfGridInfo.Rows[5].Cells[3].Value = "Process: " + orl.process;
 
 
                     pdfGridInfo.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;

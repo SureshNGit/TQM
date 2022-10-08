@@ -954,22 +954,34 @@ namespace TQM
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
+                YCTestApercentModel lastTestRecord = null;
                 conn.CreateTable<YCTestApercentModel>();
-                YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
-                if (lastTestRecord != null)
+                int recordCount = conn.Table<YCTestApercentModel>().Count();
+
+                if (recordCount == 0)
                 {
-                    if (currentTestID == 0)
-                    {
-                        currentTestID = lastTestRecord.testID + 1;
-                    }
-                    else if (currentTestID == lastTestRecord.testID)
-                    {
-                        currentTestID = lastTestRecord.testID;
-                    }
+                    currentTestID = 1;
                 }
                 else
                 {
-                    currentTestID = 1;
+                    DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+                    lastTestRecord = conn.Table<YCTestApercentModel>()
+                        .Where(YCTestApercentModel => YCTestApercentModel.createdate == maxDate).FirstOrDefault();
+                    if (lastTestRecord != null)
+                    {
+                        if (currentTestID == 0)
+                        {
+                            currentTestID = lastTestRecord.testID + 1;
+                        }
+                        else if (currentTestID == lastTestRecord.testID)
+                        {
+                            currentTestID = lastTestRecord.testID;
+                        }
+                    }
+                    else
+                    {
+                        ///to be decided
+                    }
                 }
                 lbl_TestID.Text = currentTestID.ToString();
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
@@ -1461,7 +1473,10 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 conn.CreateTable<YCTestApercentModel>();
-                YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
+                DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+                YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>()
+                    .Where(YCTestApercentModel => YCTestApercentModel.createdate == maxDate).FirstOrDefault();
+                //YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
                     if (currentTestID == 0)
@@ -1549,7 +1564,10 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 conn.CreateTable<YCTestApercentModel>();
-                YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
+                DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+                YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>()
+                    .Where(YCTestApercentModel => YCTestApercentModel.createdate == maxDate).FirstOrDefault();
+                //YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
                     if (currentTestID == 0)
