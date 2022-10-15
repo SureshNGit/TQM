@@ -27,7 +27,7 @@ namespace TQM
         const decimal ZERO = 0.0m;
         const int PER_TEST_LOOP_COUNT = 100;
         const int DATA_READ_LOOP_COUNT = 100;
-        const int STABLE_DATA_CHECK = 15;
+        const int STABLE_DATA_CHECK = 5;
         private decimal current_stable_data = 0;
         private List<YCTestModelView> ycTestModelViewlist;
         private long currentTestID = 0;
@@ -45,6 +45,7 @@ namespace TQM
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
+        private int currentTestCount = 0;
         private bool isTestStarted = false;
 
         public yarnCount()
@@ -129,6 +130,10 @@ namespace TQM
             {
                 if (showFinalOut)
                 {
+                    listview_testresult.ItemsSource = null;
+                    listview_testresult.IsVisible = false;
+                    individualTestResultFrame.IsVisible = false;
+
                     individualTestResultFrame_FinalOut.IsVisible = true;
                     listview_testresult_FinalOut.ItemsSource = null;
                     listview_testresult_FinalOut.IsVisible = visibility;
@@ -136,10 +141,23 @@ namespace TQM
                 }
                 else
                 {
+                    listview_testresult_FinalOut.ItemsSource = null;
+                    listview_testresult_FinalOut.IsVisible = false; ;
+                    individualTestResultFrame_FinalOut.IsVisible = false;
+
                     individualTestResultFrame.IsVisible = true;
-                    listview_testresult.ItemsSource = null;
                     listview_testresult.IsVisible = visibility;
-                    listview_testresult.ItemsSource = ycTestModelViewlist;
+                    if (ycTestModelViewlist != null)
+                    {
+                        listview_testresult.ItemsSource = null;
+                        listview_testresult.ItemsSource = ycTestModelViewlist.OrderByDescending(YCTestModelView => YCTestModelView.testcount);
+                    }
+
+                    //if (listview_testresult.ItemsSource != null)
+                    //{
+                    //    YCTestModelView lastRow = listview_testresult.ItemsSource.Cast<YCTestModelView>().LastOrDefault();
+                    //    listview_testresult.ScrollTo(lastRow, ScrollToPosition.MakeVisible, true);
+                    //}
                 }
             });
         }
@@ -318,6 +336,16 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
                 return;
             }
+            if (picker_shift.SelectedIndex <= 0)
+            {
+                await DisplayAlert("Attention", "Please select shift!!!", "Ok");
+                return;
+            }
+            if (entry_process.Text.Trim() == "")
+            {
+                await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
+                return;
+            }
             if (!initializeBluetooth())
             {
                 ImageNotification("red.png");
@@ -405,6 +433,7 @@ namespace TQM
                 int passCount = 0;
                 for (int i = 0; i < testCount; i++)
                 {
+                    currentTestCount = i + 1;
                     runResult = false;
                     CancellationTokenSource src = new CancellationTokenSource();
                     CancellationToken ct = src.Token;
@@ -599,7 +628,7 @@ namespace TQM
                                     {
                                         initialWeigthCheck = true;
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     else
@@ -614,7 +643,7 @@ namespace TQM
                                     if (s_op == ZERO || s_op < MIN_VAL)
                                     {
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     //else if (s_op < MIN_VAL)

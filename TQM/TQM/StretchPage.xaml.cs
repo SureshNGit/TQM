@@ -26,7 +26,7 @@ namespace TQM
         const decimal ZERO = 0.0m;
         const int PER_TEST_LOOP_COUNT = 100;
         const int DATA_READ_LOOP_COUNT = 100;
-        const int STABLE_DATA_CHECK = 15;
+        const int STABLE_DATA_CHECK = 5;
         private decimal current_stable_data = 0;
         private List<StretchTestModelView> stretchTestModelViewList;
         private long currentTestID = 0;
@@ -45,6 +45,7 @@ namespace TQM
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
+        private int currentTestCount = 0;
         private bool isTestStarted = false;
         private StretchTestCalculatedModel stretchCalcList_finalOut = null;
 
@@ -308,6 +309,10 @@ namespace TQM
             {
                 if (currentTestType == "FB" && showFinalOut)
                 {
+                    listview_testresult_individual.ItemsSource = null;
+                    listview_testresult_individual.IsVisible = false;
+                    individualTestResultFrame.IsVisible = false;
+
                     overallTestResultFrame.IsVisible = visibility;
                     listview_testresult_overall.ItemsSource = null;
                     listview_testresult_overall.IsVisible = visibility;
@@ -315,10 +320,17 @@ namespace TQM
                 }
                 else
                 {
+                    listview_testresult_overall.ItemsSource = null;
+                    listview_testresult_overall.IsVisible = false;
+                    overallTestResultFrame.IsVisible = false;
+
                     individualTestResultFrame.IsVisible = visibility;
-                    listview_testresult_individual.ItemsSource = null;
                     listview_testresult_individual.IsVisible = visibility;
-                    listview_testresult_individual.ItemsSource = stretchTestModelViewList;
+                    if (stretchTestModelViewList != null)
+                    {
+                        listview_testresult_individual.ItemsSource = null;
+                        listview_testresult_individual.ItemsSource = stretchTestModelViewList.OrderByDescending(StretchTestModelView => StretchTestModelView.testcount);
+                    }
                 }
             });
         }
@@ -807,6 +819,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
                 return;
             }
+            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
+            {
+                await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                return;
+            }
             if (picker_shift.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
@@ -899,6 +916,7 @@ namespace TQM
                 int passCount = 0;
                 for (int i = 0; i < testCount; i++)
                 {
+                    currentTestCount = i + 1;
                     runResult = false;
                     CancellationTokenSource src = new CancellationTokenSource();
                     CancellationToken ct = src.Token;
@@ -1094,7 +1112,7 @@ namespace TQM
                                     {
                                         initialWeigthCheck = true;
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     else
@@ -1109,7 +1127,7 @@ namespace TQM
                                     if (s_op == ZERO || s_op < MIN_VAL)
                                     {
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     //else if (s_op < MIN_VAL)
@@ -1323,6 +1341,11 @@ namespace TQM
             if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
             {
                 await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
+                return;
+            }
+            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
+            {
+                await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
                 return;
             }
             if (picker_shift.SelectedIndex <= 0)

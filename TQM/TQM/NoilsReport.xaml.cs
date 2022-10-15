@@ -62,7 +62,7 @@ namespace TQM
                             noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
                                         (NoilsTestCalculatedModel.createdate >= startDate
                                         && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.status == true
+                                        //&& NoilsTestCalculatedModel.status == true
                                         && NoilsTestCalculatedModel.shift == shift
                                         && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
@@ -71,7 +71,7 @@ namespace TQM
                             noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
                                         (NoilsTestCalculatedModel.createdate >= startDate
                                         && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.status == true
+                                        //&& NoilsTestCalculatedModel.status == true
                                         && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
                         else if (shift != "" && process == null)
@@ -79,7 +79,7 @@ namespace TQM
                             noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
                                         (NoilsTestCalculatedModel.createdate >= startDate
                                         && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.status == true
+                                        //&& NoilsTestCalculatedModel.status == true
                                         && NoilsTestCalculatedModel.shift == shift)).ToList();
                         }
                         else if (shift == "" && process == null)
@@ -87,7 +87,8 @@ namespace TQM
                             noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
                                         (NoilsTestCalculatedModel.createdate >= startDate
                                         && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.status == true)).ToList();
+                                        //&& NoilsTestCalculatedModel.status == true
+                                        )).ToList();
                         }
 
 
@@ -103,7 +104,7 @@ namespace TQM
                                         (NoilsTestCalculatedModel.createdate >= startDate
                                         && NoilsTestCalculatedModel.createdate < endDate
                                         && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        && NoilsTestCalculatedModel.status == true
+                                        //&& NoilsTestCalculatedModel.status == true
                                         && NoilsTestCalculatedModel.shift == shift
                                         && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
@@ -113,7 +114,7 @@ namespace TQM
                                         (NoilsTestCalculatedModel.createdate >= startDate
                                         && NoilsTestCalculatedModel.createdate < endDate
                                         && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        && NoilsTestCalculatedModel.status == true
+                                        //&& NoilsTestCalculatedModel.status == true
                                         && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
                         else if (shift != "" && process == null)
@@ -122,7 +123,7 @@ namespace TQM
                                         (NoilsTestCalculatedModel.createdate >= startDate
                                         && NoilsTestCalculatedModel.createdate < endDate
                                         && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        && NoilsTestCalculatedModel.status == true
+                                        //&& NoilsTestCalculatedModel.status == true
                                         && NoilsTestCalculatedModel.shift == shift)).ToList();
                         }
                         else if (shift == "" && process == null)
@@ -131,7 +132,8 @@ namespace TQM
                                         (NoilsTestCalculatedModel.createdate >= startDate
                                         && NoilsTestCalculatedModel.createdate < endDate
                                         && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        && NoilsTestCalculatedModel.status == true)).ToList();
+                                        //&& NoilsTestCalculatedModel.status == true
+                                        )).ToList();
                         }
 
 
@@ -147,7 +149,7 @@ namespace TQM
                                         && NoilsTestCalculatedModel.createdate < endDate
                                         && NoilsTestCalculatedModel.machineCategory == categoryName
                                         && NoilsTestCalculatedModel.machineID == machineID
-                                        && NoilsTestCalculatedModel.status == true
+                                        //&& NoilsTestCalculatedModel.status == true
                                         && NoilsTestCalculatedModel.shift == shift
                                         && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
@@ -158,7 +160,7 @@ namespace TQM
                                         && NoilsTestCalculatedModel.createdate < endDate
                                         && NoilsTestCalculatedModel.machineCategory == categoryName
                                         && NoilsTestCalculatedModel.machineID == machineID
-                                        && NoilsTestCalculatedModel.status == true
+                                        //&& NoilsTestCalculatedModel.status == true
                                         && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
                         else if (shift != "" && process == null)
@@ -168,7 +170,7 @@ namespace TQM
                                         && NoilsTestCalculatedModel.createdate < endDate
                                         && NoilsTestCalculatedModel.machineCategory == categoryName
                                         && NoilsTestCalculatedModel.machineID == machineID
-                                        && NoilsTestCalculatedModel.status == true
+                                        //&& NoilsTestCalculatedModel.status == true
                                         && NoilsTestCalculatedModel.shift == shift)).ToList();
                         }
                         else if (shift == "" && process == null)
@@ -178,7 +180,8 @@ namespace TQM
                                         && NoilsTestCalculatedModel.createdate < endDate
                                         && NoilsTestCalculatedModel.machineCategory == categoryName
                                         && NoilsTestCalculatedModel.machineID == machineID
-                                        && NoilsTestCalculatedModel.status == true)).ToList();
+                                        //&& NoilsTestCalculatedModel.status == true
+                                        )).ToList();
                         }
 
 
@@ -202,7 +205,9 @@ namespace TQM
                         OverallNoilsReportModelView report = new OverallNoilsReportModelView();
                         List<NoilsTestFinalModel> list_finalNoils = conn.Table<NoilsTestFinalModel>().Where(
                             NoilsTestFinalModel =>
-                            (NoilsTestFinalModel.testID == noilsCalc.testID && NoilsTestFinalModel.status == true)).ToList();
+                            (NoilsTestFinalModel.testID == noilsCalc.testID
+                            //&& NoilsTestFinalModel.status == true
+                            )).ToList();
 
 
                         if (list_finalNoils != null)

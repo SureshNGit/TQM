@@ -171,7 +171,7 @@
             </Picker>
 
             <Entry Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_process" TextColor="Green" FontSize="16" 
-                  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Text">
+                  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Text" MaxLength="15">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
@@ -181,7 +181,7 @@
                    BackgroundColor="White" BorderColor="White" CornerRadius="0" HasShadow="False">
                 <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="img_notification" IsVisible="False" 
                        Source="green.png" IsAnimationPlaying="True" HorizontalOptions="Center"
-                       Aspect="AspectFit" HeightRequest="40" WidthRequest="80"/>
+                       Aspect="AspectFit" HeightRequest="60" WidthRequest="80"/>
             </Frame>
 
             <Frame Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" Grid.ColumnSpan="3" 
@@ -217,7 +217,7 @@
 
             <Frame Grid.Row="3" Grid.RowSpan="9" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2"
                    BackgroundColor="White" BorderColor="White" CornerRadius="0" HasShadow="False" x:Name="individualTestResultFrame" IsVisible="false">
-                <ListView x:Name="listview_testresult" 
+                <ListView x:Name="listview_testresult"  
                       HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always" 
                        IsVisible="false">
                     <ListView.Header>
@@ -275,9 +275,9 @@
                 </Grid>
             </Frame>
 
-            <Frame Grid.Row="1" Grid.RowSpan="9" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2"
+            <Frame Grid.Row="1" Grid.RowSpan="9" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2" 
                    BackgroundColor="White" BorderColor="White" CornerRadius="0" HasShadow="False" x:Name="individualTestResultFrame_FinalOut" IsVisible="false">
-                <ListView x:Name="listview_testresult_FinalOut" 
+                <ListView x:Name="listview_testresult_FinalOut"  
                       HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always" 
                        IsVisible="false">
                     <ListView.Header>
@@ -289,7 +289,7 @@
                     </ListView.Header>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <ViewCell>
+                            <ViewCell x:Name="viewCell_individual">
                                 <Grid ColumnSpacing="2"
                                          RowSpacing="2">
                                     <Grid.ColumnDefinitions>

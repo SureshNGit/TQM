@@ -26,7 +26,7 @@ namespace TQM
         const decimal ZERO = 0.0m;
         const int PER_TEST_LOOP_COUNT = 100;
         const int DATA_READ_LOOP_COUNT = 100;
-        const int STABLE_DATA_CHECK = 15;
+        const int STABLE_DATA_CHECK = 5;
         private decimal current_stable_data = 0;
         private List<NoilsTestModelView> noilsTestModelViewList;
         private long currentTestID = 0;
@@ -45,6 +45,7 @@ namespace TQM
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
+        private int currentTestCount = 0;
         private bool isTestStarted = false;
         private NoilsTestCalculatedModel noilsCalcList_finalOut = null;
         public NOILS()
@@ -231,30 +232,32 @@ namespace TQM
 
 
                                 //delete records in NoilsTestModel Table
-
-                                List<NoilsTestModel> allLastTest = conn.Table<NoilsTestModel>().
-                                    Where(NoilsTestModel =>
-                                    (NoilsTestModel.testID == lastTestID)).ToList();
-                                foreach (NoilsTestModel test in allLastTest)
+                                if (deleteLastTest)
                                 {
-                                    conn.Delete(test);
+                                    List<NoilsTestModel> allLastTest = conn.Table<NoilsTestModel>().
+                                        Where(NoilsTestModel =>
+                                        (NoilsTestModel.testID == lastTestID)).ToList();
+                                    foreach (NoilsTestModel test in allLastTest)
+                                    {
+                                        conn.Delete(test);
+                                    }
+
+                                    // delete records in NoilsTestSummaryModel Table
+
+                                    List<NoilsTestSummaryModel> allLastTest_Summary = conn.Table<NoilsTestSummaryModel>().
+                                        Where(NoilsTestSummaryModel =>
+                                        (NoilsTestSummaryModel.testID == lastTestID)).ToList();
+                                    foreach (NoilsTestSummaryModel test in allLastTest_Summary)
+                                    {
+                                        conn.Delete(test);
+                                    }
+
+
+
+                                    //start new test
+
+                                    startSliverButton.IsVisible = true;
                                 }
-
-                                // delete records in NoilsTestSummaryModel Table
-
-                                List<NoilsTestSummaryModel> allLastTest_Summary = conn.Table<NoilsTestSummaryModel>().
-                                    Where(NoilsTestSummaryModel =>
-                                    (NoilsTestSummaryModel.testID == lastTestID)).ToList();
-                                foreach (NoilsTestSummaryModel test in allLastTest_Summary)
-                                {
-                                    conn.Delete(test);
-                                }
-
-
-
-                                //start new test
-
-                                startSliverButton.IsVisible = true;
 
 
                             }
@@ -338,6 +341,10 @@ namespace TQM
             {
                 if (currentTestType == "Noils" && showFinalOut)
                 {
+                    listview_testresult_individual.ItemsSource = null;
+                    listview_testresult_individual.IsVisible = false;
+                    individualTestResultFrame.IsVisible = false;
+
                     overallTestResultFrame.IsVisible = visibility;
                     listview_testresult_overall.ItemsSource = null;
                     listview_testresult_overall.IsVisible = visibility;
@@ -345,10 +352,17 @@ namespace TQM
                 }
                 else
                 {
+                    listview_testresult_overall.ItemsSource = null;
+                    listview_testresult_overall.IsVisible = false;
+                    overallTestResultFrame.IsVisible = false;
+
                     individualTestResultFrame.IsVisible = visibility;
-                    listview_testresult_individual.ItemsSource = null;
                     listview_testresult_individual.IsVisible = visibility;
-                    listview_testresult_individual.ItemsSource = noilsTestModelViewList;
+                    if (noilsTestModelViewList != null)
+                    {
+                        listview_testresult_individual.ItemsSource = null;
+                        listview_testresult_individual.ItemsSource = noilsTestModelViewList.OrderByDescending(NoilsTestModelView => NoilsTestModelView.testcount);
+                    }
                 }
             });
         }
@@ -504,8 +518,7 @@ namespace TQM
                 conn.CreateTable<NoilsTestModel>();
                 List<NoilsTestModel> noilsTestModelList = conn.Table<NoilsTestModel>().Where(
                                 NoilsTestModel => (NoilsTestModel.status == true &&
-                                NoilsTestModel.testID != currentTestID &&
-                                NoilsTestModel.machineID == selectedMachineID)).ToList();
+                                NoilsTestModel.testID != currentTestID)).ToList();
 
                 foreach (NoilsTestModel noilsTestModel in noilsTestModelList)
                 {
@@ -557,8 +570,7 @@ namespace TQM
                     conn.CreateTable<NoilsTestSummaryModel>();
                     List<NoilsTestSummaryModel> noilsTestSMList = conn.Table<NoilsTestSummaryModel>().Where(
                                     NoilsTestSummaryModel => (NoilsTestSummaryModel.status == true &&
-                                    NoilsTestSummaryModel.testID != currentTestID &&
-                                    NoilsTestSummaryModel.machineID == selectedMachineID)).ToList();
+                                    NoilsTestSummaryModel.testID != currentTestID)).ToList();
 
                     foreach (NoilsTestSummaryModel noilsTestSM in noilsTestSMList)
                     {
@@ -629,8 +641,7 @@ namespace TQM
                             List<NoilsTestCalculatedModel> noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(
                                NoilsTestCalculatedModel =>
                                (NoilsTestCalculatedModel.status == true &&
-                               NoilsTestCalculatedModel.testID != currentTestID &&
-                               NoilsTestCalculatedModel.machineID == selectedMachineID)).ToList();
+                               NoilsTestCalculatedModel.testID != currentTestID)).ToList();
 
                             foreach (NoilsTestCalculatedModel noilsCalc in noilsCalcList)
                             {
@@ -912,6 +923,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
                 return;
             }
+            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
+            {
+                await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                return;
+            }
             if (picker_shift.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
@@ -933,6 +949,7 @@ namespace TQM
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
+                List<NoilsTestModel> allRecords = conn.Table<NoilsTestModel>().ToList();
                 NoilsTestModel lastTestRecord = null;
                 conn.CreateTable<NoilsTestModel>();
                 int recordCount = conn.Table<NoilsTestModel>().Count();
@@ -1004,6 +1021,7 @@ namespace TQM
                 int passCount = 0;
                 for (int i = 0; i < testCount; i++)
                 {
+                    currentTestCount = i + 1;
                     runResult = false;
                     CancellationTokenSource src = new CancellationTokenSource();
                     CancellationToken ct = src.Token;
@@ -1199,7 +1217,7 @@ namespace TQM
                                     {
                                         initialWeigthCheck = true;
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     else
@@ -1214,7 +1232,7 @@ namespace TQM
                                     if (s_op == ZERO || s_op < MIN_VAL)
                                     {
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     //else if (s_op < MIN_VAL)
@@ -1430,6 +1448,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
                 return;
             }
+            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
+            {
+                await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                return;
+            }
             if (picker_shift.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
@@ -1451,6 +1474,7 @@ namespace TQM
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
+                List<NoilsTestModel> allRecords = conn.Table<NoilsTestModel>().ToList();
                 conn.CreateTable<NoilsTestModel>();
                 DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
                 NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>()
@@ -1458,6 +1482,7 @@ namespace TQM
                 //NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>().OrderByDescending(NoilsTestModel => NoilsTestModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)
                 {
+                    allRecords = conn.Table<NoilsTestModel>().ToList();
                     if (currentTestID == 0)
                     {
                         currentTestID = lastTestRecord.testID + 1;
