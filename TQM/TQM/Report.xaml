@@ -38,31 +38,43 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Report Name"  
+                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Report Type"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
-                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="picker_reportName" HorizontalTextAlignment="Center" 
+                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="picker_reportType" HorizontalTextAlignment="Center" 
                         TextColor="Green" FontSize="25">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String></x:String>
-                            <x:String>Yarn Count</x:String>
+                            <x:String>Individual</x:String>
+                            <x:String>Consolidated</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Report Name"  
+                       FontSize="20" TextColor="#0e0273" Margin="0,10"/>
+                <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="picker_reportName" HorizontalTextAlignment="Center" 
+                        TextColor="Green" FontSize="25">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String></x:String>
+                            <x:String>Wrapping</x:String>
                             <x:String>A%</x:String>
                             <x:String>Stretch</x:String>
                             <x:String>NOILS</x:String>
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>
-                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Start Date:"  
+                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Start Date:"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
-                <DatePicker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" MinimumDate="01/06/2022" HorizontalOptions="Start"
+                <DatePicker Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" MinimumDate="01/06/2022" HorizontalOptions="Start"
                             x:Name="date_fromdate" TextColor="green"/>
-                <Label Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1" Text="End Date:"  HorizontalOptions="Center"
+                <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" Text="End Date:"  HorizontalOptions="Center"
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
-                <DatePicker Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="1" MinimumDate="01/06/2022" HorizontalOptions="Start"
+                <DatePicker Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="1" MinimumDate="01/06/2022" HorizontalOptions="Start"
                        Margin="0,0,0,0" x:Name="date_enddate" TextColor="green"/>
-                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category:"  
+                <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category:"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
-                <Picker Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" x:Name="picker_machinecategory" HorizontalTextAlignment="Center" 
+                <Picker Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="picker_machinecategory" HorizontalTextAlignment="Center" 
                         SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged" TextColor="Green" FontSize="25">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
@@ -73,14 +85,14 @@
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>
-                <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name:"  
+                <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name:"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
-                <Picker Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" ItemDisplayBinding="{Binding machineName}" SelectedIndexChanged="picker_machinename_SelectedIndexChanged" 
+                <Picker Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" ItemDisplayBinding="{Binding machineName}" SelectedIndexChanged="picker_machinename_SelectedIndexChanged" 
                     x:Name="picker_machinename" TextColor="Green" FontSize="20" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
                 
-                <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift:"  
+                <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift:"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
-                <Picker Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalTextAlignment="Center"
+                <Picker Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" HorizontalTextAlignment="Center"
                     x:Name="picker_shift" TextColor="Green" FontSize="20">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
@@ -92,9 +104,9 @@
                     </Picker.ItemsSource>
                 </Picker>
 
-                <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Process:"  
+                <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Process:"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
-                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_process" TextColor="Green" FontSize="20" 
+                <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_process" TextColor="Green" FontSize="20" 
                   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Text">
                 </Entry>
 

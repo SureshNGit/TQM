@@ -44,10 +44,19 @@ namespace TQM
         {
             try
             {
+                decimal stdHank = 0.000m;
                 List<OverallReportModelView> OVS = new List<OverallReportModelView>();
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     //List<YCTestSummaryModel> ycTestSummaryModels = conn.Table<YCTestSummaryModel>().ToList();
+
+                    conn.CreateTable<YarnCountConfigModel>();
+                    YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                    if (yarncountconfigmodel != null)
+                    {
+                        stdHank = yarncountconfigmodel.standardHank;
+
+                    }
 
                     conn.CreateTable<YCTestModel>();
                     conn.CreateTable<YCTestSummaryModel>();
@@ -201,6 +210,7 @@ namespace TQM
                             report.testaverage = testsummary.testaverage;
                             report.testsd = testsummary.testsd;
                             report.testcv = testsummary.testcv;
+                            report.standardHank = stdHank;
                         }
                         OVS.Add(report);
                     }
@@ -303,11 +313,11 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[0].ColumnSpan = 2;
                     pdfGridInfo.Rows[2].Cells[2].Value = "Machine Name: " + orl.machineName;
                     pdfGridInfo.Rows[2].Cells[2].ColumnSpan = 2;
-                    pdfGridInfo.Rows[3].Cells[0].Value = "Count System: " + orl.countsysname;
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Test System: " + orl.countsysname;
                     pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     pdfGridInfo.Rows[3].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[3].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[4].Cells[0].Value = "Average: " + orl.testaverage;
+                    pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + orl.testaverage + " [Std Hank: " + orl.standardHank + "]";
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
                     pdfGridInfo.Rows[4].Cells[1].Value = "SD: " + orl.testsd;
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
@@ -448,7 +458,7 @@ namespace TQM
                     else if (result == null && overallHeight > 0)
                     {
                         result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
-                        overallHeight = overallHeight + result.Bounds.Height + 30;
+                        overallHeight = overallHeight + result.Bounds.Height + 40;//changed from 30 to 40
                     }
                     else
                     {
@@ -462,7 +472,8 @@ namespace TQM
                             if (newPageAdded_Header)
                             {
                                 newPageAdded_Header = false;
-                                result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
+                                result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 25), layoutFormat);
+                                //changed from 10 to 25
                             }
                             else
                             {
@@ -473,7 +484,8 @@ namespace TQM
                                 }
                                 else
                                 {
-                                    result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight + 10)));
+                                    result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight + 25)));
+                                    //changed from 10 to 25
                                 }
                             }
 
@@ -511,7 +523,7 @@ namespace TQM
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
                 pdfDocument.Close(true);
-                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "TQM_Report(Yarn Count).pdf");
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "TQM_Report(Wrapping).pdf");
                 //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
                 //Process.Start(pdfPath);
                 return true;
@@ -549,10 +561,15 @@ namespace TQM
                 //Stream imageStream = App.Current.GetType().Assembly.GetManifestResourceStream("TQM.Assets.SasthaLogo.jpg");
                 //PdfImage image = new PdfBitmap(imageStream);
                 //header.Graphics.DrawImage(image, new PointF(0, 0), new SizeF(100, 50));
-                PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 20);
+                PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
                 PdfBrush brush = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
                 header.Alignment = PdfAlignmentStyle.TopCenter;
                 header.Graphics.DrawString(companyName, font, brush, new PointF(10, 0));
+                //Title Starts
+                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Underline);
+                PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
+                header.Graphics.DrawString("Wrapping Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                //Title Ends
                 pdfDocument.Template.Top = header;
                 PdfPageTemplateElement footer = new PdfPageTemplateElement(bounds);
                 PdfFont font_footer = new PdfStandardFont(PdfFontFamily.Helvetica, 7);
@@ -591,7 +608,7 @@ namespace TQM
                     {
                         showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
                     }
-                    string fileName = "TQM_Report(Yarn Count).pdf";
+                    string fileName = "TQM_Report(Wrapping).pdf";
                     string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
                     Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
                     Java.IO.File file = new Java.IO.File(myDir, fileName);
@@ -600,8 +617,9 @@ namespace TQM
                     var request = new RestRequest();
                     request.Method = Method.Post;
                     //request.Timeout = Timeout.Infinite;
+                    request.AddParameter("userName", "tqmuser");
                     request.AddParameter("uploadedby", companyName);
-                    request.AddParameter("title", "TQMReports(Yarn Count)-" + DateTime.Now.ToString());
+                    request.AddParameter("title", "TQMReports(Wrapping)-" + DateTime.Now.ToString());
                     request.AddFile("reportpath", filePath);
                     RestResponse response = client.Execute(request);
                     if (response.IsSuccessful)

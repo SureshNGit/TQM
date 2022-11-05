@@ -52,8 +52,10 @@ namespace TQM
                             }
                         }
                         picker_yarnlengthunit.SelectedIndex = yarncountlenindex;
-                        entry_yarnlength.Text = ycConfigList[0].yarnlength.ToString();
+                        entry_sliverlength.Text = ycConfigList[0].sliverlength.ToString();
+                        entry_rovinglength.Text = ycConfigList[0].rovinglength.ToString();
                         entry_testcount.Text = ycConfigList[0].testcount.ToString();
+                        entry_standardHank.Text = ycConfigList[0].standardHank.ToString();
                         entry_testcountApercent.Text = ycConfigList[0].testcountApercent.ToString();
                         entry_testcountStretch.Text = ycConfigList[0].testcountStretch.ToString();
                         entry_testcountNoils.Text = ycConfigList[0].testcountNoils.ToString();
@@ -76,7 +78,8 @@ namespace TQM
             {
                 if (picker_countsysname.SelectedItem.ToString() == "" ||
                     picker_yarnlengthunit.SelectedItem.ToString() == "" ||
-                    entry_yarnlength.Text.Trim().ToString() == "" ||
+                    entry_sliverlength.Text.Trim().ToString() == "" ||
+                    entry_rovinglength.Text.Trim().ToString() == "" ||
                     entry_testcount.Text.Trim().ToString() == "" ||
                     entry_testcountApercent.Text.Trim().ToString() == "" ||
                     entry_testcountStretch.Text.Trim().ToString() == "" ||
@@ -89,13 +92,20 @@ namespace TQM
                 if (currentID != Guid.Empty) { guid = currentID; }
                 int row = 0;
                 string msg = "saved";
+                decimal stdHank = 0.0000m;
+                if (entry_standardHank.Text.Trim().ToString() != "")
+                {
+                    stdHank = decimal.Parse(entry_standardHank.Text.ToString());
+                }
                 YarnCountConfigModel yarnCountConfigModel = new YarnCountConfigModel()
                 {
                     ID = guid,
                     countsysname = picker_countsysname.SelectedItem.ToString(),
                     yarnlenunit = picker_yarnlengthunit.SelectedItem.ToString(),
-                    yarnlength = int.Parse(entry_yarnlength.Text.ToString()),
+                    sliverlength = int.Parse(entry_sliverlength.Text.ToString()),
+                    rovinglength = int.Parse(entry_rovinglength.Text.ToString()),
                     testcount = int.Parse(entry_testcount.Text.ToString()),
+                    standardHank = stdHank,
                     testcountApercent = int.Parse(entry_testcountApercent.Text.ToString()),
                     testcountStretch = int.Parse(entry_testcountStretch.Text.ToString()),
                     testcountNoils = int.Parse(entry_testcountNoils.Text.ToString()),

@@ -554,7 +554,7 @@ namespace TQM
                     else if (result == null && overallHeight > 0)
                     {
                         result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
-                        overallHeight = overallHeight + result.Bounds.Height + 30;
+                        overallHeight = overallHeight + result.Bounds.Height + 40;//changed from 30 to 40
                     }
                     else
                     {
@@ -568,7 +568,8 @@ namespace TQM
                             if (newPageAdded_Header)
                             {
                                 newPageAdded_Header = false;
-                                result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
+                                result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 25), layoutFormat);
+                                //changed from 10 to 25
                             }
                             else
                             {
@@ -579,7 +580,8 @@ namespace TQM
                                 }
                                 else
                                 {
-                                    result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight + 10)));
+                                    result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight + 25)));
+                                    //changed from 10 to 25
                                 }
                             }
 
@@ -655,10 +657,15 @@ namespace TQM
                 //Stream imageStream = App.Current.GetType().Assembly.GetManifestResourceStream("TQM.Assets.SasthaLogo.jpg");
                 //PdfImage image = new PdfBitmap(imageStream);
                 //header.Graphics.DrawImage(image, new PointF(0, 0), new SizeF(100, 50));
-                PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 20);
+                PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
                 PdfBrush brush = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
                 header.Alignment = PdfAlignmentStyle.TopCenter;
                 header.Graphics.DrawString(companyName, font, brush, new PointF(10, 0));
+                //Title Starts
+                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Underline);
+                PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
+                header.Graphics.DrawString("Stretch Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                //Title Ends
                 pdfDocument.Template.Top = header;
                 PdfPageTemplateElement footer = new PdfPageTemplateElement(bounds);
                 PdfFont font_footer = new PdfStandardFont(PdfFontFamily.Helvetica, 7);
@@ -706,6 +713,7 @@ namespace TQM
                     var request = new RestRequest();
                     request.Method = Method.Post;
                     //request.Timeout = Timeout.Infinite;
+                    request.AddParameter("userName", "tqmuser");
                     request.AddParameter("uploadedby", companyName);
                     request.AddParameter("title", "TQMReports(Stretch)-" + DateTime.Now.ToString());
                     request.AddFile("reportpath", filePath);

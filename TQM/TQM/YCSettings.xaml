@@ -25,7 +25,7 @@
 
     <ContentPage.Content>
         <StackLayout>
-            <Grid Margin="280,35">
+            <Grid Margin="200,5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -40,8 +40,9 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Text="Count System" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Label Grid.Row="0" Grid.Column="0" Text="Test System" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
                 <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_countsysname" TextColor="Green" FontSize="16"
                         VerticalTextAlignment="Center" HorizontalTextAlignment="Center">   
                     <Picker.ItemsSource>
@@ -63,20 +64,26 @@
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>
-                <Label Grid.Row="2" Grid.Column="0" Text="Yarn Length" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_yarnlength" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="2" Grid.Column="0" Text="Sliver Length" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_sliverlength" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-                <Label Grid.Row="3" Grid.Column="0" Text="Test Count (Yarn Count)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcount" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="3" Grid.Column="0" Text="Roving Length" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_rovinglength" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-                <Label Grid.Row="4" Grid.Column="0" Text="Test Count (A%)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountApercent" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="4" Grid.Column="0" Text="Test Sample (Wrapping)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcount" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-                <Label Grid.Row="5" Grid.Column="0" Text="Test Count (Stretch)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountStretch" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="5" Grid.Column="0" Text="Standard Hank (Wrapping)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_standardHank" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-                <Label Grid.Row="6" Grid.Column="0" Text="Test Count (Noils)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountNoils" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="6" Grid.Column="0" Text="Test Sample (A%)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountApercent" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                <Label Grid.Row="7" Grid.Column="0" Text="Test Sample (Stretch)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountStretch" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                <Label Grid.Row="8" Grid.Column="0" Text="Test Sample (Noils)" HorizontalOptions="EndAndExpand" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="3" Text = "" x:Name="entry_testcountNoils" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
                
             </Grid>

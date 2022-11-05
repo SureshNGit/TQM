@@ -65,7 +65,7 @@ namespace TQM
                 {
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
                     lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
-                    lbl_yarnlen.Text = yarncountconfigmodel.yarnlength.ToString();
+                    entry_yarnlen.Text = "";
                     entry_testcount.Text = yarncountconfigmodel.testcountApercent.ToString();
                     TESTCOUNT = yarncountconfigmodel.testcountApercent;
                 }
@@ -73,10 +73,10 @@ namespace TQM
                 {
                     lbl_countsysname.Text = "";
                     lbl_yarncountunit.Text = "";
-                    lbl_yarnlen.Text = "";
+                    entry_yarnlen.Text = "";
                     entry_testcount.Text = "";
                     picker_shift.SelectedIndex = 0;
-                    entry_process.Text = "";
+                    picker_process.SelectedIndex = 0;
                 }
 
                 conn.CreateTable<YCTestApercentModel>();
@@ -139,11 +139,11 @@ namespace TQM
                                 }
                                 picker_machinename.SelectedIndex = machineIndex - 1;
                                 picker_shift.SelectedItem = lastTest.shift;
-                                entry_process.Text = lastTest.process;
+                                picker_process.SelectedItem = lastTest.process;
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
-                                entry_process.IsEnabled = false;
+                                picker_process.IsEnabled = false;
                                 currentTestID = lastTest.testID;
                                 lbl_TestID.Text = currentTestID.ToString();
                                 startTestNButton.IsVisible = true;
@@ -181,11 +181,11 @@ namespace TQM
                                 }
                                 picker_machinename.SelectedIndex = machineIndex - 1;
                                 picker_shift.SelectedItem = lastTest.shift;
-                                entry_process.Text = lastTest.process;
+                                picker_process.SelectedItem = lastTest.process;
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
-                                entry_process.IsEnabled = false;
+                                picker_process.IsEnabled = false;
                                 currentTestID = lastTest.testID;
                                 lbl_TestID.Text = currentTestID.ToString();
                                 startTestNButton.IsVisible = true;
@@ -206,11 +206,11 @@ namespace TQM
                                 }
                                 picker_machinename.SelectedIndex = machineIndex - 1;
                                 picker_shift.SelectedItem = lastTest.shift;
-                                entry_process.Text = lastTest.process;
+                                picker_process.SelectedItem = lastTest.process;
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
-                                entry_process.IsEnabled = false;
+                                picker_process.IsEnabled = false;
                                 currentTestID = lastTest.testID;
                                 lbl_TestID.Text = currentTestID.ToString();
                                 startTestNp1Button.IsVisible = true;
@@ -248,11 +248,11 @@ namespace TQM
                                 }
                                 picker_machinename.SelectedIndex = machineIndex - 1;
                                 picker_shift.SelectedItem = lastTest.shift;
-                                entry_process.Text = lastTest.process;
+                                picker_process.SelectedItem = lastTest.process;
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
-                                entry_process.IsEnabled = false;
+                                picker_process.IsEnabled = false;
                                 currentTestID = lastTest.testID;
                                 lbl_TestID.Text = currentTestID.ToString();
                                 startTestNp1Button.IsVisible = true;
@@ -894,8 +894,8 @@ namespace TQM
                         picker_machinename.SelectedIndex = 0;
                         picker_shift.IsEnabled = true;
                         picker_shift.SelectedIndex = 0;
-                        entry_process.Text = "";
-                        entry_process.IsEnabled = true;
+                        picker_process.SelectedIndex = 0;
+                        picker_process.IsEnabled = true;
                     }
                     string str_testType = "";
                     if (currentTestType == "nMinus1")
@@ -955,7 +955,7 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
-            if (entry_process.Text.Trim() == "")
+            if (picker_process.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
                 return;
@@ -1014,10 +1014,10 @@ namespace TQM
             }
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = lbl_yarncountunit.Text;
-            selectedYarnLen = int.Parse(lbl_yarnlen.Text);
+            selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = entry_process.Text;
+            selectedProcess = picker_process.SelectedItem.ToString();
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNm1Button.IsEnabled = false;
             startTestNm1Button.BackgroundColor = Color.SlateGray;
@@ -1025,7 +1025,7 @@ namespace TQM
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
-            entry_process.IsEnabled = false;
+            picker_process.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -1479,7 +1479,7 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
-            if (entry_process.Text.Trim() == "")
+            if (picker_process.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
                 return;
@@ -1528,10 +1528,10 @@ namespace TQM
             }
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = lbl_yarncountunit.Text;
-            selectedYarnLen = int.Parse(lbl_yarnlen.Text);
+            selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = entry_process.Text;
+            selectedProcess = picker_process.SelectedItem.ToString();
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNButton.IsEnabled = false;
             startTestNButton.BackgroundColor = Color.SlateGray;
@@ -1539,7 +1539,7 @@ namespace TQM
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
-            entry_process.IsEnabled = false;
+            picker_process.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -1575,7 +1575,7 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
-            if (entry_process.Text.Trim() == "")
+            if (picker_process.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
                 return;
@@ -1624,10 +1624,10 @@ namespace TQM
             }
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = lbl_yarncountunit.Text;
-            selectedYarnLen = int.Parse(lbl_yarnlen.Text);
+            selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = entry_process.Text;
+            selectedProcess = picker_process.SelectedItem.ToString();
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNp1Button.IsEnabled = false;
             startTestNp1Button.BackgroundColor = Color.SlateGray;
@@ -1635,7 +1635,7 @@ namespace TQM
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
-            entry_process.IsEnabled = false;
+            picker_process.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -1657,6 +1657,25 @@ namespace TQM
                     conn.CreateTable<MachineModel>();
                     List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
                     picker_machinename.ItemsSource = machineModelList;
+
+                    conn.CreateTable<YarnCountConfigModel>();
+                    YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                    if (yarncountconfigmodel != null)
+                    {
+                        if (selectedMachineCategory == "Simplex/SpeedFrame")
+                        {
+                            entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
+                        }
+                        else
+                        {
+                            entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
+                        }
+
+                    }
+                    else
+                    {
+                        entry_yarnlen.Text = "";
+                    }
                 }
             }
             catch (Exception ex)

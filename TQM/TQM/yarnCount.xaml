@@ -86,6 +86,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -101,39 +102,48 @@
             <BoxView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
             <BoxView Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
             <BoxView Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
-            <BoxView Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+            <BoxView Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+            <BoxView Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
             
-            <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="9" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="9" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="9" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+            <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="10" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="10" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="10" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
             
             
-            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Count System Name" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Margin="5"/>
-            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Yarn Count Unit" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
-            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Yarn Length" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Count" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Test System Name" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Margin="5"/>
+            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Unit" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
+            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Yarn Length" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Sample" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Process" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Standard Hank" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
             <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_countsysname" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
             <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarncountunit" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
-            <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarnlen" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50" />
-            <Entry Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_testcount" TextColor="Green" FontSize="16" Keyboard="Numeric"
-                 HorizontalOptions="Start" WidthRequest="500"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+            <!--<Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarnlen" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50" />-->
+            <Entry Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_yarnlen" TextColor="Green" FontSize="16" Keyboard="Numeric"
+                 HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
             </Entry>
-            <Picker Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+            <Entry Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_testcount" TextColor="Green" FontSize="16" Keyboard="Numeric"
+                 HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+                <Entry.Effects>
+                    <effects:PlainEntry/>
+                </Entry.Effects>
+            </Entry>
+            <Picker Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
                     x:Name="picker_machinecategory" TextColor="Green" FontSize="16" SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
                         <x:String></x:String>
                         <x:String>Carding</x:String>
-                        <x:String>Drawing</x:String>
+                        <x:String>Breaker Drawing</x:String>
                         <x:String>Comber</x:String>
+                        <x:String>Drawing</x:String>
                         <x:String>RSB</x:String>
                         <x:String>Simplex/SpeedFrame</x:String>
                         <x:String>Spinning</x:String>
@@ -170,12 +180,29 @@
                 </Picker.Effects>
             </Picker>
 
-            <Entry Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_process" TextColor="Green" FontSize="16" 
+            <!--<Entry Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_process" TextColor="Green" FontSize="16" 
                   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Text" MaxLength="15">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
-            </Entry>
+            </Entry>-->
+
+            <Picker Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                    x:Name="picker_process" TextColor="Green" FontSize="16">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String></x:String>
+                        <x:String>RL</x:String>
+                        <x:String>VL</x:String>
+                        <x:String>GL</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+                <Picker.Effects>
+                    <effects:PlainEntry/>
+                </Picker.Effects>
+            </Picker>
+
+            <Label Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_standardHank" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
 
             <Frame Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="10,0,0,0" HorizontalOptions="Start"
                    BackgroundColor="White" BorderColor="White" CornerRadius="0" HasShadow="False">
@@ -215,7 +242,7 @@
                 </Grid>
             </Frame>
 
-            <Frame Grid.Row="3" Grid.RowSpan="9" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2"
+            <Frame Grid.Row="3" Grid.RowSpan="10" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2"
                    BackgroundColor="White" BorderColor="White" CornerRadius="0" HasShadow="False" x:Name="individualTestResultFrame" IsVisible="false">
                 <ListView x:Name="listview_testresult"  
                       HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always" 
@@ -224,7 +251,7 @@
                         <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273">
                             <Label Text="Test No" WidthRequest="150" TextColor="White" FontSize="20"/>
                             <Label Text="Yarn Weigth" WidthRequest="230" TextColor="White" FontSize="20"/>
-                            <Label Text="Yarn Count" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Label Text="Hank" WidthRequest="200" TextColor="White" FontSize="20"/>
                         </StackLayout>
                     </ListView.Header>
                     <ListView.ItemTemplate>
@@ -275,7 +302,7 @@
                 </Grid>
             </Frame>
 
-            <Frame Grid.Row="1" Grid.RowSpan="9" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2" 
+            <Frame Grid.Row="1" Grid.RowSpan="10" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2" 
                    BackgroundColor="White" BorderColor="White" CornerRadius="0" HasShadow="False" x:Name="individualTestResultFrame_FinalOut" IsVisible="false">
                 <ListView x:Name="listview_testresult_FinalOut"  
                       HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always" 
@@ -284,7 +311,7 @@
                         <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273">
                             <Label Text="Test No" WidthRequest="150" TextColor="White" FontSize="20"/>
                             <Label Text="Yarn Weigth" WidthRequest="230" TextColor="White" FontSize="20"/>
-                            <Label Text="Yarn Count" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Label Text="Hank" WidthRequest="200" TextColor="White" FontSize="20"/>
                         </StackLayout>
                     </ListView.Header>
                     <ListView.ItemTemplate>

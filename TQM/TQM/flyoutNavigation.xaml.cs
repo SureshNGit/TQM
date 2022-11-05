@@ -123,13 +123,13 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Yarn Count Settings",
+                        Title = "Settings",
                         ImageSource = "",
                         TargetPage = typeof(YCSettings)
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Yarn Count",
+                        Title = "Wrapping",
                         ImageSource = "",
                         TargetPage = typeof(yarnCount)
                     });
@@ -147,13 +147,13 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "NOILS",
+                        Title = "Noils",
                         ImageSource = "",
                         TargetPage = typeof(NOILS)
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Test Report",
+                        Title = "Reports",
                         ImageSource = "",
                         TargetPage = typeof(Report)
                     });
@@ -175,13 +175,13 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Yarn Count Settings",
+                        Title = "Settings",
                         ImageSource = "",
                         TargetPage = typeof(YCSettings)
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Yarn Count",
+                        Title = "Wrapping",
                         ImageSource = "",
                         TargetPage = typeof(yarnCount)
                     });
@@ -199,13 +199,13 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "NOILS",
+                        Title = "Noils",
                         ImageSource = "",
                         TargetPage = typeof(NOILS)
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Test Report",
+                        Title = "Reports",
                         ImageSource = "",
                         TargetPage = typeof(Report)
                     });

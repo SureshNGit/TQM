@@ -13,13 +13,15 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
                 <Image Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="1" x:Name="img_notification" IsVisible="False" HorizontalOptions="Center"
                        Source="loading.gif" IsAnimationPlaying="True" 
                        Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
-                <Button Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Send Report" 
+                <Label Grid.Row="0" Grid.Column="3" Text="Wrapping Report" FontSize="18" TextColor="Red" VerticalTextAlignment="Center" />
+                <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Send Report" 
                         x:Name="btn_saveToPDF"  Clicked="btn_saveToPDF_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="25"/>
             </Grid>
         </StackLayout>
@@ -70,7 +72,7 @@
                                     Text="{Binding machineName}" FontSize="14" TextColor="Green"/>
 
                                     <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1"
-                                    Text="Count System" FontSize="14" TextColor="#0e0273"/>
+                                    Text="Test System" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="100,0,0,0"
                                     Text="{Binding countsysname}" FontSize="14" TextColor="Green"/>
                                     <Label Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1"
@@ -87,9 +89,16 @@
                                     Text="{Binding totaltestcount}" FontSize="14" TextColor="Green"/>
 
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1"
-                                    Text="Average" FontSize="14" TextColor="#0e0273"/>
+                                    Text="Hank" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
-                                    Text="{Binding testaverage}" FontSize="14" TextColor="red"/>
+                                     FontSize="14" TextColor="red">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0} [Std Hank: {1}]">
+                                                <Binding Path="testaverage"/>
+                                                <Binding Path="standardHank"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
                                     <Label Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="1"
                                     Text="SD" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="30,0,0,0"

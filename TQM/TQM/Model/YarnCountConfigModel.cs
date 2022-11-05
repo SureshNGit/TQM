@@ -12,9 +12,13 @@ namespace TQM.Model
 
         public string yarnlenunit { get; set; }
 
-        public int yarnlength { get; set; }
+        public int sliverlength { get; set; }
+
+        public int rovinglength { get; set; }
 
         public int testcount { get; set; }
+
+        public decimal standardHank { get; set; }
 
         public int testcountApercent { get; set; }
 

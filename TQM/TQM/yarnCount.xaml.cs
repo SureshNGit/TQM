@@ -63,18 +63,20 @@ namespace TQM
                 {
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
                     lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
-                    lbl_yarnlen.Text = yarncountconfigmodel.yarnlength.ToString();
+                    entry_yarnlen.Text = "";
                     entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
                     TESTCOUNT = yarncountconfigmodel.testcount;
+                    lbl_standardHank.Text = yarncountconfigmodel.standardHank.ToString();
                 }
                 else
                 {
                     lbl_countsysname.Text = "";
                     lbl_yarncountunit.Text = "";
-                    lbl_yarnlen.Text = "";
+                    entry_yarnlen.Text = "";
                     entry_testcount.Text = "";
                     picker_shift.SelectedIndex = 0;
-                    entry_process.Text = "";
+                    picker_process.SelectedIndex = 0;
+                    lbl_standardHank.Text = "0.000";
                 }
             }
         }
@@ -294,8 +296,8 @@ namespace TQM
                     picker_machinename.SelectedIndex = 0;
                     picker_shift.IsEnabled = true;
                     picker_shift.SelectedIndex = 0;
-                    entry_process.Text = "";
-                    entry_process.IsEnabled = true;
+                    picker_process.SelectedIndex = 0;
+                    picker_process.IsEnabled = true;
                     if (isTestStarted)
                     {
                         currentTestID = 0;
@@ -341,9 +343,9 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
-            if (entry_process.Text.Trim() == "")
+            if (picker_process.SelectedIndex <= 0)
             {
-                await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
+                await DisplayAlert("Attention", "Please select process info!!!", "Ok");
                 return;
             }
             if (!initializeBluetooth())
@@ -405,16 +407,16 @@ namespace TQM
             }
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = lbl_yarncountunit.Text;
-            selectedYarnLen = int.Parse(lbl_yarnlen.Text);
+            selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = entry_process.Text;
+            selectedProcess = picker_process.SelectedItem.ToString();
             ycTestModelViewlist = new List<YCTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
             entry_testcount.IsEnabled = false;
             picker_shift.IsEnabled = false;
-            entry_process.IsEnabled = false;
+            picker_process.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
@@ -855,6 +857,25 @@ namespace TQM
                     conn.CreateTable<MachineModel>();
                     List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
                     picker_machinename.ItemsSource = machineModelList;
+
+                    conn.CreateTable<YarnCountConfigModel>();
+                    YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                    if (yarncountconfigmodel != null)
+                    {
+                        if (selectedMachineCategory == "Simplex/SpeedFrame")
+                        {
+                            entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
+                        }
+                        else
+                        {
+                            entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
+                        }
+
+                    }
+                    else
+                    {
+                        entry_yarnlen.Text = "";
+                    }
                 }
             }
             catch (Exception ex)
