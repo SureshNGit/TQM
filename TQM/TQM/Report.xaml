@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TQM.Report" NavigationPage.HasBackButton="False">
+             x:Class="TQM.Report"  xmlns:effects="clr-namespace:TQM.Effects" 
+             BackgroundColor="white" NavigationPage.HasBackButton="False">
     <NavigationPage.TitleView>
         <StackLayout BackgroundColor="White">
             <Grid>
@@ -38,18 +39,17 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Report Type"  
+                <!--<Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Report Type"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
                 <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="picker_reportType" HorizontalTextAlignment="Center" 
                         TextColor="Green" FontSize="25">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
-                            <x:String></x:String>
                             <x:String>Individual</x:String>
                             <x:String>Consolidated</x:String>
                         </x:Array>
                     </Picker.ItemsSource>
-                </Picker>
+                </Picker>-->
                 <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Report Name"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
                 <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="picker_reportName" HorizontalTextAlignment="Center" 
@@ -60,7 +60,7 @@
                             <x:String>Wrapping</x:String>
                             <x:String>A%</x:String>
                             <x:String>Stretch</x:String>
-                            <x:String>NOILS</x:String>
+                            <x:String>Noils</x:String>
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>
@@ -110,9 +110,24 @@
 
                 <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Process:"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
-                <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_process" TextColor="Green" FontSize="20" 
+                <!--<Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_process" TextColor="Green" FontSize="20" 
                   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Text">
-                </Entry>
+                </Entry>-->
+
+                <Picker Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                    x:Name="picker_process" TextColor="Green" FontSize="16">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String></x:String>
+                            <x:String>RL</x:String>
+                            <x:String>VL</x:String>
+                            <x:String>GL</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                    <!--<Picker.Effects>
+                        <effects:PlainEntry/>
+                    </Picker.Effects>-->
+                </Picker>
 
 
                 <Button Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="1" Text = "Search" 

@@ -220,9 +220,9 @@ namespace TQM
                                 {
                                     testID = test.testID,
                                     description = test.testcount.ToString(),
-                                    silver_wt = test.weigth_sliver,
-                                    noils_wt = test.weigth_noils,
-                                    noils = test.noils
+                                    silver_wt = formatDecimal(test.weigth_sliver),
+                                    noils_wt = formatDecimal(test.weigth_noils),
+                                    noils = formatDecimal(test.noils)
                                 };
                                 report.Add(noilsReportMV);
                                 loopCount += 1;
@@ -232,9 +232,9 @@ namespace TQM
                             {
                                 testID = noilsCalc.testID,
                                 description = "Average Weight",
-                                silver_wt = noilsCalc.average_wt_sliverwt,
-                                noils_wt = noilsCalc.average_wt_noilswt,
-                                noils = noilsCalc.average_wt_noils
+                                silver_wt = formatDecimal(noilsCalc.average_wt_sliverwt),
+                                noils_wt = formatDecimal(noilsCalc.average_wt_noilswt),
+                                noils = formatDecimal(noilsCalc.average_wt_noils)
                             };
                             report.Add(noilsReportModelView);
 
@@ -242,9 +242,9 @@ namespace TQM
                             {
                                 testID = noilsCalc.testID,
                                 description = "Weight (Max)",
-                                silver_wt = noilsCalc.max_sliverwt,
-                                noils_wt = noilsCalc.max_noilswt,
-                                noils = noilsCalc.max_noils
+                                silver_wt = formatDecimal(noilsCalc.max_sliverwt),
+                                noils_wt = formatDecimal(noilsCalc.max_noilswt),
+                                noils = formatDecimal(noilsCalc.max_noils)
                             };
                             report.Add(noilsReportModelView);
 
@@ -252,9 +252,9 @@ namespace TQM
                             {
                                 testID = noilsCalc.testID,
                                 description = "Weight (Min)",
-                                silver_wt = noilsCalc.min_sliverwt,
-                                noils_wt = noilsCalc.min_noilswt,
-                                noils = noilsCalc.min_noils
+                                silver_wt = formatDecimal(noilsCalc.min_sliverwt),
+                                noils_wt = formatDecimal(noilsCalc.min_noilswt),
+                                noils = formatDecimal(noilsCalc.min_noils)
                             };
                             report.Add(noilsReportModelView);
 
@@ -262,9 +262,9 @@ namespace TQM
                             {
                                 testID = noilsCalc.testID,
                                 description = "Range",
-                                silver_wt = noilsCalc.range_sliverwt,
-                                noils_wt = noilsCalc.range_noilswt,
-                                noils = noilsCalc.range_noils
+                                silver_wt = formatDecimal(noilsCalc.range_sliverwt),
+                                noils_wt = formatDecimal(noilsCalc.range_noilswt),
+                                noils = formatDecimal(noilsCalc.range_noils)
                             };
                             report.Add(noilsReportModelView);
 
@@ -282,9 +282,9 @@ namespace TQM
                             {
                                 testID = noilsCalc.testID,
                                 description = "SD",
-                                silver_wt = noilsCalc.testsd_sliverwt,
-                                noils_wt = noilsCalc.testsd_noilswt,
-                                noils = noilsCalc.testsd_noils
+                                silver_wt = formatDecimal(noilsCalc.testsd_sliverwt),
+                                noils_wt = formatDecimal(noilsCalc.testsd_noilswt),
+                                noils = formatDecimal(noilsCalc.testsd_noils)
                             };
                             report.Add(noilsReportModelView);
 
@@ -292,9 +292,9 @@ namespace TQM
                             {
                                 testID = noilsCalc.testID,
                                 description = "CV",
-                                silver_wt = noilsCalc.testcv_sliverwt,
-                                noils_wt = noilsCalc.testcv_noilswt,
-                                noils = noilsCalc.testcv_noils
+                                silver_wt = formatDecimal(noilsCalc.testcv_sliverwt),
+                                noils_wt = formatDecimal(noilsCalc.testcv_noilswt),
+                                noils = formatDecimal(noilsCalc.testcv_noils)
                             };
                             report.Add(noilsReportModelView);
 
@@ -543,9 +543,9 @@ namespace TQM
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
                         pdfGrid.Rows[rowCount].Cells[0].Value = test.description.ToString();
-                        pdfGrid.Rows[rowCount].Cells[1].Value = test.silver_wt.ToString();
-                        pdfGrid.Rows[rowCount].Cells[2].Value = test.noils_wt.ToString();
-                        pdfGrid.Rows[rowCount].Cells[3].Value = test.noils.ToString();
+                        pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.silver_wt).ToString();
+                        pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.noils_wt).ToString();
+                        pdfGrid.Rows[rowCount].Cells[3].Value = formatDecimal(test.noils).ToString();
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -755,6 +755,27 @@ namespace TQM
             {
                 DisplayAlert("Notice", msg, "Ok");
             });
+        }
+
+        private decimal formatDecimal(decimal inputVal)
+        {
+            inputVal = Math.Round(inputVal, 4);
+            string inputString = inputVal.ToString();
+            string[] ipStringArray = inputString.Split('.');
+            if (ipStringArray.Length > 1)
+            {
+                string beforeDecimal = ipStringArray[0];
+                string afterDecimal = ipStringArray[1];
+                for (int i = ipStringArray[1].Length; i < 4; i++)
+                {
+                    afterDecimal = afterDecimal + "0";
+                }
+                return decimal.Parse(beforeDecimal + "." + afterDecimal);
+            }
+            else
+            {
+                return decimal.Parse(inputString + ".0000");
+            }
         }
     }
 }

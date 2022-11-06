@@ -66,7 +66,7 @@ namespace TQM
                     entry_yarnlen.Text = "";
                     entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
                     TESTCOUNT = yarncountconfigmodel.testcount;
-                    lbl_standardHank.Text = yarncountconfigmodel.standardHank.ToString();
+                    lbl_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
                 }
                 else
                 {

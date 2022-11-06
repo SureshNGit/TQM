@@ -73,9 +73,9 @@ namespace TQM
                     shift = picker_shift.SelectedItem.ToString();
                 }
                 string process = null;
-                if (entry_process.Text.Trim() != "")
+                if (picker_process.SelectedItem != null)
                 {
-                    process = entry_process.Text.Trim();
+                    process = picker_process.SelectedItem.ToString();
                 }
                 if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
                 if (picker_reportName.SelectedItem.ToString() == "Wrapping")
@@ -93,7 +93,7 @@ namespace TQM
                     Navigation.PushAsync(new StretchReport
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process));
                 }
-                else if (picker_reportName.SelectedItem.ToString() == "NOILS")
+                else if (picker_reportName.SelectedItem.ToString() == "Noils")
                 {
                     Navigation.PushAsync(new NoilsReport
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process));

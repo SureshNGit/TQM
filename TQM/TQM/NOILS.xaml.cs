@@ -381,7 +381,7 @@ namespace TQM
                 else if (currentTestType == "Noils" && showFinalOut)
                 {
                     frame_overallTestSummary.IsVisible = visibility;
-                    lbl_noilsPercent.Text = noilsCalcList_finalOut.average_wt_noils.ToString();
+                    lbl_noilsPercent.Text = formatDecimal(noilsCalcList_finalOut.average_wt_noils).ToString();
                 }
             });
         }
@@ -416,9 +416,9 @@ namespace TQM
                             {
                                 testID = test.testID,
                                 description = test.testcount.ToString(),
-                                silver_wt = test.weigth_sliver,
-                                noils_wt = test.weigth_noils,
-                                noils = test.noils
+                                silver_wt = formatDecimal(test.weigth_sliver),
+                                noils_wt = formatDecimal(test.weigth_noils),
+                                noils = formatDecimal(test.noils)
                             };
                             OVS.Add(noilsReportMV);
                             loopCount += 1;
@@ -428,9 +428,9 @@ namespace TQM
                         {
                             testID = noilsCalcList_finalOut.testID,
                             description = "Average Weight",
-                            silver_wt = noilsCalcList_finalOut.average_wt_sliverwt,
-                            noils_wt = noilsCalcList_finalOut.average_wt_noilswt,
-                            noils = noilsCalcList_finalOut.average_wt_noils
+                            silver_wt = formatDecimal(noilsCalcList_finalOut.average_wt_sliverwt),
+                            noils_wt = formatDecimal(noilsCalcList_finalOut.average_wt_noilswt),
+                            noils = formatDecimal(noilsCalcList_finalOut.average_wt_noils)
                         };
                         OVS.Add(noilsReportModelView);
 
@@ -438,9 +438,9 @@ namespace TQM
                         {
                             testID = noilsCalcList_finalOut.testID,
                             description = "Weight (Max)",
-                            silver_wt = noilsCalcList_finalOut.max_sliverwt,
-                            noils_wt = noilsCalcList_finalOut.max_noilswt,
-                            noils = noilsCalcList_finalOut.max_noils
+                            silver_wt = formatDecimal(noilsCalcList_finalOut.max_sliverwt),
+                            noils_wt = formatDecimal(noilsCalcList_finalOut.max_noilswt),
+                            noils = formatDecimal(noilsCalcList_finalOut.max_noils)
                         };
                         OVS.Add(noilsReportModelView);
 
@@ -448,9 +448,9 @@ namespace TQM
                         {
                             testID = noilsCalcList_finalOut.testID,
                             description = "Weight (Min)",
-                            silver_wt = noilsCalcList_finalOut.min_sliverwt,
-                            noils_wt = noilsCalcList_finalOut.min_noilswt,
-                            noils = noilsCalcList_finalOut.min_noils
+                            silver_wt = formatDecimal(noilsCalcList_finalOut.min_sliverwt),
+                            noils_wt = formatDecimal(noilsCalcList_finalOut.min_noilswt),
+                            noils = formatDecimal(noilsCalcList_finalOut.min_noils)
                         };
                         OVS.Add(noilsReportModelView);
 
@@ -458,9 +458,9 @@ namespace TQM
                         {
                             testID = noilsCalcList_finalOut.testID,
                             description = "Range",
-                            silver_wt = noilsCalcList_finalOut.range_sliverwt,
-                            noils_wt = noilsCalcList_finalOut.range_noilswt,
-                            noils = noilsCalcList_finalOut.range_noils
+                            silver_wt = formatDecimal(noilsCalcList_finalOut.range_sliverwt),
+                            noils_wt = formatDecimal(noilsCalcList_finalOut.range_noilswt),
+                            noils = formatDecimal(noilsCalcList_finalOut.range_noils)
                         };
                         OVS.Add(noilsReportModelView);
 
@@ -478,9 +478,9 @@ namespace TQM
                         {
                             testID = noilsCalcList_finalOut.testID,
                             description = "SD",
-                            silver_wt = noilsCalcList_finalOut.testsd_sliverwt,
-                            noils_wt = noilsCalcList_finalOut.testsd_noilswt,
-                            noils = noilsCalcList_finalOut.testsd_noils
+                            silver_wt = formatDecimal(noilsCalcList_finalOut.testsd_sliverwt),
+                            noils_wt = formatDecimal(noilsCalcList_finalOut.testsd_noilswt),
+                            noils = formatDecimal(noilsCalcList_finalOut.testsd_noils)
                         };
                         OVS.Add(noilsReportModelView);
 
@@ -488,9 +488,9 @@ namespace TQM
                         {
                             testID = noilsCalcList_finalOut.testID,
                             description = "CV",
-                            silver_wt = noilsCalcList_finalOut.testcv_sliverwt,
-                            noils_wt = noilsCalcList_finalOut.testcv_noilswt,
-                            noils = noilsCalcList_finalOut.testcv_noils
+                            silver_wt = formatDecimal(noilsCalcList_finalOut.testcv_sliverwt),
+                            noils_wt = formatDecimal(noilsCalcList_finalOut.testcv_noilswt),
+                            noils = formatDecimal(noilsCalcList_finalOut.testcv_noils)
                         };
                         OVS.Add(noilsReportModelView);
                     }
@@ -562,7 +562,9 @@ namespace TQM
                             dbStatus = false;
                         }
                         totalCalcCountVal = totalCalcCountVal + test.yccalcval;
+                        totalCalcCountVal = formatDecimal(totalCalcCountVal);
                         totalWeight = totalWeight + test.yarnweight;
+                        totalWeight = formatDecimal(totalWeight);
                     }
                 }
                 if (dbStatus)
@@ -588,18 +590,18 @@ namespace TQM
                     if (noilsTestModelViewList[0].totaltestcount > 1)
                     {
                         avg_weight = totalWeight / noilsTestModelViewList[0].totaltestcount;
+                        avg_weight = formatDecimal(avg_weight);
                         mean = totalCalcCountVal / noilsTestModelViewList[0].totaltestcount;
+                        mean = formatDecimal(mean);
                         decimal IndividualCalValminusMean = 0m;
                         foreach (NoilsTestModelView test in noilsTestModelViewList)
                         {
                             IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
                         }
                         sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(noilsTestModelViewList[0].totaltestcount - 1));//Standard Deviation
+                        sd = formatDecimal(sd);
                         cv = (sd / avg_weight) * 100m; //Coefficient of Variation
-                        avg_weight = Math.Round(avg_weight, 3);
-                        mean = Math.Round(mean, 3);
-                        sd = Math.Round(sd, 3);
-                        cv = Math.Round(cv, 3);
+                        cv = formatDecimal(cv);
                     }
                     NoilsTestSummaryModel noilsTestSummaryModel = new NoilsTestSummaryModel()
                     {
@@ -693,15 +695,15 @@ namespace TQM
                                         foreach (NoilsTestModel noilsTest_sliver in noilsTest_sliverList)
                                         {
                                             decimal noils = (noilsTest_noilsList[testRecCount].yarnweight / (noilsTest_noilsList[testRecCount].yarnweight + noilsTest_sliver.yarnweight)) * 100m;
-                                            noils = Math.Round(noils, 3);
-                                            totalWeight_Noils = totalWeight_Noils + noils;
+                                            noils = formatDecimal(noils);
+                                            totalWeight_Noils = formatDecimal(totalWeight_Noils + noils);
                                             NoilsTestFinalModel noilsTestFinalModel = new NoilsTestFinalModel()
                                             {
                                                 ID = Guid.NewGuid(),
                                                 testID = noilsTest_sliver.testID,
                                                 testcount = noilsTest_sliver.testcount,
-                                                weigth_sliver = noilsTest_sliver.yarnweight,
-                                                weigth_noils = noilsTest_noilsList[testRecCount].yarnweight,
+                                                weigth_sliver = formatDecimal(noilsTest_sliver.yarnweight),
+                                                weigth_noils = formatDecimal(noilsTest_noilsList[testRecCount].yarnweight),
                                                 noils = noils,
                                                 status = true,
                                                 createdate = DateTime.Now
@@ -716,7 +718,7 @@ namespace TQM
                                         }
 
                                         decimal avg_weight_noils = totalWeight_Noils / noilsTest_sliverList[0].totaltestcount;
-                                        avg_weight_noils = Math.Round(avg_weight_noils, 3);
+                                        avg_weight_noils = formatDecimal(avg_weight_noils);
 
 
 
@@ -747,9 +749,9 @@ namespace TQM
                                             (NoilsTestFinalModel.testID == currentTestID &&
                                             NoilsTestFinalModel.status == true)).OrderBy(NoilsTestFinalModel => NoilsTestFinalModel.weigth_noils).First();
 
-                                        decimal range_sliver = Max_sliver.weigth_sliver - Min_sliver.weigth_sliver;
-                                        decimal range_noilswt = Max_noilswt.weigth_noils - Min_noilswt.weigth_noils;
-                                        decimal range_noils = Max_noils.noils - Min_noils.noils;
+                                        decimal range_sliver = formatDecimal(Max_sliver.weigth_sliver - Min_sliver.weigth_sliver);
+                                        decimal range_noilswt = formatDecimal(Max_noilswt.weigth_noils - Min_noilswt.weigth_noils);
+                                        decimal range_noils = formatDecimal(Max_noils.noils - Min_noils.noils);
 
                                         List<NoilsTestFinalModel> noilsFinal_list = conn.Table<NoilsTestFinalModel>().Where(
                                                           NoilsTestFinalModel => (
@@ -764,8 +766,8 @@ namespace TQM
                                         }
                                         decimal sd_noils = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(noilsTest_sliverList[0].totaltestcount - 1));//Standard Deviation
                                         decimal cv_noils = (sd_noils / avg_weight_noils) * 100m; //Coefficient of Variation
-                                        sd_noils = Math.Round(sd_noils, 3);
-                                        cv_noils = Math.Round(cv_noils, 3);
+                                        sd_noils = formatDecimal(sd_noils);
+                                        cv_noils = formatDecimal(cv_noils);
 
                                         NoilsTestCalculatedModel noilsTestCalculatedModel = new NoilsTestCalculatedModel()
                                         {
@@ -868,6 +870,7 @@ namespace TQM
 
                     if (currentTestType == "Noils")
                     {
+                        entry_yarnlen.IsEnabled = true;
                         entry_testcount.IsEnabled = true;
                         entry_testcount.Text = TESTCOUNT.ToString();
                         picker_machinecategory.IsEnabled = true;
@@ -913,6 +916,16 @@ namespace TQM
             hideFrames();
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
+            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                return;
+            }
+            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+                return;
+            }
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
@@ -1000,6 +1013,7 @@ namespace TQM
             noilsTestModelViewList = new List<NoilsTestModelView>();
             startSliverButton.IsEnabled = false;
             startSliverButton.BackgroundColor = Color.SlateGray;
+            entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
@@ -1055,11 +1069,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = (selectedYarnLen / 840m) * (1m / ((current_stable_data * 15.4324m) / 7000m));
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = ((selectedYarnLen * 1.09361m) / 840m) * (1m / ((current_stable_data * 15.4324m) / 7000m));
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -1070,11 +1084,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = current_stable_data * 1000m / (selectedYarnLen * 0.9144m) * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = current_stable_data * 1000m / selectedYarnLen * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -1085,11 +1099,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = current_stable_data * 9000m / (selectedYarnLen * 0.9144m) * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = current_stable_data * 9000m / selectedYarnLen * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -1100,11 +1114,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = ((selectedYarnLen * 0.9144m) * 1m) / ((current_stable_data * 0.001m) * 1000m);
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = (selectedYarnLen * 1m) / ((current_stable_data * 0.001m) * 1000m);
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -1210,7 +1224,7 @@ namespace TQM
                             else
                             {
                                 decimal s_op = decimal.Parse(balOutput);
-                                s_op = Math.Round(s_op, 3);
+                                s_op = formatDecimal(s_op);
                                 if (!initialWeigthCheck)
                                 {
                                     if (s_op == ZERO)
@@ -1438,6 +1452,16 @@ namespace TQM
             UpdateUserNotification("");
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
+            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                return;
+            }
+            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+                return;
+            }
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
@@ -1516,6 +1540,7 @@ namespace TQM
             noilsTestModelViewList = new List<NoilsTestModelView>();
             startNoilsButton.IsEnabled = false;
             startNoilsButton.BackgroundColor = Color.SlateGray;
+            entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
@@ -1587,6 +1612,27 @@ namespace TQM
             catch (Exception ex)
             {
                 DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+            }
+        }
+
+        private decimal formatDecimal(decimal inputVal)
+        {
+            inputVal = Math.Round(inputVal, 4);
+            string inputString = inputVal.ToString();
+            string[] ipStringArray = inputString.Split('.');
+            if (ipStringArray.Length > 1)
+            {
+                string beforeDecimal = ipStringArray[0];
+                string afterDecimal = ipStringArray[1];
+                for (int i = ipStringArray[1].Length; i < 4; i++)
+                {
+                    afterDecimal = afterDecimal + "0";
+                }
+                return decimal.Parse(beforeDecimal + "." + afterDecimal);
+            }
+            else
+            {
+                return decimal.Parse(inputString + ".0000");
             }
         }
     }
