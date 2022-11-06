@@ -207,8 +207,8 @@ namespace TQM
                                 {
                                     testID = test.testID,
                                     description = test.testcount.ToString(),
-                                    IB = yctestStretchlist_IB[loopCount].yarnweight,
-                                    FB = yctestStretchlist_FB[loopCount].yarnweight,
+                                    IB = formatDecimal(yctestStretchlist_IB[loopCount].yarnweight),
+                                    FB = formatDecimal(yctestStretchlist_FB[loopCount].yarnweight),
                                 };
                                 report.Add(stretchReportMV);
                                 loopCount += 1;
@@ -218,8 +218,8 @@ namespace TQM
                             {
                                 testID = stretchCalc.testID,
                                 description = "Average Weight",
-                                IB = stretchCalc.avg_weight_IB,
-                                FB = stretchCalc.avg_weight_FB,
+                                IB = formatDecimal(stretchCalc.avg_weight_IB),
+                                FB = formatDecimal(stretchCalc.avg_weight_FB),
                             };
                             report.Add(StretchReportModelView);
 
@@ -227,8 +227,8 @@ namespace TQM
                             {
                                 testID = stretchCalc.testID,
                                 description = "Weight (Max)",
-                                IB = stretchCalc.max_IB,
-                                FB = stretchCalc.max_FB,
+                                IB = formatDecimal(stretchCalc.max_IB),
+                                FB = formatDecimal(stretchCalc.max_FB),
                             };
                             report.Add(StretchReportModelView);
 
@@ -236,8 +236,8 @@ namespace TQM
                             {
                                 testID = stretchCalc.testID,
                                 description = "Weight (Min)",
-                                IB = stretchCalc.min_IB,
-                                FB = stretchCalc.min_FB,
+                                IB = formatDecimal(stretchCalc.min_IB),
+                                FB = formatDecimal(stretchCalc.min_FB),
                             };
                             report.Add(StretchReportModelView);
 
@@ -245,8 +245,8 @@ namespace TQM
                             {
                                 testID = stretchCalc.testID,
                                 description = "Range",
-                                IB = stretchCalc.range_IB,
-                                FB = stretchCalc.range_FB,
+                                IB = formatDecimal(stretchCalc.range_IB),
+                                FB = formatDecimal(stretchCalc.range_FB),
                             };
                             report.Add(StretchReportModelView);
 
@@ -254,8 +254,8 @@ namespace TQM
                             {
                                 testID = stretchCalc.testID,
                                 description = "HANK",
-                                IB = stretchCalc.testaverage_IB,
-                                FB = stretchCalc.testaverage_FB,
+                                IB = formatDecimal(stretchCalc.testaverage_IB),
+                                FB = formatDecimal(stretchCalc.testaverage_FB),
                             };
                             report.Add(StretchReportModelView);
 
@@ -263,8 +263,8 @@ namespace TQM
                             {
                                 testID = stretchCalc.testID,
                                 description = "SD",
-                                IB = stretchCalc.testsd_IB,
-                                FB = stretchCalc.testsd_FB,
+                                IB = formatDecimal(stretchCalc.testsd_IB),
+                                FB = formatDecimal(stretchCalc.testsd_FB),
                             };
                             report.Add(StretchReportModelView);
 
@@ -272,8 +272,8 @@ namespace TQM
                             {
                                 testID = stretchCalc.testID,
                                 description = "CV",
-                                IB = stretchCalc.testcv_IB,
-                                FB = stretchCalc.testcv_FB,
+                                IB = formatDecimal(stretchCalc.testcv_IB),
+                                FB = formatDecimal(stretchCalc.testcv_FB),
                             };
                             report.Add(StretchReportModelView);
 
@@ -294,7 +294,7 @@ namespace TQM
                             report.testaverage_FB = stretchCalc.testaverage_FB;
                             report.testsd_FB = stretchCalc.testsd_FB;
                             report.testcv_FB = stretchCalc.testcv_FB;
-                            report.stretch = stretchCalc.stretch;
+                            report.stretch = formatDecimal(stretchCalc.stretch);
                             report.createdate = stretchCalc.createdate;
                         }
                         OVS.Add(report);
@@ -398,7 +398,7 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     pdfGridInfo.Rows[2].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[2].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[3].Cells[0].Value = "Stretch %: " + orl.stretch;
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Stretch %: " + formatDecimal(orl.stretch).ToString();
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[3].Cells[1].Value = "A% (N+1): " + orl.apercent_nPlus1;
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
@@ -530,9 +530,9 @@ namespace TQM
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
                         pdfGrid.Rows[rowCount].Cells[0].Value = test.description.ToString();
-                        pdfGrid.Rows[rowCount].Cells[1].Value = test.IB.ToString();
+                        pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.IB).ToString();
                         //pdfGrid.Rows[rowCount].Cells[2].Value = test.N.ToString();
-                        pdfGrid.Rows[rowCount].Cells[2].Value = test.FB.ToString();
+                        pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.FB).ToString();
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -742,6 +742,27 @@ namespace TQM
             {
                 DisplayAlert("Notice", msg, "Ok");
             });
+        }
+
+        private decimal formatDecimal(decimal inputVal)
+        {
+            inputVal = Math.Round(inputVal, 4);
+            string inputString = inputVal.ToString();
+            string[] ipStringArray = inputString.Split('.');
+            if (ipStringArray.Length > 1)
+            {
+                string beforeDecimal = ipStringArray[0];
+                string afterDecimal = ipStringArray[1];
+                for (int i = ipStringArray[1].Length; i < 4; i++)
+                {
+                    afterDecimal = afterDecimal + "0";
+                }
+                return decimal.Parse(beforeDecimal + "." + afterDecimal);
+            }
+            else
+            {
+                return decimal.Parse(inputString + ".0000");
+            }
         }
     }
 }

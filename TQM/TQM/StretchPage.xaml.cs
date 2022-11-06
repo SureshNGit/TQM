@@ -349,7 +349,7 @@ namespace TQM
                 else if (currentTestType == "FB" && showFinalOut)
                 {
                     frame_overallTestSummary.IsVisible = visibility;
-                    lbl_stretchPercent.Text = stretchCalcList_finalOut.stretch.ToString();
+                    lbl_stretchPercent.Text = formatDecimal(stretchCalcList_finalOut.stretch).ToString();
                 }
             });
         }
@@ -394,8 +394,8 @@ namespace TQM
                             {
                                 testID = test.testID,
                                 description = test.testcount.ToString(),
-                                IB = yctestStretchlist_IB[loopCount].yarnweight,
-                                FB = yctestStretchlist_FB[loopCount].yarnweight,
+                                IB = formatDecimal(yctestStretchlist_IB[loopCount].yarnweight),
+                                FB = formatDecimal(yctestStretchlist_FB[loopCount].yarnweight),
                             };
                             OVS.Add(stretchReportMV);
                             loopCount += 1;
@@ -405,8 +405,8 @@ namespace TQM
                         {
                             testID = stretchCalcList_finalOut.testID,
                             description = "Average Weight",
-                            IB = stretchCalcList_finalOut.avg_weight_IB,
-                            FB = stretchCalcList_finalOut.avg_weight_FB,
+                            IB = formatDecimal(stretchCalcList_finalOut.avg_weight_IB),
+                            FB = formatDecimal(stretchCalcList_finalOut.avg_weight_FB),
                         };
                         OVS.Add(StretchReportModelView);
 
@@ -414,8 +414,8 @@ namespace TQM
                         {
                             testID = stretchCalcList_finalOut.testID,
                             description = "Weight (Max)",
-                            IB = stretchCalcList_finalOut.max_IB,
-                            FB = stretchCalcList_finalOut.max_FB,
+                            IB = formatDecimal(stretchCalcList_finalOut.max_IB),
+                            FB = formatDecimal(stretchCalcList_finalOut.max_FB),
                         };
                         OVS.Add(StretchReportModelView);
 
@@ -423,8 +423,8 @@ namespace TQM
                         {
                             testID = stretchCalcList_finalOut.testID,
                             description = "Weight (Min)",
-                            IB = stretchCalcList_finalOut.min_IB,
-                            FB = stretchCalcList_finalOut.min_FB,
+                            IB = formatDecimal(stretchCalcList_finalOut.min_IB),
+                            FB = formatDecimal(stretchCalcList_finalOut.min_FB),
                         };
                         OVS.Add(StretchReportModelView);
 
@@ -432,8 +432,8 @@ namespace TQM
                         {
                             testID = stretchCalcList_finalOut.testID,
                             description = "Range",
-                            IB = stretchCalcList_finalOut.range_IB,
-                            FB = stretchCalcList_finalOut.range_FB,
+                            IB = formatDecimal(stretchCalcList_finalOut.range_IB),
+                            FB = formatDecimal(stretchCalcList_finalOut.range_FB),
                         };
                         OVS.Add(StretchReportModelView);
 
@@ -441,8 +441,8 @@ namespace TQM
                         {
                             testID = stretchCalcList_finalOut.testID,
                             description = "HANK",
-                            IB = stretchCalcList_finalOut.testaverage_IB,
-                            FB = stretchCalcList_finalOut.testaverage_FB,
+                            IB = formatDecimal(stretchCalcList_finalOut.testaverage_IB),
+                            FB = formatDecimal(stretchCalcList_finalOut.testaverage_FB),
                         };
                         OVS.Add(StretchReportModelView);
 
@@ -450,8 +450,8 @@ namespace TQM
                         {
                             testID = stretchCalcList_finalOut.testID,
                             description = "SD",
-                            IB = stretchCalcList_finalOut.testsd_IB,
-                            FB = stretchCalcList_finalOut.testsd_FB,
+                            IB = formatDecimal(stretchCalcList_finalOut.testsd_IB),
+                            FB = formatDecimal(stretchCalcList_finalOut.testsd_FB),
                         };
                         OVS.Add(StretchReportModelView);
 
@@ -459,8 +459,8 @@ namespace TQM
                         {
                             testID = stretchCalcList_finalOut.testID,
                             description = "CV",
-                            IB = stretchCalcList_finalOut.testcv_IB,
-                            FB = stretchCalcList_finalOut.testcv_FB,
+                            IB = formatDecimal(stretchCalcList_finalOut.testcv_IB),
+                            FB = formatDecimal(stretchCalcList_finalOut.testcv_FB),
                         };
                         OVS.Add(StretchReportModelView);
 
@@ -534,7 +534,9 @@ namespace TQM
                             dbStatus = false;
                         }
                         totalCalcCountVal = totalCalcCountVal + test.yccalcval;
+                        totalCalcCountVal = formatDecimal(totalCalcCountVal);
                         totalWeight = totalWeight + test.yarnweight;
+                        totalWeight = formatDecimal(totalWeight);
                     }
                 }
                 if (dbStatus)
@@ -561,18 +563,18 @@ namespace TQM
                     if (stretchTestModelViewList[0].totaltestcount > 1)
                     {
                         avg_weight = totalWeight / stretchTestModelViewList[0].totaltestcount;
+                        avg_weight = formatDecimal(avg_weight);
                         mean = totalCalcCountVal / stretchTestModelViewList[0].totaltestcount;
+                        mean = formatDecimal(mean);
                         decimal IndividualCalValminusMean = 0m;
                         foreach (StretchTestModelView test in stretchTestModelViewList)
                         {
                             IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
                         }
                         sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(stretchTestModelViewList[0].totaltestcount - 1));//Standard Deviation
+                        sd = formatDecimal(sd);
                         cv = (sd / avg_weight) * 100; //Coefficient of Variation
-                        avg_weight = Math.Round(avg_weight, 3);
-                        mean = Math.Round(mean, 3);
-                        sd = Math.Round(sd, 3);
-                        cv = Math.Round(cv, 3);
+                        cv = formatDecimal(cv);
                     }
                     StretchTestSummaryModel stretchTestSummaryModel = new StretchTestSummaryModel()
                     {
@@ -642,7 +644,7 @@ namespace TQM
                                 if (fbSummary != null)
                                 {
                                     decimal stretch = ((ibSummary.avg_weight - fbSummary.avg_weight) / ((ibSummary.avg_weight + fbSummary.avg_weight) / 2m)) * 100m;
-                                    stretch = Math.Round(stretch, 3);
+                                    stretch = formatDecimal(stretch);
 
                                     StretchTestModel Max_IB = conn.Table<StretchTestModel>().Where(
                                         StretchTestModel =>
@@ -665,8 +667,8 @@ namespace TQM
                                         StretchTestModel.status == true &&
                                         StretchTestModel.testType == "FB")).OrderBy(StretchTestModel => StretchTestModel.yarnweight).First();
 
-                                    decimal range_IB = Max_IB.yarnweight - Min_IB.yarnweight;
-                                    decimal range_FB = Max_FB.yarnweight - Min_FB.yarnweight;
+                                    decimal range_IB = formatDecimal(Max_IB.yarnweight - Min_IB.yarnweight);
+                                    decimal range_FB = formatDecimal(Max_FB.yarnweight - Min_FB.yarnweight);
 
                                     StretchTestCalculatedModel stretchTestCalculatedModel = new StretchTestCalculatedModel()
                                     {
@@ -764,6 +766,7 @@ namespace TQM
 
                     if (currentTestType == "FB")
                     {
+                        entry_yarnlen.IsEnabled = true;
                         entry_testcount.IsEnabled = true;
                         entry_testcount.Text = TESTCOUNT.ToString();
                         picker_machinecategory.IsEnabled = true;
@@ -809,6 +812,16 @@ namespace TQM
             hideFrames();
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
+            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                return;
+            }
+            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+                return;
+            }
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
@@ -895,6 +908,7 @@ namespace TQM
             stretchTestModelViewList = new List<StretchTestModelView>();
             startInitialBobbinButton.IsEnabled = false;
             startInitialBobbinButton.BackgroundColor = Color.SlateGray;
+            entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
@@ -942,7 +956,7 @@ namespace TQM
                         {
                             displayusername = currentloggedInUser.firstname + ", " + currentloggedInUser.lastname + " [" + currentloggedInUser.userId + "]";
                         }
-                        decimal currentCalculatedValue = 0;
+                        decimal currentCalculatedValue = 0m;
                         switch (selectedSysName)
                         {
                             case "Nec":
@@ -950,11 +964,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = (selectedYarnLen / 840m) * (1m / ((current_stable_data * 15.4324m) / 7000m));
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = ((selectedYarnLen * 1.09361m) / 840m) * (1m / ((current_stable_data * 15.4324m) / 7000m));
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -965,11 +979,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = current_stable_data * 1000m / (selectedYarnLen * 0.9144m) * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = current_stable_data * 1000m / selectedYarnLen * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -980,11 +994,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = current_stable_data * 9000m / (selectedYarnLen * 0.9144m) * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = current_stable_data * 9000m / selectedYarnLen * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -995,11 +1009,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = ((selectedYarnLen * 0.9144m) * 1m) / ((current_stable_data * 0.001m) * 1000m);
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = (selectedYarnLen * 1m) / ((current_stable_data * 0.001m) * 1000m);
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -1105,7 +1119,7 @@ namespace TQM
                             else
                             {
                                 decimal s_op = decimal.Parse(balOutput);
-                                s_op = Math.Round(s_op, 3);
+                                s_op = formatDecimal(s_op);
                                 if (!initialWeigthCheck)
                                 {
                                     if (s_op == ZERO)
@@ -1333,6 +1347,16 @@ namespace TQM
             UpdateUserNotification("");
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
+            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                return;
+            }
+            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+                return;
+            }
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
@@ -1408,6 +1432,7 @@ namespace TQM
             stretchTestModelViewList = new List<StretchTestModelView>();
             startFullBobbinButton.IsEnabled = false;
             startFullBobbinButton.BackgroundColor = Color.SlateGray;
+            entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
@@ -1479,6 +1504,27 @@ namespace TQM
             catch (Exception ex)
             {
                 DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+            }
+        }
+
+        private decimal formatDecimal(decimal inputVal)
+        {
+            inputVal = Math.Round(inputVal, 4);
+            string inputString = inputVal.ToString();
+            string[] ipStringArray = inputString.Split('.');
+            if (ipStringArray.Length > 1)
+            {
+                string beforeDecimal = ipStringArray[0];
+                string afterDecimal = ipStringArray[1];
+                for (int i = ipStringArray[1].Length; i < 4; i++)
+                {
+                    afterDecimal = afterDecimal + "0";
+                }
+                return decimal.Parse(beforeDecimal + "." + afterDecimal);
+            }
+            else
+            {
+                return decimal.Parse(inputString + ".0000");
             }
         }
     }
