@@ -289,6 +289,7 @@ namespace TQM
                 {
                     testYCButton.IsEnabled = true;
                     testYCButton.BackgroundColor = Color.Green;
+                    entry_yarnlen.IsEnabled = true;
                     entry_testcount.IsEnabled = true;
                     entry_testcount.Text = TESTCOUNT.ToString();
                     picker_machinecategory.IsEnabled = true;
@@ -323,6 +324,16 @@ namespace TQM
             hideFrames();
             await refListView(false);
             await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
+            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                return;
+            }
+            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+                return;
+            }
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
@@ -415,6 +426,7 @@ namespace TQM
             ycTestModelViewlist = new List<YCTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
+            entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;

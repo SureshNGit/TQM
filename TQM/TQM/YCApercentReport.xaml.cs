@@ -229,9 +229,9 @@ namespace TQM
                                 {
                                     testID = test.testID,
                                     description = test.testcount.ToString(),
-                                    nMinus1 = test.yarnweight,
-                                    N = yctestApercentlist_N[loopCount].yarnweight,
-                                    nPlus1 = yctestApercentlist_nPlus1[loopCount].yarnweight,
+                                    nMinus1 = formatDecimal(test.yarnweight),
+                                    N = formatDecimal(yctestApercentlist_N[loopCount].yarnweight),
+                                    nPlus1 = formatDecimal(yctestApercentlist_nPlus1[loopCount].yarnweight),
                                 };
                                 report.Add(apercentReportMV);
                                 loopCount += 1;
@@ -241,9 +241,9 @@ namespace TQM
                             {
                                 testID = apercentCalc.testID,
                                 description = "Average Weight",
-                                nMinus1 = apercentCalc.avg_weight_nMinus1,
-                                N = apercentCalc.avg_weight_N,
-                                nPlus1 = apercentCalc.avg_weight_nPlus1,
+                                nMinus1 = formatDecimal(apercentCalc.avg_weight_nMinus1),
+                                N = formatDecimal(apercentCalc.avg_weight_N),
+                                nPlus1 = formatDecimal(apercentCalc.avg_weight_nPlus1),
                             };
                             report.Add(apercentReportModelView);
 
@@ -251,9 +251,9 @@ namespace TQM
                             {
                                 testID = apercentCalc.testID,
                                 description = "Weight (Max)",
-                                nMinus1 = apercentCalc.max_nMinus1,
-                                N = apercentCalc.max_N,
-                                nPlus1 = apercentCalc.max_nPlus1,
+                                nMinus1 = formatDecimal(apercentCalc.max_nMinus1),
+                                N = formatDecimal(apercentCalc.max_N),
+                                nPlus1 = formatDecimal(apercentCalc.max_nPlus1),
                             };
                             report.Add(apercentReportModelView);
 
@@ -261,9 +261,9 @@ namespace TQM
                             {
                                 testID = apercentCalc.testID,
                                 description = "Weight (Min)",
-                                nMinus1 = apercentCalc.min_nMinus1,
-                                N = apercentCalc.min_N,
-                                nPlus1 = apercentCalc.min_nPlus1,
+                                nMinus1 = formatDecimal(apercentCalc.min_nMinus1),
+                                N = formatDecimal(apercentCalc.min_N),
+                                nPlus1 = formatDecimal(apercentCalc.min_nPlus1),
                             };
                             report.Add(apercentReportModelView);
 
@@ -271,9 +271,9 @@ namespace TQM
                             {
                                 testID = apercentCalc.testID,
                                 description = "Range",
-                                nMinus1 = apercentCalc.range_nMinus1,
-                                N = apercentCalc.range_N,
-                                nPlus1 = apercentCalc.range_nPlus1,
+                                nMinus1 = formatDecimal(apercentCalc.range_nMinus1),
+                                N = formatDecimal(apercentCalc.range_N),
+                                nPlus1 = formatDecimal(apercentCalc.range_nPlus1),
                             };
                             report.Add(apercentReportModelView);
 
@@ -281,9 +281,9 @@ namespace TQM
                             {
                                 testID = apercentCalc.testID,
                                 description = "HANK",
-                                nMinus1 = apercentCalc.testaverage_nMinus1,
-                                N = apercentCalc.testaverage_N,
-                                nPlus1 = apercentCalc.testaverage_nPlus1,
+                                nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
+                                N = formatDecimal(apercentCalc.testaverage_N),
+                                nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
                             };
                             report.Add(apercentReportModelView);
 
@@ -291,9 +291,9 @@ namespace TQM
                             {
                                 testID = apercentCalc.testID,
                                 description = "SD",
-                                nMinus1 = apercentCalc.testsd_nMinus1,
-                                N = apercentCalc.testsd_N,
-                                nPlus1 = apercentCalc.testsd_nPlus1,
+                                nMinus1 = formatDecimal(apercentCalc.testsd_nMinus1),
+                                N = formatDecimal(apercentCalc.testsd_N),
+                                nPlus1 = formatDecimal(apercentCalc.testsd_nPlus1),
                             };
                             report.Add(apercentReportModelView);
 
@@ -301,9 +301,9 @@ namespace TQM
                             {
                                 testID = apercentCalc.testID,
                                 description = "CV",
-                                nMinus1 = apercentCalc.testcv_nMinus1,
-                                N = apercentCalc.testcv_N,
-                                nPlus1 = apercentCalc.testcv_nPlus1,
+                                nMinus1 = formatDecimal(apercentCalc.testcv_nMinus1),
+                                N = formatDecimal(apercentCalc.testcv_N),
+                                nPlus1 = formatDecimal(apercentCalc.testcv_nPlus1),
                             };
                             report.Add(apercentReportModelView);
 
@@ -318,26 +318,26 @@ namespace TQM
                             report.yarnlenunit = apercentCalc.yarnlenunit;
                             report.yarnlength = apercentCalc.yarnlength;
                             report.totaltestcount = apercentCalc.totaltestcount;
-                            report.testaverage_nMinus1 = apercentCalc.testaverage_nMinus1;
-                            report.testsd_nMinus1 = apercentCalc.testsd_nMinus1;
-                            report.testcv_nMinus1 = apercentCalc.testcv_nMinus1;
+                            report.testaverage_nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1);
+                            report.testsd_nMinus1 = formatDecimal(apercentCalc.testsd_nMinus1);
+                            report.testcv_nMinus1 = formatDecimal(apercentCalc.testcv_nMinus1);
                             //report.max_nMinus1 = apercentCalc.max_nMinus1;
                             //report.min_nMinus1 = apercentCalc.min_nMinus1;
                             //report.range_nMinus1 = apercentCalc.range_nMinus1;
-                            report.apercent_nMinus1 = apercentCalc.apercent_nMinus1;
-                            report.testaverage_N = apercentCalc.testaverage_N;
-                            report.testsd_N = apercentCalc.testsd_N;
-                            report.testcv_N = apercentCalc.testcv_N;
+                            report.apercent_nMinus1 = formatDecimal(apercentCalc.apercent_nMinus1);
+                            report.testaverage_N = formatDecimal(apercentCalc.testaverage_N);
+                            report.testsd_N = formatDecimal(apercentCalc.testsd_N);
+                            report.testcv_N = formatDecimal(apercentCalc.testcv_N);
                             //report.max_N = apercentCalc.max_N;
                             //report.min_N = apercentCalc.min_N;
                             //report.range_N = apercentCalc.range_N;
-                            report.testaverage_nPlus1 = apercentCalc.testaverage_nPlus1;
-                            report.testsd_nPlus1 = apercentCalc.testsd_nPlus1;
-                            report.testcv_nPlus1 = apercentCalc.testcv_nPlus1;
+                            report.testaverage_nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1);
+                            report.testsd_nPlus1 = formatDecimal(apercentCalc.testsd_nPlus1);
+                            report.testcv_nPlus1 = formatDecimal(apercentCalc.testcv_nPlus1);
                             //report.max_nPlus1 = apercentCalc.max_nPlus1;
                             //report.min_nPlus1 = apercentCalc.min_nPlus1;
                             //report.range_nPlus1 = apercentCalc.range_nPlus1;
-                            report.apercent_nPlus1 = apercentCalc.apercent_nPlus1;
+                            report.apercent_nPlus1 = formatDecimal(apercentCalc.apercent_nPlus1);
                             report.createdate = apercentCalc.createdate;
                         }
                         OVS.Add(report);
@@ -441,9 +441,9 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     pdfGridInfo.Rows[2].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[2].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[3].Cells[0].Value = "A% (N-1): " + orl.apercent_nMinus1;
+                    pdfGridInfo.Rows[3].Cells[0].Value = "A% (N-1): " + formatDecimal(orl.apercent_nMinus1).ToString();
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[3].Cells[1].Value = "A% (N+1): " + orl.apercent_nPlus1;
+                    pdfGridInfo.Rows[3].Cells[1].Value = "A% (N+1): " + formatDecimal(orl.apercent_nPlus1).ToString();
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
                     pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
                     pdfGridInfo.Rows[4].Cells[1].Value = "Tester: " + orl.userName;
@@ -568,9 +568,9 @@ namespace TQM
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
                         pdfGrid.Rows[rowCount].Cells[0].Value = test.description.ToString();
-                        pdfGrid.Rows[rowCount].Cells[1].Value = test.nMinus1.ToString();
-                        pdfGrid.Rows[rowCount].Cells[2].Value = test.N.ToString();
-                        pdfGrid.Rows[rowCount].Cells[3].Value = test.nPlus1.ToString();
+                        pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.nMinus1).ToString();
+                        pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.N).ToString();
+                        pdfGrid.Rows[rowCount].Cells[3].Value = formatDecimal(test.nPlus1).ToString();
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -780,6 +780,27 @@ namespace TQM
             {
                 DisplayAlert("Notice", msg, "Ok");
             });
+        }
+
+        private decimal formatDecimal(decimal inputVal)
+        {
+            inputVal = Math.Round(inputVal, 4);
+            string inputString = inputVal.ToString();
+            string[] ipStringArray = inputString.Split('.');
+            if (ipStringArray.Length > 1)
+            {
+                string beforeDecimal = ipStringArray[0];
+                string afterDecimal = ipStringArray[1];
+                for (int i = ipStringArray[1].Length; i < 4; i++)
+                {
+                    afterDecimal = afterDecimal + "0";
+                }
+                return decimal.Parse(beforeDecimal + "." + afterDecimal);
+            }
+            else
+            {
+                return decimal.Parse(inputString + ".0000");
+            }
         }
     }
 }

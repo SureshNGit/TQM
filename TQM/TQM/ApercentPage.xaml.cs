@@ -427,8 +427,8 @@ namespace TQM
                 else if (currentTestType == "nPlus1" && showFinalOut)
                 {
                     frame_overallTestSummary.IsVisible = visibility;
-                    lbl_ApercentNminus1.Text = apercentCalc.apercent_nMinus1.ToString();
-                    lbl_ApercentNplus1.Text = apercentCalc.apercent_nPlus1.ToString();
+                    lbl_ApercentNminus1.Text = formatDecimal(apercentCalc.apercent_nMinus1).ToString();
+                    lbl_ApercentNplus1.Text = formatDecimal(apercentCalc.apercent_nPlus1).ToString();
                 }
             });
         }
@@ -470,9 +470,9 @@ namespace TQM
                         {
                             testID = test.testID,
                             description = test.testcount.ToString(),
-                            nMinus1 = test.yarnweight,
-                            N = yctestApercentlist_N[loopCount].yarnweight,
-                            nPlus1 = yctestApercentlist_nPlus1[loopCount].yarnweight,
+                            nMinus1 = formatDecimal(test.yarnweight),
+                            N = formatDecimal(yctestApercentlist_N[loopCount].yarnweight),
+                            nPlus1 = formatDecimal(yctestApercentlist_nPlus1[loopCount].yarnweight),
                         };
                         OVS.Add(apercentReportMV);
                         loopCount += 1;
@@ -482,9 +482,9 @@ namespace TQM
                     {
                         testID = apercentCalc.testID,
                         description = "Average Weight",
-                        nMinus1 = apercentCalc.avg_weight_nMinus1,
-                        N = apercentCalc.avg_weight_N,
-                        nPlus1 = apercentCalc.avg_weight_nPlus1,
+                        nMinus1 = formatDecimal(apercentCalc.avg_weight_nMinus1),
+                        N = formatDecimal(apercentCalc.avg_weight_N),
+                        nPlus1 = formatDecimal(apercentCalc.avg_weight_nPlus1),
                     };
                     OVS.Add(apercentReportModelView);
 
@@ -492,9 +492,9 @@ namespace TQM
                     {
                         testID = apercentCalc.testID,
                         description = "Weight (Max)",
-                        nMinus1 = apercentCalc.max_nMinus1,
-                        N = apercentCalc.max_N,
-                        nPlus1 = apercentCalc.max_nPlus1,
+                        nMinus1 = formatDecimal(apercentCalc.max_nMinus1),
+                        N = formatDecimal(apercentCalc.max_N),
+                        nPlus1 = formatDecimal(apercentCalc.max_nPlus1),
                     };
                     OVS.Add(apercentReportModelView);
 
@@ -502,9 +502,9 @@ namespace TQM
                     {
                         testID = apercentCalc.testID,
                         description = "Weight (Min)",
-                        nMinus1 = apercentCalc.min_nMinus1,
-                        N = apercentCalc.min_N,
-                        nPlus1 = apercentCalc.min_nPlus1,
+                        nMinus1 = formatDecimal(apercentCalc.min_nMinus1),
+                        N = formatDecimal(apercentCalc.min_N),
+                        nPlus1 = formatDecimal(apercentCalc.min_nPlus1),
                     };
                     OVS.Add(apercentReportModelView);
 
@@ -512,9 +512,9 @@ namespace TQM
                     {
                         testID = apercentCalc.testID,
                         description = "Range",
-                        nMinus1 = apercentCalc.range_nMinus1,
-                        N = apercentCalc.range_N,
-                        nPlus1 = apercentCalc.range_nPlus1,
+                        nMinus1 = formatDecimal(apercentCalc.range_nMinus1),
+                        N = formatDecimal(apercentCalc.range_N),
+                        nPlus1 = formatDecimal(apercentCalc.range_nPlus1),
                     };
                     OVS.Add(apercentReportModelView);
 
@@ -522,9 +522,9 @@ namespace TQM
                     {
                         testID = apercentCalc.testID,
                         description = "HANK",
-                        nMinus1 = apercentCalc.testaverage_nMinus1,
-                        N = apercentCalc.testaverage_N,
-                        nPlus1 = apercentCalc.testaverage_nPlus1,
+                        nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
+                        N = formatDecimal(apercentCalc.testaverage_N),
+                        nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
                     };
                     OVS.Add(apercentReportModelView);
 
@@ -532,9 +532,9 @@ namespace TQM
                     {
                         testID = apercentCalc.testID,
                         description = "SD",
-                        nMinus1 = apercentCalc.testsd_nMinus1,
-                        N = apercentCalc.testsd_N,
-                        nPlus1 = apercentCalc.testsd_nPlus1,
+                        nMinus1 = formatDecimal(apercentCalc.testsd_nMinus1),
+                        N = formatDecimal(apercentCalc.testsd_N),
+                        nPlus1 = formatDecimal(apercentCalc.testsd_nPlus1),
                     };
                     OVS.Add(apercentReportModelView);
 
@@ -542,9 +542,9 @@ namespace TQM
                     {
                         testID = apercentCalc.testID,
                         description = "CV",
-                        nMinus1 = apercentCalc.testcv_nMinus1,
-                        N = apercentCalc.testcv_N,
-                        nPlus1 = apercentCalc.testcv_nPlus1,
+                        nMinus1 = formatDecimal(apercentCalc.testcv_nMinus1),
+                        N = formatDecimal(apercentCalc.testcv_N),
+                        nPlus1 = formatDecimal(apercentCalc.testcv_nPlus1),
                     };
                     OVS.Add(apercentReportModelView);
 
@@ -643,18 +643,18 @@ namespace TQM
                     if (ycTestApercentModelViewlist[0].totaltestcount > 1)
                     {
                         avg_weight = totalWeight / ycTestApercentModelViewlist[0].totaltestcount;
+                        avg_weight = formatDecimal(avg_weight);
                         mean = totalCalcCountVal / ycTestApercentModelViewlist[0].totaltestcount;
+                        mean = formatDecimal(mean);
                         decimal IndividualCalValminusMean = 0m;
                         foreach (YCTestApercentModelView test in ycTestApercentModelViewlist)
                         {
                             IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
                         }
                         sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestApercentModelViewlist[0].totaltestcount - 1));//Standard Deviation
-                        cv = (sd / avg_weight) * 100; //Coefficient of Variation
-                        avg_weight = Math.Round(avg_weight, 3);
-                        mean = Math.Round(mean, 3);
-                        sd = Math.Round(sd, 3);
-                        cv = Math.Round(cv, 3);
+                        sd = formatDecimal(sd);
+                        cv = (sd / avg_weight) * 100m; //Coefficient of Variation
+                        cv = formatDecimal(cv);
                     }
                     YCTestApercentSummaryModel ycTestApercentSummaryModel = new YCTestApercentSummaryModel()
                     {
@@ -731,9 +731,9 @@ namespace TQM
                                     if (nPlus1Summary != null)
                                     {
                                         decimal apercent_nMinus1 = ((nMinus1Summary.avg_weight - NSummary.avg_weight) / nMinus1Summary.avg_weight) * 100m;
-                                        apercent_nMinus1 = Math.Round(apercent_nMinus1, 3);
+                                        apercent_nMinus1 = formatDecimal(apercent_nMinus1);
                                         decimal apercent_nPlus1 = ((nPlus1Summary.avg_weight - NSummary.avg_weight) / nPlus1Summary.avg_weight) * 100m;
-                                        apercent_nPlus1 = Math.Round(apercent_nPlus1, 3);
+                                        apercent_nPlus1 = formatDecimal(apercent_nPlus1);
                                         YCTestApercentModel Max_nMinus1 = conn.Table<YCTestApercentModel>().Where(
                                             YCTestApercentModel =>
                                             (YCTestApercentModel.testID == currentTestID &&
@@ -886,6 +886,7 @@ namespace TQM
 
                     if (currentTestType == "nPlus1")
                     {
+                        entry_yarnlen.IsEnabled = true;
                         entry_testcount.IsEnabled = true;
                         entry_testcount.Text = TESTCOUNT.ToString();
                         picker_machinecategory.IsEnabled = true;
@@ -935,6 +936,16 @@ namespace TQM
             hideFrames();
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
+            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                return;
+            }
+            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+                return;
+            }
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
@@ -1021,6 +1032,7 @@ namespace TQM
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNm1Button.IsEnabled = false;
             startTestNm1Button.BackgroundColor = Color.SlateGray;
+            entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
@@ -1076,11 +1088,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = (selectedYarnLen / 840m) * (1m / ((current_stable_data * 15.4324m) / 7000m));
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = ((selectedYarnLen * 1.09361m) / 840m) * (1m / ((current_stable_data * 15.4324m) / 7000m));
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -1091,11 +1103,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = current_stable_data * 1000m / (selectedYarnLen * 0.9144m) * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = current_stable_data * 1000m / selectedYarnLen * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -1106,11 +1118,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = current_stable_data * 9000m / (selectedYarnLen * 0.9144m) * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = current_stable_data * 9000m / selectedYarnLen * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -1121,11 +1133,11 @@ namespace TQM
                                 {
                                     case "Yard":
                                         decimal drivedVal = ((selectedYarnLen * 0.9144m) * 1m) / ((current_stable_data * 0.001m) * 1000m);
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
                                         decimal drivedVal_meter = (selectedYarnLen * 1m) / ((current_stable_data * 0.001m) * 1000m);
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -1231,7 +1243,7 @@ namespace TQM
                             else
                             {
                                 decimal s_op = decimal.Parse(balOutput);
-                                s_op = Math.Round(s_op, 3);
+                                s_op = formatDecimal(s_op);
                                 if (!initialWeigthCheck)
                                 {
                                     if (s_op == ZERO)
@@ -1459,6 +1471,16 @@ namespace TQM
             UpdateUserNotification("");
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
+            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                return;
+            }
+            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+                return;
+            }
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
@@ -1535,6 +1557,7 @@ namespace TQM
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNButton.IsEnabled = false;
             startTestNButton.BackgroundColor = Color.SlateGray;
+            entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
@@ -1555,6 +1578,16 @@ namespace TQM
             UpdateUserNotification("");
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
+            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                return;
+            }
+            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+                return;
+            }
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
@@ -1631,6 +1664,7 @@ namespace TQM
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNp1Button.IsEnabled = false;
             startTestNp1Button.BackgroundColor = Color.SlateGray;
+            entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
@@ -1702,6 +1736,27 @@ namespace TQM
             catch (Exception ex)
             {
                 DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+            }
+        }
+
+        private decimal formatDecimal(decimal inputVal)
+        {
+            inputVal = Math.Round(inputVal, 4);
+            string inputString = inputVal.ToString();
+            string[] ipStringArray = inputString.Split('.');
+            if (ipStringArray.Length > 1)
+            {
+                string beforeDecimal = ipStringArray[0];
+                string afterDecimal = ipStringArray[1];
+                for (int i = ipStringArray[1].Length; i < 4; i++)
+                {
+                    afterDecimal = afterDecimal + "0";
+                }
+                return decimal.Parse(beforeDecimal + "." + afterDecimal);
+            }
+            else
+            {
+                return decimal.Parse(inputString + ".0000");
             }
         }
     }
