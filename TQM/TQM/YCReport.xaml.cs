@@ -207,10 +207,10 @@ namespace TQM
                             report.yarnlength = testsummary.yarnlength;
                             report.totaltestcount = testsummary.totaltestcount;
                             report.createdate = testsummary.createdate;
-                            report.testaverage = testsummary.testaverage;
-                            report.testsd = testsummary.testsd;
-                            report.testcv = testsummary.testcv;
-                            report.standardHank = stdHank;
+                            report.testaverage = formatDecimal(testsummary.testaverage);
+                            report.testsd = formatDecimal(testsummary.testsd);
+                            report.testcv = formatDecimal(testsummary.testcv);
+                            report.standardHank = formatDecimal(stdHank);
                         }
                         OVS.Add(report);
                     }
@@ -407,13 +407,13 @@ namespace TQM
                     PdfGridRow row = new PdfGridRow(pdfGrid);
                     pdfGrid.Rows.Add(row);
 
-                    pdfGrid.Rows[0].Cells[0].Value = "Test No";
+                    pdfGrid.Rows[0].Cells[0].Value = "Sample No";
                     pdfGrid.Rows[0].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[0].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[1].Value = "Weight";
+                    pdfGrid.Rows[0].Cells[1].Value = "Sample Weight";
                     pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -437,8 +437,8 @@ namespace TQM
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
                         pdfGrid.Rows[rowCount].Cells[0].Value = test.testcount.ToString();
-                        pdfGrid.Rows[rowCount].Cells[1].Value = test.yarnweight.ToString();
-                        pdfGrid.Rows[rowCount].Cells[2].Value = test.yccalcval.ToString();
+                        pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight).ToString();
+                        pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval).ToString();
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -646,6 +646,27 @@ namespace TQM
             {
                 DisplayAlert("Notice", msg, "Ok");
             });
+        }
+
+        private decimal formatDecimal(decimal inputVal)
+        {
+            inputVal = Math.Round(inputVal, 4);
+            string inputString = inputVal.ToString();
+            string[] ipStringArray = inputString.Split('.');
+            if (ipStringArray.Length > 1)
+            {
+                string beforeDecimal = ipStringArray[0];
+                string afterDecimal = ipStringArray[1];
+                for (int i = ipStringArray[1].Length; i < 4; i++)
+                {
+                    afterDecimal = afterDecimal + "0";
+                }
+                return decimal.Parse(beforeDecimal + "." + afterDecimal);
+            }
+            else
+            {
+                return decimal.Parse(inputString + ".0000");
+            }
         }
     }
 }

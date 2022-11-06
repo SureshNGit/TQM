@@ -23,8 +23,8 @@ namespace TQM
         private BluetoothSocket _socket;
         BluetoothAdapter adapter;
         BluetoothDevice device;
-        const decimal MIN_VAL = 0.400m;
-        const decimal ZERO = 0.0m;
+        const decimal MIN_VAL = 0.4000m;
+        const decimal ZERO = 0.0000m;
         const int PER_TEST_LOOP_COUNT = 100;
         const int DATA_READ_LOOP_COUNT = 100;
         const int STABLE_DATA_CHECK = 5;
@@ -37,7 +37,7 @@ namespace TQM
         private string selectedMachineName = null;
         private string selectedSysName = null;
         private string selectedCountUnit = null;
-        private decimal selectedYarnLen = 0m;
+        private decimal selectedYarnLen = 0.0000m;
         private int selectedTestCount = 0;
         private string selectedShift = null;
         private string selectedProcess = null;
@@ -190,7 +190,7 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 bool dbStatus = true;
-                decimal totalCalcCountVal = 0m;
+                decimal totalCalcCountVal = 0.0000m;
                 conn.CreateTable<YCTestModel>();
                 foreach (YCTestModelView test in ycTestModelViewlist)
                 {
@@ -221,12 +221,13 @@ namespace TQM
                         dbStatus = false;
                     }
                     totalCalcCountVal = totalCalcCountVal + test.yccalcval;
+                    totalCalcCountVal = formatDecimal(totalCalcCountVal);
                 }
                 if (dbStatus)
                 {
-                    decimal mean = 0m;
-                    decimal sd = 0m;
-                    decimal cv = 0m;
+                    decimal mean = 0.0000m;
+                    decimal sd = 0.0000m;
+                    decimal cv = 0.0000m;
                     if (ycTestModelViewlist[0].totaltestcount > 1)
                     {
                         mean = totalCalcCountVal / ycTestModelViewlist[0].totaltestcount;
@@ -236,10 +237,10 @@ namespace TQM
                             IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
                         }
                         sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
-                        cv = (sd / mean) * 100m; //Coefficient of Variation
-                        mean = Math.Round(mean, 3);
-                        sd = Math.Round(sd, 3);
-                        cv = Math.Round(cv, 3);
+                        sd = formatDecimal(sd);
+                        mean = formatDecimal(mean);
+                        cv = (sd / mean) * 100.0000m; //Coefficient of Variation
+                        cv = formatDecimal(cv);
                     }
                     YCTestSummaryModel ycTestSummaryModel = new YCTestSummaryModel()
                     {
@@ -321,7 +322,7 @@ namespace TQM
             UpdateUserNotification("");
             hideFrames();
             await refListView(false);
-            await refOverallSummary(0m, 0m, 0m, false);
+            await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
@@ -461,19 +462,19 @@ namespace TQM
                         {
                             displayusername = currentloggedInUser.firstname + ", " + currentloggedInUser.lastname + " [" + currentloggedInUser.userId + "]";
                         }
-                        decimal currentCalculatedValue = 0;
+                        decimal currentCalculatedValue = 0.0000m;
                         switch (selectedSysName)
                         {
                             case "Nec":
                                 switch (selectedCountUnit)
                                 {
                                     case "Yard":
-                                        decimal drivedVal = (selectedYarnLen / 840m) * (1m / ((current_stable_data * 15.4324m) / 7000m));
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        decimal drivedVal = (selectedYarnLen / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
-                                        decimal drivedVal_meter = ((selectedYarnLen * 1.09361m) / 840m) * (1m / ((current_stable_data * 15.4324m) / 7000m));
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        decimal drivedVal_meter = ((selectedYarnLen * 1.09361m) / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -483,12 +484,12 @@ namespace TQM
                                 switch (selectedCountUnit)
                                 {
                                     case "Yard":
-                                        decimal drivedVal = current_stable_data * 1000m / (selectedYarnLen * 0.9144m) * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        decimal drivedVal = current_stable_data * 1000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
-                                        decimal drivedVal_meter = current_stable_data * 1000m / selectedYarnLen * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        decimal drivedVal_meter = current_stable_data * 1000.0000m / selectedYarnLen * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -498,12 +499,12 @@ namespace TQM
                                 switch (selectedCountUnit)
                                 {
                                     case "Yard":
-                                        decimal drivedVal = current_stable_data * 9000m / (selectedYarnLen * 0.9144m) * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        decimal drivedVal = current_stable_data * 9000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
-                                        decimal drivedVal_meter = current_stable_data * 9000m / selectedYarnLen * 1m;
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        decimal drivedVal_meter = current_stable_data * 9000.0000m / selectedYarnLen * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -513,12 +514,12 @@ namespace TQM
                                 switch (selectedCountUnit)
                                 {
                                     case "Yard":
-                                        decimal drivedVal = ((selectedYarnLen * 0.9144m) * 1m) / ((current_stable_data * 0.001m) * 1000m);
-                                        currentCalculatedValue = Math.Round(drivedVal, 3);
+                                        decimal drivedVal = ((selectedYarnLen * 0.9144m) * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
                                         break;
                                     case "Meter":
-                                        decimal drivedVal_meter = (selectedYarnLen * 1m) / ((current_stable_data * 0.001m) * 1000m);
-                                        currentCalculatedValue = Math.Round(drivedVal_meter, 3);
+                                        decimal drivedVal_meter = (selectedYarnLen * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
                                         break;
                                     default:
                                         break;
@@ -623,7 +624,7 @@ namespace TQM
                             else
                             {
                                 decimal s_op = decimal.Parse(balOutput);
-                                s_op = Math.Round(s_op, 3);
+                                s_op = formatDecimal(s_op);
                                 if (!initialWeigthCheck)
                                 {
                                     if (s_op == ZERO)
@@ -905,6 +906,26 @@ namespace TQM
             }
         }
 
+        private decimal formatDecimal(decimal inputVal)
+        {
+            inputVal = Math.Round(inputVal, 4);
+            string inputString = inputVal.ToString();
+            string[] ipStringArray = inputString.Split('.');
+            if (ipStringArray.Length > 1)
+            {
+                string beforeDecimal = ipStringArray[0];
+                string afterDecimal = ipStringArray[1];
+                for (int i = ipStringArray[1].Length; i < 4; i++)
+                {
+                    afterDecimal = afterDecimal + "0";
+                }
+                return decimal.Parse(beforeDecimal + "." + afterDecimal);
+            }
+            else
+            {
+                return decimal.Parse(inputString + ".0000");
+            }
+        }
 
     }
 }
