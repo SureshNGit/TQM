@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.srisastha.tqm" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.srisastha_1.tqm" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="31" />
 	<application android:label="TQM.Android" android:theme="@style/MainTheme" android:icon="@mipmap/icon"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -10,8 +10,8 @@
 	<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 	<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 	<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-	<uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.INTERNET" />
 </manifest>
