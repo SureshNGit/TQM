@@ -148,28 +148,37 @@ namespace TQM
                             DisplayAlert("Attention", "Product activation is successful!!!", "Ok");
                             return true;
                         }
-                        else if (jResponse["status"].ToString() == "re-activated")
-                        {
-                            btn_newUser.Text = "Register";
-                            btn_newUser.BackgroundColor = Color.Green;
-                            btn_newUser.TextColor = Color.White;
-                            DisplayAlert("Attention", "Product re-activation is successful!!!", "Ok");
-                            return true;
-                        }
+                        //else if (jResponse["status"].ToString() == "re-activated")
+                        //{
+                        //    btn_newUser.Text = "Register";
+                        //    btn_newUser.BackgroundColor = Color.Green;
+                        //    btn_newUser.TextColor = Color.White;
+                        //    DisplayAlert("Attention", "Product re-activation is successful!!!", "Ok");
+                        //    return true;
+                        //}
                         else
                         {
+                            btn_newUser.Text = "Activate";
+                            btn_newUser.BackgroundColor = Color.Red;
+                            btn_newUser.TextColor = Color.White;
                             DisplayAlert("Attention", "Product Registration Failed. Contact Manufacturer for activation", "Ok");
                             return false;
                         }
                     }
                     else
                     {
+                        btn_newUser.Text = "Activate";
+                        btn_newUser.BackgroundColor = Color.Red;
+                        btn_newUser.TextColor = Color.White;
                         DisplayAlert("Attention", "Product Registration Failed. Contact Manufacturer for activation", "Ok");
                         return false;
                     }
                 }
                 else
                 {
+                    btn_newUser.Text = "Activate";
+                    btn_newUser.BackgroundColor = Color.Red;
+                    btn_newUser.TextColor = Color.White;
                     DisplayAlert("Attention", "Product Registration Failed. Contact Manufacturer for activation", "Ok");
                     return false;
                 }
