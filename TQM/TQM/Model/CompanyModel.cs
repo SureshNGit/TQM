@@ -12,5 +12,7 @@ namespace TQM.Model
         public string Name { get; set; }
 
         public DateTime createdate { get; set; }
+
+        public bool dataSyncStatus { get; set; } = false;
     }
 }

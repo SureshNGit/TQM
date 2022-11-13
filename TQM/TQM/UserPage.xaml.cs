@@ -195,7 +195,8 @@ namespace TQM
                     isActive = switch_active.IsToggled,
                     isloggedIn = isloggenin,
                     createdate = DateTime.Now,
-                    lastLogin = DateTime.Now
+                    lastLogin = DateTime.Now,
+                    dataSyncStatus = false
                 };
                 SQLiteConnection conn1 = new SQLiteConnection(App.DatabaseLocation);
                 conn1.CreateTable<UserModel>();

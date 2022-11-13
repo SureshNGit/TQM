@@ -46,6 +46,8 @@ namespace TQM.Model
 
         public DateTime createdate { get; set; }
 
+        public bool dataSyncStatus { get; set; } = false;
+
 
     }
 }

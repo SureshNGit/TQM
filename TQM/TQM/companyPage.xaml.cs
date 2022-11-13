@@ -45,7 +45,8 @@ namespace TQM
                 CompanyModel companymodel = new CompanyModel()
                 {
                     Name = entry_companyName.Text,
-                    createdate = DateTime.Now
+                    createdate = DateTime.Now,
+                    dataSyncStatus = false
                 };
                 string msg = "saved";
                 SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);

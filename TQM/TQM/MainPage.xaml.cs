@@ -10,6 +10,8 @@ namespace TQM
 {
     public partial class MainPage : ContentPage
     {
+        private RunConfiguration runConfiguration = new RunConfiguration();
+
         public MainPage()
         {
             InitializeComponent();
@@ -124,7 +126,7 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 //request.Timeout = Timeout.Infinite;
-                request.AddParameter("userName", "tqmuser");
+                request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                 request.AddParameter("serialNo", serialNo);
                 RestResponse response = client.Execute(request);
                 if (response.IsSuccessful)

@@ -49,6 +49,7 @@ namespace TQM
         private int currentTestCount = 0;
         private bool isTestStarted = false;
         private YCTestApercentCalculatedModel apercentCalc = null;
+        private RunConfiguration runConfiguration = new RunConfiguration();
         public ApercentPage()
         {
             InitializeComponent();
@@ -1353,7 +1354,7 @@ namespace TQM
 
 
                 device = (from bd in adapter.BondedDevices
-                          where bd.Name == "G85219651634"
+                          where bd.Name == runConfiguration.getBalanceSerialNo()
                           select bd).FirstOrDefault();
 
 

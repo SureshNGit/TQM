@@ -29,6 +29,8 @@ namespace TQM
         public List<OverallReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
         private string selectedCompanyName = null;
         private const string BLUE = "#0e0273";
+        private RunConfiguration runConfiguration = new RunConfiguration();
+
         public YCReport()
         {
             InitializeComponent();
@@ -617,7 +619,7 @@ namespace TQM
                     var request = new RestRequest();
                     request.Method = Method.Post;
                     //request.Timeout = Timeout.Infinite;
-                    request.AddParameter("userName", "tqmuser");
+                    request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                     request.AddParameter("uploadedby", companyName);
                     request.AddParameter("title", "TQMReports(Wrapping)-" + DateTime.Now.ToString());
                     request.AddFile("reportpath", filePath);

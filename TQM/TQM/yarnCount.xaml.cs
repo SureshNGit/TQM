@@ -47,6 +47,7 @@ namespace TQM
         private int TESTCOUNT = 0;
         private int currentTestCount = 0;
         private bool isTestStarted = false;
+        private RunConfiguration runConfiguration = new RunConfiguration();
 
         public yarnCount()
         {
@@ -746,7 +747,7 @@ namespace TQM
 
 
                 device = (from bd in adapter.BondedDevices
-                          where bd.Name == "G85219651634"
+                          where bd.Name == runConfiguration.getBalanceSerialNo()
                           select bd).FirstOrDefault();
 
 

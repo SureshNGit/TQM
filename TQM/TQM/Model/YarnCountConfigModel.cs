@@ -26,6 +26,8 @@ namespace TQM.Model
 
         public int testcountNoils { get; set; }
 
+        public bool dataSyncStatus { get; set; } = false;
+
 
     }
 }

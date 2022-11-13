@@ -11,5 +11,7 @@ namespace TQM.Model
         public string machineCategory { get; set; }
         public string machineName { get; set; }
         public DateTime createdate { get; set; }
+
+        public bool dataSyncStatus { get; set; } = false;
     }
 }

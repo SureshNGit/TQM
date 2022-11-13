@@ -21,6 +21,8 @@ namespace TQM.Model
         [ForeignKey(typeof(CompanyModel))]
         public Guid companyID { get; set; }
 
+        public bool dataSyncStatus { get; set; } = false;
+
 
     }
 }

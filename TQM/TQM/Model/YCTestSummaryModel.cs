@@ -41,5 +41,7 @@ namespace TQM.Model
         public decimal testcv { get; set; }
 
         public DateTime createdate { get; set; }
+
+        public bool dataSyncStatus { get; set; } = false;
     }
 }

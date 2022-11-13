@@ -48,6 +48,7 @@ namespace TQM
         private int currentTestCount = 0;
         private bool isTestStarted = false;
         private StretchTestCalculatedModel stretchCalcList_finalOut = null;
+        private RunConfiguration runConfiguration = new RunConfiguration();
 
         public StretchPage()
         {
@@ -1229,7 +1230,7 @@ namespace TQM
 
 
                 device = (from bd in adapter.BondedDevices
-                          where bd.Name == "G85219651634"
+                          where bd.Name == runConfiguration.getBalanceSerialNo()
                           select bd).FirstOrDefault();
 
 
