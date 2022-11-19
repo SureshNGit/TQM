@@ -356,11 +356,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
-            if (picker_process.SelectedIndex <= 0)
-            {
-                await DisplayAlert("Attention", "Please select process info!!!", "Ok");
-                return;
-            }
+            //if (picker_process.SelectedIndex <= 0)
+            //{
+            //    await DisplayAlert("Attention", "Please select process info!!!", "Ok");
+            //    return;
+            //}
             if (!initializeBluetooth())
             {
                 ImageNotification("red.png");
@@ -423,7 +423,11 @@ namespace TQM
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = picker_process.SelectedItem.ToString();
+            selectedProcess = "";
+            if (picker_process.SelectedIndex > 0)
+            {
+                selectedProcess = picker_process.SelectedItem.ToString();
+            }
             ycTestModelViewlist = new List<YCTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
@@ -644,7 +648,7 @@ namespace TQM
                                     {
                                         initialWeigthCheck = true;
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     else
@@ -659,7 +663,7 @@ namespace TQM
                                     if (s_op == ZERO || s_op < MIN_VAL)
                                     {
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     //else if (s_op < MIN_VAL)

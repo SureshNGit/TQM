@@ -105,6 +105,7 @@ namespace TQM
                         if (lastTestSummary == null)
                         {
                             lastTest.status = false;
+                            lastTest.dataSyncStatus = false;
                             if (conn.Update(lastTest) < 1)
                             {
                                 //to be decided
@@ -496,6 +497,7 @@ namespace TQM
                 foreach (StretchTestModel stretchTestModel in stretchTestModelList)
                 {
                     stretchTestModel.status = false;
+                    stretchTestModel.dataSyncStatus = false;
                     if (conn.Update(stretchTestModel) < 1)
                     {
                         dbStatus = false;
@@ -551,6 +553,7 @@ namespace TQM
                     foreach (StretchTestSummaryModel stretchTestSM in stretchTestSMList)
                     {
                         stretchTestSM.status = false;
+                        stretchTestSM.dataSyncStatus = false;
                         if (conn.Update(stretchTestSM) < 1)
                         {
                             dbStatus = false;
@@ -623,6 +626,7 @@ namespace TQM
                             foreach (StretchTestCalculatedModel stretch in stretchCalcList)
                             {
                                 stretch.status = false;
+                                stretch.dataSyncStatus = false;
                                 if (conn.Update(stretch) < 1)
                                 {
                                     //to be decided if stretch calculated active records failed to deactive
@@ -843,11 +847,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
-            if (picker_process.SelectedIndex <= 0)
-            {
-                await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
-                return;
-            }
+            //if (picker_process.SelectedIndex <= 0)
+            //{
+            //    await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
+            //    return;
+            //}
             if (!initializeBluetooth())
             {
                 ImageNotification("red.png");
@@ -905,7 +909,11 @@ namespace TQM
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = picker_process.SelectedItem.ToString();
+            selectedProcess = "";
+            if (picker_process.SelectedIndex > 0)
+            {
+                selectedProcess = picker_process.SelectedItem.ToString();
+            }
             stretchTestModelViewList = new List<StretchTestModelView>();
             startInitialBobbinButton.IsEnabled = false;
             startInitialBobbinButton.BackgroundColor = Color.SlateGray;
@@ -1127,7 +1135,7 @@ namespace TQM
                                     {
                                         initialWeigthCheck = true;
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     else
@@ -1142,7 +1150,7 @@ namespace TQM
                                     if (s_op == ZERO || s_op < MIN_VAL)
                                     {
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     //else if (s_op < MIN_VAL)
@@ -1378,11 +1386,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
-            if (picker_process.SelectedIndex <= 0)
-            {
-                await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
-                return;
-            }
+            //if (picker_process.SelectedIndex <= 0)
+            //{
+            //    await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
+            //    return;
+            //}
             if (!initializeBluetooth())
             {
                 ImageNotification("red.png");
@@ -1429,7 +1437,11 @@ namespace TQM
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = picker_process.SelectedItem.ToString();
+            selectedProcess = "";
+            if (picker_process.SelectedIndex > 0)
+            {
+                selectedProcess = picker_process.SelectedItem.ToString();
+            }
             stretchTestModelViewList = new List<StretchTestModelView>();
             startFullBobbinButton.IsEnabled = false;
             startFullBobbinButton.BackgroundColor = Color.SlateGray;

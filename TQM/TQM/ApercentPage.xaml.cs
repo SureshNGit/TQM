@@ -577,6 +577,7 @@ namespace TQM
                 foreach (YCTestApercentModel ycTestApercentModel in ycTestApercentModelList)
                 {
                     ycTestApercentModel.status = false;
+                    ycTestApercentModel.dataSyncStatus = false;
                     if (conn.Update(ycTestApercentModel) < 1)
                     {
                         dbStatus = false;
@@ -631,6 +632,7 @@ namespace TQM
                     foreach (YCTestApercentSummaryModel apercentSummaryModel in apercentSummaryModelList)
                     {
                         apercentSummaryModel.status = false;
+                        apercentSummaryModel.dataSyncStatus = false;
                         if (conn.Update(apercentSummaryModel) < 1)
                         {
                             dbStatus = false;
@@ -702,6 +704,7 @@ namespace TQM
                             foreach (YCTestApercentCalculatedModel apercent in apercentCalcList)
                             {
                                 apercent.status = false;
+                                apercent.dataSyncStatus = false;
                                 if (conn.Update(apercent) < 1)
                                 {
                                     //to be decided if apercent calculated active records failed to deactive
@@ -967,11 +970,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
-            if (picker_process.SelectedIndex <= 0)
-            {
-                await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
-                return;
-            }
+            //if (picker_process.SelectedIndex <= 0)
+            //{
+            //    await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
+            //    return;
+            //}
             if (!initializeBluetooth())
             {
                 ImageNotification("red.png");
@@ -1029,7 +1032,11 @@ namespace TQM
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = picker_process.SelectedItem.ToString();
+            selectedProcess = "";
+            if (picker_process.SelectedIndex > 0)
+            {
+                selectedProcess = picker_process.SelectedItem.ToString();
+            }
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNm1Button.IsEnabled = false;
             startTestNm1Button.BackgroundColor = Color.SlateGray;
@@ -1251,7 +1258,7 @@ namespace TQM
                                     {
                                         initialWeigthCheck = true;
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     else
@@ -1266,7 +1273,7 @@ namespace TQM
                                     if (s_op == ZERO || s_op < MIN_VAL)
                                     {
                                         ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT" + " (T.No - " + currentTestCount + ")", GREEN);
+                                        UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
                                         Debug.WriteLine("Place object to start test!!!");
                                     }
                                     //else if (s_op < MIN_VAL)
@@ -1502,11 +1509,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
-            if (picker_process.SelectedIndex <= 0)
-            {
-                await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
-                return;
-            }
+            //if (picker_process.SelectedIndex <= 0)
+            //{
+            //    await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
+            //    return;
+            //}
             if (!initializeBluetooth())
             {
                 ImageNotification("red.png");
@@ -1554,7 +1561,11 @@ namespace TQM
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = picker_process.SelectedItem.ToString();
+            selectedProcess = "";
+            if (picker_process.SelectedIndex > 0)
+            {
+                selectedProcess = picker_process.SelectedItem.ToString();
+            }
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNButton.IsEnabled = false;
             startTestNButton.BackgroundColor = Color.SlateGray;
@@ -1609,11 +1620,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
-            if (picker_process.SelectedIndex <= 0)
-            {
-                await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
-                return;
-            }
+            //if (picker_process.SelectedIndex <= 0)
+            //{
+            //    await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
+            //    return;
+            //}
             if (!initializeBluetooth())
             {
                 ImageNotification("red.png");
@@ -1661,7 +1672,11 @@ namespace TQM
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = picker_process.SelectedItem.ToString();
+            selectedProcess = "";
+            if (picker_process.SelectedIndex > 0)
+            {
+                selectedProcess = picker_process.SelectedItem.ToString();
+            }
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNp1Button.IsEnabled = false;
             startTestNp1Button.BackgroundColor = Color.SlateGray;
