@@ -670,5 +670,7 @@ namespace TQM
                 return decimal.Parse(inputString + ".0000");
             }
         }
+
+
     }
 }

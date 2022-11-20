@@ -31,11 +31,15 @@
             </Entry.Effects>
         </Entry>-->
 
+        <Image x:Name="img_notification" IsVisible="False" HorizontalOptions="Center"
+                       Source="loading.gif" IsAnimationPlaying="True" 
+                       Aspect="AspectFit" HeightRequest="120" WidthRequest="120"/>
+
         <Label x:Name="lbl_backupProgress" HorizontalTextAlignment="Center"
                VerticalTextAlignment="Center"
                TextColor="White"
                FontSize="Large" HeightRequest="50"
-               BackgroundColor="Green" Margin="100,200,900,0">
+               BackgroundColor="Green" Margin="100,50,900,0">
         </Label>
     </StackLayout>
 </ContentPage>

@@ -2,8 +2,8 @@
 {
     internal class RunConfiguration
     {
-        private string balanceSerialNo = "G85222792760";
-        private string tqmAppUserID = "lytunit2";
+        private string balanceSerialNo = "G85222792761";
+        private string tqmAppUserID = "lytunit1";
 
         public string getBalanceSerialNo()
         {
