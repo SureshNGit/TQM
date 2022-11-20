@@ -60,7 +60,7 @@ namespace TQM
                             });
                             flyItems.Add(new MenuItem
                             {
-                                Title = "Apercent",
+                                Title = "A %",
                                 ImageSource = "",
                                 TargetPage = typeof(ApercentPage)
                             });
@@ -136,7 +136,7 @@ namespace TQM
                             });
                             flyItems.Add(new MenuItem
                             {
-                                Title = "Apercent",
+                                Title = "A %",
                                 ImageSource = "",
                                 TargetPage = typeof(ApercentPage)
                             });

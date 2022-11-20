@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TQM.Model;
@@ -36,13 +37,13 @@ namespace TQM
             InitializeComponent();
         }
 
-        public StretchReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process)
+        public StretchReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID)
         {
             InitializeComponent();
-            getReport(startDate, endDate, categoryName, machineID, shift, process);
+            getReport(startDate, endDate, categoryName, machineID, shift, process, testID);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID)
         {
             try
             {
@@ -183,6 +184,13 @@ namespace TQM
                     {
                         DisplayAlert("Notice", "No records to display!!!", "OK");
                         return;
+                    }
+                    else
+                    {
+                        if (testID != "")
+                        {
+                            stretchCalcList = stretchCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
+                        }
                     }
 
                     foreach (StretchTestCalculatedModel stretchCalc in stretchCalcList)

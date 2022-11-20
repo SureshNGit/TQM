@@ -146,6 +146,9 @@ namespace TQM
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
                                 currentTestID = lastTest.testID;
+                                entry_testcount.Text = lastTest.totaltestcount.ToString();
+                                entry_testcount.IsEnabled = false;
+                                entry_yarnlen.IsEnabled = false;
                                 lbl_TestID.Text = currentTestID.ToString();
                                 startTestNButton.IsVisible = true;
                             }
@@ -188,6 +191,9 @@ namespace TQM
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
                                 currentTestID = lastTest.testID;
+                                entry_testcount.Text = lastTest.totaltestcount.ToString();
+                                entry_testcount.IsEnabled = false;
+                                entry_yarnlen.IsEnabled = false;
                                 lbl_TestID.Text = currentTestID.ToString();
                                 startTestNButton.IsVisible = true;
                             }
@@ -213,6 +219,9 @@ namespace TQM
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
                                 currentTestID = lastTest.testID;
+                                entry_testcount.Text = lastTest.totaltestcount.ToString();
+                                entry_testcount.IsEnabled = false;
+                                entry_yarnlen.IsEnabled = false;
                                 lbl_TestID.Text = currentTestID.ToString();
                                 startTestNp1Button.IsVisible = true;
                             }
@@ -255,6 +264,9 @@ namespace TQM
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
                                 currentTestID = lastTest.testID;
+                                entry_testcount.Text = lastTest.totaltestcount.ToString();
+                                entry_testcount.IsEnabled = false;
+                                entry_yarnlen.IsEnabled = false;
                                 lbl_TestID.Text = currentTestID.ToString();
                                 startTestNp1Button.IsVisible = true;
                             }

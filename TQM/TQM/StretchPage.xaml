@@ -250,7 +250,7 @@
                     <ListView.Header>
                         <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273">
                             <Label Text="Sample No" WidthRequest="150" TextColor="White" FontSize="16"/>
-                            <Label Text="Weigth" WidthRequest="150" TextColor="White" FontSize="16"/>
+                            <Label Text="Sample Weigth" WidthRequest="150" TextColor="White" FontSize="16"/>
                             <Label Text="Hank" WidthRequest="150" TextColor="White" FontSize="16"/>
                         </StackLayout>
                     </ListView.Header>

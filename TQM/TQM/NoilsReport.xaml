@@ -204,9 +204,9 @@
                                     <Label  Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                             Text="Sample No"  TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="Sliver"  TextColor="#0e0273" FontSize="14"/>
+                                            Text="Sliver Weight"  TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="Noils Wt"  TextColor="#0e0273" FontSize="14"/>
+                                            Text="Noils Weight"  TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                             Text="Noils %" TextColor="#0e0273" FontSize="14"/>
 
