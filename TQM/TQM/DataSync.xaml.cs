@@ -58,75 +58,14 @@ namespace TQM
             Device.BeginInvokeOnMainThread(() =>
             {
                 lbl_backupProgress.BackgroundColor = lblColor;
+                if (lblColor == Color.Yellow)
+                {
+                    lbl_backupProgress.TextColor = Color.Black;
+                }
                 lbl_backupProgress.Margin = new Thickness(100, 50, width, 0);
                 lbl_backupProgress.Text = msg;
             });
         }
-
-        //private async void backupButton_Clicked(object sender, EventArgs e)
-        //{
-        //    bool companyBackup = await syncDataCompanyModel();
-        //    if (companyBackup)
-        //    {
-        //        bool userModelBackup = await syncDataUserModel();
-        //        if (userModelBackup)
-        //        {
-        //            bool machineModelBackup = await syncDataMachineModel();
-        //            if (machineModelBackup)
-        //            {
-        //                bool settingsModelBackup = await syncDataSettingsModel();
-        //                if (settingsModelBackup)
-        //                {
-        //                    bool ycTestModelBackup = await syncDataTQMYCTestModel();
-        //                    if (ycTestModelBackup)
-        //                    {
-        //                        bool ycTestSummaryModelBackup = await syncDataTQMYCTestSummaryModel();
-        //                        if (ycTestSummaryModelBackup)
-        //                        {
-        //                            bool ycTestApercentModelBackup = await syncDataTQMYCTestApercentModel();
-        //                            if (ycTestApercentModelBackup)
-        //                            {
-        //                                bool testApercentSummaryModelBackup = await syncDataTQMYCTestApercentSummaryModel();
-        //                                if (testApercentSummaryModelBackup)
-        //                                {
-        //                                    bool testApercentCalculatedModelBackup = await syncDataTQMYCTestApercentCalculatedModel();
-        //                                    if (testApercentCalculatedModelBackup)
-        //                                    {
-        //                                        bool stretchTestModelBackup = await syncDataTQMStretchTestModel();
-        //                                        if (stretchTestModelBackup)
-        //                                        {
-        //                                            bool stretchTestSummaryModelBackup = await syncDataTQMStretchTestSummaryModel();
-        //                                            if (stretchTestSummaryModelBackup)
-        //                                            {
-        //                                                bool stretchTestCalculatedModelBackup = await syncDataTQMStretchTestCalculatedModel();
-        //                                                if (stretchTestCalculatedModelBackup)
-        //                                                {
-        //                                                    bool noilsTestModelBackup = await syncDataTQMNoilsTestModel();
-        //                                                    if (noilsTestModelBackup)
-        //                                                    {
-        //                                                        bool noilsTestSummaryModelBackup = await syncDataTQMNoilsTestSummaryModel();
-        //                                                        if (noilsTestSummaryModelBackup)
-        //                                                        {
-        //                                                            bool noilsTestFinalModelBackup = await syncDataTQMNoilsTestFinalModel();
-        //                                                            if (noilsTestFinalModelBackup)
-        //                                                            {
-        //                                                                bool noilsTestCalculatedModelBackup = await syncDataTQMNoilsTestCalculatedModel();
-        //                                                            }
-        //                                                        }
-        //                                                    }
-        //                                                }
-        //                                            }
-        //                                        }
-        //                                    }
-        //                                }
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
 
 
         private async void toggleLoading(bool visibility)
@@ -186,7 +125,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -223,22 +161,42 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == companyList.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("User: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != companyList.Count)
                     {
-                        updateProgress("Backup failed for Company. Please contact manufacturer!!!", 100, Color.Red);
-                    }
-                    else if (syncDataCount != companyList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Company!!!", 100, Color.Yellow);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
                 }
                 if (status)
@@ -279,7 +237,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -324,22 +281,42 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == userList.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("User: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != userList.Count)
                     {
-                        updateProgress("Backup failed for User. Please contact manufacturer!!!", 100, Color.Red);
-                    }
-                    else if (syncDataCount != userList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for User!!!", 100, Color.Yellow);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("User: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("User: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("User: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("User: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
                 }
                 if (status)
@@ -380,7 +357,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -419,22 +395,42 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == machineList.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("Machine: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != machineList.Count)
                     {
-                        updateProgress("Backup failed for Machine. Please contact manufacturer!!!", 100, Color.Red);
-                    }
-                    else if (syncDataCount != machineList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Machine!!!", 100, Color.Yellow);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Machine: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Machine: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Machine: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Machine: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
                 }
                 if (status)
@@ -444,7 +440,6 @@ namespace TQM
                     ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
                     await Task.Run(async () => await syncDataSettingsModel(), ct);
                     src.Cancel();
-                    //toggleLoading(true);
                 }
                 else
                 {
@@ -476,7 +471,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -522,22 +516,42 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == yarnCountConfigs.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("Settings: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != yarnCountConfigs.Count)
                     {
-                        updateProgress("Backup failed for Settings. Please contact manufacturer!!!", 100, Color.Red);
-                    }
-                    else if (syncDataCount != yarnCountConfigs.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Settings!!!", 100, Color.Yellow);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Settings: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Settings: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Settings: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Settings: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
                 }
                 if (status)
@@ -547,7 +561,6 @@ namespace TQM
                     ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
                     await Task.Run(async () => await syncDataTQMYCTestModel(), ct);
                     src.Cancel();
-                    //toggleLoading(true);
                 }
                 else
                 {
@@ -579,7 +592,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -633,22 +645,42 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == ycTestModels.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("Wrapping: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != ycTestModels.Count)
                     {
-                        updateProgress("Backup failed for Wrapping. Please contact manufacturer!!!", 100, Color.Red);
-                    }
-                    else if (syncDataCount != ycTestModels.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Wrapping!!!", 100, Color.Yellow);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Wrapping: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Wrapping: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Wrapping: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Wrapping: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
                 }
                 if (status)
@@ -658,7 +690,6 @@ namespace TQM
                     ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
                     await Task.Run(async () => await syncDataTQMYCTestSummaryModel(), ct);
                     src.Cancel();
-                    //toggleLoading(true);
                 }
                 else
                 {
@@ -690,7 +721,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -745,36 +775,55 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == ycTestSummaryModels.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("Wrapping Summary: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != ycTestSummaryModels.Count)
                     {
-                        updateProgress("Backup failed for Wrapping Summary. Please contact manufacturer!!!", 100, Color.Red);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Wrapping Summary: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Wrapping Summary: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Wrapping Summary: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Wrapping Summary: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
-                    else if (syncDataCount != ycTestSummaryModels.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Wrapping Summary!!!", 100, Color.Yellow);
-                    }
-                    if (status)
-                    {
-                        CancellationTokenSource src = new CancellationTokenSource();
-                        CancellationToken ct = src.Token;
-                        ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                        await Task.Run(async () => await syncDataTQMYCTestApercentModel(), ct);
-                        src.Cancel();
-                        //toggleLoading(true);
-                    }
-                    else
-                    {
-                        toggleLoading(false);
-                    }
+                }
+                if (status)
+                {
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    await Task.Run(async () => await syncDataTQMYCTestApercentModel(), ct);
+                    src.Cancel();
+                }
+                else
+                {
+                    toggleLoading(false);
                 }
             }
             catch (Exception ex)
@@ -802,7 +851,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -857,36 +905,55 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == ycTestApercentModels.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("A%: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != ycTestApercentModels.Count)
                     {
-                        updateProgress("Backup failed for A%. Please contact manufacturer!!!", 100, Color.Red);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("A%: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("A%: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("A%: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("A%: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
-                    else if (syncDataCount != ycTestApercentModels.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for A%!!!", 100, Color.Yellow);
-                    }
-                    if (status)
-                    {
-                        CancellationTokenSource src = new CancellationTokenSource();
-                        CancellationToken ct = src.Token;
-                        ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                        await Task.Run(async () => await syncDataTQMYCTestApercentSummaryModel(), ct);
-                        src.Cancel();
-                        //toggleLoading(true);
-                    }
-                    else
-                    {
-                        toggleLoading(false);
-                    }
+                }
+                if (status)
+                {
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    await Task.Run(async () => await syncDataTQMYCTestApercentSummaryModel(), ct);
+                    src.Cancel();
+                }
+                else
+                {
+                    toggleLoading(false);
                 }
             }
             catch (Exception ex)
@@ -914,7 +981,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -970,36 +1036,55 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == ycTestApercentSummaryList.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("A% Summary: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != ycTestApercentSummaryList.Count)
                     {
-                        updateProgress("Backup failed for A% Summary. Please contact manufacturer!!!", 100, Color.Red);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("A% Summary: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("A% Summary: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("A% Summary: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("A% Summary: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
-                    else if (syncDataCount != ycTestApercentSummaryList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for A% Summary!!!", 100, Color.Yellow);
-                    }
-                    if (status)
-                    {
-                        CancellationTokenSource src = new CancellationTokenSource();
-                        CancellationToken ct = src.Token;
-                        ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                        await Task.Run(async () => await syncDataTQMYCTestApercentCalculatedModel(), ct);
-                        src.Cancel();
-                        //toggleLoading(true);
-                    }
-                    else
-                    {
-                        toggleLoading(false);
-                    }
+                }
+                if (status)
+                {
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    await Task.Run(async () => await syncDataTQMYCTestApercentCalculatedModel(), ct);
+                    src.Cancel();
+                }
+                else
+                {
+                    toggleLoading(false);
                 }
             }
             catch (Exception ex)
@@ -1027,7 +1112,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1103,36 +1187,55 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == ycTestApercentCalculatedList.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("A% Calculation: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != ycTestApercentCalculatedList.Count)
                     {
-                        updateProgress("Backup failed for A% Calculation. Please contact manufacturer!!!", 100, Color.Red);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("A% Calculation: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("A% Calculation: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("A% Calculation: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("A% Calculation: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
-                    else if (syncDataCount != ycTestApercentCalculatedList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for A% Calculation!!!", 100, Color.Yellow);
-                    }
-                    if (status)
-                    {
-                        CancellationTokenSource src = new CancellationTokenSource();
-                        CancellationToken ct = src.Token;
-                        ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                        await Task.Run(async () => await syncDataTQMStretchTestModel(), ct);
-                        src.Cancel();
-                        //toggleLoading(true);
-                    }
-                    else
-                    {
-                        toggleLoading(false);
-                    }
+                }
+                if (status)
+                {
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    await Task.Run(async () => await syncDataTQMStretchTestModel(), ct);
+                    src.Cancel();
+                }
+                else
+                {
+                    toggleLoading(false);
                 }
             }
             catch (Exception ex)
@@ -1160,7 +1263,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1215,36 +1317,55 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == stretchTestModelList.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("Stretch : Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != stretchTestModelList.Count)
                     {
-                        updateProgress("Backup failed for Stretch. Please contact manufacturer!!!", 100, Color.Red);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Stretch : Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Stretch : Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Stretch : Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Stretch : Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
-                    else if (syncDataCount != stretchTestModelList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Stretch!!!", 100, Color.Yellow);
-                    }
-                    if (status)
-                    {
-                        CancellationTokenSource src = new CancellationTokenSource();
-                        CancellationToken ct = src.Token;
-                        ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                        await Task.Run(async () => await syncDataTQMStretchTestSummaryModel(), ct);
-                        src.Cancel();
-                        //toggleLoading(true);
-                    }
-                    else
-                    {
-                        toggleLoading(false);
-                    }
+                }
+                if (status)
+                {
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    await Task.Run(async () => await syncDataTQMStretchTestSummaryModel(), ct);
+                    src.Cancel();
+                }
+                else
+                {
+                    toggleLoading(false);
                 }
             }
             catch (Exception ex)
@@ -1272,7 +1393,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1329,36 +1449,55 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == stretchTestSummaryModelList.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("Stretch Summary: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != stretchTestSummaryModelList.Count)
                     {
-                        updateProgress("Backup failed for Stretch Summary. Please contact manufacturer!!!", 100, Color.Red);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Stretch Summary: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Stretch Summary: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Stretch Summary: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Stretch Summary: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
-                    else if (syncDataCount != stretchTestSummaryModelList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Stretch Summary!!!", 100, Color.Yellow);
-                    }
-                    if (status)
-                    {
-                        CancellationTokenSource src = new CancellationTokenSource();
-                        CancellationToken ct = src.Token;
-                        ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                        await Task.Run(async () => await syncDataTQMStretchTestCalculatedModel(), ct);
-                        src.Cancel();
-                        //toggleLoading(true);
-                    }
-                    else
-                    {
-                        toggleLoading(false);
-                    }
+                }
+                if (status)
+                {
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    await Task.Run(async () => await syncDataTQMStretchTestCalculatedModel(), ct);
+                    src.Cancel();
+                }
+                else
+                {
+                    toggleLoading(false);
                 }
             }
             catch (Exception ex)
@@ -1386,7 +1525,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1455,36 +1593,55 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == stretchTestCalculatedModelList.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("Stretch Calculation: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != stretchTestCalculatedModelList.Count)
                     {
-                        updateProgress("Backup failed for Stretch Calculations. Please contact manufacturer!!!", 100, Color.Red);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Stretch Calculation: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Stretch Calculation: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Stretch Calculation: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Stretch Calculation: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
-                    else if (syncDataCount != stretchTestCalculatedModelList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Stretch Calculations!!!", 100, Color.Yellow);
-                    }
-                    if (status)
-                    {
-                        CancellationTokenSource src = new CancellationTokenSource();
-                        CancellationToken ct = src.Token;
-                        ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                        await Task.Run(async () => await syncDataTQMNoilsTestModel(), ct);
-                        src.Cancel();
-                        //toggleLoading(true);
-                    }
-                    else
-                    {
-                        toggleLoading(false);
-                    }
+                }
+                if (status)
+                {
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    await Task.Run(async () => await syncDataTQMNoilsTestModel(), ct);
+                    src.Cancel();
+                }
+                else
+                {
+                    toggleLoading(false);
                 }
             }
             catch (Exception ex)
@@ -1512,7 +1669,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1567,36 +1723,55 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == noilsTestModelList.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("Noils: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != noilsTestModelList.Count)
                     {
-                        updateProgress("Backup failed for Noils. Please contact manufacturer!!!", 100, Color.Red);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Noils: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Noils: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Noils: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Noils: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
-                    else if (syncDataCount != noilsTestModelList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Noils!!!", 100, Color.Yellow);
-                    }
-                    if (status)
-                    {
-                        CancellationTokenSource src = new CancellationTokenSource();
-                        CancellationToken ct = src.Token;
-                        ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                        await Task.Run(async () => await syncDataTQMNoilsTestSummaryModel(), ct);
-                        src.Cancel();
-                        //toggleLoading(true);
-                    }
-                    else
-                    {
-                        toggleLoading(false);
-                    }
+                }
+                if (status)
+                {
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    await Task.Run(async () => await syncDataTQMNoilsTestSummaryModel(), ct);
+                    src.Cancel();
+                }
+                else
+                {
+                    toggleLoading(false);
                 }
             }
             catch (Exception ex)
@@ -1624,7 +1799,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1681,36 +1855,55 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == noilsTestSummaryModelList.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("Noils Summary: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != noilsTestSummaryModelList.Count)
                     {
-                        updateProgress("Backup failed for Noils Summary. Please contact manufacturer!!!", 100, Color.Red);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Noils Summary: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Noils Summary: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Noils Summary: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Noils Summary: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
-                    else if (syncDataCount != noilsTestSummaryModelList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Noils Summary!!!", 100, Color.Yellow);
-                    }
-                    if (status)
-                    {
-                        CancellationTokenSource src = new CancellationTokenSource();
-                        CancellationToken ct = src.Token;
-                        ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                        await Task.Run(async () => await syncDataTQMNoilsTestFinalModel(), ct);
-                        src.Cancel();
-                        //toggleLoading(true);
-                    }
-                    else
-                    {
-                        toggleLoading(false);
-                    }
+                }
+                if (status)
+                {
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    await Task.Run(async () => await syncDataTQMNoilsTestFinalModel(), ct);
+                    src.Cancel();
+                }
+                else
+                {
+                    toggleLoading(false);
                 }
             }
             catch (Exception ex)
@@ -1738,7 +1931,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1782,36 +1974,55 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == noilsTestFinalModelList.Count)
                     {
-                        updateProgress("Backup completed!!!", 100, Color.Green);
+                        //success
+                        updateProgress("Noils Final Test: Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != noilsTestFinalModelList.Count)
                     {
-                        updateProgress("Backup failed for Noils Final Test. Please contact manufacturer!!!", 100, Color.Red);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Noils Final Test: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Noils Final Test: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Noils Final Test: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Noils Final Test: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
-                    else if (syncDataCount != noilsTestFinalModelList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Noils Final Test!!!", 100, Color.Yellow);
-                    }
-                    if (status)
-                    {
-                        CancellationTokenSource src = new CancellationTokenSource();
-                        CancellationToken ct = src.Token;
-                        ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
-                        await Task.Run(async () => await syncDataTQMNoilsTestCalculatedModel(), ct);
-                        src.Cancel();
-                        //toggleLoading(true);
-                    }
-                    else
-                    {
-                        toggleLoading(false);
-                    }
+                }
+                if (status)
+                {
+                    CancellationTokenSource src = new CancellationTokenSource();
+                    CancellationToken ct = src.Token;
+                    ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                    await Task.Run(async () => await syncDataTQMNoilsTestCalculatedModel(), ct);
+                    src.Cancel();
+                }
+                else
+                {
+                    toggleLoading(false);
                 }
             }
             catch (Exception ex)
@@ -1839,7 +2050,6 @@ namespace TQM
                 var request = new RestRequest();
                 request.Method = Method.Post;
                 request.Timeout = Timeout.Infinite;
-                //Company Model
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1911,31 +2121,51 @@ namespace TQM
                         }
                         updateProgress("Uploading.....", 100, Color.BlueViolet);
                     }
+
                     if (syncDataCount == noilsTestCalculatedModelList.Count)
                     {
+                        //success
                         updateProgress("Backup completed!!!", 100, Color.Green);
                         status = true;
                     }
-                    else if (syncDataCount == 0 && poorInternet != true)
+                    else if (syncDataCount != noilsTestCalculatedModelList.Count)
                     {
-                        updateProgress("Backup failed for Noils Calculation. Please contact manufacturer!!!", 100, Color.Red);
+                        if (syncDataCount > 0)
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet but few record(s) pushed to server
+                                updateProgress("Noils Calculation: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but few records not pushed to server
+                                updateProgress("Noils Calculation: Backup completed partially but failed", 100, Color.Red);
+                            }
+                        }
+                        else
+                        {
+                            if (poorInternet)
+                            {
+                                //Poor internet, so none of the record(s) pushed to server
+                                updateProgress("Noils Calculation: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                            }
+                            else
+                            {
+                                //Internet is good but none of the record(s) pushed to server
+                                updateProgress("Noils Calculation: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                            }
+
+                        }
                     }
-                    else if (syncDataCount != noilsTestCalculatedModelList.Count && poorInternet == true)
-                    {
-                        updateProgress("Backup failed for due to poor internet connection!!!", 100, Color.Red);
-                    }
-                    else
-                    {
-                        updateProgress("Backup completed partially for Noils Calculation!!!", 100, Color.Yellow);
-                    }
-                    if (status)
-                    {
-                        toggleLoading(false);
-                    }
-                    else
-                    {
-                        toggleLoading(false);
-                    }
+                }
+                if (status)
+                {
+                    toggleLoading(false);
+                }
+                else
+                {
+                    toggleLoading(false);
                 }
             }
             catch (Exception ex)

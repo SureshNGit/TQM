@@ -66,7 +66,7 @@ namespace TQM
                             apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
                                                  (YCTestApercentCalculatedModel.createdate >= startDate
                                                  && YCTestApercentCalculatedModel.createdate < endDate
-                                                 && YCTestApercentCalculatedModel.status == true
+                                                 //&& YCTestApercentCalculatedModel.status == true
                                                  && YCTestApercentCalculatedModel.shift == shift
                                                  && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
@@ -75,7 +75,7 @@ namespace TQM
                             apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
                                                  (YCTestApercentCalculatedModel.createdate >= startDate
                                                  && YCTestApercentCalculatedModel.createdate < endDate
-                                                 && YCTestApercentCalculatedModel.status == true
+                                                 //&& YCTestApercentCalculatedModel.status == true
                                                  && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
                         else if (shift != "" && process == null)
@@ -83,7 +83,7 @@ namespace TQM
                             apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
                                                 (YCTestApercentCalculatedModel.createdate >= startDate
                                                 && YCTestApercentCalculatedModel.createdate < endDate
-                                                && YCTestApercentCalculatedModel.status == true
+                                                //&& YCTestApercentCalculatedModel.status == true
                                                 && YCTestApercentCalculatedModel.shift == shift)).ToList();
                         }
                         else if (shift == "" && process == null)
@@ -91,7 +91,8 @@ namespace TQM
                             apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
                                                 (YCTestApercentCalculatedModel.createdate >= startDate
                                                 && YCTestApercentCalculatedModel.createdate < endDate
-                                                && YCTestApercentCalculatedModel.status == true)).ToList();
+                                                //&& YCTestApercentCalculatedModel.status == true
+                                                )).ToList();
                         }
 
 
@@ -107,7 +108,7 @@ namespace TQM
                                                 (YCTestApercentCalculatedModel.createdate >= startDate
                                                 && YCTestApercentCalculatedModel.createdate < endDate
                                                 && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                && YCTestApercentCalculatedModel.status == true
+                                                //&& YCTestApercentCalculatedModel.status == true
                                                 && YCTestApercentCalculatedModel.shift == shift
                                                 && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
@@ -117,7 +118,7 @@ namespace TQM
                                                 (YCTestApercentCalculatedModel.createdate >= startDate
                                                 && YCTestApercentCalculatedModel.createdate < endDate
                                                 && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                && YCTestApercentCalculatedModel.status == true
+                                                //&& YCTestApercentCalculatedModel.status == true
                                                 && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
                         else if (shift != "" && process == null)
@@ -126,7 +127,7 @@ namespace TQM
                                                 (YCTestApercentCalculatedModel.createdate >= startDate
                                                 && YCTestApercentCalculatedModel.createdate < endDate
                                                 && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                && YCTestApercentCalculatedModel.status == true
+                                                //&& YCTestApercentCalculatedModel.status == true
                                                 && YCTestApercentCalculatedModel.shift == shift)).ToList();
                         }
                         else if (shift == "" && process == null)
@@ -135,7 +136,8 @@ namespace TQM
                                                 (YCTestApercentCalculatedModel.createdate >= startDate
                                                 && YCTestApercentCalculatedModel.createdate < endDate
                                                 && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                && YCTestApercentCalculatedModel.status == true)).ToList();
+                                                //&& YCTestApercentCalculatedModel.status == true
+                                                )).ToList();
                         }
 
 
@@ -151,7 +153,7 @@ namespace TQM
                                                  && YCTestApercentCalculatedModel.createdate < endDate
                                                  && YCTestApercentCalculatedModel.machineCategory == categoryName
                                                  && YCTestApercentCalculatedModel.machineID == machineID
-                                                 && YCTestApercentCalculatedModel.status == true
+                                                 //&& YCTestApercentCalculatedModel.status == true
                                                  && YCTestApercentCalculatedModel.shift == shift
                                                  && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
@@ -162,7 +164,7 @@ namespace TQM
                                                 && YCTestApercentCalculatedModel.createdate < endDate
                                                 && YCTestApercentCalculatedModel.machineCategory == categoryName
                                                 && YCTestApercentCalculatedModel.machineID == machineID
-                                                && YCTestApercentCalculatedModel.status == true
+                                                //&& YCTestApercentCalculatedModel.status == true
                                                 && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
                         }
                         else if (shift != "" && process == null)
@@ -172,7 +174,7 @@ namespace TQM
                                                 && YCTestApercentCalculatedModel.createdate < endDate
                                                 && YCTestApercentCalculatedModel.machineCategory == categoryName
                                                 && YCTestApercentCalculatedModel.machineID == machineID
-                                                && YCTestApercentCalculatedModel.status == true
+                                                //&& YCTestApercentCalculatedModel.status == true
                                                 && YCTestApercentCalculatedModel.shift == shift)).ToList();
                         }
                         else if (shift == "" && process == null)
@@ -182,7 +184,8 @@ namespace TQM
                                                 && YCTestApercentCalculatedModel.createdate < endDate
                                                 && YCTestApercentCalculatedModel.machineCategory == categoryName
                                                 && YCTestApercentCalculatedModel.machineID == machineID
-                                                && YCTestApercentCalculatedModel.status == true)).ToList();
+                                                //&& YCTestApercentCalculatedModel.status == true
+                                                )).ToList();
                         }
 
 
@@ -217,17 +220,17 @@ namespace TQM
                         List<YCTestApercentModel> yctestApercentlist_nMinus1 = conn.Table<YCTestApercentModel>().Where(
                             YCTestApercentModel =>
                             (YCTestApercentModel.testType == "nMinus1"
-                            && YCTestApercentModel.status == true
+                            //&& YCTestApercentModel.status == true
                             && YCTestApercentModel.testID == apercentCalc.testID)).ToList();
                         List<YCTestApercentModel> yctestApercentlist_N = conn.Table<YCTestApercentModel>().Where(
                             YCTestApercentModel =>
                             (YCTestApercentModel.testType == "N"
-                            && YCTestApercentModel.status == true
+                            //&& YCTestApercentModel.status == true
                             && YCTestApercentModel.testID == apercentCalc.testID)).ToList();
                         List<YCTestApercentModel> yctestApercentlist_nPlus1 = conn.Table<YCTestApercentModel>().Where(
                             YCTestApercentModel =>
                             (YCTestApercentModel.testType == "nPlus1"
-                            && YCTestApercentModel.status == true
+                            //&& YCTestApercentModel.status == true
                             && YCTestApercentModel.testID == apercentCalc.testID)).ToList();
                         if (yctestApercentlist_nMinus1 != null && yctestApercentlist_N != null && yctestApercentlist_nPlus1 != null)
                         {
