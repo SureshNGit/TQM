@@ -121,10 +121,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -139,6 +135,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMCustomer");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", company.ID);
@@ -180,7 +180,15 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
+
                             }
                         }
                         else
@@ -193,7 +201,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -233,10 +248,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -252,6 +263,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMUser");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", user.ID);
@@ -300,7 +315,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("User: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -313,7 +335,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("User: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -353,10 +382,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -372,6 +397,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMMachine");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", machine.ID);
@@ -414,7 +443,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Machine: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -427,7 +463,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Machine: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -467,10 +510,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -486,6 +525,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMSettings");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", yarnCountConfig.ID);
@@ -535,7 +578,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Settings: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -548,7 +598,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Settings: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -588,10 +645,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -607,6 +660,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMYCTestModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", ycTest.ID);
@@ -664,7 +721,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Wrapping: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -677,7 +741,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Wrapping: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -717,10 +788,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -736,6 +803,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMYCTestSummaryModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", ycTestSummary.ID);
@@ -794,7 +865,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Wrapping Summary: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -807,7 +885,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Wrapping Summary: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -847,10 +932,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -866,6 +947,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMYCTestApercentModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", ycTestApercent.ID);
@@ -924,7 +1009,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("A%: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -937,7 +1029,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("A%: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -977,10 +1076,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -996,6 +1091,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMYCTestApercentSummaryModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", ycTestApercentSummary.ID);
@@ -1055,7 +1154,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("A% Summary: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -1068,7 +1174,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("A% Summary: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -1108,10 +1221,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1127,6 +1236,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMYCTestApercentCalculatedModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", ycTestApercentCalc.ID);
@@ -1206,7 +1319,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("A% Calculation: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -1219,7 +1339,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("A% Calculation: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -1259,10 +1386,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1278,6 +1401,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMStretchTestModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", stretchTest.ID);
@@ -1336,7 +1463,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Stretch : Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -1349,7 +1483,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Stretch : Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -1389,10 +1530,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1408,6 +1545,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMStretchTestSummaryModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", stretchTestSummary.ID);
@@ -1468,7 +1609,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Stretch Summary: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -1481,7 +1629,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Stretch Summary: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -1521,10 +1676,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1540,6 +1691,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMStretchTestCalculatedModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", stretchTestCalc.ID);
@@ -1612,7 +1767,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Stretch Calculation: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -1625,7 +1787,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Stretch Calculation: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -1665,10 +1834,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1684,6 +1849,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMNoilsTestModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", noilsTest.ID);
@@ -1742,7 +1911,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Noils: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -1755,7 +1931,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Noils: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -1795,10 +1978,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1814,6 +1993,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMNoilsTestSummaryModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", noilsTestSummary.ID);
@@ -1874,7 +2057,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Noils Summary: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -1887,7 +2077,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Noils Summary: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -1927,10 +2124,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -1946,6 +2139,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMNoilsTestFinalModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", noilsTestFinal.ID);
@@ -1993,7 +2190,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Noils Final Test: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -2006,7 +2210,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Noils Final Test: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
@@ -2046,10 +2257,6 @@ namespace TQM
                     toggleLoading(false);
                     return;
                 }
-                var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
-                var request = new RestRequest();
-                request.Method = Method.Post;
-                request.Timeout = Timeout.Infinite;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     int syncDataCount = 0;
@@ -2065,6 +2272,10 @@ namespace TQM
                             poorInternet = true;
                             break;
                         }
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqm/datasync");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        request.Timeout = Timeout.Infinite;
                         request.AddParameter("modelName", "TQMNoilsTestCalculatedModel");
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("GUID", noilsTestCalc.ID);
@@ -2140,7 +2351,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but few records not pushed to server
-                                updateProgress("Noils Calculation: Backup completed partially but failed", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup partially completed but failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup completed partially but failed", 100, Color.Red);
+                                }
                             }
                         }
                         else
@@ -2153,7 +2371,14 @@ namespace TQM
                             else
                             {
                                 //Internet is good but none of the record(s) pushed to server
-                                updateProgress("Noils Calculation: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                if (!checkConnection())
+                                {
+                                    updateProgress("Company: Backup failed due to poor internet connection!!!", 100, Color.Yellow);
+                                }
+                                else
+                                {
+                                    updateProgress("Company: Backup failed. Please contact manufacturer!!!", 100, Color.Red);
+                                }
                             }
 
                         }
