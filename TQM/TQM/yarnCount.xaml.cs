@@ -303,9 +303,28 @@ namespace TQM
                     picker_process.IsEnabled = true;
                     if (isTestStarted)
                     {
-                        currentTestID = 0;
+                        if (ycTestModelViewlist != null)
+                        {
+                            if (selectedTestCount != ycTestModelViewlist.Count())
+                            {
+                                ImageNotification("red.png");
+                                UpdateUserNotification("IMPROPER TEST!!!");
+                                showAlert("Improper Test!!!");
+                            }
+                            else
+                            {
+                                currentTestID = 0;
+                                showAlert("Test Completed!!! Start new test");
+                            }
+                        }
+                        else
+                        {
+                            ImageNotification("red.png");
+                            UpdateUserNotification("IMPROPER TEST!!!");
+                            showAlert("Improper Test!!!");
+                        }
                         isTestStarted = false;
-                        showAlert("Test Completed!!! Start new test");
+                        //showAlert("Test Completed!!! Start new test");
                     }
                 });
             }

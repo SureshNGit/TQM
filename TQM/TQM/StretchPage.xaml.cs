@@ -758,37 +758,22 @@ namespace TQM
                 {
                     if (currentTestType == "IB")
                     {
-                        startInitialBobbinButton.IsVisible = false;
-                        startFullBobbinButton.IsVisible = true;
-                        startFullBobbinButton.IsEnabled = true;
-                        startFullBobbinButton.BackgroundColor = Color.Green;
-                    }
-                    else
-                    {
                         startFullBobbinButton.IsVisible = false;
                         startInitialBobbinButton.IsVisible = true;
                         startInitialBobbinButton.IsEnabled = true;
                         startInitialBobbinButton.BackgroundColor = Color.Green;
                     }
+                    else
+                    {
+                        startInitialBobbinButton.IsVisible = false;
+                        startFullBobbinButton.IsVisible = true;
+                        startFullBobbinButton.IsEnabled = true;
+                        startFullBobbinButton.BackgroundColor = Color.Green;
+                    }
                 }
                 if (dispose) { disposeble(); }
                 Device.BeginInvokeOnMainThread(() =>
                 {
-
-                    if (currentTestType == "FB")
-                    {
-                        entry_yarnlen.IsEnabled = true;
-                        entry_testcount.IsEnabled = true;
-                        entry_testcount.Text = TESTCOUNT.ToString();
-                        picker_machinecategory.IsEnabled = true;
-                        picker_machinecategory.SelectedIndex = 0;
-                        picker_machinename.IsEnabled = true;
-                        picker_machinename.SelectedIndex = 0;
-                        picker_shift.IsEnabled = true;
-                        picker_shift.SelectedIndex = 0;
-                        picker_process.SelectedIndex = 0;
-                        picker_process.IsEnabled = true;
-                    }
                     string str_testType = "";
                     if (currentTestType == "IB")
                     {
@@ -796,13 +781,45 @@ namespace TQM
                     }
                     else
                     {
-                        currentTestID = 0;
                         str_testType = "All Test Completed!!!";
                     }
                     if (isTestStarted)
                     {
                         isTestStarted = false;
-                        showAlert(str_testType);
+                        if (stretchTestModelViewList != null)
+                        {
+                            if (selectedTestCount != stretchTestModelViewList.Count())
+                            {
+                                ImageNotification("red.png");
+                                UpdateUserNotification("IMPROPER TEST!!!");
+                                showAlert("Improper Test!!!");
+                            }
+                            else
+                            {
+                                showAlert(str_testType);
+                                if (currentTestType == "FB")
+                                {
+                                    currentTestID = 0;
+                                    entry_yarnlen.IsEnabled = true;
+                                    entry_testcount.IsEnabled = true;
+                                    entry_testcount.Text = TESTCOUNT.ToString();
+                                    picker_machinecategory.IsEnabled = true;
+                                    picker_machinecategory.SelectedIndex = 0;
+                                    picker_machinename.IsEnabled = true;
+                                    picker_machinename.SelectedIndex = 0;
+                                    picker_shift.IsEnabled = true;
+                                    picker_shift.SelectedIndex = 0;
+                                    picker_process.SelectedIndex = 0;
+                                    picker_process.IsEnabled = true;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ImageNotification("red.png");
+                            UpdateUserNotification("IMPROPER TEST!!!");
+                            showAlert("Improper Test!!!");
+                        }
                     }
                 });
             }

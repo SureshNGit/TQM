@@ -862,37 +862,22 @@ namespace TQM
                 {
                     if (currentTestType == "Sliver")
                     {
-                        startSliverButton.IsVisible = false;
-                        startNoilsButton.IsVisible = true;
-                        startNoilsButton.IsEnabled = true;
-                        startNoilsButton.BackgroundColor = Color.Green;
-                    }
-                    else
-                    {
                         startNoilsButton.IsVisible = false;
                         startSliverButton.IsVisible = true;
                         startSliverButton.IsEnabled = true;
                         startSliverButton.BackgroundColor = Color.Green;
                     }
+                    else
+                    {
+                        startSliverButton.IsVisible = false;
+                        startNoilsButton.IsVisible = true;
+                        startNoilsButton.IsEnabled = true;
+                        startNoilsButton.BackgroundColor = Color.Green;
+                    }
                 }
                 if (dispose) { disposeble(); }
                 Device.BeginInvokeOnMainThread(() =>
                 {
-
-                    if (currentTestType == "Noils")
-                    {
-                        entry_yarnlen.IsEnabled = true;
-                        entry_testcount.IsEnabled = true;
-                        entry_testcount.Text = TESTCOUNT.ToString();
-                        picker_machinecategory.IsEnabled = true;
-                        picker_machinecategory.SelectedIndex = 0;
-                        picker_machinename.IsEnabled = true;
-                        picker_machinename.SelectedIndex = 0;
-                        picker_shift.IsEnabled = true;
-                        picker_shift.SelectedIndex = 0;
-                        picker_process.SelectedIndex = 0;
-                        picker_process.IsEnabled = true;
-                    }
                     string str_testType = "";
                     if (currentTestType == "Sliver")
                     {
@@ -900,13 +885,45 @@ namespace TQM
                     }
                     else
                     {
-                        currentTestID = 0;
                         str_testType = "All Test Completed!!!";
                     }
                     if (isTestStarted)
                     {
                         isTestStarted = false;
-                        showAlert(str_testType);
+                        if (noilsTestModelViewList != null)
+                        {
+                            if (selectedTestCount != noilsTestModelViewList.Count())
+                            {
+                                ImageNotification("red.png");
+                                UpdateUserNotification("IMPROPER TEST!!!");
+                                showAlert("Improper Test!!!");
+                            }
+                            else
+                            {
+                                showAlert(str_testType);
+                                if (currentTestType == "Noils")
+                                {
+                                    currentTestID = 0;
+                                    entry_yarnlen.IsEnabled = true;
+                                    entry_testcount.IsEnabled = true;
+                                    entry_testcount.Text = TESTCOUNT.ToString();
+                                    picker_machinecategory.IsEnabled = true;
+                                    picker_machinecategory.SelectedIndex = 0;
+                                    picker_machinename.IsEnabled = true;
+                                    picker_machinename.SelectedIndex = 0;
+                                    picker_shift.IsEnabled = true;
+                                    picker_shift.SelectedIndex = 0;
+                                    picker_process.SelectedIndex = 0;
+                                    picker_process.IsEnabled = true;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ImageNotification("red.png");
+                            UpdateUserNotification("IMPROPER TEST!!!");
+                            showAlert("Improper Test!!!");
+                        }
                     }
                 });
             }
