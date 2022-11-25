@@ -157,12 +157,12 @@ namespace TQM
                         ImageSource = "",
                         TargetPage = typeof(Report)
                     });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "BackUp",
-                        ImageSource = "",
-                        TargetPage = typeof(DataSync)
-                    });
+                    //flyItems.Add(new MenuItem
+                    //{
+                    //    Title = "BackUp",
+                    //    ImageSource = "",
+                    //    TargetPage = typeof(DataSync)
+                    //});
                     flyItems.Add(new MenuItem
                     {
                         Title = "Log Out",
@@ -215,12 +215,12 @@ namespace TQM
                         ImageSource = "",
                         TargetPage = typeof(Report)
                     });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "BackUp",
-                        ImageSource = "",
-                        TargetPage = typeof(DataSync)
-                    });
+                    //flyItems.Add(new MenuItem
+                    //{
+                    //    Title = "BackUp",
+                    //    ImageSource = "",
+                    //    TargetPage = typeof(DataSync)
+                    //});
                     flyItems.Add(new MenuItem
                     {
                         Title = "Log Out",
