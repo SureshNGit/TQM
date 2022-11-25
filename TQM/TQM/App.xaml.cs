@@ -70,7 +70,10 @@ namespace TQM
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                Toast.MakeText(Android.App.Application.Context, msg, ToastLength.Short).Show();
+                if (title.ToLower().Contains("fail"))
+                {
+                    Toast.MakeText(Android.App.Application.Context, msg, ToastLength.Short).Show();
+                }
             });
         }
 
@@ -108,7 +111,7 @@ namespace TQM
 
                     if (!checkConnection())
                     {
-                        showAlert("No Internet Connection", "Please connect to Internet for Back-up", "OK");
+                        showAlert("Backup failed!!!", "Please connect to Internet for Back-up", "OK");
                     }
                     else
                     {
@@ -130,12 +133,14 @@ namespace TQM
         protected override void OnSleep()
         {
             // Ensure our stopwatch is reset so the elapsed time is 0.
+            backupStatus = false;
             stopWatch.Reset();
         }
 
         protected override void OnResume()
         {
             // App enters the foreground so start our stopwatch again.
+            backupStatus = false;
             stopWatch.Start();
         }
 
