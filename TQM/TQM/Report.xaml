@@ -135,9 +135,13 @@
                 </Picker>
 
 
-                <Button Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="1" Text = "Search" 
+                <Button Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="1" Text = "Get Report" 
                         x:Name="btn_getreport" Clicked="btn_getreport_Clicked" 
                         BackgroundColor="#0e0273" TextColor="White" CornerRadius="25" />
+
+                <Button Grid.Row="6" Grid.Column="4" Grid.ColumnSpan="1" Text = "Delete Records" 
+                        x:Name="btn_deleteRecords" Clicked="btn_deleteRecords_Clicked" 
+                        BackgroundColor="Red" TextColor="White" CornerRadius="25" />
             </Grid>
          </StackLayout>
     </ContentPage.Content>

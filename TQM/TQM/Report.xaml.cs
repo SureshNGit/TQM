@@ -94,7 +94,7 @@ namespace TQM
                 if (picker_reportName.SelectedItem.ToString() == "Wrapping")
                 {
                     Navigation.PushAsync(new YCReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
@@ -145,6 +145,77 @@ namespace TQM
                     List<MachineModel> machines = conn.Table<MachineModel>().Where(
                         MachineModel => MachineModel.machineCategory == selectedCategory).ToList();
                     picker_machinename.ItemsSource = machines;
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice-ReportSearch", ex.Message.ToString(), "Ok");
+            }
+        }
+
+        private void btn_deleteRecords_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                if (picker_reportName.SelectedIndex <= 0)
+                {
+                    DisplayAlert("Attention", "Please select report name to proceed!!!", "OK");
+                    return;
+                }
+                if (date_enddate.Date < date_fromdate.Date)
+                {
+                    DisplayAlert("Attention", "Report End Date cannot be less than Report Start Date", "OK");
+                    return;
+                }
+                if (date_fromdate.Date > date_fromdate.Date)
+                {
+                    DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
+                    return;
+                }
+                string testID = "";
+                if (entry_testID.Text.Trim() != "")
+                {
+                    if (entry_testID.Text.Contains("."))
+                    {
+                        DisplayAlert("Attention", "Test ID should not be decimal", "OK");
+                        return;
+                    }
+                    else
+                    {
+                        testID = entry_testID.Text.Trim();
+                    }
+                }
+                string selectedCategory = null;
+                string shift = "";
+                if (picker_shift.SelectedItem != null)
+                {
+                    shift = picker_shift.SelectedItem.ToString();
+                }
+                string process = null;
+                if (picker_process.SelectedItem != null)
+                {
+                    process = picker_process.SelectedItem.ToString();
+                }
+                if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
+                if (picker_reportName.SelectedItem.ToString() == "Wrapping")
+                {
+                    Navigation.PushAsync(new YCReport
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
+                }
+                else if (picker_reportName.SelectedItem.ToString() == "A%")
+                {
+                    Navigation.PushAsync(new YCApercentReport
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID));
+                }
+                else if (picker_reportName.SelectedItem.ToString() == "Stretch")
+                {
+                    Navigation.PushAsync(new StretchReport
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID));
+                }
+                else if (picker_reportName.SelectedItem.ToString() == "Noils")
+                {
+                    Navigation.PushAsync(new NoilsReport
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID));
                 }
             }
             catch (Exception ex)
