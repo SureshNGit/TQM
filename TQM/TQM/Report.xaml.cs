@@ -23,6 +23,21 @@ namespace TQM
             {
                 base.OnAppearing();
                 reset();
+                bool isAdmin = false;
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<UserModel>();
+                    UserModel userinfo = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                    if (userinfo != null)
+                    {
+
+                        if (userinfo.isAdmin) { isAdmin = true; }
+                    }
+                }
+                if (isAdmin)
+                {
+                    btn_deleteRecords.IsVisible = true;
+                }
             }
             catch (Exception ex)
             {
@@ -99,17 +114,17 @@ namespace TQM
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
                     Navigation.PushAsync(new YCApercentReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "Stretch")
                 {
                     Navigation.PushAsync(new StretchReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "Noils")
                 {
                     Navigation.PushAsync(new NoilsReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
                 }
             }
             catch (Exception ex)
@@ -205,17 +220,17 @@ namespace TQM
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
                     Navigation.PushAsync(new YCApercentReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "Stretch")
                 {
                     Navigation.PushAsync(new StretchReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "Noils")
                 {
                     Navigation.PushAsync(new NoilsReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
                 }
             }
             catch (Exception ex)

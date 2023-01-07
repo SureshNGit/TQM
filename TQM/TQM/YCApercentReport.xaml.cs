@@ -31,19 +31,27 @@ namespace TQM
         private string selectedCompanyName = null;
         private const string BLUE = "#0e0273";
         private RunConfiguration runConfiguration = new RunConfiguration();
+        private List<YCTestApercentCalculatedModel> deleteList = null;
+        private bool deleteAll = false;
 
         public YCApercentReport()
         {
             InitializeComponent();
         }
 
-        public YCApercentReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID)
+        public YCApercentReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
         {
             InitializeComponent();
-            getReport(startDate, endDate, categoryName, machineID, shift, process, testID);
+            if (deleteRequest)
+            {
+                btn_saveToPDF.Text = "Send & Delete Records";
+                btn_saveToPDF.BackgroundColor = Color.Red;
+                btn_saveToPDF.TextColor = Color.White;
+            }
+            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, deleteRequest);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
         {
             try
             {
@@ -208,6 +216,11 @@ namespace TQM
                     }
                     else
                     {
+                        if (deleteRequest)
+                        {
+                            deleteAll = true;
+                            deleteList = apercentCalcList;
+                        }
                         if (testID != "")
                         {
                             apercentCalcList = apercentCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
@@ -366,11 +379,36 @@ namespace TQM
             }
         }
 
+        private void deleteRecords(List<YCTestApercentCalculatedModel> lstOfRecs)
+        {
+            if (lstOfRecs.Count == 0)
+            {
+                return;
+            }
+            foreach (YCTestApercentCalculatedModel rec in lstOfRecs)
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.Table<YCTestApercentCalculatedModel>().
+                                           Where(YCTestApercentCalculatedModel =>
+                                           YCTestApercentCalculatedModel.testID == rec.testID).Delete();
+                    conn.Table<YCTestApercentSummaryModel>().
+                                           Where(YCTestApercentSummaryModel =>
+                                           YCTestApercentSummaryModel.testID == rec.testID).Delete();
+                    conn.Table<YCTestApercentModel>().
+                                        Where(YCTestApercentModel =>
+                                        YCTestApercentModel.testID == rec.testID).Delete();
+                }
+            }
+        }
+
         private async Task resetBtn()
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                deleteAll = false;
                 img_notification.IsVisible = false;
+                btn_saveToPDF.Text = "Send Report";
                 btn_saveToPDF.IsEnabled = true;
                 btn_saveToPDF.BackgroundColor = Color.FromHex(BLUE);
             });
@@ -383,6 +421,11 @@ namespace TQM
             {
                 await DisplayAlert("Notice", "No records to generate PDF!!!", "OK");
                 return;
+            }
+            if (deleteAll)
+            {
+                bool answer = await DisplayAlert("Attention!!!", "Would you like to delete selected records?", "Yes", "No");
+                if (answer == false) { return; }
             }
             btn_saveToPDF.IsEnabled = false;
             btn_saveToPDF.BackgroundColor = Color.Gray;
@@ -771,7 +814,15 @@ namespace TQM
                     RestResponse response = client.Execute(request);
                     if (response.IsSuccessful)
                     {
-                        showAlert("Report upload is sucessful!!!");
+                        if (deleteAll)
+                        {
+                            deleteRecords(deleteList);
+                            showAlert("Report uploaded and deleted sucessfully!!!");
+                        }
+                        else
+                        {
+                            showAlert("Report upload is sucessful!!!");
+                        }
                     }
                     else
                     {

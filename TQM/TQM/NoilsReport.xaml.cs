@@ -31,19 +31,27 @@ namespace TQM
         private string selectedCompanyName = null;
         private const string BLUE = "#0e0273";
         private RunConfiguration runConfiguration = new RunConfiguration();
+        private List<NoilsTestCalculatedModel> deleteList = null;
+        private bool deleteAll = false;
 
         public NoilsReport()
         {
             InitializeComponent();
         }
 
-        public NoilsReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID)
+        public NoilsReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
         {
             InitializeComponent();
-            getReport(startDate, endDate, categoryName, machineID, shift, process, testID);
+            if (deleteRequest)
+            {
+                btn_saveToPDF.Text = "Send & Delete Records";
+                btn_saveToPDF.BackgroundColor = Color.Red;
+                btn_saveToPDF.TextColor = Color.White;
+            }
+            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, deleteRequest);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
         {
             try
             {
@@ -204,6 +212,11 @@ namespace TQM
                     }
                     else
                     {
+                        if (deleteRequest)
+                        {
+                            deleteAll = true;
+                            deleteList = noilsCalcList;
+                        }
                         if (testID != "")
                         {
                             noilsCalcList = noilsCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
@@ -334,11 +347,39 @@ namespace TQM
             }
         }
 
+        private void deleteRecords(List<NoilsTestCalculatedModel> lstOfRecs)
+        {
+            if (lstOfRecs.Count == 0)
+            {
+                return;
+            }
+            foreach (NoilsTestCalculatedModel rec in lstOfRecs)
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.Table<NoilsTestFinalModel>().
+                                           Where(NoilsTestFinalModel =>
+                                           NoilsTestFinalModel.testID == rec.testID).Delete();
+                    conn.Table<NoilsTestCalculatedModel>().
+                                           Where(NoilsTestCalculatedModel =>
+                                           NoilsTestCalculatedModel.testID == rec.testID).Delete();
+                    conn.Table<NoilsTestSummaryModel>().
+                                           Where(NoilsTestSummaryModel =>
+                                           NoilsTestSummaryModel.testID == rec.testID).Delete();
+                    conn.Table<NoilsTestModel>().
+                                        Where(NoilsTestModel =>
+                                        NoilsTestModel.testID == rec.testID).Delete();
+                }
+            }
+        }
+
         private async Task resetBtn()
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                deleteAll = false;
                 img_notification.IsVisible = false;
+                btn_saveToPDF.Text = "Send Report";
                 btn_saveToPDF.IsEnabled = true;
                 btn_saveToPDF.BackgroundColor = Color.FromHex(BLUE);
             });
@@ -351,6 +392,11 @@ namespace TQM
             {
                 await DisplayAlert("Notice", "No records to generate PDF!!!", "OK");
                 return;
+            }
+            if (deleteAll)
+            {
+                bool answer = await DisplayAlert("Attention!!!", "Would you like to delete selected records?", "Yes", "No");
+                if (answer == false) { return; }
             }
             btn_saveToPDF.IsEnabled = false;
             btn_saveToPDF.BackgroundColor = Color.Gray;
@@ -743,7 +789,15 @@ namespace TQM
                     RestResponse response = client.Execute(request);
                     if (response.IsSuccessful)
                     {
-                        showAlert("Report upload is sucessful!!!");
+                        if (deleteAll)
+                        {
+                            deleteRecords(deleteList);
+                            showAlert("Report uploaded and deleted sucessfully!!!");
+                        }
+                        else
+                        {
+                            showAlert("Report upload is sucessful!!!");
+                        }
                     }
                     else
                     {

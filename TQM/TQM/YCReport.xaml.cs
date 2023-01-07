@@ -289,8 +289,11 @@ namespace TQM
                 await DisplayAlert("Notice", "No records to generate PDF!!!", "OK");
                 return;
             }
-            bool answer = await DisplayAlert("Attention!!!", "Would you like to delete selected records?", "Yes", "No");
-            if (answer == false) { return; }
+            if (deleteAll)
+            {
+                bool answer = await DisplayAlert("Attention!!!", "Would you like to delete selected records?", "Yes", "No");
+                if (answer == false) { return; }
+            }
             btn_saveToPDF.IsEnabled = false;
             btn_saveToPDF.BackgroundColor = Color.Gray;
             img_notification.IsVisible = true;
@@ -675,8 +678,12 @@ namespace TQM
                         if (deleteAll)
                         {
                             deleteRecords(deleteList);
+                            showAlert("Report uploaded and deleted sucessfully!!!");
                         }
-                        showAlert("Report upload is sucessful!!!");
+                        else
+                        {
+                            showAlert("Report upload is sucessful!!!");
+                        }
                     }
                     else
                     {
