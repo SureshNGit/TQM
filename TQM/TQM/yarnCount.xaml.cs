@@ -375,6 +375,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
+            //if (entry_standardHank.Text.Trim() == "" || int.Parse(entry_standardHank.Text.Trim()) == 0)
+            //{
+            //    await DisplayAlert("Attention", "Standard Hank should not be blank or zero!!!", "Ok");
+            //    return;
+            //}
             //if (picker_process.SelectedIndex <= 0)
             //{
             //    await DisplayAlert("Attention", "Please select process info!!!", "Ok");
@@ -963,5 +968,40 @@ namespace TQM
             }
         }
 
+        private async void btn_comment_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                string header = "Note [Test ID : " + lbl_TestID.Text + "]";
+                long testID = long.Parse(lbl_TestID.Text.ToString());
+                string comment = await DisplayPromptAsync(header, "Please type your remark", "Save", "Discard", null, 100);
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    YCTestSummaryModel summaryModel = conn.Table<YCTestSummaryModel>().Where(
+                        YCTestSummaryModel => YCTestSummaryModel.testID == testID).FirstOrDefault();
+                    if (summaryModel != null)
+                    {
+                        summaryModel.testRemark = comment;
+                        int row = conn.Update(summaryModel);
+                        if (row < 1)
+                        {
+                            await DisplayAlert("Attention!!!", "Unable to save test remark. Please try again!!!", "Ok");
+                        }
+                        else
+                        {
+                            await DisplayAlert("Success!!!", "Test remark added successfully!!!", "Ok");
+                        }
+                    }
+                    else
+                    {
+                        await DisplayAlert("Attention!!!", "Unable to save test remark. Please try again!!!", "Ok");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+            }
+        }
     }
 }

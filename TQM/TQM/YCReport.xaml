@@ -124,6 +124,11 @@
                                     Text="Process" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="3" Grid.Row="4"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
                                     Text="{Binding process}" FontSize="14" TextColor="Green"/>
+
+                                    <Label Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1" 
+                                    Text="Remark" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="0" Grid.Row="5"  Grid.ColumnSpan="5" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    Text="{Binding testRemark}" FontSize="14" TextColor="Red"/>
                                 </Grid>
                       
 

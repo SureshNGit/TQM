@@ -20,6 +20,7 @@ namespace TQM.ModelView
         public decimal standardHank { get; set; }
         public decimal testsd { get; set; }
         public decimal testcv { get; set; }
+        public string testRemark { get; set; }
         public DateTime createdate { get; set; }
         public List<YCTestModel> yctestlist => this;
     }

@@ -207,6 +207,15 @@
 
             <Label Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_standardHank" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
 
+            <!--<Entry Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_standardHank" TextColor="Green" FontSize="16" Keyboard="Numeric"
+                 HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+                <Entry.Effects>
+                    <effects:PlainEntry/>
+                </Entry.Effects>
+            </Entry>-->
+            
+            
+            
             <Frame Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="10,0,0,0" HorizontalOptions="Start"
                    BackgroundColor="White" BorderColor="White" CornerRadius="0" HasShadow="False">
                 <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="img_notification" IsVisible="False" 
@@ -242,6 +251,8 @@
                                        Text="CV:" FontSize="20" TextColor="#0e0273"/>
                     <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_cv"
                            HorizontalTextAlignment="Start" Margin="80,0" Text="2.135" FontSize="22" TextColor="ForestGreen"/>
+                    <!--<Button Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="1" HorizontalOptions="End" Text="+" 
+                        x:Name="btn_comment"  Clicked="btn_comment_Clicked" BackgroundColor="Red" TextColor="white"/>-->
                 </Grid>
             </Frame>
 
@@ -293,15 +304,18 @@
                     <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1"
                                        Text="Average:" FontSize="20" TextColor="#0e0273"/>
                     <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="1" x:Name="lbl_average_FinalOut" HorizontalTextAlignment="Start" Margin="0,0"
-                                       Text="0" FontSize="22" TextColor="ForestGreen"/>
+                                       Text="1234.8888" FontSize="22" TextColor="ForestGreen"/>
                     <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="0,0"
                                        Text="SD:" FontSize="20" TextColor="#0e0273"/>
                     <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_sd_FinalOut" 
-                           HorizontalTextAlignment="Start" Margin="35,0" Text="0" FontSize="22" TextColor="ForestGreen"/>
-                    <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="Center" Margin="0,0"
+                           HorizontalTextAlignment="Start" Margin="35,0" Text="1234.8888" FontSize="22" TextColor="ForestGreen"/>
+                    <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="start" Margin="20,0"
                                        Text="CV:" FontSize="20" TextColor="#0e0273"/>
                     <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_cv_FinalOut"
-                           HorizontalTextAlignment="Start" Margin="80,0" Text="0" FontSize="22" TextColor="ForestGreen"/>
+                           HorizontalTextAlignment="Start" Margin="55,0" Text="1234.8888" FontSize="22" TextColor="ForestGreen"/>
+                    <Button Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="1" HorizontalOptions="End" Text="+" Margin="50,0,40,5" 
+                            Padding="2,0,0,0" FontSize="Large"
+                        x:Name="btn_comment"  Clicked="btn_comment_Clicked" BackgroundColor="Red" TextColor="white"/>
                 </Grid>
             </Frame>
 
