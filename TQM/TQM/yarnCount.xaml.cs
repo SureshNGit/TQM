@@ -45,6 +45,8 @@ namespace TQM
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
+        private decimal STD_HANK = 0.0000m;
+        private decimal STD_HANK_CURR = 0.0000m;
         private int currentTestCount = 0;
         private bool isTestStarted = false;
         private RunConfiguration runConfiguration = new RunConfiguration();
@@ -67,7 +69,8 @@ namespace TQM
                     entry_yarnlen.Text = "";
                     entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
                     TESTCOUNT = yarncountconfigmodel.testcount;
-                    lbl_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
+                    entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
+                    STD_HANK = formatDecimal(yarncountconfigmodel.standardHank);
                 }
                 else
                 {
@@ -77,7 +80,7 @@ namespace TQM
                     entry_testcount.Text = "";
                     picker_shift.SelectedIndex = 0;
                     picker_process.SelectedIndex = 0;
-                    lbl_standardHank.Text = "0.000";
+                    entry_standardHank.Text = "0.000";
                 }
             }
         }
@@ -261,6 +264,7 @@ namespace TQM
                         testaverage = mean,
                         testsd = sd,
                         testcv = cv,
+                        standardHank = STD_HANK_CURR,
                         createdate = DateTime.Now
                     };
                     conn.CreateTable<YCTestSummaryModel>();
@@ -293,6 +297,8 @@ namespace TQM
                     entry_yarnlen.IsEnabled = true;
                     entry_testcount.IsEnabled = true;
                     entry_testcount.Text = TESTCOUNT.ToString();
+                    entry_standardHank.IsEnabled = true;
+                    entry_standardHank.Text = STD_HANK_CURR.ToString();
                     picker_machinecategory.IsEnabled = true;
                     picker_machinecategory.SelectedIndex = 0;
                     picker_machinename.IsEnabled = true;
@@ -364,7 +370,16 @@ namespace TQM
                 await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
                 return;
             }
-
+            if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
+            {
+                await DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
+                return;
+            }
+            if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
+            {
+                await DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
+                return;
+            }
             if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
             {
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
@@ -446,6 +461,7 @@ namespace TQM
             selectedCountUnit = lbl_yarncountunit.Text;
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
+            STD_HANK_CURR = decimal.Parse(entry_standardHank.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
             selectedProcess = "";
             if (picker_process.SelectedIndex > 0)
@@ -457,6 +473,7 @@ namespace TQM
             testYCButton.BackgroundColor = Color.SlateGray;
             entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
+            entry_standardHank.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;

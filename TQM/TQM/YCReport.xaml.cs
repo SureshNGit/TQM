@@ -62,13 +62,13 @@ namespace TQM
                 {
                     //List<YCTestSummaryModel> ycTestSummaryModels = conn.Table<YCTestSummaryModel>().ToList();
 
-                    conn.CreateTable<YarnCountConfigModel>();
-                    YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
-                    if (yarncountconfigmodel != null)
-                    {
-                        stdHank = yarncountconfigmodel.standardHank;
+                    //conn.CreateTable<YarnCountConfigModel>();
+                    //YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                    //if (yarncountconfigmodel != null)
+                    //{
+                    //    stdHank = yarncountconfigmodel.standardHank;
 
-                    }
+                    //}
 
                     conn.CreateTable<YCTestModel>();
                     conn.CreateTable<YCTestSummaryModel>();
@@ -235,7 +235,8 @@ namespace TQM
                             report.testaverage = formatDecimal(testsummary.testaverage);
                             report.testsd = formatDecimal(testsummary.testsd);
                             report.testcv = formatDecimal(testsummary.testcv);
-                            report.standardHank = formatDecimal(stdHank);
+                            //report.standardHank = formatDecimal(stdHank);
+                            report.standardHank = formatDecimal(testsummary.standardHank);
                         }
                         OVS.Add(report);
                     }

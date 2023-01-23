@@ -205,14 +205,14 @@
                 </Picker.Effects>
             </Picker>
 
-            <Label Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_standardHank" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
+            <!--<Label Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_standardHank" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>-->
 
-            <!--<Entry Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_standardHank" TextColor="Green" FontSize="16" Keyboard="Numeric"
+            <Entry Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_standardHank" TextColor="Green" FontSize="16" Keyboard="Numeric"
                  HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
-            </Entry>-->
+            </Entry>
             
             
             

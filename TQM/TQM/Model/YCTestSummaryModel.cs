@@ -40,6 +40,8 @@ namespace TQM.Model
 
         public decimal testcv { get; set; }
 
+        public decimal standardHank { get; set; }
+
         public string testRemark { get; set; }
 
         public DateTime createdate { get; set; }
