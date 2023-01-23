@@ -69,6 +69,8 @@ namespace TQM.Model
 
         public bool status { get; set; }
 
+        public string testRemark { get; set; }
+
         public DateTime createdate { get; set; }
 
         public bool dataSyncStatus { get; set; } = false;

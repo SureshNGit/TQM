@@ -37,6 +37,8 @@ namespace TQM.ModelView
         public decimal testcv_FB { get; set; }
 
         public decimal stretch { get; set; }
+
+        public string testRemark { get; set; }
         public DateTime createdate { get; set; }
         public List<StretchReportModelView> stretchReportMV => this;
     }

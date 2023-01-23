@@ -58,6 +58,8 @@ namespace TQM.ModelView
 
         public decimal testcv_noils { get; set; }
 
+        public string testRemark { get; set; }
+
         public DateTime createdate { get; set; }
         public List<NoilsReportModelView> noilsTestList => this;
     }

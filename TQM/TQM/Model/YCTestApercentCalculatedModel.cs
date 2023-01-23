@@ -83,6 +83,8 @@ namespace TQM.Model
 
         public decimal apercent_nPlus1 { get; set; }
 
+        public string testRemark { get; set; }
+
         public bool status { get; set; }
 
         public DateTime createdate { get; set; }

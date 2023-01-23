@@ -1563,5 +1563,41 @@ namespace TQM
                 return decimal.Parse(inputString + ".0000");
             }
         }
+
+        private async void btn_comment_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                string header = "Note [Test ID : " + lbl_TestID.Text + "]";
+                long testID = long.Parse(lbl_TestID.Text.ToString());
+                string comment = await DisplayPromptAsync(header, "Please type your remark", "Save", "Discard", null, 100);
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    StretchTestCalculatedModel stretchCalculatedModel = conn.Table<StretchTestCalculatedModel>().Where(
+                        StretchTestCalculatedModel => StretchTestCalculatedModel.testID == testID).FirstOrDefault();
+                    if (stretchCalculatedModel != null)
+                    {
+                        stretchCalculatedModel.testRemark = comment;
+                        int row = conn.Update(stretchCalculatedModel);
+                        if (row < 1)
+                        {
+                            await DisplayAlert("Attention!!!", "Unable to save test remark. Please try again!!!", "Ok");
+                        }
+                        else
+                        {
+                            await DisplayAlert("Success!!!", "Test remark added successfully!!!", "Ok");
+                        }
+                    }
+                    else
+                    {
+                        await DisplayAlert("Attention!!!", "Unable to save test remark. Please try again!!!", "Ok");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+            }
+        }
     }
 }

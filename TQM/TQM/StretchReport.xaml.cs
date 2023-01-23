@@ -318,6 +318,7 @@ namespace TQM
                             report.testsd_FB = stretchCalc.testsd_FB;
                             report.testcv_FB = stretchCalc.testcv_FB;
                             report.stretch = formatDecimal(stretchCalc.stretch);
+                            report.testRemark = stretchCalc.testRemark;
                             report.createdate = stretchCalc.createdate;
                         }
                         OVS.Add(report);
@@ -431,7 +432,7 @@ namespace TQM
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
-                    //pdfGridInfo.Rows.Add();
+                    pdfGridInfo.Rows.Add();
 
                     if (tableNo == 1)
                     {
@@ -461,6 +462,20 @@ namespace TQM
                     pdfGridInfo.Rows[4].Cells[3].Value = "Shift: " + orl.shift;
                     pdfGridInfo.Rows[4].Cells[4].Value = "Process: " + orl.process;
 
+                    pdfGridInfo.Rows[5].Cells[0].Value = "Remark: " + orl.testRemark;
+                    pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 4;
+                    PdfBrush brush_red = new PdfSolidBrush(Syncfusion.Drawing.Color.Red);
+                    pdfGridInfo.Rows[5].Cells[0].Style.TextBrush = brush_red;
+                    pdfGridInfo.Rows[5].Cells[1].Style.TextBrush = brush_red;
+                    pdfGridInfo.Rows[5].Cells[2].Style.TextBrush = brush_red;
+                    pdfGridInfo.Rows[5].Cells[3].Style.TextBrush = brush_red;
+                    pdfGridInfo.Rows[5].Cells[4].Style.TextBrush = brush_red;
+                    pdfGridInfo.Rows[5].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                    pdfGridInfo.Rows[5].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                    pdfGridInfo.Rows[5].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                    pdfGridInfo.Rows[5].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                    pdfGridInfo.Rows[5].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+
 
                     pdfGridInfo.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
@@ -487,12 +502,13 @@ namespace TQM
                     pdfGridInfo.Rows[4].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[3].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[4].Style.Borders.All = PdfPens.Transparent;
-                    //pdfGridInfo.Rows[5].Cells[0].Style.Borders.All = PdfPens.Transparent;
-                    //pdfGridInfo.Rows[5].Cells[1].Style.Borders.All = PdfPens.Transparent;
-                    //pdfGridInfo.Rows[5].Cells[2].Style.Borders.All = PdfPens.Transparent;
-                    //pdfGridInfo.Rows[5].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[4].Style.Borders.All = PdfPens.Transparent;
 
-                    int totalRow_header = 6;
+                    int totalRow_header = 5;
                     int totalRow_header_height = totalRow_header * 18;
 
                     if (overallHeight == 0)

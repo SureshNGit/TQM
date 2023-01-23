@@ -167,6 +167,11 @@
                                            HorizontalTextAlignment="Start" Margin="20,0,0,0" HorizontalOptions="Center"
                                     Text="{Binding process}" FontSize="14" TextColor="Green"/>
 
+                                    <Label Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="1" 
+                                    Text="Remark" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="0" Grid.Row="4"  Grid.ColumnSpan="5" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    Text="{Binding testRemark}" FontSize="14" TextColor="Red"/>
+
                                 </Grid>
                       
 

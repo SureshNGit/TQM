@@ -64,6 +64,8 @@ namespace TQM.ModelView
         //public decimal range_nPlus1 { get; set; }
 
         public decimal apercent_nPlus1 { get; set; }
+
+        public string testRemark { get; set; }
         public DateTime createdate { get; set; }
         public List<ApercentReportModelView> apercentReportMV => this;
     }

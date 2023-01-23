@@ -288,10 +288,10 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" HorizontalTextAlignment="End" 
+                    <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" HorizontalTextAlignment="End" 
                                        Text="NOILS % :" FontSize="20" TextColor="#0e0273"/>
-                    <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1" x:Name="lbl_noilsPercent" HorizontalTextAlignment="Start" Margin="0,0" 
-                                       Text="2.274" FontSize="22" TextColor="ForestGreen"/>
+                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_noilsPercent" HorizontalTextAlignment="Start" Margin="0,0" 
+                                       Text="+0002.2074" FontSize="22" TextColor="ForestGreen"/>
                     <!--<Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="0,0"
                                        Text="SD:" FontSize="20" TextColor="#0e0273"/>
                     <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_sd" 
@@ -300,6 +300,9 @@
                                        Text="CV:" FontSize="20" TextColor="#0e0273"/>
                     <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_cv"
                            HorizontalTextAlignment="Start" Margin="80,2" Text="2.135" FontSize="18" TextColor="Red"/>-->
+                    <Button Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="1" HorizontalOptions="Center" Text="+" WidthRequest="30" 
+                            Padding="2,0,0,0" FontSize="Large" HeightRequest="30" VerticalOptions="Start" Margin="0,3"
+                        x:Name="btn_comment"  Clicked="btn_comment_Clicked" BackgroundColor="Red" TextColor="white"/>
                 </Grid>
             </Frame>
 
