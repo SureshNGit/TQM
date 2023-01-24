@@ -105,11 +105,26 @@ namespace TQM
                 {
                     process = picker_process.SelectedItem.ToString();
                 }
+                string reportType = null;
+                if (picker_reportType.SelectedItem != null)
+                {
+                    reportType = picker_reportType.SelectedItem.ToString();
+                }
+                bool is_consolidated = false;
+                if (reportType == "Consolidated") { is_consolidated = true; }
                 if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
                 if (picker_reportName.SelectedItem.ToString() == "Wrapping")
                 {
+                    if (is_consolidated)
+                    {
+                        if (selectedCategory == null || selectedMachineID == Guid.Empty)
+                        {
+                            DisplayAlert("Attention", "Please select machine for consolidated report", "OK");
+                            return;
+                        }
+                    }
                     Navigation.PushAsync(new YCReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false, is_consolidated));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
@@ -211,11 +226,18 @@ namespace TQM
                 {
                     process = picker_process.SelectedItem.ToString();
                 }
+                string reportType = null;
+                if (picker_reportType.SelectedItem != null)
+                {
+                    reportType = picker_reportType.SelectedItem.ToString();
+                }
+                bool is_consolidated = false;
+                if (reportType == "Consolidated") { is_consolidated = true; }
                 if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
                 if (picker_reportName.SelectedItem.ToString() == "Wrapping")
                 {
                     Navigation.PushAsync(new YCReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true, is_consolidated));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
@@ -237,6 +259,36 @@ namespace TQM
             {
                 DisplayAlert("Notice-ReportSearch", ex.Message.ToString(), "Ok");
             }
+        }
+
+        private void picker_reportType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                string selectedReportType = picker_reportType.SelectedItem.ToString();
+                if (selectedReportType == "Consolidated")
+                {
+                    var lst_reportName = new List<string>();
+                    lst_reportName.Add("");
+                    lst_reportName.Add("Wrapping");
+                    picker_reportName.ItemsSource = lst_reportName;
+                }
+                else
+                {
+                    var lst_reportName = new List<string>();
+                    lst_reportName.Add("");
+                    lst_reportName.Add("Wrapping");
+                    lst_reportName.Add("A%");
+                    lst_reportName.Add("Stretch");
+                    lst_reportName.Add("Noils");
+                    picker_reportName.ItemsSource = lst_reportName;
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice-ReportType", ex.Message.ToString(), "Ok");
+            }
+
         }
     }
 }

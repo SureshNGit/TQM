@@ -17,13 +17,22 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
+                <Button Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="1" Text = "Get Report" 
+                        x:Name="btn_getreport" Clicked="btn_getreport_Clicked" 
+                        BackgroundColor="#0e0273" TextColor="White" CornerRadius="25" />
+
+                <Button Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="1" Text = "Delete Records" IsVisible="false"
+                        x:Name="btn_deleteRecords" Clicked="btn_deleteRecords_Clicked" 
+                        BackgroundColor="Red" TextColor="White" CornerRadius="25" />
             </Grid>
         </StackLayout>
     </NavigationPage.TitleView>
     <ContentPage.Content>
         <StackLayout>
-            <Grid Margin="35">
+            <Grid Margin="15,0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -39,17 +48,17 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <!--<Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Report Type"  
+                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Report Type"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
                 <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="picker_reportType" HorizontalTextAlignment="Center" 
-                        TextColor="Green" FontSize="25">
+                        TextColor="Green" FontSize="25" SelectedIndexChanged="picker_reportType_SelectedIndexChanged">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String>Individual</x:String>
                             <x:String>Consolidated</x:String>
                         </x:Array>
                     </Picker.ItemsSource>
-                </Picker>-->
+                </Picker>
                 <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Report Name"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
                 <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="picker_reportName" HorizontalTextAlignment="Center" 
@@ -135,13 +144,7 @@
                 </Picker>
 
 
-                <Button Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="1" Text = "Get Report" 
-                        x:Name="btn_getreport" Clicked="btn_getreport_Clicked" 
-                        BackgroundColor="#0e0273" TextColor="White" CornerRadius="25" />
-
-                <Button Grid.Row="6" Grid.Column="4" Grid.ColumnSpan="1" Text = "Delete Records" IsVisible="false"
-                        x:Name="btn_deleteRecords" Clicked="btn_deleteRecords_Clicked" 
-                        BackgroundColor="Red" TextColor="White" CornerRadius="25" />
+                
             </Grid>
          </StackLayout>
     </ContentPage.Content>

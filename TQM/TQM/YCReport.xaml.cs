@@ -33,15 +33,29 @@ namespace TQM
         private RunConfiguration runConfiguration = new RunConfiguration();
         private List<YCTestSummaryModel> deleteList = null;
         private bool deleteAll = false;
+        private int TOT_TEST = 0;
+        private decimal CON_HANK = 0.0000m;
+        private decimal CON_STD_DEV = 0.0000m;
+        private decimal CON_CV = 0.0000m;
+        private bool consolidatedReport = false;
 
         public YCReport()
         {
             InitializeComponent();
         }
 
-        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
+        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest, bool isConsolidated)
         {
             InitializeComponent();
+            consolidatedReport = isConsolidated;
+            if (consolidatedReport)
+            {
+                lbl_reportHeader.Text = "Consolidated Wrapping Report";
+            }
+            else
+            {
+                lbl_reportHeader.Text = "Wrapping Report";
+            }
             if (deleteRequest)
             {
                 btn_saveToPDF.Text = "Send & Delete Records";
@@ -208,12 +222,24 @@ namespace TQM
                         }
                     }
 
+                    CON_HANK = 0.0000m;
+                    CON_STD_DEV = 0.0000m;
+                    CON_CV = 0.0000m;
+
+                    TOT_TEST = ycTestSummaryModels.Count;
+
                     foreach (YCTestSummaryModel testsummary in ycTestSummaryModels)
                     {
                         OverallReportModelView report = new OverallReportModelView();
                         List<YCTestModel> yctestlist = conn.Table<YCTestModel>().Where(YCTestModel => YCTestModel.testID == testsummary.testID).ToList();
                         if (yctestlist != null)
                         {
+                            if (consolidatedReport)
+                            {
+                                CON_HANK = CON_HANK + formatDecimal(testsummary.testaverage);
+                                CON_STD_DEV = CON_STD_DEV + formatDecimal(testsummary.testsd);
+                                CON_CV = CON_CV + formatDecimal(testsummary.testsd);
+                            }
 
                             foreach (YCTestModel test in yctestlist)
                             {
@@ -244,6 +270,14 @@ namespace TQM
                 }
                 listview_tcreport.ItemsSource = null;
                 listview_tcreport.ItemsSource = ListOfReport;
+                if (consolidatedReport)
+                {
+                    lbl_totalTest.Text = TOT_TEST.ToString();
+                    lbl_AvgHank.Text = CON_HANK.ToString();
+                    lbl_AvgSD.Text = CON_STD_DEV.ToString();
+                    lbl_AvgCV.Text = CON_CV.ToString();
+                    grid_consolidated.IsVisible = true;
+                }
             }
             catch (Exception ex)
             {
@@ -349,7 +383,7 @@ namespace TQM
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
 
-                    if (tableNo == 1)
+                    if (consolidatedReport && tableNo == 1)
                     {
                         //pdfGridInfo.Rows[0].Cells[0].Value = selectedCompanyName;
                         //pdfGridInfo.Rows[0].Cells[0].ColumnSpan = 4;
@@ -358,6 +392,10 @@ namespace TQM
                         //pdfGridInfo.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.Blue;
                         //pdfGridInfo.Rows[0].Cells[0].Style.TextPen = PdfPens.White;
                         //pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 18);
+                        pdfGridInfo.Rows[0].Cells[0].Value = "Total Test: " + TOT_TEST;
+                        pdfGridInfo.Rows[0].Cells[1].Value = "Con. HANK: " + CON_HANK;
+                        pdfGridInfo.Rows[0].Cells[2].Value = "Con. SD: " + CON_STD_DEV;
+                        pdfGridInfo.Rows[0].Cells[3].Value = "Con. CV: " + CON_CV;
                     }
                     pdfGridInfo.Rows[1].Cells[0].Value = "Test ID: " + orl.testID;
                     pdfGridInfo.Rows[1].Cells[0].ColumnSpan = 2;
