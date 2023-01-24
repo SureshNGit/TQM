@@ -197,14 +197,14 @@ namespace TQM
                     }
                     else
                     {
+                        if (testID != "")
+                        {
+                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.testID == long.Parse(testID)).ToList();
+                        }
                         if (deleteRequest)
                         {
                             deleteAll = true;
                             deleteList = ycTestSummaryModels;
-                        }
-                        if (testID != "")
-                        {
-                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.testID == long.Parse(testID)).ToList();
                         }
                     }
 

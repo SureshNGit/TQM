@@ -195,14 +195,14 @@ namespace TQM
                     }
                     else
                     {
+                        if (testID != "")
+                        {
+                            stretchCalcList = stretchCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
+                        }
                         if (deleteRequest)
                         {
                             deleteAll = true;
                             deleteList = stretchCalcList;
-                        }
-                        if (testID != "")
-                        {
-                            stretchCalcList = stretchCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
                         }
                     }
 

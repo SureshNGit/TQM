@@ -212,14 +212,14 @@ namespace TQM
                     }
                     else
                     {
+                        if (testID != "")
+                        {
+                            noilsCalcList = noilsCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
+                        }
                         if (deleteRequest)
                         {
                             deleteAll = true;
                             deleteList = noilsCalcList;
-                        }
-                        if (testID != "")
-                        {
-                            noilsCalcList = noilsCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
                         }
                     }
 

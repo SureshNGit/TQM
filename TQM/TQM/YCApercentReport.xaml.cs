@@ -216,14 +216,14 @@ namespace TQM
                     }
                     else
                     {
+                        if (testID != "")
+                        {
+                            apercentCalcList = apercentCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
+                        }
                         if (deleteRequest)
                         {
                             deleteAll = true;
                             deleteList = apercentCalcList;
-                        }
-                        if (testID != "")
-                        {
-                            apercentCalcList = apercentCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
                         }
                     }
 
