@@ -238,7 +238,7 @@ namespace TQM
                             {
                                 CON_HANK = CON_HANK + formatDecimal(testsummary.testaverage);
                                 CON_STD_DEV = CON_STD_DEV + formatDecimal(testsummary.testsd);
-                                CON_CV = CON_CV + formatDecimal(testsummary.testsd);
+                                CON_CV = CON_CV + formatDecimal(testsummary.testcv);
                             }
 
                             foreach (YCTestModel test in yctestlist)
@@ -266,6 +266,9 @@ namespace TQM
                         }
                         OVS.Add(report);
                     }
+                    CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
+                    CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
+                    CON_CV = formatDecimal(CON_CV / TOT_TEST);
                     ListOfReport = OVS;
                 }
                 listview_tcreport.ItemsSource = null;
@@ -314,6 +317,8 @@ namespace TQM
                 btn_saveToPDF.Text = "Send Report";
                 btn_saveToPDF.IsEnabled = true;
                 btn_saveToPDF.BackgroundColor = Color.FromHex(BLUE);
+                btn_backToReport.IsEnabled = true;
+                btn_backToReport.BackgroundColor = Color.Green;
             });
         }
 
@@ -330,6 +335,8 @@ namespace TQM
                 bool answer = await DisplayAlert("Attention!!!", "Would you like to delete selected records?", "Yes", "No");
                 if (answer == false) { return; }
             }
+            btn_backToReport.IsEnabled = false;
+            btn_backToReport.BackgroundColor = Color.Gray;
             btn_saveToPDF.IsEnabled = false;
             btn_saveToPDF.BackgroundColor = Color.Gray;
             img_notification.IsVisible = true;
@@ -396,6 +403,28 @@ namespace TQM
                         pdfGridInfo.Rows[0].Cells[1].Value = "Con. HANK: " + CON_HANK;
                         pdfGridInfo.Rows[0].Cells[2].Value = "Con. SD: " + CON_STD_DEV;
                         pdfGridInfo.Rows[0].Cells[3].Value = "Con. CV: " + CON_CV;
+
+                        PdfBrush brush_bg_con = new PdfSolidBrush(Syncfusion.Drawing.Color.LightSteelBlue);
+                        pdfGridInfo.Rows[0].Cells[0].Style.BackgroundBrush = brush_bg_con;
+                        pdfGridInfo.Rows[0].Cells[1].Style.BackgroundBrush = brush_bg_con;
+                        pdfGridInfo.Rows[0].Cells[2].Style.BackgroundBrush = brush_bg_con;
+                        pdfGridInfo.Rows[0].Cells[3].Style.BackgroundBrush = brush_bg_con;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Red);
+                        pdfGridInfo.Rows[0].Cells[0].Style.TextBrush = brush_con;
+                        pdfGridInfo.Rows[0].Cells[1].Style.TextBrush = brush_con;
+                        pdfGridInfo.Rows[0].Cells[2].Style.TextBrush = brush_con;
+                        pdfGridInfo.Rows[0].Cells[3].Style.TextBrush = brush_con;
+                        pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                        pdfGridInfo.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                        pdfGridInfo.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                        pdfGridInfo.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                        PdfStringFormat format = new PdfStringFormat();
+                        format.Alignment = PdfTextAlignment.Left;
+                        format.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGridInfo.Rows[0].Cells[0].Style.StringFormat = format;
+                        pdfGridInfo.Rows[0].Cells[1].Style.StringFormat = format;
+                        pdfGridInfo.Rows[0].Cells[2].Style.StringFormat = format;
+                        pdfGridInfo.Rows[0].Cells[3].Style.StringFormat = format;
                     }
                     pdfGridInfo.Rows[1].Cells[0].Value = "Test ID: " + orl.testID;
                     pdfGridInfo.Rows[1].Cells[0].ColumnSpan = 2;
@@ -667,7 +696,14 @@ namespace TQM
                 //Title Starts
                 PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Underline);
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
-                header.Graphics.DrawString("Wrapping Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                if (consolidatedReport)
+                {
+                    header.Graphics.DrawString("Consolidated Wrapping Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(135, 16));
+                }
+                else
+                {
+                    header.Graphics.DrawString("Wrapping Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                }
                 //Title Ends
                 pdfDocument.Template.Top = header;
                 PdfPageTemplateElement footer = new PdfPageTemplateElement(bounds);
@@ -776,6 +812,10 @@ namespace TQM
             }
         }
 
+        private void btn_backToReport_Clicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new Report());
+        }
 
     }
 }

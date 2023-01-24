@@ -14,14 +14,21 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
-                <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
-                <Image Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="1" x:Name="img_notification" IsVisible="False" HorizontalOptions="Center"
+                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
+                <Image Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="1" x:Name="img_notification" IsVisible="False" HorizontalOptions="Center"
                        Source="loading.gif" IsAnimationPlaying="True" 
                        Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
-                <Label Grid.Row="0" Grid.Column="3" Text="Noils Report" FontSize="18" TextColor="Red" VerticalTextAlignment="Center" />
-                <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Send Report" 
+                <Label Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="3" Text="Noils Report" x:Name="lbl_reportHeader" 
+                       Margin="0,0,0,0" HorizontalOptions="Start" FontSize="18" TextColor="Red" VerticalTextAlignment="Center" />
+                <Button Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="1" HorizontalOptions="End" Text="Back" 
+                        x:Name="btn_backToReport"  Clicked="btn_backToReport_Clicked" BackgroundColor="green" TextColor="white" CornerRadius="25"/>
+                <Button Grid.Row="0" Grid.Column="7" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Send Report" 
                         x:Name="btn_saveToPDF"  Clicked="btn_saveToPDF_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="25"/>
             </Grid>
         </StackLayout>

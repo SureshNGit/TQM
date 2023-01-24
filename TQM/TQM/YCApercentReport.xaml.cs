@@ -412,6 +412,8 @@ namespace TQM
                 btn_saveToPDF.Text = "Send Report";
                 btn_saveToPDF.IsEnabled = true;
                 btn_saveToPDF.BackgroundColor = Color.FromHex(BLUE);
+                btn_backToReport.IsEnabled = true;
+                btn_backToReport.BackgroundColor = Color.Green;
             });
         }
 
@@ -430,6 +432,8 @@ namespace TQM
             }
             btn_saveToPDF.IsEnabled = false;
             btn_saveToPDF.BackgroundColor = Color.Gray;
+            btn_backToReport.IsEnabled = false;
+            btn_backToReport.BackgroundColor = Color.Gray;
             img_notification.IsVisible = true;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
@@ -881,6 +885,11 @@ namespace TQM
             {
                 return decimal.Parse(inputString + ".0000");
             }
+        }
+
+        private void btn_backToReport_Clicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new Report());
         }
     }
 }

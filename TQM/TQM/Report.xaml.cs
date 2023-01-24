@@ -272,6 +272,10 @@ namespace TQM
                     lst_reportName.Add("");
                     lst_reportName.Add("Wrapping");
                     picker_reportName.ItemsSource = lst_reportName;
+                    picker_reportName.SelectedItem = "Wrapping";
+                    lbl_testID.IsVisible = false;
+                    entry_testID.IsVisible = false;
+                    btn_deleteRecords.IsVisible = false;
                 }
                 else
                 {
@@ -282,6 +286,9 @@ namespace TQM
                     lst_reportName.Add("Stretch");
                     lst_reportName.Add("Noils");
                     picker_reportName.ItemsSource = lst_reportName;
+                    lbl_testID.IsVisible = true;
+                    entry_testID.IsVisible = true;
+                    btn_deleteRecords.IsVisible = true;
                 }
             }
             catch (Exception ex)
