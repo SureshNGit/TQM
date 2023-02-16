@@ -54,28 +54,28 @@ namespace TQM
                             });
                             flyItems.Add(new MenuItem
                             {
-                                Title = "Wrapping",
+                                Title = "Count+Strength",
+                                ImageSource = "",
+                                TargetPage = typeof(yarnCountWithCSP)
+                            });
+                            flyItems.Add(new MenuItem
+                            {
+                                Title = "Count",
                                 ImageSource = "",
                                 TargetPage = typeof(yarnCount)
                             });
-                            flyItems.Add(new MenuItem
-                            {
-                                Title = "A %",
-                                ImageSource = "",
-                                TargetPage = typeof(ApercentPage)
-                            });
-                            flyItems.Add(new MenuItem
-                            {
-                                Title = "Stretch",
-                                ImageSource = "",
-                                TargetPage = typeof(StretchPage)
-                            });
-                            flyItems.Add(new MenuItem
-                            {
-                                Title = "Noils",
-                                ImageSource = "",
-                                TargetPage = typeof(NOILS)
-                            });
+                            //flyItems.Add(new MenuItem
+                            //{
+                            //    Title = "Stretch",
+                            //    ImageSource = "",
+                            //    TargetPage = typeof(StretchPage)
+                            //});
+                            //flyItems.Add(new MenuItem
+                            //{
+                            //    Title = "Noils",
+                            //    ImageSource = "",
+                            //    TargetPage = typeof(NOILS)
+                            //});
                             flyItems.Add(new MenuItem
                             {
                                 Title = "Reports",
@@ -130,28 +130,28 @@ namespace TQM
                             });
                             flyItems.Add(new MenuItem
                             {
-                                Title = "Wrapping",
+                                Title = "Count+Strength",
+                                ImageSource = "",
+                                TargetPage = typeof(yarnCountWithCSP)
+                            });
+                            flyItems.Add(new MenuItem
+                            {
+                                Title = "Count",
                                 ImageSource = "",
                                 TargetPage = typeof(yarnCount)
                             });
-                            flyItems.Add(new MenuItem
-                            {
-                                Title = "A %",
-                                ImageSource = "",
-                                TargetPage = typeof(ApercentPage)
-                            });
-                            flyItems.Add(new MenuItem
-                            {
-                                Title = "Stretch",
-                                ImageSource = "",
-                                TargetPage = typeof(StretchPage)
-                            });
-                            flyItems.Add(new MenuItem
-                            {
-                                Title = "Noils",
-                                ImageSource = "",
-                                TargetPage = typeof(NOILS)
-                            });
+                            //flyItems.Add(new MenuItem
+                            //{
+                            //    Title = "Stretch",
+                            //    ImageSource = "",
+                            //    TargetPage = typeof(StretchPage)
+                            //});
+                            //flyItems.Add(new MenuItem
+                            //{
+                            //    Title = "Noils",
+                            //    ImageSource = "",
+                            //    TargetPage = typeof(NOILS)
+                            //});
                             flyItems.Add(new MenuItem
                             {
                                 Title = "Reports",

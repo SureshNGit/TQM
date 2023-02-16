@@ -49,7 +49,6 @@ namespace TQM
         private decimal STD_HANK_CURR = 0.0000m;
         private int currentTestCount = 0;
         private bool isTestStarted = false;
-        private string currentTarget = null;
         private RunConfiguration runConfiguration = new RunConfiguration();
 
         public yarnCount()
@@ -401,21 +400,12 @@ namespace TQM
             //    await DisplayAlert("Attention", "Please select process info!!!", "Ok");
             //    return;
             //}
-
-            if (!initializeBluetooth(runConfiguration.getLoadCellSerailNo()))
+            if (!initializeBluetooth())
             {
                 ImageNotification("red.png");
-                UpdateUserNotification("CSP - COMMUNICATION ERROR!!!");
+                UpdateUserNotification("COMMUNICATION ERROR!!!");
                 return;
             }
-            disposeble();
-            if (!initializeBluetooth(runConfiguration.getBalanceSerialNo()))
-            {
-                ImageNotification("red.png");
-                UpdateUserNotification("Balance - COMMUNICATION ERROR!!!");
-                return;
-            }
-            currentTarget = "YCB";
             string testCount_str = entry_testcount.Text;
             int testCount = int.Parse(testCount_str);
             //if (testCount_str == null || testCount_str == "")
@@ -502,32 +492,9 @@ namespace TQM
                 ImageNotification("loading.gif");
                 bool runResult = false;
                 int passCount = 0;
-                bool isYCB = true;
                 for (int i = 0; i < testCount; i++)
                 {
-                    if (isYCB)
-                    {
-                        currentTestCount = i + 1;
-                        disposeble();
-                        if (!initializeBluetooth(runConfiguration.getBalanceSerialNo()))
-                        {
-                            ImageNotification("red.png");
-                            UpdateUserNotification("CSP - COMMUNICATION ERROR!!!");
-                            return;
-                        }
-                        isYCB = false;
-                    }
-                    else
-                    {
-                        disposeble();
-                        if (!initializeBluetooth(runConfiguration.getLoadCellSerailNo()))
-                        {
-                            ImageNotification("red.png");
-                            UpdateUserNotification("Balance - COMMUNICATION ERROR!!!");
-                            return;
-                        }
-                        isYCB = true;
-                    }
+                    currentTestCount = i + 1;
                     runResult = false;
                     CancellationTokenSource src = new CancellationTokenSource();
                     CancellationToken ct = src.Token;
@@ -545,114 +512,107 @@ namespace TQM
                         };
                     });
                     src.Cancel();
-                    if (!isYCB)
+                    if (runResult)
                     {
-                        if (runResult)
+                        passCount++;
+                        string displayusername = currentloggedInUser.firstname + " [" + currentloggedInUser.userId + "]";
+                        if (currentloggedInUser.firstname != "")
                         {
-                            passCount++;
-                            string displayusername = currentloggedInUser.firstname + " [" + currentloggedInUser.userId + "]";
-                            if (currentloggedInUser.firstname != "")
-                            {
-                                displayusername = currentloggedInUser.firstname + ", " + currentloggedInUser.lastname + " [" + currentloggedInUser.userId + "]";
-                            }
-                            decimal currentCalculatedValue = 0.0000m;
-                            switch (selectedSysName)
-                            {
-                                case "Nec":
-                                    switch (selectedCountUnit)
-                                    {
-                                        case "Yard":
-                                            decimal drivedVal = (selectedYarnLen / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
-                                            currentCalculatedValue = formatDecimal(drivedVal);
-                                            break;
-                                        case "Meter":
-                                            decimal drivedVal_meter = ((selectedYarnLen * 1.09361m) / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
-                                            currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                            break;
-                                        default:
-                                            break;
-                                    };
-                                    break;
-                                case "Tex":
-                                    switch (selectedCountUnit)
-                                    {
-                                        case "Yard":
-                                            decimal drivedVal = current_stable_data * 1000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
-                                            currentCalculatedValue = formatDecimal(drivedVal);
-                                            break;
-                                        case "Meter":
-                                            decimal drivedVal_meter = current_stable_data * 1000.0000m / selectedYarnLen * 1.0000m;
-                                            currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                            break;
-                                        default:
-                                            break;
-                                    };
-                                    break;
-                                case "Den":
-                                    switch (selectedCountUnit)
-                                    {
-                                        case "Yard":
-                                            decimal drivedVal = current_stable_data * 9000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
-                                            currentCalculatedValue = formatDecimal(drivedVal);
-                                            break;
-                                        case "Meter":
-                                            decimal drivedVal_meter = current_stable_data * 9000.0000m / selectedYarnLen * 1.0000m;
-                                            currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                            break;
-                                        default:
-                                            break;
-                                    };
-                                    break;
-                                case "Nm":
-                                    switch (selectedCountUnit)
-                                    {
-                                        case "Yard":
-                                            decimal drivedVal = ((selectedYarnLen * 0.9144m) * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
-                                            currentCalculatedValue = formatDecimal(drivedVal);
-                                            break;
-                                        case "Meter":
-                                            decimal drivedVal_meter = (selectedYarnLen * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
-                                            currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                            break;
-                                        default:
-                                            break;
-                                    };
-                                    break;
-                                default:
-                                    break;
-                            };
-                            YCTestModelView ycTestModelView = new YCTestModelView()
-                            {
-                                testID = currentTestID,
-                                userID = currentloggedInUser.ID,
-                                userName = displayusername,
-                                machineID = selectedMachineID,
-                                machineCategory = selectedMachineCategory,
-                                machineName = selectedMachineName,
-                                shift = selectedShift,
-                                process = selectedProcess,
-                                countsysname = selectedSysName,
-                                yarnlenunit = selectedCountUnit,
-                                yarnlength = selectedYarnLen,
-                                totaltestcount = selectedTestCount,
-                                testcount = i + 1,
-                                yarnweight = current_stable_data,
-                                yccalcval = currentCalculatedValue
-                            };
-                            ycTestModelViewlist.Add(ycTestModelView);
-                            //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
-                            await refListView();
+                            displayusername = currentloggedInUser.firstname + ", " + currentloggedInUser.lastname + " [" + currentloggedInUser.userId + "]";
                         }
-                        else
+                        decimal currentCalculatedValue = 0.0000m;
+                        switch (selectedSysName)
                         {
-                            //showAlert("Test - [" + (i + 1) + "] Failed!!! Please start test from begining!!!");
-                            reset(false);
-                            break;
-                        }
+                            case "Nec":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = (selectedYarnLen / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
+                                        currentCalculatedValue = formatDecimal(drivedVal);
+                                        break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = ((selectedYarnLen * 1.09361m) / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            case "Tex":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = current_stable_data * 1000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal);
+                                        break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = current_stable_data * 1000.0000m / selectedYarnLen * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            case "Den":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = current_stable_data * 9000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal);
+                                        break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = current_stable_data * 9000.0000m / selectedYarnLen * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            case "Nm":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = ((selectedYarnLen * 0.9144m) * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
+                                        break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = (selectedYarnLen * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            default:
+                                break;
+                        };
+                        YCTestModelView ycTestModelView = new YCTestModelView()
+                        {
+                            testID = currentTestID,
+                            userID = currentloggedInUser.ID,
+                            userName = displayusername,
+                            machineID = selectedMachineID,
+                            machineCategory = selectedMachineCategory,
+                            machineName = selectedMachineName,
+                            shift = selectedShift,
+                            process = selectedProcess,
+                            countsysname = selectedSysName,
+                            yarnlenunit = selectedCountUnit,
+                            yarnlength = selectedYarnLen,
+                            totaltestcount = selectedTestCount,
+                            testcount = i + 1,
+                            yarnweight = current_stable_data,
+                            yccalcval = currentCalculatedValue
+                        };
+                        ycTestModelViewlist.Add(ycTestModelView);
+                        //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
+                        await refListView();
                     }
                     else
                     {
-                        showAlert(current_stable_data.ToString());
+                        //showAlert("Test - [" + (i + 1) + "] Failed!!! Please start test from begining!!!");
+                        reset(false);
+                        break;
                     }
                 }
 
@@ -810,7 +770,7 @@ namespace TQM
         }
 
         [Obsolete]
-        public bool initializeBluetooth(string deviceName)
+        public bool initializeBluetooth()
         {
             try
             {
@@ -832,7 +792,7 @@ namespace TQM
 
 
                 device = (from bd in adapter.BondedDevices
-                          where bd.Name == deviceName
+                          where bd.Name == runConfiguration.getBalanceSerialNo()
                           select bd).FirstOrDefault();
 
 

@@ -1,5 +1,6 @@
 ﻿using Android.Bluetooth;
 using Java.IO;
+//using Java.Lang;
 using Java.Util;
 using SQLite;
 using System;
@@ -24,12 +25,14 @@ namespace TQM
         BluetoothAdapter adapter;
         BluetoothDevice device;
         const decimal MIN_VAL = 0.4000m;
+        const decimal MIN_VAL_LOAD_CELL = 2.0000m;
         const decimal ZERO = 0.0000m;
+        private decimal INITIAL_LOAD_CELL_VALUE = 0.0000m;
         const int PER_TEST_LOOP_COUNT = 100;
         const int DATA_READ_LOOP_COUNT = 100;
         const int STABLE_DATA_CHECK = 5;
         private decimal current_stable_data = 0;
-        private List<YCTestModelView> ycTestModelViewlist;
+        private List<YCStrengthTestModelView> ycStrengthTestModelViewList;
         private long currentTestID = 0;
         private UserModel currentloggedInUser = null;
         private string selectedMachineCategory = null;
@@ -44,6 +47,7 @@ namespace TQM
         private const string RED = "#FF0000";
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
+        private const int BUFFER_WAIT_COUNT_CSP = 200;
         private int TESTCOUNT = 0;
         private decimal STD_HANK = 0.0000m;
         private decimal STD_HANK_CURR = 0.0000m;
@@ -144,7 +148,7 @@ namespace TQM
                     individualTestResultFrame_FinalOut.IsVisible = true;
                     listview_testresult_FinalOut.ItemsSource = null;
                     listview_testresult_FinalOut.IsVisible = visibility;
-                    listview_testresult_FinalOut.ItemsSource = ycTestModelViewlist;
+                    listview_testresult_FinalOut.ItemsSource = ycStrengthTestModelViewList;
                 }
                 else
                 {
@@ -154,10 +158,10 @@ namespace TQM
 
                     individualTestResultFrame.IsVisible = true;
                     listview_testresult.IsVisible = visibility;
-                    if (ycTestModelViewlist != null)
+                    if (ycStrengthTestModelViewList != null)
                     {
                         listview_testresult.ItemsSource = null;
-                        listview_testresult.ItemsSource = ycTestModelViewlist.OrderByDescending(YCTestModelView => YCTestModelView.testcount);
+                        listview_testresult.ItemsSource = ycStrengthTestModelViewList.OrderByDescending(YCStrengthTestModelView => YCStrengthTestModelView.testcount);
                     }
 
                     //if (listview_testresult.ItemsSource != null)
@@ -196,10 +200,11 @@ namespace TQM
             {
                 bool dbStatus = true;
                 decimal totalCalcCountVal = 0.0000m;
-                conn.CreateTable<YCTestModel>();
-                foreach (YCTestModelView test in ycTestModelViewlist)
+                decimal CSPSum = 0.0000m;
+                conn.CreateTable<YCStrengthTestModel>();
+                foreach (YCStrengthTestModelView test in ycStrengthTestModelViewList)
                 {
-                    YCTestModel ycTestModel = new YCTestModel()
+                    YCStrengthTestModel ycStrengthTestModel = new YCStrengthTestModel()
                     {
                         ID = Guid.NewGuid(),
                         testID = test.testID,
@@ -218,58 +223,84 @@ namespace TQM
                         testcount = test.testcount,
                         yarnweight = test.yarnweight,
                         yccalcval = test.yccalcval,
+                        yarnstrength = test.yarnstrength,
+                        CSP = test.CSP,
                         createdate = DateTime.Now
                     };
-                    int row = conn.Insert(ycTestModel);
+                    int row = conn.Insert(ycStrengthTestModel);
                     if (row < 1)
                     {
                         dbStatus = false;
                     }
                     totalCalcCountVal = totalCalcCountVal + test.yccalcval;
                     totalCalcCountVal = formatDecimal(totalCalcCountVal);
+                    CSPSum = CSPSum + test.CSP;
+                    CSPSum = formatDecimal(CSPSum);
                 }
                 if (dbStatus)
                 {
                     decimal mean = 0.0000m;
                     decimal sd = 0.0000m;
                     decimal cv = 0.0000m;
-                    if (ycTestModelViewlist[0].totaltestcount > 1)
+
+                    decimal mean_CSP = 0.0000m;
+                    decimal sd_CSP = 0.0000m;
+                    decimal cv_CSP = 0.0000m;
+                    if (ycStrengthTestModelViewList[0].totaltestcount > 1)
                     {
-                        mean = totalCalcCountVal / ycTestModelViewlist[0].totaltestcount;
+                        mean = totalCalcCountVal / ycStrengthTestModelViewList[0].totaltestcount;
                         decimal IndividualCalValminusMean = 0m;
-                        foreach (YCTestModelView test in ycTestModelViewlist)
+                        foreach (YCStrengthTestModelView test in ycStrengthTestModelViewList)
                         {
                             IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
                         }
-                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
+                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycStrengthTestModelViewList[0].totaltestcount - 1));//Standard Deviation
                         sd = formatDecimal(sd);
                         mean = formatDecimal(mean);
                         cv = (sd / mean) * 100.0000m; //Coefficient of Variation
                         cv = formatDecimal(cv);
+
+                        mean_CSP = CSPSum / ycStrengthTestModelViewList[0].totaltestcount;
+                        decimal IndividualCSPminusMean = 0m;
+                        foreach (YCStrengthTestModelView test in ycStrengthTestModelViewList)
+                        {
+                            IndividualCSPminusMean = IndividualCSPminusMean + ((test.CSP - mean_CSP) * (test.CSP - mean_CSP));
+                        }
+                        sd_CSP = (decimal)Math.Sqrt((double)IndividualCSPminusMean / (double)(ycStrengthTestModelViewList[0].totaltestcount - 1));//Standard Deviation
+                        sd_CSP = formatDecimal(sd_CSP);
+                        mean_CSP = formatDecimal(mean_CSP);
+                        cv_CSP = (sd_CSP / mean_CSP) * 100.0000m; //Coefficient of Variation
+                        cv_CSP = formatDecimal(cv_CSP);
+
+
                     }
-                    YCTestSummaryModel ycTestSummaryModel = new YCTestSummaryModel()
+                    YCStrengthTestSummaryModel ycStrengthTestSummaryModel = new YCStrengthTestSummaryModel()
                     {
                         ID = Guid.NewGuid(),
-                        testID = ycTestModelViewlist[0].testID,
-                        userID = ycTestModelViewlist[0].userID,
-                        userName = ycTestModelViewlist[0].userName,
-                        machineID = ycTestModelViewlist[0].machineID,
-                        machineCategory = ycTestModelViewlist[0].machineCategory,
-                        machineName = ycTestModelViewlist[0].machineName,
-                        shift = ycTestModelViewlist[0].shift,
-                        process = ycTestModelViewlist[0].process,
-                        countsysname = ycTestModelViewlist[0].countsysname,
-                        yarnlenunit = ycTestModelViewlist[0].yarnlenunit,
-                        yarnlength = ycTestModelViewlist[0].yarnlength,
-                        totaltestcount = ycTestModelViewlist[0].totaltestcount,
+                        testID = ycStrengthTestModelViewList[0].testID,
+                        userID = ycStrengthTestModelViewList[0].userID,
+                        userName = ycStrengthTestModelViewList[0].userName,
+                        machineID = ycStrengthTestModelViewList[0].machineID,
+                        machineCategory = ycStrengthTestModelViewList[0].machineCategory,
+                        machineName = ycStrengthTestModelViewList[0].machineName,
+                        shift = ycStrengthTestModelViewList[0].shift,
+                        process = ycStrengthTestModelViewList[0].process,
+                        countsysname = ycStrengthTestModelViewList[0].countsysname,
+                        yarnlenunit = ycStrengthTestModelViewList[0].yarnlenunit,
+                        yarnlength = ycStrengthTestModelViewList[0].yarnlength,
+                        totaltestcount = ycStrengthTestModelViewList[0].totaltestcount,
                         testaverage = mean,
                         testsd = sd,
                         testcv = cv,
                         standardHank = STD_HANK_CURR,
+                        testRemark = "",
+                        avgCSP = mean_CSP,
+                        sdCSP = sd_CSP,
+                        cvCSP = cv_CSP,
                         createdate = DateTime.Now
                     };
-                    conn.CreateTable<YCTestSummaryModel>();
-                    int row = conn.Insert(ycTestSummaryModel);
+                    conn.CreateTable<YCStrengthTestSummaryModel>();
+                    int row = conn.Insert(ycStrengthTestSummaryModel);
                     if (row < 1)
                     {
                         dbStatus = false;
@@ -277,7 +308,7 @@ namespace TQM
                     if (dbStatus)
                     {
                         await refListView(true, true);
-                        await refOverallSummary(mean, sd, cv, true, true);
+                        await refOverallSummary(mean_CSP, sd_CSP, cv_CSP, true, true);
                     }
                 }
 
@@ -310,9 +341,9 @@ namespace TQM
                     picker_process.IsEnabled = true;
                     if (isTestStarted)
                     {
-                        if (ycTestModelViewlist != null)
+                        if (ycStrengthTestModelViewList != null)
                         {
-                            if (selectedTestCount != ycTestModelViewlist.Count())
+                            if (selectedTestCount != ycStrengthTestModelViewList.Count())
                             {
                                 ImageNotification("red.png");
                                 UpdateUserNotification("IMPROPER TEST!!!");
@@ -408,6 +439,32 @@ namespace TQM
                 UpdateUserNotification("CSP - COMMUNICATION ERROR!!!");
                 return;
             }
+            //READ INITIAL LOAD CELL VALUE
+
+            INITIAL_LOAD_CELL_VALUE = 0.0000m;
+            String balOutput = ListenCSP();
+
+            Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
+            if (balOutput != "")
+            {
+                if (balOutput == "fail")
+                {
+                    ImageNotification("red.png");
+                    UpdateUserNotification("COMMUNICATION ERROR!!!");
+                    Debug.WriteLine("Read data failed");
+                    return;
+                }
+                else
+                {
+                    decimal s_op = decimal.Parse(balOutput);
+                    INITIAL_LOAD_CELL_VALUE = formatDecimal(s_op);
+                }
+            }
+
+
+
+
+            //END OF READ
             disposeble();
             if (!initializeBluetooth(runConfiguration.getBalanceSerialNo()))
             {
@@ -478,7 +535,7 @@ namespace TQM
             {
                 selectedProcess = picker_process.SelectedItem.ToString();
             }
-            ycTestModelViewlist = new List<YCTestModelView>();
+            ycStrengthTestModelViewList = new List<YCStrengthTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
             entry_yarnlen.IsEnabled = false;
@@ -502,36 +559,25 @@ namespace TQM
                 ImageNotification("loading.gif");
                 bool runResult = false;
                 int passCount = 0;
-                bool isYCB = true;
+                //bool isYCB = true;
                 for (int i = 0; i < testCount; i++)
                 {
-                    if (isYCB)
-                    {
-                        currentTestCount = i + 1;
-                        disposeble();
-                        if (!initializeBluetooth(runConfiguration.getBalanceSerialNo()))
-                        {
-                            ImageNotification("red.png");
-                            UpdateUserNotification("CSP - COMMUNICATION ERROR!!!");
-                            return;
-                        }
-                        isYCB = false;
-                    }
-                    else
-                    {
-                        disposeble();
-                        if (!initializeBluetooth(runConfiguration.getLoadCellSerailNo()))
-                        {
-                            ImageNotification("red.png");
-                            UpdateUserNotification("Balance - COMMUNICATION ERROR!!!");
-                            return;
-                        }
-                        isYCB = true;
-                    }
                     runResult = false;
                     CancellationTokenSource src = new CancellationTokenSource();
                     CancellationToken ct = src.Token;
                     ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+
+                    //if (isYCB)
+                    //{
+                    currentTestCount = i + 1;
+                    disposeble();
+                    if (!initializeBluetooth(runConfiguration.getBalanceSerialNo()))
+                    {
+                        ImageNotification("red.png");
+                        UpdateUserNotification("Balance - COMMUNICATION ERROR!!!");
+                        return;
+                    }
+                    //isYCB = false;
                     await Task.Run(async () => await RunTest(), ct).ContinueWith((t) =>
                     {
                         t.Wait();
@@ -544,119 +590,169 @@ namespace TQM
                             runResult = t.Result;
                         };
                     });
+                    //}
+                    //else
+                    //{
+
+                    //}
+
+
                     src.Cancel();
-                    if (!isYCB)
+                    //if (!isYCB)
+                    //{
+                    if (runResult)
                     {
+                        passCount++;
+                        string displayusername = currentloggedInUser.firstname + " [" + currentloggedInUser.userId + "]";
+                        if (currentloggedInUser.firstname != "")
+                        {
+                            displayusername = currentloggedInUser.firstname + ", " + currentloggedInUser.lastname + " [" + currentloggedInUser.userId + "]";
+                        }
+                        decimal currentCalculatedValue = 0.0000m;
+                        switch (selectedSysName)
+                        {
+                            case "Nec":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = (selectedYarnLen / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
+                                        currentCalculatedValue = formatDecimal(drivedVal);
+                                        break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = ((selectedYarnLen * 1.09361m) / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            case "Tex":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = current_stable_data * 1000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal);
+                                        break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = current_stable_data * 1000.0000m / selectedYarnLen * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            case "Den":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = current_stable_data * 9000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal);
+                                        break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = current_stable_data * 9000.0000m / selectedYarnLen * 1.0000m;
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            case "Nm":
+                                switch (selectedCountUnit)
+                                {
+                                    case "Yard":
+                                        decimal drivedVal = ((selectedYarnLen * 0.9144m) * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
+                                        currentCalculatedValue = formatDecimal(drivedVal);
+                                        break;
+                                    case "Meter":
+                                        decimal drivedVal_meter = (selectedYarnLen * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
+                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
+                                        break;
+                                    default:
+                                        break;
+                                };
+                                break;
+                            default:
+                                break;
+                        };
+                        YCStrengthTestModelView ycStrengthTestModelView = new YCStrengthTestModelView()
+                        {
+                            testID = currentTestID,
+                            userID = currentloggedInUser.ID,
+                            userName = displayusername,
+                            machineID = selectedMachineID,
+                            machineCategory = selectedMachineCategory,
+                            machineName = selectedMachineName,
+                            shift = selectedShift,
+                            process = selectedProcess,
+                            countsysname = selectedSysName,
+                            yarnlenunit = selectedCountUnit,
+                            yarnlength = selectedYarnLen,
+                            totaltestcount = selectedTestCount,
+                            testcount = i + 1,
+                            yarnweight = current_stable_data,
+                            yccalcval = currentCalculatedValue,
+                            yarnstrength = 0.0000m,
+                            CSP = 0.0000m
+                        };
+                        ycStrengthTestModelViewList.Add(ycStrengthTestModelView);
+                        //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
+                        await refListView();
+
+                        runResult = false;
+                        src = new CancellationTokenSource();
+                        ct = src.Token;
+                        ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
+                        disposeble();
+                        if (!initializeBluetooth(runConfiguration.getLoadCellSerailNo()))
+                        {
+                            ImageNotification("red.png");
+                            UpdateUserNotification("CSP - COMMUNICATION ERROR!!!");
+                            return;
+                        }
+                        await Task.Run(async () => await RunCSPTest(), ct).ContinueWith((t) =>
+                        {
+                            t.Wait();
+                            if (t.IsFaulted)
+                            {
+                                runResult = false;
+                            };
+                            if (t.IsCompleted)
+                            {
+                                runResult = t.Result;
+                            };
+                        });
                         if (runResult)
                         {
-                            passCount++;
-                            string displayusername = currentloggedInUser.firstname + " [" + currentloggedInUser.userId + "]";
-                            if (currentloggedInUser.firstname != "")
-                            {
-                                displayusername = currentloggedInUser.firstname + ", " + currentloggedInUser.lastname + " [" + currentloggedInUser.userId + "]";
-                            }
-                            decimal currentCalculatedValue = 0.0000m;
-                            switch (selectedSysName)
-                            {
-                                case "Nec":
-                                    switch (selectedCountUnit)
-                                    {
-                                        case "Yard":
-                                            decimal drivedVal = (selectedYarnLen / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
-                                            currentCalculatedValue = formatDecimal(drivedVal);
-                                            break;
-                                        case "Meter":
-                                            decimal drivedVal_meter = ((selectedYarnLen * 1.09361m) / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
-                                            currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                            break;
-                                        default:
-                                            break;
-                                    };
-                                    break;
-                                case "Tex":
-                                    switch (selectedCountUnit)
-                                    {
-                                        case "Yard":
-                                            decimal drivedVal = current_stable_data * 1000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
-                                            currentCalculatedValue = formatDecimal(drivedVal);
-                                            break;
-                                        case "Meter":
-                                            decimal drivedVal_meter = current_stable_data * 1000.0000m / selectedYarnLen * 1.0000m;
-                                            currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                            break;
-                                        default:
-                                            break;
-                                    };
-                                    break;
-                                case "Den":
-                                    switch (selectedCountUnit)
-                                    {
-                                        case "Yard":
-                                            decimal drivedVal = current_stable_data * 9000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
-                                            currentCalculatedValue = formatDecimal(drivedVal);
-                                            break;
-                                        case "Meter":
-                                            decimal drivedVal_meter = current_stable_data * 9000.0000m / selectedYarnLen * 1.0000m;
-                                            currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                            break;
-                                        default:
-                                            break;
-                                    };
-                                    break;
-                                case "Nm":
-                                    switch (selectedCountUnit)
-                                    {
-                                        case "Yard":
-                                            decimal drivedVal = ((selectedYarnLen * 0.9144m) * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
-                                            currentCalculatedValue = formatDecimal(drivedVal);
-                                            break;
-                                        case "Meter":
-                                            decimal drivedVal_meter = (selectedYarnLen * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
-                                            currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                            break;
-                                        default:
-                                            break;
-                                    };
-                                    break;
-                                default:
-                                    break;
-                            };
-                            YCTestModelView ycTestModelView = new YCTestModelView()
-                            {
-                                testID = currentTestID,
-                                userID = currentloggedInUser.ID,
-                                userName = displayusername,
-                                machineID = selectedMachineID,
-                                machineCategory = selectedMachineCategory,
-                                machineName = selectedMachineName,
-                                shift = selectedShift,
-                                process = selectedProcess,
-                                countsysname = selectedSysName,
-                                yarnlenunit = selectedCountUnit,
-                                yarnlength = selectedYarnLen,
-                                totaltestcount = selectedTestCount,
-                                testcount = i + 1,
-                                yarnweight = current_stable_data,
-                                yccalcval = currentCalculatedValue
-                            };
-                            ycTestModelViewlist.Add(ycTestModelView);
-                            //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
+                            decimal yarnstrength = formatDecimal(current_stable_data);
+                            decimal CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * (yarnstrength * 2.20462m));
+                            ycStrengthTestModelViewList[i].yarnstrength = yarnstrength;
+                            ycStrengthTestModelViewList[i].CSP = CSP;
+
                             await refListView();
                         }
                         else
                         {
-                            //showAlert("Test - [" + (i + 1) + "] Failed!!! Please start test from begining!!!");
                             reset(false);
                             break;
                         }
                     }
                     else
                     {
-                        showAlert(current_stable_data.ToString());
+                        //showAlert("Test - [" + (i + 1) + "] Failed!!! Please start test from begining!!!");
+                        reset(false);
+                        break;
                     }
+                    //}
+                    //else
+                    //{
+                    //decimal yarnstrength = formatDecimal(current_stable_data);
+                    //decimal CSP = formatDecimal(ycStrengthTestModelViewList[currentTestCount - 1].yccalcval * current_stable_data);
+                    //ycStrengthTestModelViewList[currentTestCount - 1].yarnstrength = yarnstrength;
+                    //ycStrengthTestModelViewList[currentTestCount - 1].CSP = CSP;
+                    //}
                 }
 
-                if (ycTestModelViewlist.Count > 0 && passCount == testCount)
+                if (ycStrengthTestModelViewList.Count > 0 && passCount == testCount)
                 {
                     updateDB();
                 }
@@ -698,6 +794,7 @@ namespace TQM
                     while (true)
                     {
                         String balOutput = Listen(initialWeigthCheck);
+
                         Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
                         if (balOutput != "")
                         {
@@ -793,6 +890,120 @@ namespace TQM
                 return false;
             }
         }
+
+
+        private async Task<bool> RunCSPTest()
+        {
+            try
+            {
+                bool blueState = true;
+                if (blueState)
+                {
+                    bool initialWeigthCheck = false;
+                    decimal prev_stable_value = 0.000m;
+                    while (true)
+                    {
+                        String balOutput = ListenCSP();
+
+                        Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
+                        if (balOutput != "")
+                        {
+                            if (balOutput == "reset" && initialWeigthCheck) //Added to ignore negative values after placing weight
+                            {
+                                continue;
+                            }
+
+                            if (balOutput == "reset")
+                            {
+                                ImageNotification("red.png");
+                                UpdateUserNotification("REMOVE WEIGHT");
+                                Debug.WriteLine("Remove weigth to ensure zero!!!");
+                            }
+                            else if (balOutput == "fail")
+                            {
+                                ImageNotification("red.png");
+                                UpdateUserNotification("COMMUNICATION ERROR!!!");
+                                Debug.WriteLine("Read data failed");
+                                return false;
+                            }
+                            else
+                            {
+                                decimal s_op = decimal.Parse(balOutput);
+                                s_op = formatDecimal(s_op);
+                                if (!initialWeigthCheck)
+                                {
+                                    if (s_op == INITIAL_LOAD_CELL_VALUE)
+                                    {
+                                        initialWeigthCheck = true;
+                                        ImageNotification("green.png");
+                                        UpdateUserNotification("Waiting for CSP data" + " (S.No - " + currentTestCount + ")", GREEN);
+                                        Debug.WriteLine("Place object to start test!!!");
+                                    }
+                                    else
+                                    {
+                                        ImageNotification("red.png");
+                                        UpdateUserNotification("Ensure CSP is not loaded");
+                                        Debug.WriteLine("Remove weigth to ensure zero!!!");
+                                    }
+                                }
+                                else
+                                {
+                                    if (s_op == INITIAL_LOAD_CELL_VALUE || s_op < MIN_VAL_LOAD_CELL)
+                                    {
+                                        ImageNotification("green.png");
+                                        UpdateUserNotification("Waiting for CSP data" + " (S.No - " + currentTestCount + ")", GREEN);
+                                        Debug.WriteLine("Place object to start test!!!");
+                                    }
+                                    else
+                                    {
+                                        if (prev_stable_value > s_op)
+                                        {
+                                            if (INITIAL_LOAD_CELL_VALUE < 0.0000m)
+                                            {
+                                                current_stable_data = prev_stable_value + INITIAL_LOAD_CELL_VALUE;
+                                            }
+                                            else
+                                            {
+                                                current_stable_data = prev_stable_value - INITIAL_LOAD_CELL_VALUE;
+                                            }
+                                            ImageNotification(null);
+                                            UpdateUserNotification("");
+                                            return true;
+                                        }
+                                        else
+                                        {
+                                            prev_stable_value = s_op;
+                                            ImageNotification(null);
+                                            UpdateUserNotification(s_op.ToString());
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ImageNotification("red.png");
+                            UpdateUserNotification("UNSTABLE DATA!!!");
+                            Debug.WriteLine("Data is unstable!!! Ensure weighing machine is covered properly");
+                        }
+                    }
+                }
+                else
+                {
+                    ImageNotification("red.png");
+                    UpdateUserNotification("COMMUNICATION ERROR!!!");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                return false;
+            }
+        }
+
+
 
         private void disposeble()
         {
@@ -942,6 +1153,50 @@ namespace TQM
             return op;
         }
 
+        private string ListenCSP()
+        {
+            string op = "";
+            bool Listening = true;
+            Debug.WriteLine("Listening has been started.");
+            while (Listening)
+            {
+                try
+                {
+                    while (true)
+                    {
+                        var buffer = new BufferedReader(new InputStreamReader(_socket.InputStream));
+                        System.Threading.Thread.Sleep(1000);
+                        if (buffer.Ready())
+                        {
+                            op = RemoveSpecialCharacters(buffer.ReadLine());
+                            while (op != null)
+                            {
+                                //if (op.Contains("-")) { return "reset"; }
+                                //else
+                                //{
+                                decimal op_dec = decimal.Parse(op);
+                                return op;
+                                //}
+                            }
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Buffer is not ready!!!");
+                            return "fail";
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error: " + e.Message);
+                    Listening = false;
+                    return "fail";
+                }
+            }
+            Debug.WriteLine("Listening has ended....");
+            return op;
+        }
+
         private void picker_machinecategory_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
@@ -1034,8 +1289,8 @@ namespace TQM
                 string comment = await DisplayPromptAsync(header, "Please type your remark", "Save", "Discard", null, 100);
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    YCTestSummaryModel summaryModel = conn.Table<YCTestSummaryModel>().Where(
-                        YCTestSummaryModel => YCTestSummaryModel.testID == testID).FirstOrDefault();
+                    YCStrengthTestSummaryModel summaryModel = conn.Table<YCStrengthTestSummaryModel>().Where(
+                        YCStrengthTestSummaryModel => YCStrengthTestSummaryModel.testID == testID).FirstOrDefault();
                     if (summaryModel != null)
                     {
                         summaryModel.testRemark = comment;

@@ -19,9 +19,9 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
-                <Label Grid.Row="0" Grid.Column="2" Text="Wrapping" FontSize="25" TextColor="ForestGreen" 
+                <Label Grid.Row="0" Grid.Column="2" Text="Count+Strength" FontSize="16" TextColor="ForestGreen" 
                        VerticalTextAlignment="Center" HorizontalOptions="Start" />
-                <Label Grid.Row="0" Grid.Column="3" Text="Test ID :" FontSize="18" TextColor="#0e0273" 
+                <Label Grid.Row="0" Grid.Column="3" Text="Test ID :" FontSize="16" TextColor="#0e0273" 
                        VerticalTextAlignment="Center" HorizontalOptions="Start" />
                 <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Text="" FontSize="16" TextColor="ForestGreen" Margin="65,0"
                        VerticalTextAlignment="Center" HorizontalOptions="Start" x:Name="lbl_TestID" />
@@ -121,7 +121,7 @@
             <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Process" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Standard Hank" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Standard Count" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
             <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_countsysname" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
             <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarncountunit" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
@@ -263,9 +263,11 @@
                        IsVisible="false">
                     <ListView.Header>
                         <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273">
-                            <Label Text="Sample No" WidthRequest="150" TextColor="White" FontSize="20"/>
-                            <Label Text="Sample Weigth" WidthRequest="230" TextColor="White" FontSize="20"/>
-                            <Label Text="Hank" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Label Text="S.No" WidthRequest="150" TextColor="White" FontSize="20"/>
+                            <Label Text="Sample Wt" WidthRequest="230" TextColor="White" FontSize="20"/>
+                            <Label Text="Count" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Label Text="Strength" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Label Text="CSP" WidthRequest="200" TextColor="White" FontSize="20"/>
                         </StackLayout>
                     </ListView.Header>
                     <ListView.ItemTemplate>
@@ -274,8 +276,10 @@
                                 <Grid ColumnSpacing="2"
                                          RowSpacing="2">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="155"/>
-                                        <ColumnDefinition Width="235"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Label Grid.Column="0" Grid.Row="0"
@@ -284,6 +288,10 @@
                                        Text="{Binding yarnweight}" FontSize="16"/>
                                      <Label Grid.Column="2" Grid.Row="0" 
                                        Text="{Binding yccalcval}" FontSize="16"/>
+                                    <Label Grid.Column="3" Grid.Row="0" 
+                                       Text="{Binding yarnstrength}" FontSize="16"/>
+                                    <Label Grid.Column="4" Grid.Row="0" 
+                                       Text="{Binding CSP}" FontSize="16"/>
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>
@@ -326,9 +334,11 @@
                        IsVisible="false">
                     <ListView.Header>
                         <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273">
-                            <Label Text="Sample No" WidthRequest="150" TextColor="White" FontSize="20"/>
-                            <Label Text="Sample Weigth" WidthRequest="230" TextColor="White" FontSize="20"/>
-                            <Label Text="Hank" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Label Text="S.No" WidthRequest="150" TextColor="White" FontSize="20"/>
+                            <Label Text="Sample Wt" WidthRequest="230" TextColor="White" FontSize="20"/>
+                            <Label Text="Count" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Label Text="Strength" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Label Text="CSP" WidthRequest="200" TextColor="White" FontSize="20"/>
                         </StackLayout>
                     </ListView.Header>
                     <ListView.ItemTemplate>
@@ -337,8 +347,10 @@
                                 <Grid ColumnSpacing="2"
                                          RowSpacing="2">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="155"/>
-                                        <ColumnDefinition Width="235"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Label Grid.Column="0" Grid.Row="0"
@@ -347,6 +359,10 @@
                                        Text="{Binding yarnweight}" FontSize="16"/>
                                     <Label Grid.Column="2" Grid.Row="0" 
                                        Text="{Binding yccalcval}" FontSize="16"/>
+                                    <Label Grid.Column="3" Grid.Row="0" 
+                                       Text="{Binding yarnstrength}" FontSize="16"/>
+                                    <Label Grid.Column="4" Grid.Row="0" 
+                                       Text="{Binding CSP}" FontSize="16"/>
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>
