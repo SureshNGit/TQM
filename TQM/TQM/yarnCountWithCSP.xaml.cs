@@ -422,17 +422,6 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
-            //if (entry_standardHank.Text.Trim() == "" || int.Parse(entry_standardHank.Text.Trim()) == 0)
-            //{
-            //    await DisplayAlert("Attention", "Standard Hank should not be blank or zero!!!", "Ok");
-            //    return;
-            //}
-            //if (picker_process.SelectedIndex <= 0)
-            //{
-            //    await DisplayAlert("Attention", "Please select process info!!!", "Ok");
-            //    return;
-            //}
-
             if (!initializeBluetooth(runConfiguration.getLoadCellSerailNo()))
             {
                 ImageNotification("red.png");
@@ -442,7 +431,7 @@ namespace TQM
             //READ INITIAL LOAD CELL VALUE
 
             INITIAL_LOAD_CELL_VALUE = 0.0000m;
-            String balOutput = ListenCSP();
+            String balOutput = getInitialCSPValue();
 
             Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
             if (balOutput != "")
@@ -461,9 +450,6 @@ namespace TQM
                 }
             }
 
-
-
-
             //END OF READ
             disposeble();
             if (!initializeBluetooth(runConfiguration.getBalanceSerialNo()))
@@ -475,17 +461,11 @@ namespace TQM
             currentTarget = "YCB";
             string testCount_str = entry_testcount.Text;
             int testCount = int.Parse(testCount_str);
-            //if (testCount_str == null || testCount_str == "")
-            //{
-            //    ImageNotification("red.png");
-            //    UpdateUserNotification("Test count cannot be zero!!!");
-            //    return;
-            //}
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                YCTestModel lastTestRecord = null;
-                conn.CreateTable<YCTestModel>();
-                int recordCount = conn.Table<YCTestModel>().Count();
+                YCStrengthTestModel lastTestRecord = null;
+                conn.CreateTable<YCStrengthTestModel>();
+                int recordCount = conn.Table<YCStrengthTestModel>().Count();
 
                 if (recordCount == 0)
                 {
@@ -493,9 +473,9 @@ namespace TQM
                 }
                 else
                 {
-                    DateTime maxDate = conn.Table<YCTestModel>().Max(YCTestModel => YCTestModel.createdate);
-                    lastTestRecord = conn.Table<YCTestModel>()
-                        .Where(YCTestModel => YCTestModel.createdate == maxDate).FirstOrDefault();
+                    DateTime maxDate = conn.Table<YCStrengthTestModel>().Max(YCStrengthTestModel => YCStrengthTestModel.createdate);
+                    lastTestRecord = conn.Table<YCStrengthTestModel>()
+                        .Where(YCStrengthTestModel => YCStrengthTestModel.createdate == maxDate).FirstOrDefault();
                     if (lastTestRecord != null)
                     {
                         if (currentTestID == 0)
@@ -559,7 +539,6 @@ namespace TQM
                 ImageNotification("loading.gif");
                 bool runResult = false;
                 int passCount = 0;
-                //bool isYCB = true;
                 for (int i = 0; i < testCount; i++)
                 {
                     runResult = false;
@@ -567,8 +546,6 @@ namespace TQM
                     CancellationToken ct = src.Token;
                     ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
 
-                    //if (isYCB)
-                    //{
                     currentTestCount = i + 1;
                     disposeble();
                     if (!initializeBluetooth(runConfiguration.getBalanceSerialNo()))
@@ -577,7 +554,6 @@ namespace TQM
                         UpdateUserNotification("Balance - COMMUNICATION ERROR!!!");
                         return;
                     }
-                    //isYCB = false;
                     await Task.Run(async () => await RunTest(), ct).ContinueWith((t) =>
                     {
                         t.Wait();
@@ -590,16 +566,7 @@ namespace TQM
                             runResult = t.Result;
                         };
                     });
-                    //}
-                    //else
-                    //{
-
-                    //}
-
-
                     src.Cancel();
-                    //if (!isYCB)
-                    //{
                     if (runResult)
                     {
                         passCount++;
@@ -695,7 +662,6 @@ namespace TQM
                             CSP = 0.0000m
                         };
                         ycStrengthTestModelViewList.Add(ycStrengthTestModelView);
-                        //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
                         await refListView();
 
                         runResult = false;
@@ -738,18 +704,9 @@ namespace TQM
                     }
                     else
                     {
-                        //showAlert("Test - [" + (i + 1) + "] Failed!!! Please start test from begining!!!");
                         reset(false);
                         break;
                     }
-                    //}
-                    //else
-                    //{
-                    //decimal yarnstrength = formatDecimal(current_stable_data);
-                    //decimal CSP = formatDecimal(ycStrengthTestModelViewList[currentTestCount - 1].yccalcval * current_stable_data);
-                    //ycStrengthTestModelViewList[currentTestCount - 1].yarnstrength = yarnstrength;
-                    //ycStrengthTestModelViewList[currentTestCount - 1].CSP = CSP;
-                    //}
                 }
 
                 if (ycStrengthTestModelViewList.Count > 0 && passCount == testCount)
@@ -764,20 +721,21 @@ namespace TQM
                         await refOverallSummary();
                     }
                 }
-                if (runResult)
-                {
-                    reset();
-                }
-                else
-                {
-                    reset(false);
-                }
+
+                //if (runResult)
+                //{
+                //    reset();
+                //}
+                //else
+                //{
+                //    reset(false);
+                //}
 
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
-                showAlert("COMMUNICATION ERROR!!!");
+                showAlert("Handle Test - COMMUNICATION ERROR!!! " + ex.ToString());
                 reset();
             }
         }
@@ -786,107 +744,109 @@ namespace TQM
         {
             try
             {
-                bool blueState = true;
-                if (blueState)
+                //bool blueState = true;
+                //if (blueState)
+                //{
+                bool initialWeigthCheck = false;
+                int perTestLoopCount = 0;
+                while (true)
                 {
-                    bool initialWeigthCheck = false;
-                    int perTestLoopCount = 0;
-                    while (true)
+                    String balOutput = Listen(initialWeigthCheck);
+
+                    Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
+                    if (balOutput != "")
                     {
-                        String balOutput = Listen(initialWeigthCheck);
-
-                        Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
-                        if (balOutput != "")
+                        if (balOutput == "reset" && initialWeigthCheck) //Added to ignore negative values after placing weight
                         {
-                            if (balOutput == "reset" && initialWeigthCheck) //Added to ignore negative values after placing weight
-                            {
-                                continue;
-                            }
+                            continue;
+                        }
 
-                            if (balOutput == "reset")
-                            {
-                                ImageNotification("red.png");
-                                UpdateUserNotification("REMOVE WEIGHT");
-                                Debug.WriteLine("Remove weigth to ensure zero!!!");
-                            }
-                            else if (balOutput == "fail")
-                            {
-                                ImageNotification("red.png");
-                                UpdateUserNotification("COMMUNICATION ERROR!!!");
-                                Debug.WriteLine("Read data failed");
-                                return false;
-                            }
-                            else
-                            {
-                                decimal s_op = decimal.Parse(balOutput);
-                                s_op = formatDecimal(s_op);
-                                if (!initialWeigthCheck)
-                                {
-                                    if (s_op == ZERO)
-                                    {
-                                        initialWeigthCheck = true;
-                                        ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
-                                        Debug.WriteLine("Place object to start test!!!");
-                                    }
-                                    else
-                                    {
-                                        ImageNotification("red.png");
-                                        UpdateUserNotification("REMOVE WEIGHT");
-                                        Debug.WriteLine("Remove weigth to ensure zero!!!");
-                                    }
-                                }
-                                else
-                                {
-                                    if (s_op == ZERO || s_op < MIN_VAL)
-                                    {
-                                        ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
-                                        Debug.WriteLine("Place object to start test!!!");
-                                    }
-                                    //else if (s_op < MIN_VAL)
-                                    //{
-                                    //    initialWeigthCheck = false;
-                                    //    ImageNotification("red.png");
-                                    //    UpdateUserNotification("Weigth is below minimum value!!!");
-                                    //    Debug.WriteLine("Weigth is below minimum value!!!");
-                                    //}
-                                    else
-                                    {
-                                        current_stable_data = s_op;
-                                        ImageNotification(null);
-                                        UpdateUserNotification("");
-                                        return true;
-                                    }
-                                }
-                            }
+                        if (balOutput == "reset")
+                        {
+                            ImageNotification("red.png");
+                            UpdateUserNotification("REMOVE WEIGHT");
+                            Debug.WriteLine("Remove weigth to ensure zero!!!");
+                        }
+                        else if (balOutput == "fail")
+                        {
+                            ImageNotification("red.png");
+                            UpdateUserNotification("Balance - COMMUNICATION ERROR!!! Data reception failure");
+                            Debug.WriteLine("Read data failed");
+                            return false;
                         }
                         else
                         {
-                            ImageNotification("red.png");
-                            UpdateUserNotification("UNSTABLE DATA!!!");
-                            Debug.WriteLine("Data is unstable!!! Ensure weighing machine is covered properly");
+                            decimal s_op = decimal.Parse(balOutput);
+                            s_op = formatDecimal(s_op);
+                            if (!initialWeigthCheck)
+                            {
+                                if (s_op == ZERO)
+                                {
+                                    initialWeigthCheck = true;
+                                    ImageNotification("green.png");
+                                    UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
+                                    Debug.WriteLine("Place object to start test!!!");
+                                }
+                                else
+                                {
+                                    ImageNotification("red.png");
+                                    UpdateUserNotification("REMOVE WEIGHT");
+                                    Debug.WriteLine("Remove weigth to ensure zero!!!");
+                                }
+                            }
+                            else
+                            {
+                                if (s_op == ZERO || s_op < MIN_VAL)
+                                {
+                                    ImageNotification("green.png");
+                                    UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
+                                    Debug.WriteLine("Place object to start test!!!");
+                                }
+                                //else if (s_op < MIN_VAL)
+                                //{
+                                //    initialWeigthCheck = false;
+                                //    ImageNotification("red.png");
+                                //    UpdateUserNotification("Weigth is below minimum value!!!");
+                                //    Debug.WriteLine("Weigth is below minimum value!!!");
+                                //}
+                                else
+                                {
+                                    current_stable_data = s_op;
+                                    ImageNotification(null);
+                                    UpdateUserNotification("");
+                                    return true;
+                                }
+                            }
                         }
-                        if (perTestLoopCount > PER_TEST_LOOP_COUNT)
-                        {
-                            ImageNotification("red.png");
-                            UpdateUserNotification("IMPROPER TEST!!!");
-                            Debug.WriteLine("Improper Test!!! Start new test");
-                            return false;
-                        }
-                        perTestLoopCount += 1;
                     }
+                    else
+                    {
+                        ImageNotification("red.png");
+                        UpdateUserNotification("UNSTABLE DATA!!!");
+                        Debug.WriteLine("Data is unstable!!! Ensure weighing machine is covered properly");
+                    }
+                    if (perTestLoopCount > PER_TEST_LOOP_COUNT)
+                    {
+                        ImageNotification("red.png");
+                        UpdateUserNotification("IMPROPER TEST!!!");
+                        Debug.WriteLine("Improper Test!!! Start new test");
+                        return false;
+                    }
+                    perTestLoopCount += 1;
                 }
-                else
-                {
-                    ImageNotification("red.png");
-                    UpdateUserNotification("COMMUNICATION ERROR!!!");
-                    return false;
-                }
+                //}
+                //else
+                //{
+                //    ImageNotification("red.png");
+                //    UpdateUserNotification("COMMUNICATION ERROR!!!");
+                //    return false;
+                //}
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
+                ImageNotification("red.png");
+                UpdateUserNotification("Balance-COMMUNICATION ERROR!!! " + ex.ToString());
                 return false;
             }
         }
@@ -896,109 +856,33 @@ namespace TQM
         {
             try
             {
-                bool blueState = true;
-                if (blueState)
+                ImageNotification("green.png");
+                UpdateUserNotification("Waiting for CSP data" + " (S.No - " + currentTestCount + ")", GREEN);
+
+                List<decimal> balOutput = ListenCSP();
+
+                Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
+                if (balOutput.Count != 0)
                 {
-                    bool initialWeigthCheck = false;
-                    decimal prev_stable_value = 0.000m;
-                    while (true)
-                    {
-                        String balOutput = ListenCSP();
-
-                        Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
-                        if (balOutput != "")
-                        {
-                            if (balOutput == "reset" && initialWeigthCheck) //Added to ignore negative values after placing weight
-                            {
-                                continue;
-                            }
-
-                            if (balOutput == "reset")
-                            {
-                                ImageNotification("red.png");
-                                UpdateUserNotification("REMOVE WEIGHT");
-                                Debug.WriteLine("Remove weigth to ensure zero!!!");
-                            }
-                            else if (balOutput == "fail")
-                            {
-                                ImageNotification("red.png");
-                                UpdateUserNotification("COMMUNICATION ERROR!!!");
-                                Debug.WriteLine("Read data failed");
-                                return false;
-                            }
-                            else
-                            {
-                                decimal s_op = decimal.Parse(balOutput);
-                                s_op = formatDecimal(s_op);
-                                if (!initialWeigthCheck)
-                                {
-                                    if (s_op == INITIAL_LOAD_CELL_VALUE)
-                                    {
-                                        initialWeigthCheck = true;
-                                        ImageNotification("green.png");
-                                        UpdateUserNotification("Waiting for CSP data" + " (S.No - " + currentTestCount + ")", GREEN);
-                                        Debug.WriteLine("Place object to start test!!!");
-                                    }
-                                    else
-                                    {
-                                        ImageNotification("red.png");
-                                        UpdateUserNotification("Ensure CSP is not loaded");
-                                        Debug.WriteLine("Remove weigth to ensure zero!!!");
-                                    }
-                                }
-                                else
-                                {
-                                    if (s_op == INITIAL_LOAD_CELL_VALUE || s_op < MIN_VAL_LOAD_CELL)
-                                    {
-                                        ImageNotification("green.png");
-                                        UpdateUserNotification("Waiting for CSP data" + " (S.No - " + currentTestCount + ")", GREEN);
-                                        Debug.WriteLine("Place object to start test!!!");
-                                    }
-                                    else
-                                    {
-                                        if (prev_stable_value > s_op)
-                                        {
-                                            if (INITIAL_LOAD_CELL_VALUE < 0.0000m)
-                                            {
-                                                current_stable_data = prev_stable_value + INITIAL_LOAD_CELL_VALUE;
-                                            }
-                                            else
-                                            {
-                                                current_stable_data = prev_stable_value - INITIAL_LOAD_CELL_VALUE;
-                                            }
-                                            ImageNotification(null);
-                                            UpdateUserNotification("");
-                                            return true;
-                                        }
-                                        else
-                                        {
-                                            prev_stable_value = s_op;
-                                            ImageNotification(null);
-                                            UpdateUserNotification(s_op.ToString());
-                                        }
-
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            ImageNotification("red.png");
-                            UpdateUserNotification("UNSTABLE DATA!!!");
-                            Debug.WriteLine("Data is unstable!!! Ensure weighing machine is covered properly");
-                        }
-                    }
+                    balOutput.Sort();
+                    current_stable_data = balOutput[balOutput.Count - 1];
+                    ImageNotification(null);
+                    UpdateUserNotification("");
+                    return true;
                 }
                 else
                 {
                     ImageNotification("red.png");
-                    UpdateUserNotification("COMMUNICATION ERROR!!!");
+                    UpdateUserNotification("CSP-COMMUNICATION ERROR!!! Data reception failure");
+                    Debug.WriteLine("Read data failed");
                     return false;
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
+                ImageNotification("red.png");
+                UpdateUserNotification("CSP-COMMUNICATION ERROR!!! " + ex.ToString());
                 return false;
             }
         }
@@ -1153,7 +1037,7 @@ namespace TQM
             return op;
         }
 
-        private string ListenCSP()
+        private string getInitialCSPValue()
         {
             string op = "";
             bool Listening = true;
@@ -1162,6 +1046,7 @@ namespace TQM
             {
                 try
                 {
+                    int dataLoop = 0;
                     while (true)
                     {
                         var buffer = new BufferedReader(new InputStreamReader(_socket.InputStream));
@@ -1171,19 +1056,24 @@ namespace TQM
                             op = RemoveSpecialCharacters(buffer.ReadLine());
                             while (op != null)
                             {
-                                //if (op.Contains("-")) { return "reset"; }
-                                //else
-                                //{
                                 decimal op_dec = decimal.Parse(op);
-                                return op;
-                                //}
+                                return op_dec.ToString();
+
                             }
                         }
                         else
                         {
-                            Debug.WriteLine("Buffer is not ready!!!");
-                            return "fail";
+
+                            disposeble();
+                            if (!initializeBluetooth(runConfiguration.getLoadCellSerailNo()))
+                            {
+                                ImageNotification("red.png");
+                                UpdateUserNotification("CSP - Communication Error!!!");
+                                return "fail";
+                            }
+                            continue;
                         }
+                        dataLoop = dataLoop + 1;
                     }
                 }
                 catch (Exception e)
@@ -1194,7 +1084,87 @@ namespace TQM
                 }
             }
             Debug.WriteLine("Listening has ended....");
-            return op;
+            return "fail";
+        }
+
+        private List<decimal> ListenCSP()
+        {
+            string op = "";
+            List<decimal> ipList = new List<decimal>();
+            bool Listening = true;
+            Debug.WriteLine("Listening has been started.");
+            while (Listening)
+            {
+                try
+                {
+                    bool initialValueCheck = false;
+                    while (true)
+                    {
+                        var buffer = new BufferedReader(new InputStreamReader(_socket.InputStream));
+                        System.Threading.Thread.Sleep(1000);
+                        if (buffer.Ready())
+                        {
+
+                            while (op != null)
+                            {
+                                op = RemoveSpecialCharacters(buffer.ReadLine());
+                                decimal op_dec = decimal.Parse(op);
+
+                                if (!initialValueCheck)
+                                {
+                                    if (op_dec == INITIAL_LOAD_CELL_VALUE || op_dec < MIN_VAL_LOAD_CELL)
+                                    {
+                                        ImageNotification("green.png");
+                                        UpdateUserNotification("Waiting for CSP data" + " (S.No - " + currentTestCount + ")", GREEN);
+                                    }
+                                    else
+                                    {
+                                        ipList.Add(op_dec);
+                                        initialValueCheck = true;
+                                        ImageNotification("green.png");
+                                        UpdateUserNotification("Reading CSP data" + " (S.No - " + currentTestCount + ")", GREEN);
+                                    }
+                                }
+                                else
+                                {
+                                    ipList.Add(op_dec);
+                                    if (op_dec <= INITIAL_LOAD_CELL_VALUE || op_dec == 0.0000m || op_dec < MIN_VAL_LOAD_CELL)
+                                    {
+                                        return ipList;
+                                    }
+                                    else
+                                    {
+                                        ImageNotification("green.png");
+                                        UpdateUserNotification("Reading CSP data" + " (S.No - " + currentTestCount + ")", GREEN);
+                                    }
+                                }
+
+
+                            }
+                        }
+                        else
+                        {
+
+                            disposeble();
+                            if (!initializeBluetooth(runConfiguration.getLoadCellSerailNo()))
+                            {
+                                ImageNotification("red.png");
+                                UpdateUserNotification("CSP - Communication Error!!!");
+                                return ipList;
+                            }
+                            continue;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error: " + e.Message);
+                    Listening = false;
+                    return ipList;
+                }
+            }
+            Debug.WriteLine("Listening has ended....");
+            return ipList;
         }
 
         private void picker_machinecategory_SelectedIndexChanged(object sender, EventArgs e)
