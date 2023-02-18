@@ -126,21 +126,21 @@ namespace TQM
                     Navigation.PushAsync(new YCReport
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false, is_consolidated));
                 }
-                else if (picker_reportName.SelectedItem.ToString() == "A%")
-                {
-                    Navigation.PushAsync(new YCApercentReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
-                }
-                else if (picker_reportName.SelectedItem.ToString() == "Stretch")
-                {
-                    Navigation.PushAsync(new StretchReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
-                }
-                else if (picker_reportName.SelectedItem.ToString() == "Noils")
-                {
-                    Navigation.PushAsync(new NoilsReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
-                }
+                //else if (picker_reportName.SelectedItem.ToString() == "A%")
+                //{
+                //    Navigation.PushAsync(new YCApercentReport
+                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
+                //}
+                //else if (picker_reportName.SelectedItem.ToString() == "Stretch")
+                //{
+                //    Navigation.PushAsync(new StretchReport
+                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
+                //}
+                //else if (picker_reportName.SelectedItem.ToString() == "Noils")
+                //{
+                //    Navigation.PushAsync(new NoilsReport
+                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
+                //}
             }
             catch (Exception ex)
             {
@@ -239,21 +239,21 @@ namespace TQM
                     Navigation.PushAsync(new YCReport
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true, is_consolidated));
                 }
-                else if (picker_reportName.SelectedItem.ToString() == "A%")
-                {
-                    Navigation.PushAsync(new YCApercentReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
-                }
-                else if (picker_reportName.SelectedItem.ToString() == "Stretch")
-                {
-                    Navigation.PushAsync(new StretchReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
-                }
-                else if (picker_reportName.SelectedItem.ToString() == "Noils")
-                {
-                    Navigation.PushAsync(new NoilsReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
-                }
+                //else if (picker_reportName.SelectedItem.ToString() == "A%")
+                //{
+                //    Navigation.PushAsync(new YCApercentReport
+                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
+                //}
+                //else if (picker_reportName.SelectedItem.ToString() == "Stretch")
+                //{
+                //    Navigation.PushAsync(new StretchReport
+                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
+                //}
+                //else if (picker_reportName.SelectedItem.ToString() == "Noils")
+                //{
+                //    Navigation.PushAsync(new NoilsReport
+                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
+                //}
             }
             catch (Exception ex)
             {

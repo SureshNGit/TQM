@@ -56,9 +56,18 @@ namespace TQM
                         entry_rovinglength.Text = ycConfigList[0].rovinglength.ToString();
                         entry_testcount.Text = ycConfigList[0].testcount.ToString();
                         entry_standardHank.Text = ycConfigList[0].standardHank.ToString();
-                        entry_testcountApercent.Text = ycConfigList[0].testcountApercent.ToString();
-                        entry_testcountStretch.Text = ycConfigList[0].testcountStretch.ToString();
-                        entry_testcountNoils.Text = ycConfigList[0].testcountNoils.ToString();
+                        if (ycConfigList[0].shift1time != null && ycConfigList[0].shift1time != "")
+                        {
+                            Shift1_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfigList[0].shift1time).TotalHours);
+                        }
+                        if (ycConfigList[0].shift2time != null && ycConfigList[0].shift2time != "")
+                        {
+                            Shift2_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfigList[0].shift2time).TotalHours);
+                        }
+                        if (ycConfigList[0].shift3time != null && ycConfigList[0].shift3time != "")
+                        {
+                            Shift3_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfigList[0].shift3time).TotalHours);
+                        }
                     }
                     else
                     {
@@ -80,10 +89,8 @@ namespace TQM
                     picker_yarnlengthunit.SelectedItem.ToString() == "" ||
                     entry_sliverlength.Text.Trim().ToString() == "" ||
                     entry_rovinglength.Text.Trim().ToString() == "" ||
-                    entry_testcount.Text.Trim().ToString() == "" ||
-                    entry_testcountApercent.Text.Trim().ToString() == "" ||
-                    entry_testcountStretch.Text.Trim().ToString() == "" ||
-                    entry_testcountNoils.Text.Trim().ToString() == "")
+                    entry_testcount.Text.Trim().ToString() == "")
+
                 {
                     DisplayAlert("Attention", "Please fill all fields with valid data to proceed!!!", "OK");
                     return;
@@ -106,9 +113,9 @@ namespace TQM
                     rovinglength = int.Parse(entry_rovinglength.Text.ToString()),
                     testcount = int.Parse(entry_testcount.Text.ToString()),
                     standardHank = stdHank,
-                    testcountApercent = int.Parse(entry_testcountApercent.Text.ToString()),
-                    testcountStretch = int.Parse(entry_testcountStretch.Text.ToString()),
-                    testcountNoils = int.Parse(entry_testcountNoils.Text.ToString()),
+                    shift1time = Shift1_timePicker.Time.Hours.ToString() + ":" + Shift1_timePicker.Time.Minutes.ToString(),
+                    shift2time = Shift2_timePicker.Time.Hours.ToString() + ":" + Shift2_timePicker.Time.Minutes.ToString(),
+                    shift3time = Shift3_timePicker.Time.Hours.ToString() + ":" + Shift3_timePicker.Time.Minutes.ToString()
                 };
 
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))

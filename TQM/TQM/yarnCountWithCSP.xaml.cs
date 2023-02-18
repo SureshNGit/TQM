@@ -76,6 +76,7 @@ namespace TQM
                     TESTCOUNT = yarncountconfigmodel.testcount;
                     entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
                     STD_HANK = formatDecimal(yarncountconfigmodel.standardHank);
+                    updateShift();
                 }
                 else
                 {
@@ -86,6 +87,38 @@ namespace TQM
                     picker_shift.SelectedIndex = 0;
                     picker_process.SelectedIndex = 0;
                     entry_standardHank.Text = "0.000";
+                }
+            }
+        }
+
+        private void updateShift()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                conn.CreateTable<YarnCountConfigModel>();
+                YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                if (yarncountconfigmodel != null)
+                {
+                    TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
+                    TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
+                    TimeSpan shit3time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift3time).TotalHours);
+                    TimeSpan currentTime = TimeSpan.FromHours(TimeSpan.Parse(DateTime.Now.Hour.ToString() + ":" + DateTime.Now.Minute.ToString()).TotalHours);
+                    if (currentTime >= shit1time && currentTime < shit2time)
+                    {
+                        picker_shift.SelectedItem = "Shift-1";
+                    }
+                    else if (currentTime >= shit2time && currentTime < shit3time)
+                    {
+                        picker_shift.SelectedItem = "Shift-2";
+                    }
+                    else
+                    {
+                        picker_shift.SelectedItem = "Shift-3";
+                    }
+                }
+                else
+                {
+                    picker_shift.SelectedIndex = 0;
                 }
             }
         }
@@ -335,8 +368,9 @@ namespace TQM
                     picker_machinecategory.SelectedIndex = 0;
                     picker_machinename.IsEnabled = true;
                     picker_machinename.SelectedIndex = 0;
-                    picker_shift.IsEnabled = true;
-                    picker_shift.SelectedIndex = 0;
+                    updateShift();
+                    //picker_shift.IsEnabled = true;
+                    //picker_shift.SelectedIndex = 0;
                     picker_process.SelectedIndex = 0;
                     picker_process.IsEnabled = true;
                     if (isTestStarted)
@@ -377,6 +411,7 @@ namespace TQM
         {
             lbl_TestID.Text = "";
             isTestStarted = true;
+            updateShift();
             ImageNotification("null");
             UpdateUserNotification("");
             hideFrames();
@@ -865,7 +900,7 @@ namespace TQM
                 if (balOutput.Count != 0)
                 {
                     balOutput.Sort();
-                    current_stable_data = balOutput[balOutput.Count - 1];
+                    current_stable_data = INITIAL_LOAD_CELL_VALUE - balOutput[balOutput.Count - 1];
                     ImageNotification(null);
                     UpdateUserNotification("");
                     return true;

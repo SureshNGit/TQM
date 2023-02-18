@@ -20,11 +20,11 @@ namespace TQM.Model
 
         public decimal standardHank { get; set; }
 
-        public int testcountApercent { get; set; }
+        public string shift1time { get; set; }
 
-        public int testcountStretch { get; set; }
+        public string shift2time { get; set; }
 
-        public int testcountNoils { get; set; }
+        public string shift3time { get; set; }
 
         public bool dataSyncStatus { get; set; } = false;
 
