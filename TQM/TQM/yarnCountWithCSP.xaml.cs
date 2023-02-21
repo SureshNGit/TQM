@@ -25,7 +25,7 @@ namespace TQM
         BluetoothAdapter adapter;
         BluetoothDevice device;
         const decimal MIN_VAL = 0.4000m;
-        const decimal MIN_VAL_LOAD_CELL = 2.0000m;
+        const decimal MIN_VAL_LOAD_CELL = 10.0000m;
         const decimal ZERO = 0.0000m;
         private decimal INITIAL_LOAD_CELL_VALUE = 0.0000m;
         const int PER_TEST_LOOP_COUNT = 100;
@@ -900,7 +900,19 @@ namespace TQM
                 if (balOutput.Count != 0)
                 {
                     balOutput.Sort();
-                    current_stable_data = INITIAL_LOAD_CELL_VALUE - balOutput[balOutput.Count - 1];
+                    //current_stable_data = INITIAL_LOAD_CELL_VALUE - balOutput[balOutput.Count - 1];
+
+                    if (INITIAL_LOAD_CELL_VALUE < 0.0000m)
+                    {
+                        current_stable_data = balOutput[balOutput.Count - 1] + INITIAL_LOAD_CELL_VALUE;
+                    }
+                    else
+                    {
+                        current_stable_data = balOutput[balOutput.Count - 1] - INITIAL_LOAD_CELL_VALUE;
+                    }
+
+
+
                     ImageNotification(null);
                     UpdateUserNotification("");
                     return true;
