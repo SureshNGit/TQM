@@ -1,9 +1,12 @@
 ﻿
 
+using Android;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
+using AndroidX.Core.App;
+using System;
 using System.IO;
 
 namespace TQM.Droid
@@ -20,17 +23,159 @@ namespace TQM.Droid
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
 
+            if (!(CheckPermissionGranted(Manifest.Permission.WriteExternalStorage) &&
+                    CheckPermissionGranted(Manifest.Permission.ReadExternalStorage)))
+            {
+                RequestStoragePermission();
+            }
+
+            if (!(CheckPermissionGranted(Manifest.Permission.AccessFineLocation) &&
+                    CheckPermissionGranted(Manifest.Permission.AccessCoarseLocation)))
+            {
+                RequestLocationPermission();
+            }
+
+            if (!(CheckPermissionGranted(Manifest.Permission.Bluetooth) &&
+                   CheckPermissionGranted(Manifest.Permission.BluetoothAdmin) &&
+                   CheckPermissionGranted(Manifest.Permission.BluetoothScan) &&
+                   CheckPermissionGranted(Manifest.Permission.BluetoothConnect) &&
+                   CheckPermissionGranted(Manifest.Permission.BluetoothAdvertise)))
+            {
+                RequestBluetoothPermission();
+            }
+
+            if (!(CheckPermissionGranted(Manifest.Permission.Internet)))
+            {
+                RequestInternetPermission();
+            }
+
+
             string dbName = "tqm_db.sqlite";
             string folderPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             string fullPath = Path.Combine(folderPath, dbName);
 
             LoadApplication(new App(fullPath));
+
+
+        }
+
+        public bool CheckPermissionGranted(string Permissions)
+        {
+            // Check if the permission is already available.
+            if (ActivityCompat.CheckSelfPermission(this, Permissions) != Permission.Granted)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        private void RequestStoragePermission()
+        {
+            if (ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.WriteExternalStorage) ||
+                ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.ReadExternalStorage))
+            {
+                // Provide an additional rationale to the user if the permission was not granted
+                // and the user would benefit from additional context for the use of the permission.
+                // For example if the user has previously denied the permission.
+                ActivityCompat.RequestPermissions(this, new String[] {
+                    Manifest.Permission.WriteExternalStorage,
+                    Manifest.Permission.ReadExternalStorage}, 100);
+
+            }
+            else
+            {
+                // permission has not been granted yet. Request it directly.
+                ActivityCompat.RequestPermissions(this, new String[] {
+                    Manifest.Permission.WriteExternalStorage,
+                    Manifest.Permission.ReadExternalStorage}, 100);
+            }
+        }
+
+        private void RequestLocationPermission()
+        {
+            if (ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.AccessFineLocation) ||
+                ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.AccessCoarseLocation))
+            {
+                // Provide an additional rationale to the user if the permission was not granted
+                // and the user would benefit from additional context for the use of the permission.
+                // For example if the user has previously denied the permission.
+
+
+
+                ActivityCompat.RequestPermissions(this, new String[] {
+                    Manifest.Permission.AccessFineLocation,
+                    Manifest.Permission.AccessCoarseLocation }, 101);
+
+            }
+            else
+            {
+                // permission has not been granted yet. Request it directly.
+                ActivityCompat.RequestPermissions(this, new String[] {
+                    Manifest.Permission.AccessFineLocation,
+                    Manifest.Permission.AccessCoarseLocation }, 101);
+            }
+        }
+
+        private void RequestBluetoothPermission()
+        {
+            if (ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.Bluetooth) ||
+                ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.BluetoothAdmin) ||
+                ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.BluetoothScan) ||
+                ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.BluetoothConnect) ||
+                ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.BluetoothAdvertise))
+            {
+                // Provide an additional rationale to the user if the permission was not granted
+                // and the user would benefit from additional context for the use of the permission.
+                // For example if the user has previously denied the permission.
+
+
+
+                ActivityCompat.RequestPermissions(this, new String[] {
+                    Manifest.Permission.Bluetooth,
+                    Manifest.Permission.BluetoothAdmin,
+                    Manifest.Permission.BluetoothScan,
+                    Manifest.Permission.BluetoothConnect,
+                    Manifest.Permission.BluetoothAdvertise}, 102);
+
+            }
+            else
+            {
+                // permission has not been granted yet. Request it directly.
+                ActivityCompat.RequestPermissions(this, new String[] {
+                    Manifest.Permission.Bluetooth,
+                    Manifest.Permission.BluetoothAdmin,
+                    Manifest.Permission.BluetoothScan,
+                    Manifest.Permission.BluetoothConnect,
+                    Manifest.Permission.BluetoothAdvertise}, 102);
+            }
+        }
+
+        private void RequestInternetPermission()
+        {
+            if (ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.Internet))
+            {
+                // Provide an additional rationale to the user if the permission was not granted
+                // and the user would benefit from additional context for the use of the permission.
+                // For example if the user has previously denied the permission.
+                ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.Internet }, 103);
+
+            }
+            else
+            {
+                // permission has not been granted yet. Request it directly.
+                ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.Internet }, 103);
+            }
         }
     }
 }
