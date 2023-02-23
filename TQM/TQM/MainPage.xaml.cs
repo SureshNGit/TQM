@@ -1,11 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using Plugin.Connectivity;
-using Plugin.Permissions;
-using Plugin.Permissions.Abstractions;
 using RestSharp;
 using SQLite;
 using System;
-using System.Diagnostics;
 using TQM.Model;
 using Xamarin.Forms;
 
@@ -20,123 +17,7 @@ namespace TQM
 
             InitializeComponent();
 
-            //CheckLocationPermissions();
-
-            //CheckStoragePermissions();
-
-            //CheckNetworkStatePermissions();
         }
-
-
-        private async void showAlert(string msg)
-        {
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                DisplayAlert("Notice", msg, "Ok");
-            });
-        }
-
-
-        private async void CheckLocationPermissions()
-        {
-            try
-            {
-                var status = await CrossPermissions.Current.CheckPermissionStatusAsync<LocationPermission>();
-                if (status != PermissionStatus.Granted)
-                {
-                    //bool ret = false;
-                    status = await CrossPermissions.Current.RequestPermissionAsync<LocationPermission>();
-                    if (status == PermissionStatus.Granted)
-                    {
-                        //ret = true;
-                    }
-                    else if (status != PermissionStatus.Unknown)
-                    {
-                        //ret = false;
-                        showAlert("Location permission was not granted!!!");
-                    }
-                    //return ret;
-                }
-                else
-                {
-                    //return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Location Permission Exception: " + ex.ToString());
-                showAlert("Location permission was not granted!!!");
-                //return false;
-            }
-        }
-
-        private async void CheckStoragePermissions()
-        {
-            try
-            {
-                var status = await CrossPermissions.Current.CheckPermissionStatusAsync<StoragePermission>();
-                if (status != PermissionStatus.Granted)
-                {
-                    //bool ret = false;
-                    status = await CrossPermissions.Current.RequestPermissionAsync<StoragePermission>();
-                    if (status == PermissionStatus.Granted)
-                    {
-                        //ret = true;
-                    }
-                    else if (status != PermissionStatus.Unknown)
-                    {
-                        //ret = false;
-                        showAlert("Storage permission was not granted!!!");
-                    }
-                    //return ret;
-                }
-                else
-                {
-                    //return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Storage Permission Exception: " + ex.ToString());
-                showAlert("Storage permission was not granted!!!");
-                //return false;
-            }
-        }
-
-        private async void CheckNetworkStatePermissions()
-        {
-            try
-            {
-                var status = await CrossPermissions.Current.CheckPermissionStatusAsync<PhonePermission>();
-                if (status != PermissionStatus.Granted)
-                {
-                    //bool ret = false;
-                    status = await CrossPermissions.Current.RequestPermissionAsync<PhonePermission>();
-                    if (status == PermissionStatus.Granted)
-                    {
-                        //ret = true;
-                    }
-                    else if (status != PermissionStatus.Unknown)
-                    {
-                        //ret = false;
-                        showAlert("Phone permission was not granted!!!");
-                    }
-                    //return ret;
-                }
-                else
-                {
-                    //return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Storage Permission Exception: " + ex.ToString());
-                showAlert("Storage permission was not granted!!!");
-                //return false;
-            }
-        }
-
-
 
         protected override void OnAppearing()
         {
