@@ -1137,7 +1137,7 @@ namespace TQM
         private List<decimal> ListenCSP()
         {
             string op = "";
-            List<decimal> ipList = new List<decimal>();
+            List<decimal> ipList = null;
             bool Listening = true;
             Debug.WriteLine("Listening has been started.");
             while (Listening)
@@ -1166,6 +1166,7 @@ namespace TQM
                                     }
                                     else
                                     {
+                                        ipList = new List<decimal>();
                                         ipList.Add(op_dec);
                                         initialValueCheck = true;
                                         ImageNotification("green.png");
