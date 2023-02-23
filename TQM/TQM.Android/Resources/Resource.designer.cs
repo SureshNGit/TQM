@@ -16905,22 +16905,25 @@ namespace TQM.Droid
 			public const int SasthaLogo = 2131165333;
 			
 			// aapt resource value: 0x7F070096
-			public const int test_custom_background = 2131165334;
+			public const int SasthaLogoYCB = 2131165334;
 			
 			// aapt resource value: 0x7F070097
-			public const int tooltip_frame_dark = 2131165335;
+			public const int test_custom_background = 2131165335;
 			
 			// aapt resource value: 0x7F070098
-			public const int tooltip_frame_light = 2131165336;
+			public const int tooltip_frame_dark = 2131165336;
 			
 			// aapt resource value: 0x7F070099
-			public const int user = 2131165337;
+			public const int tooltip_frame_light = 2131165337;
 			
 			// aapt resource value: 0x7F07009A
-			public const int yarn = 2131165338;
+			public const int user = 2131165338;
 			
 			// aapt resource value: 0x7F07009B
-			public const int ycsettings = 2131165339;
+			public const int yarn = 2131165339;
+			
+			// aapt resource value: 0x7F07009C
+			public const int ycsettings = 2131165340;
 			
 			static Drawable()
 			{
@@ -19043,19 +19046,13 @@ namespace TQM.Droid
 			public const int icon = 2131492864;
 			
 			// aapt resource value: 0x7F0C0001
-			public const int icon1 = 2131492865;
+			public const int icon_round = 2131492865;
 			
 			// aapt resource value: 0x7F0C0002
-			public const int icon_round = 2131492866;
+			public const int launcher_foreground = 2131492866;
 			
 			// aapt resource value: 0x7F0C0003
-			public const int launcher_foreground = 2131492867;
-			
-			// aapt resource value: 0x7F0C0004
-			public const int launcher_foreground1 = 2131492868;
-			
-			// aapt resource value: 0x7F0C0005
-			public const int SasthaLogo = 2131492869;
+			public const int SasthaLogoYCB = 2131492867;
 			
 			static Mipmap()
 			{
