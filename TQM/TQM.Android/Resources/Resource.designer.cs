@@ -19043,13 +19043,19 @@ namespace TQM.Droid
 			public const int icon = 2131492864;
 			
 			// aapt resource value: 0x7F0C0001
-			public const int icon_round = 2131492865;
+			public const int icon1 = 2131492865;
 			
 			// aapt resource value: 0x7F0C0002
-			public const int launcher_foreground = 2131492866;
+			public const int icon_round = 2131492866;
 			
 			// aapt resource value: 0x7F0C0003
-			public const int sasthaLogo = 2131492867;
+			public const int launcher_foreground = 2131492867;
+			
+			// aapt resource value: 0x7F0C0004
+			public const int launcher_foreground1 = 2131492868;
+			
+			// aapt resource value: 0x7F0C0005
+			public const int SasthaLogo = 2131492869;
 			
 			static Mipmap()
 			{
