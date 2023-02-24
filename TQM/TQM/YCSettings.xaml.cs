@@ -52,8 +52,9 @@ namespace TQM
                             }
                         }
                         picker_yarnlengthunit.SelectedIndex = yarncountlenindex;
-                        entry_sliverlength.Text = ycConfigList[0].sliverlength.ToString();
-                        entry_rovinglength.Text = ycConfigList[0].rovinglength.ToString();
+                        entry_yarnlength.Text = ycConfigList[0].yarnLength.ToString();
+                        //entry_sliverlength.Text = ycConfigList[0].sliverlength.ToString();
+                        //entry_rovinglength.Text = ycConfigList[0].rovinglength.ToString();
                         entry_testcount.Text = ycConfigList[0].testcount.ToString();
                         entry_standardHank.Text = ycConfigList[0].standardHank.ToString();
                         if (ycConfigList[0].shift1time != null && ycConfigList[0].shift1time != "")
@@ -87,8 +88,7 @@ namespace TQM
             {
                 if (picker_countsysname.SelectedItem.ToString() == "" ||
                     picker_yarnlengthunit.SelectedItem.ToString() == "" ||
-                    entry_sliverlength.Text.Trim().ToString() == "" ||
-                    entry_rovinglength.Text.Trim().ToString() == "" ||
+                    entry_yarnlength.Text.Trim().ToString() == "" ||
                     entry_testcount.Text.Trim().ToString() == "")
 
                 {
@@ -109,8 +109,7 @@ namespace TQM
                     ID = guid,
                     countsysname = picker_countsysname.SelectedItem.ToString(),
                     yarnlenunit = picker_yarnlengthunit.SelectedItem.ToString(),
-                    sliverlength = int.Parse(entry_sliverlength.Text.ToString()),
-                    rovinglength = int.Parse(entry_rovinglength.Text.ToString()),
+                    yarnLength = int.Parse(entry_yarnlength.Text.ToString()),
                     testcount = int.Parse(entry_testcount.Text.ToString()),
                     standardHank = stdHank,
                     shift1time = Shift1_timePicker.Time.Hours.ToString() + ":" + Shift1_timePicker.Time.Minutes.ToString(),

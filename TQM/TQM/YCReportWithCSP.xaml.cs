@@ -23,15 +23,15 @@ using String = System.String;
 namespace TQM
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class YCReport : ContentPage
+    public partial class YCReportWithCSP : ContentPage
     {
 
-        private List<OverallReportModelView> _listOfReports;
-        public List<OverallReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
+        private List<OverallCountStrengthReportModelView> _listOfReports;
+        public List<OverallCountStrengthReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
         private string selectedCompanyName = null;
         private const string BLUE = "#0e0273";
         private RunConfiguration runConfiguration = new RunConfiguration();
-        private List<YCTestSummaryModel> deleteList = null;
+        private List<YCStrengthTestSummaryModel> deleteList = null;
         private bool deleteAll = false;
         private int TOT_TEST = 0;
         private decimal CON_HANK = 0.0000m;
@@ -39,22 +39,22 @@ namespace TQM
         private decimal CON_CV = 0.0000m;
         private bool consolidatedReport = false;
 
-        public YCReport()
+        public YCReportWithCSP()
         {
             InitializeComponent();
         }
 
-        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest, bool isConsolidated)
+        public YCReportWithCSP(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest, bool isConsolidated)
         {
             InitializeComponent();
             consolidatedReport = isConsolidated;
             if (consolidatedReport)
             {
-                lbl_reportHeader.Text = "Consolidated YC Report";
+                lbl_reportHeader.Text = "Consolidated YC+CSP Report";
             }
             else
             {
-                lbl_reportHeader.Text = "YC Report";
+                lbl_reportHeader.Text = "YC+CSP Report";
             }
             if (deleteRequest)
             {
@@ -70,55 +70,44 @@ namespace TQM
             try
             {
                 decimal stdHank = 0.000m;
-                List<OverallReportModelView> OVS = new List<OverallReportModelView>();
-                //List<YCTestSummaryModel> ycTestSummaryModels = null;
+                List<OverallCountStrengthReportModelView> OVS = new List<OverallCountStrengthReportModelView>();
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    //List<YCTestSummaryModel> ycTestSummaryModels = conn.Table<YCTestSummaryModel>().ToList();
+                    conn.CreateTable<YCStrengthTestModel>();
+                    conn.CreateTable<YCStrengthTestSummaryModel>();
 
-                    //conn.CreateTable<YarnCountConfigModel>();
-                    //YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
-                    //if (yarncountconfigmodel != null)
-                    //{
-                    //    stdHank = yarncountconfigmodel.standardHank;
-
-                    //}
-
-                    conn.CreateTable<YCTestModel>();
-                    conn.CreateTable<YCTestSummaryModel>();
-
-                    List<YCTestSummaryModel> ycTestSummaryModels = null;
+                    List<YCStrengthTestSummaryModel> summaryModels = null;
                     if (categoryName == null || categoryName == "")
                     {
                         endDate = endDate.AddDays(1);
 
                         if (shift != "" && process != null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                (YCTestSummaryModel.createdate >= startDate
-                                                && YCTestSummaryModel.createdate < endDate
-                                                && YCTestSummaryModel.shift == shift
-                                                && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                (YCStrengthTestSummaryModel.createdate >= startDate
+                                                && YCStrengthTestSummaryModel.createdate < endDate
+                                                && YCStrengthTestSummaryModel.shift == shift
+                                                && YCStrengthTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
                         }
                         else if (shift == "" && process != null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                (YCTestSummaryModel.createdate >= startDate
-                                                && YCTestSummaryModel.createdate < endDate
-                                                && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                (YCStrengthTestSummaryModel.createdate >= startDate
+                                                && YCStrengthTestSummaryModel.createdate < endDate
+                                                && YCStrengthTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
                         }
                         else if (shift != "" && process == null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                (YCTestSummaryModel.createdate >= startDate
-                                                && YCTestSummaryModel.createdate < endDate
-                                                && YCTestSummaryModel.shift == shift)).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                (YCStrengthTestSummaryModel.createdate >= startDate
+                                                && YCStrengthTestSummaryModel.createdate < endDate
+                                                && YCStrengthTestSummaryModel.shift == shift)).ToList();
                         }
                         else if (shift == "" && process == null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                (YCTestSummaryModel.createdate >= startDate
-                                                && YCTestSummaryModel.createdate < endDate)).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                (YCStrengthTestSummaryModel.createdate >= startDate
+                                                && YCStrengthTestSummaryModel.createdate < endDate)).ToList();
                         }
 
                     }
@@ -128,35 +117,35 @@ namespace TQM
 
                         if (shift != "" && process != null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                 (YCTestSummaryModel.createdate >= startDate
-                                                 && YCTestSummaryModel.createdate < endDate
-                                                 && YCTestSummaryModel.machineCategory == categoryName
-                                                 && YCTestSummaryModel.shift == shift
-                                                 && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                 (YCStrengthTestSummaryModel.createdate >= startDate
+                                                 && YCStrengthTestSummaryModel.createdate < endDate
+                                                 && YCStrengthTestSummaryModel.machineCategory == categoryName
+                                                 && YCStrengthTestSummaryModel.shift == shift
+                                                 && YCStrengthTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
                         }
                         else if (shift == "" && process != null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                 (YCTestSummaryModel.createdate >= startDate
-                                                 && YCTestSummaryModel.createdate < endDate
-                                                 && YCTestSummaryModel.machineCategory == categoryName
-                                                 && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                 (YCStrengthTestSummaryModel.createdate >= startDate
+                                                 && YCStrengthTestSummaryModel.createdate < endDate
+                                                 && YCStrengthTestSummaryModel.machineCategory == categoryName
+                                                 && YCStrengthTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
                         }
                         else if (shift != "" && process == null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                 (YCTestSummaryModel.createdate >= startDate
-                                                 && YCTestSummaryModel.createdate < endDate
-                                                 && YCTestSummaryModel.machineCategory == categoryName
-                                                 && YCTestSummaryModel.shift == shift)).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                 (YCStrengthTestSummaryModel.createdate >= startDate
+                                                 && YCStrengthTestSummaryModel.createdate < endDate
+                                                 && YCStrengthTestSummaryModel.machineCategory == categoryName
+                                                 && YCStrengthTestSummaryModel.shift == shift)).ToList();
                         }
                         else if (shift == "" && process == null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                (YCTestSummaryModel.createdate >= startDate
-                                                && YCTestSummaryModel.createdate < endDate
-                                                && YCTestSummaryModel.machineCategory == categoryName)).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                (YCStrengthTestSummaryModel.createdate >= startDate
+                                                && YCStrengthTestSummaryModel.createdate < endDate
+                                                && YCStrengthTestSummaryModel.machineCategory == categoryName)).ToList();
                         }
 
 
@@ -167,44 +156,44 @@ namespace TQM
 
                         if (shift != "" && process != null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                    (YCTestSummaryModel.createdate >= startDate
-                                                    && YCTestSummaryModel.createdate < endDate
-                                                    && YCTestSummaryModel.machineCategory == categoryName)
-                                                    && YCTestSummaryModel.machineID == machineID
-                                                    && YCTestSummaryModel.shift == shift
-                                                    && YCTestSummaryModel.process.ToLower() == process.ToLower()).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                    (YCStrengthTestSummaryModel.createdate >= startDate
+                                                    && YCStrengthTestSummaryModel.createdate < endDate
+                                                    && YCStrengthTestSummaryModel.machineCategory == categoryName)
+                                                    && YCStrengthTestSummaryModel.machineID == machineID
+                                                    && YCStrengthTestSummaryModel.shift == shift
+                                                    && YCStrengthTestSummaryModel.process.ToLower() == process.ToLower()).ToList();
                         }
                         else if (shift == "" && process != null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                    (YCTestSummaryModel.createdate >= startDate
-                                                    && YCTestSummaryModel.createdate < endDate
-                                                    && YCTestSummaryModel.machineCategory == categoryName)
-                                                    && YCTestSummaryModel.machineID == machineID
-                                                    && YCTestSummaryModel.process.ToLower() == process.ToLower()).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                    (YCStrengthTestSummaryModel.createdate >= startDate
+                                                    && YCStrengthTestSummaryModel.createdate < endDate
+                                                    && YCStrengthTestSummaryModel.machineCategory == categoryName)
+                                                    && YCStrengthTestSummaryModel.machineID == machineID
+                                                    && YCStrengthTestSummaryModel.process.ToLower() == process.ToLower()).ToList();
                         }
                         else if (shift != "" && process == null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                    (YCTestSummaryModel.createdate >= startDate
-                                                    && YCTestSummaryModel.createdate < endDate
-                                                    && YCTestSummaryModel.machineCategory == categoryName)
-                                                    && YCTestSummaryModel.machineID == machineID
-                                                    && YCTestSummaryModel.shift == shift).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                    (YCStrengthTestSummaryModel.createdate >= startDate
+                                                    && YCStrengthTestSummaryModel.createdate < endDate
+                                                    && YCStrengthTestSummaryModel.machineCategory == categoryName)
+                                                    && YCStrengthTestSummaryModel.machineID == machineID
+                                                    && YCStrengthTestSummaryModel.shift == shift).ToList();
                         }
                         else if (shift == "" && process == null)
                         {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                    (YCTestSummaryModel.createdate >= startDate
-                                                    && YCTestSummaryModel.createdate < endDate
-                                                    && YCTestSummaryModel.machineCategory == categoryName)
-                                                    && YCTestSummaryModel.machineID == machineID).ToList();
+                            summaryModels = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel =>
+                                                    (YCStrengthTestSummaryModel.createdate >= startDate
+                                                    && YCStrengthTestSummaryModel.createdate < endDate
+                                                    && YCStrengthTestSummaryModel.machineCategory == categoryName)
+                                                    && YCStrengthTestSummaryModel.machineID == machineID).ToList();
                         }
 
                     }
 
-                    if (ycTestSummaryModels.Count == 0)
+                    if (summaryModels.Count == 0)
                     {
                         DisplayAlert("Notice", "No records to display!!!", "OK");
                         return;
@@ -213,12 +202,12 @@ namespace TQM
                     {
                         if (testID != "")
                         {
-                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.testID == long.Parse(testID)).ToList();
+                            summaryModels = summaryModels.Where(t => t.testID == long.Parse(testID)).ToList();
                         }
                         if (deleteRequest)
                         {
                             deleteAll = true;
-                            deleteList = ycTestSummaryModels;
+                            deleteList = summaryModels;
                         }
                     }
 
@@ -226,22 +215,22 @@ namespace TQM
                     CON_STD_DEV = 0.0000m;
                     CON_CV = 0.0000m;
 
-                    TOT_TEST = ycTestSummaryModels.Count;
+                    TOT_TEST = summaryModels.Count;
 
-                    foreach (YCTestSummaryModel testsummary in ycTestSummaryModels)
+                    foreach (YCStrengthTestSummaryModel testsummary in summaryModels)
                     {
-                        OverallReportModelView report = new OverallReportModelView();
-                        List<YCTestModel> yctestlist = conn.Table<YCTestModel>().Where(YCTestModel => YCTestModel.testID == testsummary.testID).ToList();
+                        OverallCountStrengthReportModelView report = new OverallCountStrengthReportModelView();
+                        List<YCStrengthTestModel> yctestlist = conn.Table<YCStrengthTestModel>().Where(YCStrengthTestModel => YCStrengthTestModel.testID == testsummary.testID).ToList();
                         if (yctestlist != null)
                         {
                             if (consolidatedReport)
                             {
-                                CON_HANK = CON_HANK + formatDecimal(testsummary.testaverage);
-                                CON_STD_DEV = CON_STD_DEV + formatDecimal(testsummary.testsd);
-                                CON_CV = CON_CV + formatDecimal(testsummary.testcv);
+                                CON_HANK = CON_HANK + formatDecimal(testsummary.avgCSP);
+                                CON_STD_DEV = CON_STD_DEV + formatDecimal(testsummary.sdCSP);
+                                CON_CV = CON_CV + formatDecimal(testsummary.cvCSP);
                             }
 
-                            foreach (YCTestModel test in yctestlist)
+                            foreach (YCStrengthTestModel test in yctestlist)
                             {
                                 report.Add(test);
                             }
@@ -251,17 +240,15 @@ namespace TQM
                             report.machineName = testsummary.machineName;
                             report.shift = testsummary.shift;
                             report.process = testsummary.process;
-                            //report.apercent = testsummary.apercent;
                             report.countsysname = testsummary.countsysname;
                             report.yarnlenunit = testsummary.yarnlenunit;
                             report.yarnlength = testsummary.yarnlength;
                             report.totaltestcount = testsummary.totaltestcount;
                             report.createdate = testsummary.createdate;
                             report.testRemark = testsummary.testRemark;
-                            report.testaverage = formatDecimal(testsummary.testaverage);
-                            report.testsd = formatDecimal(testsummary.testsd);
-                            report.testcv = formatDecimal(testsummary.testcv);
-                            //report.standardHank = formatDecimal(stdHank);
+                            report.testaverage = formatDecimal(testsummary.avgCSP);
+                            report.testsd = formatDecimal(testsummary.sdCSP);
+                            report.testcv = formatDecimal(testsummary.cvCSP);
                             report.standardHank = formatDecimal(testsummary.standardHank);
                         }
                         OVS.Add(report);
@@ -288,22 +275,22 @@ namespace TQM
             }
         }
 
-        private void deleteRecords(List<YCTestSummaryModel> lstOfRecs)
+        private void deleteRecords(List<YCStrengthTestSummaryModel> lstOfRecs)
         {
             if (lstOfRecs.Count == 0)
             {
                 return;
             }
-            foreach (YCTestSummaryModel rec in lstOfRecs)
+            foreach (YCStrengthTestSummaryModel rec in lstOfRecs)
             {
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    conn.Table<YCTestSummaryModel>().
-                                           Where(YCTestSummaryModel =>
-                                           YCTestSummaryModel.testID == rec.testID).Delete();
-                    conn.Table<YCTestModel>().
-                                        Where(YCTestModel =>
-                                        YCTestModel.testID == rec.testID).Delete();
+                    conn.Table<YCStrengthTestSummaryModel>().
+                                           Where(YCStrengthTestSummaryModel =>
+                                           YCStrengthTestSummaryModel.testID == rec.testID).Delete();
+                    conn.Table<YCStrengthTestModel>().
+                                        Where(YCStrengthTestModel =>
+                                        YCStrengthTestModel.testID == rec.testID).Delete();
                 }
             }
         }
@@ -366,17 +353,17 @@ namespace TQM
                 PdfGrid pdfGrid = null;
                 PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
                 layoutFormat.Layout = PdfLayoutType.Paginate;
-                List<OverallReportModelView> overallReportList = (List<OverallReportModelView>)listview_tcreport.ItemsSource;
+                List<OverallCountStrengthReportModelView> overallReportList = (List<OverallCountStrengthReportModelView>)listview_tcreport.ItemsSource;
                 PdfLayoutResult result = null;
                 //PdfLayoutResult resultInfo = null;
                 float overallHeight = 0;
                 int tableNo = 1;
                 bool newPageAdded_Header = false;
                 bool newPageAdded_Body = false;
-                foreach (OverallReportModelView orl in overallReportList)
+                foreach (OverallCountStrengthReportModelView orl in overallReportList)
                 {
 
-                    List<YCTestModel> testList = orl.yctestlist;
+                    List<YCStrengthTestModel> testList = orl.ycStrengthTestlist;
 
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
@@ -400,7 +387,7 @@ namespace TQM
                         //pdfGridInfo.Rows[0].Cells[0].Style.TextPen = PdfPens.White;
                         //pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 18);
                         pdfGridInfo.Rows[0].Cells[0].Value = "Total Test: " + TOT_TEST;
-                        pdfGridInfo.Rows[0].Cells[1].Value = "Con. HANK: " + CON_HANK;
+                        pdfGridInfo.Rows[0].Cells[1].Value = "Con. Avg. CSP: " + CON_HANK;
                         pdfGridInfo.Rows[0].Cells[2].Value = "Con. SD: " + CON_STD_DEV;
                         pdfGridInfo.Rows[0].Cells[3].Value = "Con. CV: " + CON_CV;
 
@@ -438,11 +425,12 @@ namespace TQM
                     pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     pdfGridInfo.Rows[3].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[3].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + orl.testaverage + " [Std Hank: " + orl.standardHank + "]";
+                    pdfGridInfo.Rows[4].Cells[0].Value = "Avg. CSP: " + orl.testaverage + " [Std CSP: " + orl.standardHank + "]";
+                    pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[1].Value = "SD: " + orl.testsd;
+                    pdfGridInfo.Rows[4].Cells[2].Value = "SD: " + orl.testsd;
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[2].Value = "CV: " + orl.testcv;
+                    pdfGridInfo.Rows[4].Cells[3].Value = "CV: " + orl.testcv;
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
                     pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
@@ -531,7 +519,7 @@ namespace TQM
 
                     pdfGrid = new PdfGrid();
 
-                    pdfGrid.Columns.Add(3);
+                    pdfGrid.Columns.Add(5);
                     PdfGridRow row = new PdfGridRow(pdfGrid);
                     pdfGrid.Rows.Add(row);
 
@@ -547,7 +535,7 @@ namespace TQM
                     pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[1].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[2].Value = "Hank";
+                    pdfGrid.Rows[0].Cells[2].Value = "Count";
                     pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -556,23 +544,39 @@ namespace TQM
                     //pdfGrid.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     //pdfGrid.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     //pdfGrid.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    pdfGrid.Rows[0].Cells[3].Value = "Strength";
+                    pdfGrid.Rows[0].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    pdfGrid.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                    pdfGrid.Rows[0].Cells[4].Value = "CSP";
+                    pdfGrid.Rows[0].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[4].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    pdfGrid.Rows[0].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
 
 
 
                     int rowCount = 1;
-                    foreach (YCTestModel test in testList)
+                    foreach (YCStrengthTestModel test in testList)
                     {
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
                         pdfGrid.Rows[rowCount].Cells[0].Value = test.testcount.ToString();
                         pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight).ToString();
                         pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval).ToString();
+                        pdfGrid.Rows[rowCount].Cells[3].Value = formatDecimal(test.yarnstrength).ToString();
+                        pdfGrid.Rows[rowCount].Cells[4].Value = formatDecimal(test.CSP).ToString();
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[rowCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[rowCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[rowCount].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[rowCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         rowCount++;
                     }
 
@@ -651,7 +655,7 @@ namespace TQM
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
                 pdfDocument.Close(true);
-                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "YC-Report.pdf");
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "YC_CSP_Report.pdf");
                 //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
                 //Process.Start(pdfPath);
                 return true;
@@ -698,11 +702,11 @@ namespace TQM
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
                 if (consolidatedReport)
                 {
-                    header.Graphics.DrawString("Consolidated YC Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(135, 16));
+                    header.Graphics.DrawString("Consolidated YC+CSP Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(135, 16));
                 }
                 else
                 {
-                    header.Graphics.DrawString("YC Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                    header.Graphics.DrawString("YC+CSP Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
                 }
                 //Title Ends
                 pdfDocument.Template.Top = header;
@@ -743,7 +747,7 @@ namespace TQM
                     {
                         showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
                     }
-                    string fileName = "YC-Report.pdf";
+                    string fileName = "YC_CSP_Report.pdf";
                     string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
                     Java.IO.File myDir = new Java.IO.File(root + "/CSPDownloads");
                     Java.IO.File file = new Java.IO.File(myDir, fileName);
@@ -754,7 +758,7 @@ namespace TQM
                     //request.Timeout = Timeout.Infinite;
                     request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                     request.AddParameter("uploadedby", companyName);
-                    request.AddParameter("title", "YC-Report-" + DateTime.Now.ToString());
+                    request.AddParameter("title", "YC_CSP_Report-" + DateTime.Now.ToString());
                     request.AddFile("reportpath", filePath);
                     RestResponse response = client.Execute(request);
                     if (response.IsSuccessful)

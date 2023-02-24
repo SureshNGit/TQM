@@ -37,7 +37,7 @@ namespace TQM.Droid
                 RequestAllPermission();
             }
 
-            string dbName = "tqm_db.sqlite";
+            string dbName = "tqm_db_csp.sqlite";
             string folderPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             string fullPath = Path.Combine(folderPath, dbName);
 

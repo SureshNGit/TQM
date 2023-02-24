@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TQM.YCReport" NavigationPage.HasBackButton="False">
+             x:Class="TQM.YCReportWithCSP" NavigationPage.HasBackButton="False">
     <NavigationPage.TitleView>
         <StackLayout BackgroundColor="White">
             <Grid>
@@ -25,7 +25,7 @@
                 <Image Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="1" x:Name="img_notification" IsVisible="False" HorizontalOptions="Center"
                        Source="loading.gif" IsAnimationPlaying="True" 
                        Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
-                <Label Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="3" Text="Count Report" x:Name="lbl_reportHeader" 
+                <Label Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="3" Text="Count+Strength Report" x:Name="lbl_reportHeader" 
                        Margin="0,0,0,0" HorizontalOptions="Start" FontSize="18" TextColor="Red" VerticalTextAlignment="Center" />
                 <Button Grid.Row="0" Grid.Column="7" Grid.ColumnSpan="1" HorizontalOptions="Start" Text="Back" 
                         x:Name="btn_backToReport"  Clicked="btn_backToReport_Clicked" BackgroundColor="green" TextColor="white" CornerRadius="25"/>
@@ -127,11 +127,11 @@
                                     Text="{Binding totaltestcount}" FontSize="14" TextColor="Green"/>
 
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1"
-                                    Text="Hank" FontSize="14" TextColor="#0e0273"/>
+                                    Text="Avg. CSP" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
                                      FontSize="14" TextColor="red">
                                         <Label.Text>
-                                            <MultiBinding StringFormat="{}{0} [Std Hank: {1}]">
+                                            <MultiBinding StringFormat="{}{0} [Std CSP: {1}]">
                                                 <Binding Path="testaverage"/>
                                                 <Binding Path="standardHank"/>
                                             </MultiBinding>
@@ -175,24 +175,32 @@
                                         <ColumnDefinition Width="80"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
 
-                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
-                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
 
 
                                     <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-                                    <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+                                    <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
                                     
                                     <Label  Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                             Text="Sample No"  TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                             Text="Sample Weigth"  TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="Hank" TextColor="#0e0273" FontSize="14"/>
+                                            Text="Count" TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="Strength" TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="CSP" TextColor="#0e0273" FontSize="14"/>
 
 
                                 </Grid>
@@ -210,15 +218,19 @@
                                     <ColumnDefinition Width="80"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
-                                 </Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
 
-                                <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
 
                                 <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                 <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                 <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-                                <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+                                <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
                                 
                                 <Label Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                        Text="{Binding testcount}" FontSize="14"/>
@@ -226,6 +238,10 @@
                                        Text="{Binding yarnweight,StringFormat='{0:N4}'}" FontSize="14"/>
                                 <Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                        Text="{Binding yccalcval,StringFormat='{0:N4}'}" FontSize="14"/>
+                                <Label Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                       Text="{Binding yarnstrength,StringFormat='{0:N4}'}" FontSize="14"/>
+                                <Label Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                       Text="{Binding CSP,StringFormat='{0:N4}'}" FontSize="14"/>
                                 
                             </Grid>
                         </ViewCell>

@@ -616,8 +616,8 @@ namespace TQM
                         request.AddParameter("GUID", yarnCountConfig.ID);
                         request.AddParameter("countsysname", yarnCountConfig.countsysname);
                         request.AddParameter("yarnlenunit", yarnCountConfig.yarnlenunit);
-                        request.AddParameter("sliverlength", yarnCountConfig.sliverlength);
-                        request.AddParameter("rovinglength", yarnCountConfig.rovinglength);
+                        request.AddParameter("sliverlength", yarnCountConfig.yarnLength);
+                        //request.AddParameter("rovinglength", yarnCountConfig.rovinglength);
                         request.AddParameter("testcount", yarnCountConfig.testcount);
                         request.AddParameter("standardHank", yarnCountConfig.standardHank);
                         //request.AddParameter("testcountApercent", yarnCountConfig.testcountApercent);

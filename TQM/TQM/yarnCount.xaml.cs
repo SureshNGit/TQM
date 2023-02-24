@@ -66,7 +66,7 @@ namespace TQM
                 {
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
                     lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
-                    entry_yarnlen.Text = "";
+                    entry_yarnlen.Text = yarncountconfigmodel.yarnLength.ToString();
                     entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
                     TESTCOUNT = yarncountconfigmodel.testcount;
                     entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
@@ -917,24 +917,24 @@ namespace TQM
                     List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
                     picker_machinename.ItemsSource = machineModelList;
 
-                    conn.CreateTable<YarnCountConfigModel>();
-                    YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
-                    if (yarncountconfigmodel != null)
-                    {
-                        if (selectedMachineCategory == "Simplex/SpeedFrame")
-                        {
-                            entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
-                        }
-                        else
-                        {
-                            entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
-                        }
+                    //conn.CreateTable<YarnCountConfigModel>();
+                    //YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                    //if (yarncountconfigmodel != null)
+                    //{
+                    //    if (selectedMachineCategory == "Simplex/SpeedFrame")
+                    //    {
+                    //        entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
+                    //    }
+                    //    else
+                    //    {
+                    //        entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
+                    //    }
 
-                    }
-                    else
-                    {
-                        entry_yarnlen.Text = "";
-                    }
+                    //}
+                    //else
+                    //{
+                    //    entry_yarnlen.Text = "";
+                    //}
                 }
             }
             catch (Exception ex)

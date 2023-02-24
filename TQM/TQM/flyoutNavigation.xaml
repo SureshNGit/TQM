@@ -13,7 +13,7 @@
     <FlyoutPage.Detail>
         <NavigationPage>
             <x:Arguments>
-                <local:yarnCount/>
+                <local:yarnCountWithCSP/>
             </x:Arguments>
         </NavigationPage>
     </FlyoutPage.Detail>

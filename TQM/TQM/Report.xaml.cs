@@ -113,7 +113,7 @@ namespace TQM
                 bool is_consolidated = false;
                 if (reportType == "Consolidated") { is_consolidated = true; }
                 if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
-                if (picker_reportName.SelectedItem.ToString() == "Wrapping")
+                if (picker_reportName.SelectedItem.ToString() == "Count")
                 {
                     if (is_consolidated)
                     {
@@ -126,21 +126,11 @@ namespace TQM
                     Navigation.PushAsync(new YCReport
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false, is_consolidated));
                 }
-                //else if (picker_reportName.SelectedItem.ToString() == "A%")
-                //{
-                //    Navigation.PushAsync(new YCApercentReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
-                //}
-                //else if (picker_reportName.SelectedItem.ToString() == "Stretch")
-                //{
-                //    Navigation.PushAsync(new StretchReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
-                //}
-                //else if (picker_reportName.SelectedItem.ToString() == "Noils")
-                //{
-                //    Navigation.PushAsync(new NoilsReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
-                //}
+                else if (picker_reportName.SelectedItem.ToString() == "Count+Strength")
+                {
+                    Navigation.PushAsync(new YCReportWithCSP
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false, is_consolidated));
+                }
             }
             catch (Exception ex)
             {
@@ -239,21 +229,11 @@ namespace TQM
                     Navigation.PushAsync(new YCReport
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true, is_consolidated));
                 }
-                //else if (picker_reportName.SelectedItem.ToString() == "A%")
-                //{
-                //    Navigation.PushAsync(new YCApercentReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
-                //}
-                //else if (picker_reportName.SelectedItem.ToString() == "Stretch")
-                //{
-                //    Navigation.PushAsync(new StretchReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
-                //}
-                //else if (picker_reportName.SelectedItem.ToString() == "Noils")
-                //{
-                //    Navigation.PushAsync(new NoilsReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
-                //}
+                else if (picker_reportName.SelectedItem.ToString() == "Count+Strength")
+                {
+                    Navigation.PushAsync(new YCReportWithCSP
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false, is_consolidated));
+                }
             }
             catch (Exception ex)
             {
@@ -261,41 +241,41 @@ namespace TQM
             }
         }
 
-        private void picker_reportType_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                string selectedReportType = picker_reportType.SelectedItem.ToString();
-                if (selectedReportType == "Consolidated")
-                {
-                    var lst_reportName = new List<string>();
-                    lst_reportName.Add("");
-                    lst_reportName.Add("Wrapping");
-                    picker_reportName.ItemsSource = lst_reportName;
-                    picker_reportName.SelectedItem = "Wrapping";
-                    lbl_testID.IsVisible = false;
-                    entry_testID.IsVisible = false;
-                    btn_deleteRecords.IsVisible = false;
-                }
-                else
-                {
-                    var lst_reportName = new List<string>();
-                    lst_reportName.Add("");
-                    lst_reportName.Add("Wrapping");
-                    lst_reportName.Add("A%");
-                    lst_reportName.Add("Stretch");
-                    lst_reportName.Add("Noils");
-                    picker_reportName.ItemsSource = lst_reportName;
-                    lbl_testID.IsVisible = true;
-                    entry_testID.IsVisible = true;
-                    btn_deleteRecords.IsVisible = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                DisplayAlert("Notice-ReportType", ex.Message.ToString(), "Ok");
-            }
+        //private void picker_reportType_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        string selectedReportType = picker_reportType.SelectedItem.ToString();
+        //        if (selectedReportType == "Consolidated")
+        //        {
+        //            var lst_reportName = new List<string>();
+        //            lst_reportName.Add("");
+        //            lst_reportName.Add("Wrapping");
+        //            picker_reportName.ItemsSource = lst_reportName;
+        //            picker_reportName.SelectedItem = "Wrapping";
+        //            lbl_testID.IsVisible = false;
+        //            entry_testID.IsVisible = false;
+        //            btn_deleteRecords.IsVisible = false;
+        //        }
+        //        else
+        //        {
+        //            var lst_reportName = new List<string>();
+        //            lst_reportName.Add("");
+        //            lst_reportName.Add("Wrapping");
+        //            lst_reportName.Add("A%");
+        //            lst_reportName.Add("Stretch");
+        //            lst_reportName.Add("Noils");
+        //            picker_reportName.ItemsSource = lst_reportName;
+        //            lbl_testID.IsVisible = true;
+        //            entry_testID.IsVisible = true;
+        //            btn_deleteRecords.IsVisible = true;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        DisplayAlert("Notice-ReportType", ex.Message.ToString(), "Ok");
+        //    }
 
-        }
+        //}
     }
 }

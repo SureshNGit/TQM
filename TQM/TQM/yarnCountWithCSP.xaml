@@ -19,8 +19,8 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
-                <Label Grid.Row="0" Grid.Column="2" Text="Count+Strength" FontSize="16" TextColor="ForestGreen" 
-                       VerticalTextAlignment="Center" HorizontalOptions="Start" />
+                <Label Grid.Row="0" Grid.Column="2" Text="Count+Strength" FontSize="16" TextColor="White" 
+                       VerticalTextAlignment="Center" HorizontalOptions="Start" BackgroundColor="Red" />
                 <Label Grid.Row="0" Grid.Column="3" Text="Test ID :" FontSize="16" TextColor="#0e0273" 
                        VerticalTextAlignment="Center" HorizontalOptions="Start" />
                 <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Text="" FontSize="16" TextColor="ForestGreen" Margin="65,0"
@@ -143,13 +143,8 @@
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
                         <x:String></x:String>
-                        <x:String>Carding</x:String>
-                        <x:String>Breaker Drawing</x:String>
-                        <x:String>Comber</x:String>
-                        <x:String>Drawing</x:String>
-                        <x:String>RSB</x:String>
-                        <x:String>Simplex/SpeedFrame</x:String>
                         <x:String>Spinning</x:String>
+                        <x:String>Winding</x:String>
                     </x:Array>
                 </Picker.ItemsSource>
                 <Picker.Effects>
