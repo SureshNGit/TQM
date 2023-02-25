@@ -164,7 +164,7 @@
                 </Entry.Effects>
             </Entry>-->
             <Picker Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
-                    x:Name="picker_shift" TextColor="Green" FontSize="16">
+                    x:Name="picker_shift" TextColor="Green" FontSize="16" IsEnabled="False"> 
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
                         <x:String></x:String>

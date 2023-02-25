@@ -242,6 +242,7 @@ namespace TQM
                             report.process = testsummary.process;
                             report.countsysname = testsummary.countsysname;
                             report.yarnlenunit = testsummary.yarnlenunit;
+                            report.yarnstrengthunit = testsummary.yarnstrengthunit;
                             report.yarnlength = testsummary.yarnlength;
                             report.totaltestcount = testsummary.totaltestcount;
                             report.createdate = testsummary.createdate;
@@ -431,10 +432,11 @@ namespace TQM
                     pdfGridInfo.Rows[4].Cells[2].Value = "SD: " + orl.testsd;
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
                     pdfGridInfo.Rows[4].Cells[3].Value = "CV: " + orl.testcv;
+
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
                     pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
-                    pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 2;
+                    pdfGridInfo.Rows[5].Cells[1].Value = "Strength Unit: " + orl.yarnstrengthunit;
                     pdfGridInfo.Rows[5].Cells[2].Value = "Shift: " + orl.shift;
                     pdfGridInfo.Rows[5].Cells[3].Value = "Process: " + orl.process;
 

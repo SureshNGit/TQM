@@ -40,6 +40,7 @@ namespace TQM
         private string selectedMachineName = null;
         private string selectedSysName = null;
         private string selectedCountUnit = null;
+        private string selectedStrengthUnit = null;
         private decimal selectedYarnLen = 0.0000m;
         private int selectedTestCount = 0;
         private string selectedShift = null;
@@ -70,12 +71,19 @@ namespace TQM
                 if (yarncountconfigmodel != null)
                 {
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
-                    lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
+                    if (yarncountconfigmodel.yarnStrengthUnit == null || yarncountconfigmodel.yarnlenunit == null)
+                    {
+                        lbl_yarncountunit.Text = "";
+                    }
+                    else
+                    {
+                        lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit.ToString() + "/ " + yarncountconfigmodel.yarnStrengthUnit.ToString();
+                    }
                     entry_yarnlen.Text = yarncountconfigmodel.yarnLength.ToString();
                     entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
                     TESTCOUNT = yarncountconfigmodel.testcount;
-                    entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
-                    STD_HANK = formatDecimal(yarncountconfigmodel.standardHank);
+                    entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardCSP).ToString();
+                    STD_HANK = formatDecimal(yarncountconfigmodel.standardCSP);
                     updateShift();
                 }
                 else
@@ -246,11 +254,11 @@ namespace TQM
                         machineID = test.machineID,
                         machineCategory = test.machineCategory,
                         machineName = test.machineName,
-                        //apercent = test.apercent,
                         shift = test.shift,
                         process = test.process,
                         countsysname = test.countsysname,
                         yarnlenunit = test.yarnlenunit,
+                        yarnstrengthunit = test.yarnstrengthunit,
                         yarnlength = test.yarnlength,
                         totaltestcount = test.totaltestcount,
                         testcount = test.testcount,
@@ -320,6 +328,7 @@ namespace TQM
                         process = ycStrengthTestModelViewList[0].process,
                         countsysname = ycStrengthTestModelViewList[0].countsysname,
                         yarnlenunit = ycStrengthTestModelViewList[0].yarnlenunit,
+                        yarnstrengthunit = ycStrengthTestModelViewList[0].yarnstrengthunit,
                         yarnlength = ycStrengthTestModelViewList[0].yarnlength,
                         totaltestcount = ycStrengthTestModelViewList[0].totaltestcount,
                         testaverage = mean,
@@ -540,7 +549,8 @@ namespace TQM
                 }
             }
             selectedSysName = lbl_countsysname.Text;
-            selectedCountUnit = lbl_yarncountunit.Text;
+            selectedCountUnit = lbl_yarncountunit.Text.ToString().Split('/')[0].Trim();
+            selectedStrengthUnit = lbl_yarncountunit.Text.ToString().Split('/')[1].Trim();
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             STD_HANK_CURR = decimal.Parse(entry_standardHank.Text);
@@ -688,6 +698,7 @@ namespace TQM
                             process = selectedProcess,
                             countsysname = selectedSysName,
                             yarnlenunit = selectedCountUnit,
+                            yarnstrengthunit = selectedStrengthUnit,
                             yarnlength = selectedYarnLen,
                             totaltestcount = selectedTestCount,
                             testcount = i + 1,
@@ -725,7 +736,15 @@ namespace TQM
                         if (runResult)
                         {
                             decimal yarnstrength = formatDecimal(current_stable_data);
-                            decimal CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * (yarnstrength * 2.20462m));
+                            decimal CSP = 0.0000m;
+                            if (selectedStrengthUnit == "Kg")
+                            {
+                                CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * (yarnstrength * 1.0m));
+                            }
+                            else if (selectedStrengthUnit == "lbs")
+                            {
+                                CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * (yarnstrength * 2.20462m));
+                            }
                             ycStrengthTestModelViewList[i].yarnstrength = yarnstrength;
                             ycStrengthTestModelViewList[i].CSP = CSP;
 

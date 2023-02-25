@@ -21,6 +21,8 @@ namespace TQM.ModelView
 
         public string yarnlenunit { get; set; }
 
+        public string yarnstrengthunit { get; set; }
+
         public decimal yarnlength { get; set; }
 
         public int totaltestcount { get; set; }

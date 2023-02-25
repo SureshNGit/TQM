@@ -145,6 +145,10 @@
                                     Text="CV" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="3" Grid.Row="3"  Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="30,0,0,0"
                                     Text="{Binding testcv}" FontSize="14" TextColor="red"/>
+                                    <Label Grid.Column="4" Grid.Row="3" Grid.ColumnSpan="1" HorizontalTextAlignment="Center" Margin="70,0,0,0"
+                                    Text="Strength Unit" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="4" Grid.Row="3"  Grid.ColumnSpan="2" HorizontalTextAlignment="Center" Margin="60,0,0,0"
+                                    Text="{Binding yarnstrengthunit}" FontSize="14" TextColor="Green"/>
                                     <!--<Label Grid.Column="4" Grid.Row="3" Grid.ColumnSpan="1" HorizontalTextAlignment="Center" Margin="15,0,0,0"
                                     Text="A%" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="4" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Center" Margin="25,0,0,0"

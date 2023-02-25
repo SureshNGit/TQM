@@ -14,6 +14,7 @@ namespace TQM.ModelView
         public string process { get; set; }
         public string countsysname { get; set; }
         public string yarnlenunit { get; set; }
+        public string yarnstrengthunit { get; set; }
         public decimal yarnlength { get; set; }
         public int totaltestcount { get; set; }
         public decimal testaverage { get; set; }
