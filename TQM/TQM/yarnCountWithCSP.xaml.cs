@@ -735,15 +735,18 @@ namespace TQM
                         });
                         if (runResult)
                         {
-                            decimal yarnstrength = formatDecimal(current_stable_data);
+                            decimal yarnstrength = 0.0000m;
+
                             decimal CSP = 0.0000m;
                             if (selectedStrengthUnit == "Kg")
                             {
-                                CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * (yarnstrength * 1.0m));
+                                yarnstrength = formatDecimal(current_stable_data);
+                                CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * yarnstrength);
                             }
                             else if (selectedStrengthUnit == "lbs")
                             {
-                                CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * (yarnstrength * 2.20462m));
+                                yarnstrength = formatDecimal(current_stable_data * 2.20462m);
+                                CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * yarnstrength);
                             }
                             ycStrengthTestModelViewList[i].yarnstrength = yarnstrength;
                             ycStrengthTestModelViewList[i].CSP = CSP;

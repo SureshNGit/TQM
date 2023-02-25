@@ -261,6 +261,7 @@
                             <Label Text="S.No" WidthRequest="150" TextColor="White" FontSize="20"/>
                             <Label Text="Sample Wt" WidthRequest="230" TextColor="White" FontSize="20"/>
                             <Label Text="Count" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <!--<Label Text="{Binding yarnstrengthunit, StringFormat='Strength (\{0\})'}" WidthRequest="200" TextColor="White" FontSize="20"/>-->
                             <Label Text="Strength" WidthRequest="200" TextColor="White" FontSize="20"/>
                             <Label Text="CSP" WidthRequest="200" TextColor="White" FontSize="20"/>
                         </StackLayout>
