@@ -55,6 +55,8 @@ namespace TQM
         private int currentTestCount = 0;
         private bool isTestStarted = false;
         private string currentTarget = null;
+        private bool resumeTest = false;
+        private bool pageNavigated = true;
         private RunConfiguration runConfiguration = new RunConfiguration();
 
         public yarnCountWithCSP()
@@ -63,38 +65,434 @@ namespace TQM
             lbl_TestID.Text = "";
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                //conn.DropTable<YCTestModel>();
-                //conn.DropTable<YCTestSummaryModel>();
+                //conn.DropTable<YCStrengthTestModel>();
+                //conn.DropTable<YCStrengthTestSummaryModel>();
+                //conn.DropTable<TestResumeCheck>();
 
-                conn.CreateTable<YarnCountConfigModel>();
-                YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
-                if (yarncountconfigmodel != null)
+                conn.CreateTable<YCStrengthTestModel>();
+                conn.CreateTable<YCStrengthTestSummaryModel>();
+                conn.CreateTable<TestResumeCheck>();
+
+                UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                if (loggedInUser == null)
                 {
-                    lbl_countsysname.Text = yarncountconfigmodel.countsysname;
-                    if (yarncountconfigmodel.yarnStrengthUnit == null || yarncountconfigmodel.yarnlenunit == null)
-                    {
-                        lbl_yarncountunit.Text = "";
-                    }
-                    else
-                    {
-                        lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit.ToString() + "/ " + yarncountconfigmodel.yarnStrengthUnit.ToString();
-                    }
-                    entry_yarnlen.Text = yarncountconfigmodel.yarnLength.ToString();
-                    entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
-                    TESTCOUNT = yarncountconfigmodel.testcount;
-                    entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardCSP).ToString();
-                    STD_HANK = formatDecimal(yarncountconfigmodel.standardCSP);
-                    updateShift();
+                    DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                    return;
                 }
                 else
                 {
-                    lbl_countsysname.Text = "";
-                    lbl_yarncountunit.Text = "";
-                    entry_yarnlen.Text = "";
-                    entry_testcount.Text = "";
-                    picker_shift.SelectedIndex = 0;
-                    picker_process.SelectedIndex = 0;
-                    entry_standardHank.Text = "0.000";
+                    currentloggedInUser = loggedInUser;
+                }
+
+                List<YCStrengthTestModel> allTest = conn.Table<YCStrengthTestModel>().ToList();
+
+                if (allTest.Count > 0)
+                {
+                    DateTime maxDate = conn.Table<YCStrengthTestModel>().Max(YCStrengthTestModel => YCStrengthTestModel.createdate);
+                    YCStrengthTestModel lastTestRecord = conn.Table<YCStrengthTestModel>()
+                                        .Where(YCStrengthTestModel => YCStrengthTestModel.createdate == maxDate).FirstOrDefault();
+                    if (lastTestRecord != null)
+                    {
+                        List<YCStrengthTestModel> lastTest = conn.Table<YCStrengthTestModel>()
+                                                            .Where(YCStrengthTestModel => YCStrengthTestModel.testID == lastTestRecord.testID).ToList();
+
+                        //all sample tests are not completed so there will not an entry in test summary table
+                        //resume test 
+
+                        lastTest.OrderBy(YCStrengthTestModel => YCStrengthTestModel.testcount);
+
+                        int lastTestTotalCount = lastTest.Count - 1;
+                        Guid lastTestPK = lastTest[lastTestTotalCount].ID;
+                        long lastTestID = lastTest[lastTestTotalCount].testID;
+                        int lastTestCount = lastTest[lastTestTotalCount].testcount;
+
+                        if (lastTest[lastTestTotalCount].yarnstrength == 0.0000m && lastTest[lastTestTotalCount].CSP == 0.0000m)
+                        {
+
+                            YCStrengthTestModel inValidRec = conn.Table<YCStrengthTestModel>()
+                                    .Where(YCStrengthTestModel => (YCStrengthTestModel.ID == lastTestPK
+                                                                    && YCStrengthTestModel.testcount == lastTestCount)).FirstOrDefault();
+                            if (inValidRec != null)
+                            {
+
+                                int row = conn.Delete(inValidRec);
+
+
+                                if (row > 0)
+                                {
+                                    string displayusername = currentloggedInUser.firstname + " [" + currentloggedInUser.userId + "]";
+                                    if (currentloggedInUser.firstname != "")
+                                    {
+                                        displayusername = currentloggedInUser.firstname + ", " + currentloggedInUser.lastname + " [" + currentloggedInUser.userId + "]";
+                                    }
+                                    TestResumeCheck testResume = new TestResumeCheck()
+                                    {
+                                        ID = Guid.NewGuid(),
+                                        testID = lastTestID,
+                                        testcount = lastTestCount,
+                                        testType = "CSP",
+                                        userID = currentloggedInUser.ID,
+                                        userName = displayusername,
+                                        createdate = DateTime.Now
+                                    };
+                                    int res = conn.Insert(testResume);
+                                    if (res > 0)
+                                    {
+                                        List<YCStrengthTestModel> partialTest = conn.Table<YCStrengthTestModel>()
+                                                      .Where(YCStrengthTestModel => YCStrengthTestModel.testID == inValidRec.testID).ToList();
+                                        if (partialTest.Count > 0)
+                                        {
+                                            resumeTest = true;
+                                            testYCButton.Text = "Resume";
+                                            lbl_TestID.Text = inValidRec.testID.ToString();
+                                            currentTestID = inValidRec.testID;
+                                            currentTestCount = inValidRec.testcount;
+                                            lbl_countsysname.Text = inValidRec.countsysname;
+                                            lbl_yarncountunit.Text = inValidRec.yarnlenunit.ToString() + "/ " + inValidRec.yarnstrengthunit.ToString();
+                                            entry_yarnlen.Text = inValidRec.yarnlength.ToString();
+                                            entry_testcount.Text = inValidRec.totaltestcount.ToString();
+                                            TESTCOUNT = inValidRec.totaltestcount;
+                                            entry_standardHank.Text = formatDecimal(inValidRec.standardHank).ToString();
+                                            STD_HANK = formatDecimal(inValidRec.standardHank);
+
+                                            IList<string> mclist = picker_machinecategory.Items;
+                                            int mcindex = 0;
+                                            foreach (string mc in mclist)
+                                            {
+                                                if (mc != inValidRec.machineCategory)
+                                                {
+                                                    mcindex++;
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            picker_machinecategory.SelectedIndex = mcindex;
+
+
+                                            updateShift();
+
+                                            IList<string> mlist = picker_machinename.Items;
+                                            int mindex = 0;
+                                            foreach (string m in mlist)
+                                            {
+                                                if (m != inValidRec.machineName)
+                                                {
+                                                    mindex++;
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            picker_machinename.SelectedIndex = mindex;
+                                            selectedMachineID = inValidRec.machineID;
+
+                                            IList<string> plist = picker_process.Items;
+                                            int pindex = 0;
+                                            foreach (string p in plist)
+                                            {
+                                                if (p != inValidRec.process)
+                                                {
+                                                    pindex++;
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            picker_process.SelectedIndex = pindex;
+                                            selectedProcess = inValidRec.process;
+
+
+
+                                            entry_yarnlen.IsEnabled = false;
+                                            entry_testcount.IsEnabled = false;
+                                            entry_standardHank.IsEnabled = false;
+                                            picker_shift.IsEnabled = false;
+                                            picker_process.IsEnabled = false;
+                                            picker_machinecategory.IsEnabled = false;
+                                            picker_machinename.IsEnabled = false;
+
+                                            ycStrengthTestModelViewList = new List<YCStrengthTestModelView>();
+                                            foreach (YCStrengthTestModel pt in partialTest)
+                                            {
+                                                YCStrengthTestModelView stvm = new YCStrengthTestModelView()
+                                                {
+                                                    testID = pt.testID,
+                                                    userID = pt.userID,
+                                                    userName = pt.userName,
+                                                    machineID = pt.machineID,
+                                                    machineCategory = pt.machineCategory,
+                                                    machineName = pt.machineName,
+                                                    shift = pt.shift,
+                                                    process = pt.process,
+                                                    countsysname = pt.countsysname,
+                                                    yarnlenunit = pt.yarnlenunit,
+                                                    yarnstrengthunit = pt.yarnstrengthunit,
+                                                    yarnlength = formatDecimal(pt.yarnlength),
+                                                    totaltestcount = pt.totaltestcount,
+                                                    testcount = pt.testcount,
+                                                    yarnweight = formatDecimal(pt.yarnweight),
+                                                    yccalcval = formatDecimal(pt.yccalcval),
+                                                    standardHank = formatDecimal(pt.standardHank),
+                                                    yarnstrength = formatDecimal(pt.yarnstrength),
+                                                    CSP = formatDecimal(pt.CSP)
+                                                };
+                                                ycStrengthTestModelViewList.Add(stvm);
+                                            }
+                                            refListView(true);
+                                        }
+                                        else
+                                        {
+                                            //need to decide 
+                                            //This condition will occur when the CSP machine off at the 1st sample 
+                                            resumeTest = true;
+                                            testYCButton.Text = "Resume";
+                                            lbl_TestID.Text = inValidRec.testID.ToString();
+                                            currentTestID = inValidRec.testID;
+                                            currentTestCount = inValidRec.testcount;
+                                            lbl_countsysname.Text = inValidRec.countsysname;
+                                            lbl_yarncountunit.Text = inValidRec.yarnlenunit.ToString() + "/ " + inValidRec.yarnstrengthunit.ToString();
+                                            entry_yarnlen.Text = inValidRec.yarnlength.ToString();
+                                            entry_testcount.Text = inValidRec.totaltestcount.ToString();
+                                            TESTCOUNT = inValidRec.totaltestcount;
+                                            entry_standardHank.Text = formatDecimal(inValidRec.standardHank).ToString();
+                                            STD_HANK = formatDecimal(inValidRec.standardHank);
+
+                                            IList<string> mclist = picker_machinecategory.Items;
+                                            int mcindex = 0;
+                                            foreach (string mc in mclist)
+                                            {
+                                                if (mc != inValidRec.machineCategory)
+                                                {
+                                                    mcindex++;
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            picker_machinecategory.SelectedIndex = mcindex;
+
+
+                                            updateShift();
+
+                                            IList<string> mlist = picker_machinename.Items;
+                                            int mindex = 0;
+                                            foreach (string m in mlist)
+                                            {
+                                                if (m != inValidRec.machineName)
+                                                {
+                                                    mindex++;
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            picker_machinename.SelectedIndex = mindex;
+                                            selectedMachineID = inValidRec.machineID;
+
+                                            IList<string> plist = picker_process.Items;
+                                            int pindex = 0;
+                                            foreach (string p in plist)
+                                            {
+                                                if (p != inValidRec.process)
+                                                {
+                                                    pindex++;
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            picker_process.SelectedIndex = pindex;
+                                            selectedProcess = inValidRec.process;
+
+
+
+                                            entry_yarnlen.IsEnabled = false;
+                                            entry_testcount.IsEnabled = false;
+                                            entry_standardHank.IsEnabled = false;
+                                            picker_shift.IsEnabled = false;
+                                            picker_process.IsEnabled = false;
+                                            picker_machinecategory.IsEnabled = false;
+                                            picker_machinename.IsEnabled = false;
+                                            ycStrengthTestModelViewList = new List<YCStrengthTestModelView>();
+                                            refListView(true);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //need to decide 
+                                    }
+
+                                }
+                                else
+                                {
+                                    // To be decided how to proceed!!!
+                                }
+                            }
+                            else
+                            {
+                                // To be decided how to proceed!!!
+                            }
+                        }
+                        else
+                        {
+                            //this condition is possible when the invalid record was deleted and user navigated to some other
+                            //screens without resuming the test and come back to count+strength screen
+
+                            //int lastTestTotalCount = lastTest.Count - 1;
+                            //Guid lastTestPK = lastTest[lastTestTotalCount].ID;
+                            //long lastTestID = lastTest[lastTestTotalCount].testID;
+                            //int lastTestCount = lastTest[lastTestTotalCount].testcount;
+
+                            if (lastTest.Count != lastTestRecord.totaltestcount)
+                            {
+
+                                List<YCStrengthTestModel> partialTest = conn.Table<YCStrengthTestModel>()
+                                                      .Where(YCStrengthTestModel => YCStrengthTestModel.testID == lastTestID).ToList();
+                                if (partialTest.Count > 0)
+                                {
+                                    resumeTest = true;
+                                    testYCButton.Text = "Resume";
+                                    lbl_TestID.Text = lastTest[lastTestTotalCount].testID.ToString();
+                                    currentTestID = lastTest[lastTestTotalCount].testID;
+                                    currentTestCount = lastTest[lastTestTotalCount].testcount + 1;
+                                    lbl_countsysname.Text = lastTest[lastTestTotalCount].countsysname;
+                                    lbl_yarncountunit.Text = lastTest[lastTestTotalCount].yarnlenunit.ToString() + "/ " + lastTest[lastTestTotalCount].yarnstrengthunit.ToString();
+                                    entry_yarnlen.Text = lastTest[lastTestTotalCount].yarnlength.ToString();
+                                    entry_testcount.Text = lastTest[lastTestTotalCount].totaltestcount.ToString();
+                                    TESTCOUNT = lastTest[lastTestTotalCount].totaltestcount;
+                                    entry_standardHank.Text = formatDecimal(lastTest[lastTestTotalCount].standardHank).ToString();
+                                    STD_HANK = formatDecimal(lastTest[lastTestTotalCount].standardHank);
+
+                                    IList<string> mclist = picker_machinecategory.Items;
+                                    int mcindex = 0;
+                                    foreach (string mc in mclist)
+                                    {
+                                        if (mc != lastTest[lastTestTotalCount].machineCategory)
+                                        {
+                                            mcindex++;
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    picker_machinecategory.SelectedIndex = mcindex;
+
+
+                                    updateShift();
+
+                                    IList<string> mlist = picker_machinename.Items;
+                                    int mindex = 0;
+                                    foreach (string m in mlist)
+                                    {
+                                        if (m != lastTest[lastTestTotalCount].machineName)
+                                        {
+                                            mindex++;
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    picker_machinename.SelectedIndex = mindex;
+                                    selectedMachineID = lastTest[lastTestTotalCount].machineID;
+
+                                    IList<string> plist = picker_process.Items;
+                                    int pindex = 0;
+                                    foreach (string p in plist)
+                                    {
+                                        if (p != lastTest[lastTestTotalCount].process)
+                                        {
+                                            pindex++;
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    picker_process.SelectedIndex = pindex;
+                                    selectedProcess = lastTest[lastTestTotalCount].process;
+
+
+
+                                    entry_yarnlen.IsEnabled = false;
+                                    entry_testcount.IsEnabled = false;
+                                    entry_standardHank.IsEnabled = false;
+                                    picker_shift.IsEnabled = false;
+                                    picker_process.IsEnabled = false;
+                                    picker_machinecategory.IsEnabled = false;
+                                    picker_machinename.IsEnabled = false;
+
+                                    ycStrengthTestModelViewList = new List<YCStrengthTestModelView>();
+                                    foreach (YCStrengthTestModel pt in partialTest)
+                                    {
+                                        YCStrengthTestModelView stvm = new YCStrengthTestModelView()
+                                        {
+                                            testID = pt.testID,
+                                            userID = pt.userID,
+                                            userName = pt.userName,
+                                            machineID = pt.machineID,
+                                            machineCategory = pt.machineCategory,
+                                            machineName = pt.machineName,
+                                            shift = pt.shift,
+                                            process = pt.process,
+                                            countsysname = pt.countsysname,
+                                            yarnlenunit = pt.yarnlenunit,
+                                            yarnstrengthunit = pt.yarnstrengthunit,
+                                            yarnlength = formatDecimal(pt.yarnlength),
+                                            totaltestcount = pt.totaltestcount,
+                                            testcount = pt.testcount,
+                                            yarnweight = formatDecimal(pt.yarnweight),
+                                            yccalcval = formatDecimal(pt.yccalcval),
+                                            standardHank = formatDecimal(pt.standardHank),
+                                            yarnstrength = formatDecimal(pt.yarnstrength),
+                                            CSP = formatDecimal(pt.CSP)
+                                        };
+                                        ycStrengthTestModelViewList.Add(stvm);
+                                    }
+                                    refListView(true);
+                                }
+                            }
+                        }
+                    }
+
+                    conn.CreateTable<YarnCountConfigModel>();
+                    YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                    if (yarncountconfigmodel != null)
+                    {
+                        lbl_countsysname.Text = yarncountconfigmodel.countsysname;
+                        if (yarncountconfigmodel.yarnStrengthUnit == null || yarncountconfigmodel.yarnlenunit == null)
+                        {
+                            lbl_yarncountunit.Text = "";
+                        }
+                        else
+                        {
+                            lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit.ToString() + "/ " + yarncountconfigmodel.yarnStrengthUnit.ToString();
+                        }
+                        entry_yarnlen.Text = yarncountconfigmodel.yarnLength.ToString();
+                        entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
+                        TESTCOUNT = yarncountconfigmodel.testcount;
+                        entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardCSP).ToString();
+                        STD_HANK = formatDecimal(yarncountconfigmodel.standardCSP);
+                        updateShift();
+                    }
+                    else
+                    {
+                        lbl_countsysname.Text = "";
+                        lbl_yarncountunit.Text = "";
+                        entry_yarnlen.Text = "";
+                        entry_testcount.Text = "";
+                        picker_shift.SelectedIndex = 0;
+                        picker_process.SelectedIndex = 0;
+                        entry_standardHank.Text = "0.000";
+                    }
                 }
             }
         }
@@ -245,34 +643,6 @@ namespace TQM
                 conn.CreateTable<YCStrengthTestModel>();
                 foreach (YCStrengthTestModelView test in ycStrengthTestModelViewList)
                 {
-                    YCStrengthTestModel ycStrengthTestModel = new YCStrengthTestModel()
-                    {
-                        ID = Guid.NewGuid(),
-                        testID = test.testID,
-                        userID = test.userID,
-                        userName = test.userName,
-                        machineID = test.machineID,
-                        machineCategory = test.machineCategory,
-                        machineName = test.machineName,
-                        shift = test.shift,
-                        process = test.process,
-                        countsysname = test.countsysname,
-                        yarnlenunit = test.yarnlenunit,
-                        yarnstrengthunit = test.yarnstrengthunit,
-                        yarnlength = test.yarnlength,
-                        totaltestcount = test.totaltestcount,
-                        testcount = test.testcount,
-                        yarnweight = test.yarnweight,
-                        yccalcval = test.yccalcval,
-                        yarnstrength = test.yarnstrength,
-                        CSP = test.CSP,
-                        createdate = DateTime.Now
-                    };
-                    int row = conn.Insert(ycStrengthTestModel);
-                    if (row < 1)
-                    {
-                        dbStatus = false;
-                    }
                     totalCalcCountVal = totalCalcCountVal + test.yccalcval;
                     totalCalcCountVal = formatDecimal(totalCalcCountVal);
                     CSPSum = CSPSum + test.CSP;
@@ -357,15 +727,231 @@ namespace TQM
             }
         }
 
+
+        private void initializeResumeTest()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                //conn.DropTable<YCStrengthTestModel>();
+                //conn.DropTable<YCStrengthTestSummaryModel>();
+                //conn.DropTable<TestResumeCheck>();
+
+                conn.CreateTable<YCStrengthTestModel>();
+                conn.CreateTable<YCStrengthTestSummaryModel>();
+                conn.CreateTable<TestResumeCheck>();
+
+                UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                if (loggedInUser == null)
+                {
+                    DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                    return;
+                }
+                else
+                {
+                    currentloggedInUser = loggedInUser;
+                }
+
+                List<YCStrengthTestModel> allTest = conn.Table<YCStrengthTestModel>().ToList();
+
+                if (allTest.Count > 0)
+                {
+                    DateTime maxDate = conn.Table<YCStrengthTestModel>().Max(YCStrengthTestModel => YCStrengthTestModel.createdate);
+                    YCStrengthTestModel lastTestRecord = conn.Table<YCStrengthTestModel>()
+                                        .Where(YCStrengthTestModel => YCStrengthTestModel.createdate == maxDate).FirstOrDefault();
+                    if (lastTestRecord != null)
+                    {
+                        List<YCStrengthTestModel> lastTest = conn.Table<YCStrengthTestModel>()
+                                                            .Where(YCStrengthTestModel => YCStrengthTestModel.testID == lastTestRecord.testID).ToList();
+                        //if (lastTest.Count != lastTestRecord.totaltestcount)
+                        //{
+                        //all sample tests are not completed so there will not an entry in test summary table
+                        //resume test 
+
+                        lastTest.OrderBy(YCStrengthTestModel => YCStrengthTestModel.testcount);
+
+                        int lastTestTotalCount = lastTest.Count - 1;
+                        Guid lastTestPK = lastTest[lastTestTotalCount].ID;
+                        long lastTestID = lastTest[lastTestTotalCount].testID;
+                        int lastTestCount = lastTest[lastTestTotalCount].testcount;
+
+                        if (lastTest[lastTestTotalCount].yarnstrength == 0.0000m && lastTest[lastTestTotalCount].CSP == 0.0000m)
+                        {
+
+                            YCStrengthTestModel inValidRec = conn.Table<YCStrengthTestModel>()
+                                    .Where(YCStrengthTestModel => (YCStrengthTestModel.ID == lastTestPK
+                                                                    && YCStrengthTestModel.testcount == lastTestCount)).FirstOrDefault();
+                            if (inValidRec != null)
+                            {
+
+                                int row = row = conn.Delete(inValidRec);
+
+                                if (row > 0)
+                                {
+                                    string displayusername = currentloggedInUser.firstname + " [" + currentloggedInUser.userId + "]";
+                                    if (currentloggedInUser.firstname != "")
+                                    {
+                                        displayusername = currentloggedInUser.firstname + ", " + currentloggedInUser.lastname + " [" + currentloggedInUser.userId + "]";
+                                    }
+                                    TestResumeCheck testResume = new TestResumeCheck()
+                                    {
+                                        ID = Guid.NewGuid(),
+                                        testID = lastTestID,
+                                        testcount = lastTestCount,
+                                        testType = "CSP",
+                                        userID = currentloggedInUser.ID,
+                                        userName = displayusername,
+                                        createdate = DateTime.Now
+                                    };
+                                    int res = conn.Insert(testResume);
+                                    if (res > 0)
+                                    {
+                                        List<YCStrengthTestModel> partialTest = conn.Table<YCStrengthTestModel>()
+                                                      .Where(YCStrengthTestModel => YCStrengthTestModel.testID == inValidRec.testID).ToList();
+                                        if (partialTest.Count > 0)
+                                        {
+                                            resumeTest = true;
+                                            testYCButton.Text = "Resume";
+                                            currentTestID = inValidRec.testID;
+                                            currentTestCount = inValidRec.testcount;
+                                            lbl_countsysname.Text = inValidRec.countsysname;
+                                            lbl_yarncountunit.Text = inValidRec.yarnlenunit.ToString() + "/ " + inValidRec.yarnstrengthunit.ToString();
+                                            entry_yarnlen.Text = inValidRec.yarnlength.ToString();
+                                            entry_testcount.Text = inValidRec.totaltestcount.ToString();
+                                            TESTCOUNT = inValidRec.totaltestcount;
+                                            entry_standardHank.Text = formatDecimal(inValidRec.standardHank).ToString();
+                                            STD_HANK = formatDecimal(inValidRec.standardHank);
+
+                                            IList<string> mclist = picker_machinecategory.Items;
+                                            int mcindex = 0;
+                                            foreach (string mc in mclist)
+                                            {
+                                                if (mc != inValidRec.machineCategory)
+                                                {
+                                                    mcindex++;
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            picker_machinecategory.SelectedIndex = mcindex;
+
+
+                                            updateShift();
+
+                                            IList<string> mlist = picker_machinename.Items;
+                                            int mindex = 0;
+                                            foreach (string m in mlist)
+                                            {
+                                                if (m != inValidRec.machineName)
+                                                {
+                                                    mindex++;
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            picker_machinename.SelectedIndex = mindex;
+                                            selectedMachineID = inValidRec.machineID;
+
+                                            IList<string> plist = picker_process.Items;
+                                            int pindex = 0;
+                                            foreach (string p in plist)
+                                            {
+                                                if (p != inValidRec.process)
+                                                {
+                                                    pindex++;
+                                                }
+                                                else
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                            picker_process.SelectedIndex = pindex;
+                                            selectedProcess = inValidRec.process;
+
+
+                                            entry_yarnlen.IsEnabled = false;
+                                            entry_testcount.IsEnabled = false;
+                                            entry_standardHank.IsEnabled = false;
+                                            picker_shift.IsEnabled = false;
+                                            picker_process.IsEnabled = false;
+                                            picker_machinecategory.IsEnabled = false;
+                                            picker_machinename.IsEnabled = false;
+
+                                            ycStrengthTestModelViewList = new List<YCStrengthTestModelView>();
+                                            foreach (YCStrengthTestModel pt in partialTest)
+                                            {
+                                                YCStrengthTestModelView stvm = new YCStrengthTestModelView()
+                                                {
+                                                    testID = pt.testID,
+                                                    userID = pt.userID,
+                                                    userName = pt.userName,
+                                                    machineID = pt.machineID,
+                                                    machineCategory = pt.machineCategory,
+                                                    machineName = pt.machineName,
+                                                    shift = pt.shift,
+                                                    process = pt.process,
+                                                    countsysname = pt.countsysname,
+                                                    yarnlenunit = pt.yarnlenunit,
+                                                    yarnstrengthunit = pt.yarnstrengthunit,
+                                                    yarnlength = formatDecimal(pt.yarnlength),
+                                                    totaltestcount = pt.totaltestcount,
+                                                    testcount = pt.testcount,
+                                                    yarnweight = formatDecimal(pt.yarnweight),
+                                                    yccalcval = formatDecimal(pt.yccalcval),
+                                                    standardHank = formatDecimal(pt.standardHank),
+                                                    yarnstrength = formatDecimal(pt.yarnstrength),
+                                                    CSP = formatDecimal(pt.CSP)
+                                                };
+                                                ycStrengthTestModelViewList.Add(stvm);
+                                            }
+                                            refListView(true);
+                                        }
+                                        else
+                                        {
+                                            //need to decide 
+                                            //This condition will occur when the CSP machine off at the 1st sample 
+                                            ycStrengthTestModelViewList = new List<YCStrengthTestModelView>();
+                                            refListView(true);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //need to decide 
+                                    }
+
+                                }
+                                else
+                                {
+                                    // To be decided how to proceed!!!
+                                }
+                            }
+                            else
+                            {
+                                // To be decided how to proceed!!!
+                            }
+                        }
+                        //}
+
+                    }
+                }
+            }
+        }
+
         private void reset(bool fullreset = true, bool dispose = true)
         {
             try
             {
                 current_stable_data = 0;
+                pageNavigated = true;
+                resumeTest = false;
                 if (fullreset) { ImageNotification(null); UpdateUserNotification(""); }
                 if (dispose) { disposeble(); }
                 Device.BeginInvokeOnMainThread(() =>
                 {
+                    testYCButton.Text = "Start";
                     testYCButton.IsEnabled = true;
                     testYCButton.BackgroundColor = Color.Green;
                     entry_yarnlen.IsEnabled = true;
@@ -418,14 +1004,26 @@ namespace TQM
         [Obsolete]
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
-            lbl_TestID.Text = "";
-            isTestStarted = true;
-            updateShift();
+
             ImageNotification("null");
             UpdateUserNotification("");
-            hideFrames();
-            await refListView(false);
-            await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
+
+            isTestStarted = true;
+
+            if (resumeTest == true && pageNavigated == false)
+            {
+                initializeResumeTest();
+            }
+
+            if (!resumeTest)
+            {
+                lbl_TestID.Text = "";
+                updateShift();
+                hideFrames();
+                await refListView(false);
+                await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
+            }
+
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
@@ -505,49 +1103,54 @@ namespace TQM
             currentTarget = "YCB";
             string testCount_str = entry_testcount.Text;
             int testCount = int.Parse(testCount_str);
-            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-            {
-                YCStrengthTestModel lastTestRecord = null;
-                conn.CreateTable<YCStrengthTestModel>();
-                int recordCount = conn.Table<YCStrengthTestModel>().Count();
 
-                if (recordCount == 0)
+            if (!resumeTest)
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    currentTestID = 1;
-                }
-                else
-                {
-                    DateTime maxDate = conn.Table<YCStrengthTestModel>().Max(YCStrengthTestModel => YCStrengthTestModel.createdate);
-                    lastTestRecord = conn.Table<YCStrengthTestModel>()
-                        .Where(YCStrengthTestModel => YCStrengthTestModel.createdate == maxDate).FirstOrDefault();
-                    if (lastTestRecord != null)
+                    YCStrengthTestModel lastTestRecord = null;
+                    conn.CreateTable<YCStrengthTestModel>();
+                    int recordCount = conn.Table<YCStrengthTestModel>().Count();
+
+                    if (recordCount == 0)
                     {
-                        if (currentTestID == 0)
-                        {
-                            currentTestID = lastTestRecord.testID + 1;
-                        }
-                        else if (currentTestID == lastTestRecord.testID)
-                        {
-                            currentTestID = lastTestRecord.testID;
-                        }
+                        currentTestID = 1;
                     }
                     else
                     {
-                        ///to be decided
+                        DateTime maxDate = conn.Table<YCStrengthTestModel>().Max(YCStrengthTestModel => YCStrengthTestModel.createdate);
+                        lastTestRecord = conn.Table<YCStrengthTestModel>()
+                            .Where(YCStrengthTestModel => YCStrengthTestModel.createdate == maxDate).FirstOrDefault();
+                        if (lastTestRecord != null)
+                        {
+                            if (currentTestID == 0)
+                            {
+                                currentTestID = lastTestRecord.testID + 1;
+                            }
+                            else if (currentTestID == lastTestRecord.testID)
+                            {
+                                currentTestID = lastTestRecord.testID;
+                            }
+                        }
+                        else
+                        {
+                            ///to be decided
+                        }
+                    }
+                    lbl_TestID.Text = currentTestID.ToString();
+                    UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                    if (loggedInUser == null)
+                    {
+                        await DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                        return;
+                    }
+                    else
+                    {
+                        currentloggedInUser = loggedInUser;
                     }
                 }
-                lbl_TestID.Text = currentTestID.ToString();
-                UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
-                if (loggedInUser == null)
-                {
-                    await DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
-                    return;
-                }
-                else
-                {
-                    currentloggedInUser = loggedInUser;
-                }
             }
+
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = lbl_yarncountunit.Text.ToString().Split('/')[0].Trim();
             selectedStrengthUnit = lbl_yarncountunit.Text.ToString().Split('/')[1].Trim();
@@ -560,16 +1163,21 @@ namespace TQM
             {
                 selectedProcess = picker_process.SelectedItem.ToString();
             }
-            ycStrengthTestModelViewList = new List<YCStrengthTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
-            entry_yarnlen.IsEnabled = false;
-            entry_testcount.IsEnabled = false;
-            entry_standardHank.IsEnabled = false;
-            picker_shift.IsEnabled = false;
-            picker_process.IsEnabled = false;
-            picker_machinecategory.IsEnabled = false;
-            picker_machinename.IsEnabled = false;
+
+            if (!resumeTest)
+            {
+                ycStrengthTestModelViewList = new List<YCStrengthTestModelView>();
+                entry_yarnlen.IsEnabled = false;
+                entry_testcount.IsEnabled = false;
+                entry_standardHank.IsEnabled = false;
+                picker_shift.IsEnabled = false;
+                picker_process.IsEnabled = false;
+                picker_machinecategory.IsEnabled = false;
+                picker_machinename.IsEnabled = false;
+            }
+
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -584,7 +1192,9 @@ namespace TQM
                 ImageNotification("loading.gif");
                 bool runResult = false;
                 int passCount = 0;
-                for (int i = 0; i < testCount; i++)
+                int startLoopCount = 0;
+                if (resumeTest) { startLoopCount = currentTestCount - 1; passCount = currentTestCount - 1; resumeTest = false; }
+                for (int i = startLoopCount; i < testCount; i++)
                 {
                     runResult = false;
                     CancellationTokenSource src = new CancellationTokenSource();
@@ -704,9 +1314,46 @@ namespace TQM
                             testcount = i + 1,
                             yarnweight = current_stable_data,
                             yccalcval = currentCalculatedValue,
+                            standardHank = STD_HANK_CURR,
                             yarnstrength = 0.0000m,
-                            CSP = 0.0000m
+                            CSP = 0.0000m,
                         };
+
+                        using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                        {
+                            YCStrengthTestModel ycStrengthTestModel = new YCStrengthTestModel()
+                            {
+                                ID = Guid.NewGuid(),
+                                testID = currentTestID,
+                                userID = currentloggedInUser.ID,
+                                userName = displayusername,
+                                machineID = selectedMachineID,
+                                machineCategory = selectedMachineCategory,
+                                machineName = selectedMachineName,
+                                shift = selectedShift,
+                                process = selectedProcess,
+                                countsysname = selectedSysName,
+                                yarnlenunit = selectedCountUnit,
+                                yarnstrengthunit = selectedStrengthUnit,
+                                yarnlength = selectedYarnLen,
+                                totaltestcount = selectedTestCount,
+                                testcount = i + 1,
+                                yarnweight = current_stable_data,
+                                yccalcval = currentCalculatedValue,
+                                standardHank = STD_HANK_CURR,
+                                yarnstrength = 0.0000m,
+                                CSP = 0.0000m,
+                                createdate = DateTime.Now
+                            };
+                            int row = conn.Insert(ycStrengthTestModel);
+                            if (row < 1)
+                            {
+                                ImageNotification("red.png");
+                                UpdateUserNotification("Count - DB ERROR!!!");
+                                return;
+                            }
+                        }
+
                         ycStrengthTestModelViewList.Add(ycStrengthTestModelView);
                         await refListView();
 
@@ -718,7 +1365,16 @@ namespace TQM
                         if (!initializeBluetooth(runConfiguration.getLoadCellSerailNo()))
                         {
                             ImageNotification("red.png");
-                            UpdateUserNotification("CSP - COMMUNICATION ERROR!!!");
+                            UpdateUserNotification("CSP - Communication error!!!");
+                            //call resume test method
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                testYCButton.Text = "Resume";
+                                testYCButton.IsEnabled = true;
+                                testYCButton.BackgroundColor = Color.Green;
+                            });
+                            resumeTest = true;
+                            pageNavigated = false;
                             return;
                         }
                         await Task.Run(async () => await RunCSPTest(), ct).ContinueWith((t) =>
@@ -735,6 +1391,71 @@ namespace TQM
                         });
                         if (runResult)
                         {
+                            var buffer = new BufferedReader(new InputStreamReader(_socket.InputStream));
+                            System.Threading.Thread.Sleep(1000);
+
+                            if (!buffer.Ready())
+                            {
+
+                                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                                {
+                                    conn.CreateTable<TestResumeCheck>();
+                                    TestResumeCheck resumeCheck = conn.Table<TestResumeCheck>()
+                                        .Where(TestResumeCheck => (TestResumeCheck.testID == currentTestID
+                                                                        && TestResumeCheck.testcount == currentTestCount)).FirstOrDefault();
+                                    if (resumeCheck != null)
+                                    {
+                                        int row = conn.Delete(resumeCheck);
+                                        if (row < 0)
+                                        {
+                                            ImageNotification("red.png");
+                                            UpdateUserNotification("CSP - RESUME TEST DELETE ERROR!!!");
+                                            return;
+                                        }
+                                    }
+                                }
+
+
+                                //reset(false);
+                                ImageNotification("red.png");
+                                UpdateUserNotification("CSP - Machine Off!!!");
+                                //call resume test method
+                                Device.BeginInvokeOnMainThread(() =>
+                                {
+                                    testYCButton.Text = "Resume";
+                                    testYCButton.IsEnabled = true;
+                                    testYCButton.BackgroundColor = Color.Green;
+                                });
+                                resumeTest = true;
+                                pageNavigated = false;
+                                return;
+                            }
+                            else
+                            {
+
+                                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                                {
+                                    conn.CreateTable<TestResumeCheck>();
+                                    TestResumeCheck testResume = new TestResumeCheck()
+                                    {
+                                        ID = Guid.NewGuid(),
+                                        testID = currentTestID,
+                                        testcount = currentTestCount,
+                                        testType = "CSP",
+                                        userID = currentloggedInUser.ID,
+                                        userName = displayusername,
+                                        createdate = DateTime.Now
+                                    };
+                                    int res = conn.Insert(testResume);
+                                    if (res < 0)
+                                    {
+                                        ImageNotification("red.png");
+                                        UpdateUserNotification("CSP - RESUME TEST ERROR!!!");
+                                        return;
+                                    }
+                                }
+                            }
+
                             decimal yarnstrength = 0.0000m;
 
                             decimal CSP = 0.0000m;
@@ -748,6 +1469,34 @@ namespace TQM
                                 yarnstrength = formatDecimal(current_stable_data * 2.20462m);
                                 CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * yarnstrength);
                             }
+
+
+
+                            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                            {
+                                YCStrengthTestModel curTestRec = conn.Table<YCStrengthTestModel>()
+                                    .Where(YCStrengthTestModel => (YCStrengthTestModel.testID == currentTestID
+                                                                    && YCStrengthTestModel.testcount == currentTestCount)).FirstOrDefault();
+                                if (curTestRec != null)
+                                {
+                                    curTestRec.yarnstrength = yarnstrength;
+                                    curTestRec.CSP = CSP;
+                                    int row = conn.Update(curTestRec);
+                                    if (row < 0)
+                                    {
+                                        ImageNotification("red.png");
+                                        UpdateUserNotification("CSP - UPDATE DB ERROR!!!");
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    ImageNotification("red.png");
+                                    UpdateUserNotification("CSP - DB ERROR!!!");
+                                    return;
+                                }
+                            }
+
                             ycStrengthTestModelViewList[i].yarnstrength = yarnstrength;
                             ycStrengthTestModelViewList[i].CSP = CSP;
 
@@ -755,14 +1504,38 @@ namespace TQM
                         }
                         else
                         {
-                            reset(false);
-                            break;
+                            //reset(false);
+                            //break;
+                            ImageNotification("red.png");
+                            UpdateUserNotification("CSP - Machine Off!!!");
+                            //call resume test method
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                testYCButton.Text = "Resume";
+                                testYCButton.IsEnabled = true;
+                                testYCButton.BackgroundColor = Color.Green;
+                            });
+                            resumeTest = true;
+                            pageNavigated = false;
+                            return;
                         }
                     }
                     else
                     {
-                        reset(false);
-                        break;
+                        //reset(false);
+                        //break;
+                        ImageNotification("red.png");
+                        UpdateUserNotification("Balance - Communication error!!!");
+                        //call resume test method
+                        Device.BeginInvokeOnMainThread(() =>
+                        {
+                            testYCButton.Text = "Resume";
+                            testYCButton.IsEnabled = true;
+                            testYCButton.BackgroundColor = Color.Green;
+                        });
+                        resumeTest = true;
+                        pageNavigated = false;
+                        return;
                     }
                 }
 
@@ -917,7 +1690,13 @@ namespace TQM
                 UpdateUserNotification("Waiting for CSP data" + " (S.No - " + currentTestCount + ")", GREEN);
 
                 List<decimal> balOutput = ListenCSP();
-
+                if (balOutput == null)
+                {
+                    ImageNotification("red.png");
+                    UpdateUserNotification("CSP-COMMUNICATION ERROR!!! Data reception failure");
+                    Debug.WriteLine("Read data failed");
+                    return false;
+                }
                 Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
                 if (balOutput.Count != 0)
                 {
@@ -962,10 +1741,9 @@ namespace TQM
         {
             try
             {
-                _socket.Close();
-                _socket.Dispose();
-                device.Dispose();
-                adapter.Dispose();
+                if (_socket != null) { _socket.Close(); _socket.Dispose(); }
+                if (device != null) device.Dispose();
+                if (adapter != null) adapter.Dispose();
             }
             catch (Exception ex)
             {

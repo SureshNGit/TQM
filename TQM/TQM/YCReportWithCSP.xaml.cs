@@ -50,11 +50,11 @@ namespace TQM
             consolidatedReport = isConsolidated;
             if (consolidatedReport)
             {
-                lbl_reportHeader.Text = "Consolidated YC+CSP Report";
+                lbl_reportHeader.Text = "Consolidated CSP Report";
             }
             else
             {
-                lbl_reportHeader.Text = "YC+CSP Report";
+                lbl_reportHeader.Text = "CSP Report";
             }
             if (deleteRequest)
             {

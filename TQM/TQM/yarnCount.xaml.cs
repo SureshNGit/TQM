@@ -793,10 +793,9 @@ namespace TQM
         {
             try
             {
-                _socket.Close();
-                _socket.Dispose();
-                device.Dispose();
-                adapter.Dispose();
+                if (_socket != null) { _socket.Close(); _socket.Dispose(); }
+                if (device != null) device.Dispose();
+                if (adapter != null) adapter.Dispose();
             }
             catch (Exception ex)
             {

@@ -41,6 +41,8 @@ namespace TQM.Model
 
         public decimal yccalcval { get; set; }
 
+        public decimal standardHank { get; set; }
+
         public decimal yarnstrength { get; set; }
 
         public decimal CSP { get; set; }

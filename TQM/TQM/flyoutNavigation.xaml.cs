@@ -129,7 +129,7 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Count+Strength",
+                        Title = "CSP",
                         ImageSource = "",
                         TargetPage = typeof(yarnCountWithCSP)
                     });
@@ -187,7 +187,7 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Count+Strength",
+                        Title = "CSP",
                         ImageSource = "",
                         TargetPage = typeof(yarnCountWithCSP)
                     });
