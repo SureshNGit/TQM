@@ -4,7 +4,7 @@
     {
         //Demo balance serail no: G85219651634
         //Test balance serail no: G85222825615
-        private string balanceSerialNo = "DS85222849198";
+        private string balanceSerialNo = "DS85222849197";
         private string loadCellSerailNo = "INTEL";
         private string tqmAppUserID = "tqmuser";
 

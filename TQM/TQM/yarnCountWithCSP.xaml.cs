@@ -73,6 +73,39 @@ namespace TQM
                 conn.CreateTable<YCStrengthTestSummaryModel>();
                 conn.CreateTable<TestResumeCheck>();
 
+
+                conn.CreateTable<YarnCountConfigModel>();
+                YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                if (yarncountconfigmodel != null)
+                {
+                    lbl_countsysname.Text = yarncountconfigmodel.countsysname;
+                    if (yarncountconfigmodel.yarnStrengthUnit == null || yarncountconfigmodel.yarnlenunit == null)
+                    {
+                        lbl_yarncountunit.Text = "";
+                    }
+                    else
+                    {
+                        lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit.ToString() + "/ " + yarncountconfigmodel.yarnStrengthUnit.ToString();
+                    }
+                    entry_yarnlen.Text = yarncountconfigmodel.yarnLength.ToString();
+                    entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
+                    TESTCOUNT = yarncountconfigmodel.testcount;
+                    entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardCSP).ToString();
+                    STD_HANK = formatDecimal(yarncountconfigmodel.standardCSP);
+                    updateShift();
+                }
+                else
+                {
+                    lbl_countsysname.Text = "";
+                    lbl_yarncountunit.Text = "";
+                    entry_yarnlen.Text = "";
+                    entry_testcount.Text = "";
+                    picker_shift.SelectedIndex = 0;
+                    picker_process.SelectedIndex = 0;
+                    entry_standardHank.Text = "0.000";
+                }
+
+
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
                 {
@@ -83,6 +116,8 @@ namespace TQM
                 {
                     currentloggedInUser = loggedInUser;
                 }
+
+
 
                 List<YCStrengthTestModel> allTest = conn.Table<YCStrengthTestModel>().ToList();
 
@@ -463,36 +498,7 @@ namespace TQM
                         }
                     }
 
-                    conn.CreateTable<YarnCountConfigModel>();
-                    YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
-                    if (yarncountconfigmodel != null)
-                    {
-                        lbl_countsysname.Text = yarncountconfigmodel.countsysname;
-                        if (yarncountconfigmodel.yarnStrengthUnit == null || yarncountconfigmodel.yarnlenunit == null)
-                        {
-                            lbl_yarncountunit.Text = "";
-                        }
-                        else
-                        {
-                            lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit.ToString() + "/ " + yarncountconfigmodel.yarnStrengthUnit.ToString();
-                        }
-                        entry_yarnlen.Text = yarncountconfigmodel.yarnLength.ToString();
-                        entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
-                        TESTCOUNT = yarncountconfigmodel.testcount;
-                        entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardCSP).ToString();
-                        STD_HANK = formatDecimal(yarncountconfigmodel.standardCSP);
-                        updateShift();
-                    }
-                    else
-                    {
-                        lbl_countsysname.Text = "";
-                        lbl_yarncountunit.Text = "";
-                        entry_yarnlen.Text = "";
-                        entry_testcount.Text = "";
-                        picker_shift.SelectedIndex = 0;
-                        picker_process.SelectedIndex = 0;
-                        entry_standardHank.Text = "0.000";
-                    }
+
                 }
             }
         }
@@ -1007,6 +1013,7 @@ namespace TQM
 
             ImageNotification("null");
             UpdateUserNotification("");
+            hideFrames();
 
             isTestStarted = true;
 
@@ -1019,7 +1026,6 @@ namespace TQM
             {
                 lbl_TestID.Text = "";
                 updateShift();
-                hideFrames();
                 await refListView(false);
                 await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
             }
@@ -1064,6 +1070,7 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
+            disposeble();
             if (!initializeBluetooth(runConfiguration.getLoadCellSerailNo()))
             {
                 ImageNotification("red.png");
@@ -1506,6 +1513,7 @@ namespace TQM
                         {
                             //reset(false);
                             //break;
+                            disposeble();
                             ImageNotification("red.png");
                             UpdateUserNotification("CSP - Machine Off!!!");
                             //call resume test method
@@ -1524,6 +1532,7 @@ namespace TQM
                     {
                         //reset(false);
                         //break;
+                        disposeble();
                         ImageNotification("red.png");
                         UpdateUserNotification("Balance - Communication error!!!");
                         //call resume test method
