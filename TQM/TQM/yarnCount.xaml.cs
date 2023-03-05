@@ -407,12 +407,12 @@ namespace TQM
             }
             if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
             {
-                await DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
+                await DisplayAlert("Attention", "Standard Count is invalid. Please check!!!", "Ok");
                 return;
             }
             if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
             {
-                await DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
+                await DisplayAlert("Attention", "Standard Count should not be blank or zero or negative!!!", "Ok");
                 return;
             }
             if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")

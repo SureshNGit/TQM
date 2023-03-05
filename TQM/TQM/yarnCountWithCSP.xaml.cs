@@ -28,6 +28,7 @@ namespace TQM
         const decimal MIN_VAL_LOAD_CELL = 10.0000m;
         const decimal ZERO = 0.0000m;
         private decimal INITIAL_LOAD_CELL_VALUE = 0.0000m;
+        private decimal INITIAL_LOAD_CELL_CHECK = 1.0000m;
         const int PER_TEST_LOOP_COUNT = 100;
         const int DATA_READ_LOOP_COUNT = 100;
         const int STABLE_DATA_CHECK = 5;
@@ -62,6 +63,57 @@ namespace TQM
         public yarnCountWithCSP()
         {
             InitializeComponent();
+            //initializeTest();
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            initializeTest();
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            //disposeble();
+            reset();
+        }
+
+        private void updateShift()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                conn.CreateTable<YarnCountConfigModel>();
+                YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                if (yarncountconfigmodel != null)
+                {
+                    TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
+                    TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
+                    TimeSpan shit3time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift3time).TotalHours);
+                    TimeSpan currentTime = TimeSpan.FromHours(TimeSpan.Parse(DateTime.Now.Hour.ToString() + ":" + DateTime.Now.Minute.ToString()).TotalHours);
+                    if (currentTime >= shit1time && currentTime < shit2time)
+                    {
+                        picker_shift.SelectedItem = "Shift-1";
+                    }
+                    else if (currentTime >= shit2time && currentTime < shit3time)
+                    {
+                        picker_shift.SelectedItem = "Shift-2";
+                    }
+                    else
+                    {
+                        picker_shift.SelectedItem = "Shift-3";
+                    }
+                }
+                else
+                {
+                    picker_shift.SelectedIndex = 0;
+                }
+            }
+        }
+
+
+        private void initializeTest()
+        {
             lbl_TestID.Text = "";
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
@@ -503,44 +555,7 @@ namespace TQM
             }
         }
 
-        private void updateShift()
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-            {
-                conn.CreateTable<YarnCountConfigModel>();
-                YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
-                if (yarncountconfigmodel != null)
-                {
-                    TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
-                    TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
-                    TimeSpan shit3time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift3time).TotalHours);
-                    TimeSpan currentTime = TimeSpan.FromHours(TimeSpan.Parse(DateTime.Now.Hour.ToString() + ":" + DateTime.Now.Minute.ToString()).TotalHours);
-                    if (currentTime >= shit1time && currentTime < shit2time)
-                    {
-                        picker_shift.SelectedItem = "Shift-1";
-                    }
-                    else if (currentTime >= shit2time && currentTime < shit3time)
-                    {
-                        picker_shift.SelectedItem = "Shift-2";
-                    }
-                    else
-                    {
-                        picker_shift.SelectedItem = "Shift-3";
-                    }
-                }
-                else
-                {
-                    picker_shift.SelectedIndex = 0;
-                }
-            }
-        }
 
-        protected override void OnDisappearing()
-        {
-            base.OnDisappearing();
-            disposeble();
-            reset();
-        }
 
         private async void UpdateUserNotification(string msg, string color = RED)
         {
@@ -1013,7 +1028,7 @@ namespace TQM
 
             ImageNotification("null");
             UpdateUserNotification("");
-            hideFrames();
+
 
             isTestStarted = true;
 
@@ -1025,6 +1040,7 @@ namespace TQM
             if (!resumeTest)
             {
                 lbl_TestID.Text = "";
+                hideFrames();
                 updateShift();
                 await refListView(false);
                 await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
@@ -1052,12 +1068,12 @@ namespace TQM
             }
             if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
             {
-                await DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
+                await DisplayAlert("Attention", "Standard Count is invalid. Please check!!!", "Ok");
                 return;
             }
             if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
             {
-                await DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
+                await DisplayAlert("Attention", "Standard Count should not be blank or zero or negative!!!", "Ok");
                 return;
             }
             if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
@@ -1214,6 +1230,16 @@ namespace TQM
                     {
                         ImageNotification("red.png");
                         UpdateUserNotification("Balance - COMMUNICATION ERROR!!!");
+
+                        //call resume test method
+                        Device.BeginInvokeOnMainThread(() =>
+                        {
+                            testYCButton.Text = "Resume";
+                            testYCButton.IsEnabled = true;
+                            testYCButton.BackgroundColor = Color.Green;
+                        });
+                        resumeTest = true;
+                        pageNavigated = false;
                         return;
                     }
                     await Task.Run(async () => await RunTest(), ct).ContinueWith((t) =>
@@ -1534,7 +1560,7 @@ namespace TQM
                         //break;
                         disposeble();
                         ImageNotification("red.png");
-                        UpdateUserNotification("Balance - Communication error!!!");
+                        UpdateUserNotification("IMPROPER TEST!!!");
                         //call resume test method
                         Device.BeginInvokeOnMainThread(() =>
                         {
@@ -1696,7 +1722,7 @@ namespace TQM
             try
             {
                 ImageNotification("green.png");
-                UpdateUserNotification("Waiting for CSP data" + " (S.No - " + currentTestCount + ")", GREEN);
+                UpdateUserNotification("Checking CSP data. Please wait...", GREEN);
 
                 List<decimal> balOutput = ListenCSP();
                 if (balOutput == null)
@@ -1960,7 +1986,10 @@ namespace TQM
                         System.Threading.Thread.Sleep(1000);
                         if (buffer.Ready())
                         {
-
+                            decimal prevInitalVal = 0.0000m;
+                            int initCounter = 0;
+                            int initCounterBreakVal = 10;
+                            bool initialAssigned = false;
                             while (op != null)
                             {
                                 op = RemoveSpecialCharacters(buffer.ReadLine());
@@ -1968,7 +1997,40 @@ namespace TQM
 
                                 if (!initialValueCheck)
                                 {
-                                    if (op_dec == INITIAL_LOAD_CELL_VALUE || op_dec < MIN_VAL_LOAD_CELL)
+                                    if (INITIAL_LOAD_CELL_VALUE > MIN_VAL_LOAD_CELL || INITIAL_LOAD_CELL_VALUE >= INITIAL_LOAD_CELL_CHECK)
+                                    {
+                                        if (op_dec > INITIAL_LOAD_CELL_CHECK)
+                                        {
+                                            ImageNotification("red.png");
+                                            UpdateUserNotification("CSP-Remove lea and wait...", RED);
+                                        }
+                                        else
+                                        {
+                                            if (prevInitalVal > op_dec || (prevInitalVal == 0.0000m && initialAssigned == false))
+                                            {
+                                                prevInitalVal = op_dec;
+                                                initCounter = 0;
+                                                initialAssigned = true;
+                                            }
+                                            else if (prevInitalVal == op_dec || op_dec == 0.000m)
+                                            {
+                                                if (initCounter >= initCounterBreakVal)
+                                                {
+                                                    INITIAL_LOAD_CELL_VALUE = op_dec;
+                                                }
+                                                else
+                                                {
+                                                    initCounter = initCounter + 1;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                prevInitalVal = op_dec;
+                                                initCounter = 0;
+                                            }
+                                        }
+                                    }
+                                    else if (op_dec == INITIAL_LOAD_CELL_VALUE || op_dec < MIN_VAL_LOAD_CELL)
                                     {
                                         ImageNotification("green.png");
                                         UpdateUserNotification("Waiting for CSP data" + " (S.No - " + currentTestCount + ")", GREEN);
