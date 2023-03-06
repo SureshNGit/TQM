@@ -126,7 +126,7 @@ namespace TQM
                     Navigation.PushAsync(new YCReport
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false, is_consolidated));
                 }
-                else if (picker_reportName.SelectedItem.ToString() == "Count+Strength")
+                else if (picker_reportName.SelectedItem.ToString() == "CSP")
                 {
                     Navigation.PushAsync(new YCReportWithCSP
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false, is_consolidated));
@@ -229,7 +229,7 @@ namespace TQM
                     Navigation.PushAsync(new YCReport
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true, is_consolidated));
                 }
-                else if (picker_reportName.SelectedItem.ToString() == "Count+Strength")
+                else if (picker_reportName.SelectedItem.ToString() == "CSP")
                 {
                     Navigation.PushAsync(new YCReportWithCSP
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false, is_consolidated));

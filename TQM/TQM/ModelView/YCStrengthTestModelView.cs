@@ -36,6 +36,6 @@ namespace TQM.ModelView
 
         public decimal yarnstrength { get; set; }
 
-        public decimal CSP { get; set; }
+        public int CSP { get; set; }
     }
 }

@@ -45,7 +45,7 @@ namespace TQM.Model
 
         public decimal yarnstrength { get; set; }
 
-        public decimal CSP { get; set; }
+        public int CSP { get; set; }
 
         public DateTime createdate { get; set; }
 

@@ -193,7 +193,7 @@ namespace TQM
                         long lastTestID = lastTest[lastTestTotalCount].testID;
                         int lastTestCount = lastTest[lastTestTotalCount].testcount;
 
-                        if (lastTest[lastTestTotalCount].yarnstrength == 0.0000m && lastTest[lastTestTotalCount].CSP == 0.0000m)
+                        if (lastTest[lastTestTotalCount].yarnstrength == 0.0000m && lastTest[lastTestTotalCount].CSP == 0)
                         {
 
                             YCStrengthTestModel inValidRec = conn.Table<YCStrengthTestModel>()
@@ -325,7 +325,7 @@ namespace TQM
                                                     yccalcval = formatDecimal(pt.yccalcval),
                                                     standardHank = formatDecimal(pt.standardHank),
                                                     yarnstrength = formatDecimal(pt.yarnstrength),
-                                                    CSP = formatDecimal(pt.CSP)
+                                                    CSP = Convert.ToInt32(pt.CSP)
                                                 };
                                                 ycStrengthTestModelViewList.Add(stvm);
                                             }
@@ -540,7 +540,7 @@ namespace TQM
                                             yccalcval = formatDecimal(pt.yccalcval),
                                             standardHank = formatDecimal(pt.standardHank),
                                             yarnstrength = formatDecimal(pt.yarnstrength),
-                                            CSP = formatDecimal(pt.CSP)
+                                            CSP = Convert.ToInt32(pt.CSP)
                                         };
                                         ycStrengthTestModelViewList.Add(stvm);
                                     }
@@ -703,8 +703,6 @@ namespace TQM
                         mean_CSP = formatDecimal(mean_CSP);
                         cv_CSP = (sd_CSP / mean_CSP) * 100.0000m; //Coefficient of Variation
                         cv_CSP = formatDecimal(cv_CSP);
-
-
                     }
                     YCStrengthTestSummaryModel ycStrengthTestSummaryModel = new YCStrengthTestSummaryModel()
                     {
@@ -744,7 +742,6 @@ namespace TQM
                         await refOverallSummary(mean_CSP, sd_CSP, cv_CSP, true, true);
                     }
                 }
-
             }
         }
 
@@ -795,7 +792,7 @@ namespace TQM
                         long lastTestID = lastTest[lastTestTotalCount].testID;
                         int lastTestCount = lastTest[lastTestTotalCount].testcount;
 
-                        if (lastTest[lastTestTotalCount].yarnstrength == 0.0000m && lastTest[lastTestTotalCount].CSP == 0.0000m)
+                        if (lastTest[lastTestTotalCount].yarnstrength == 0.0000m && lastTest[lastTestTotalCount].CSP == 0)
                         {
 
                             YCStrengthTestModel inValidRec = conn.Table<YCStrengthTestModel>()
@@ -924,7 +921,7 @@ namespace TQM
                                                     yccalcval = formatDecimal(pt.yccalcval),
                                                     standardHank = formatDecimal(pt.standardHank),
                                                     yarnstrength = formatDecimal(pt.yarnstrength),
-                                                    CSP = formatDecimal(pt.CSP)
+                                                    CSP = Convert.ToInt32(pt.CSP)
                                                 };
                                                 ycStrengthTestModelViewList.Add(stvm);
                                             }
@@ -1349,7 +1346,7 @@ namespace TQM
                             yccalcval = currentCalculatedValue,
                             standardHank = STD_HANK_CURR,
                             yarnstrength = 0.0000m,
-                            CSP = 0.0000m,
+                            CSP = 0,
                         };
 
                         using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -1375,7 +1372,7 @@ namespace TQM
                                 yccalcval = currentCalculatedValue,
                                 standardHank = STD_HANK_CURR,
                                 yarnstrength = 0.0000m,
-                                CSP = 0.0000m,
+                                CSP = 0,
                                 createdate = DateTime.Now
                             };
                             int row = conn.Insert(ycStrengthTestModel);
@@ -1513,7 +1510,7 @@ namespace TQM
                                 if (curTestRec != null)
                                 {
                                     curTestRec.yarnstrength = yarnstrength;
-                                    curTestRec.CSP = CSP;
+                                    curTestRec.CSP = Convert.ToInt32(CSP);
                                     int row = conn.Update(curTestRec);
                                     if (row < 0)
                                     {
@@ -1531,7 +1528,7 @@ namespace TQM
                             }
 
                             ycStrengthTestModelViewList[i].yarnstrength = yarnstrength;
-                            ycStrengthTestModelViewList[i].CSP = CSP;
+                            ycStrengthTestModelViewList[i].CSP = Convert.ToInt32(CSP);
 
                             await refListView();
                         }
@@ -1736,16 +1733,16 @@ namespace TQM
                 if (balOutput.Count != 0)
                 {
                     balOutput.Sort();
-                    //current_stable_data = INITIAL_LOAD_CELL_VALUE - balOutput[balOutput.Count - 1];
+                    current_stable_data = balOutput[balOutput.Count - 1];
 
-                    if (INITIAL_LOAD_CELL_VALUE < 0.0000m)
-                    {
-                        current_stable_data = balOutput[balOutput.Count - 1] + INITIAL_LOAD_CELL_VALUE;
-                    }
-                    else
-                    {
-                        current_stable_data = balOutput[balOutput.Count - 1] - INITIAL_LOAD_CELL_VALUE;
-                    }
+                    //if (INITIAL_LOAD_CELL_VALUE < 0.0000m)
+                    //{
+                    //    current_stable_data = balOutput[balOutput.Count - 1] + INITIAL_LOAD_CELL_VALUE;
+                    //}
+                    //else
+                    //{
+                    //    current_stable_data = balOutput[balOutput.Count - 1] - INITIAL_LOAD_CELL_VALUE;
+                    //}
 
 
 
@@ -1992,7 +1989,14 @@ namespace TQM
                             bool initialAssigned = false;
                             while (op != null)
                             {
-                                op = RemoveSpecialCharacters(buffer.ReadLine());
+                                string ipData = buffer.ReadLine();
+                                if (ipData.Contains("-"))
+                                {
+                                    ImageNotification("red.png");
+                                    UpdateUserNotification("CSP-Remove lea and ensure zero...", RED);
+                                    continue;
+                                }
+                                op = RemoveSpecialCharacters(ipData);
                                 decimal op_dec = decimal.Parse(op);
 
                                 if (!initialValueCheck)

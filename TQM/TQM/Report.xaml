@@ -67,7 +67,7 @@
                         <x:Array Type="{x:Type x:String}">
                             <x:String></x:String>
                             <x:String>Count</x:String>
-                            <x:String>Count+Strength</x:String>
+                            <x:String>CSP</x:String>
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>
