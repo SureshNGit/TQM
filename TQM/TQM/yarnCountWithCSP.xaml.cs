@@ -1492,7 +1492,7 @@ namespace TQM
                             if (selectedStrengthUnit == "Kg")
                             {
                                 yarnstrength = formatDecimal(current_stable_data);
-                                CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * yarnstrength);
+                                CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * (yarnstrength * 2.20462m));
                             }
                             else if (selectedStrengthUnit == "lbs")
                             {

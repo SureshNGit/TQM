@@ -128,6 +128,14 @@ namespace TQM
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "CSP")
                 {
+                    if (is_consolidated)
+                    {
+                        if (selectedCategory == null || selectedMachineID == Guid.Empty)
+                        {
+                            DisplayAlert("Attention", "Please select machine for consolidated report", "OK");
+                            return;
+                        }
+                    }
                     Navigation.PushAsync(new YCReportWithCSP
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false, is_consolidated));
                 }
@@ -224,7 +232,7 @@ namespace TQM
                 bool is_consolidated = false;
                 if (reportType == "Consolidated") { is_consolidated = true; }
                 if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
-                if (picker_reportName.SelectedItem.ToString() == "Wrapping")
+                if (picker_reportName.SelectedItem.ToString() == "Count")
                 {
                     Navigation.PushAsync(new YCReport
                         (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true, is_consolidated));
@@ -232,7 +240,7 @@ namespace TQM
                 else if (picker_reportName.SelectedItem.ToString() == "CSP")
                 {
                     Navigation.PushAsync(new YCReportWithCSP
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false, is_consolidated));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true, is_consolidated));
                 }
             }
             catch (Exception ex)

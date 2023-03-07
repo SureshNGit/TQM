@@ -32,12 +32,14 @@ namespace TQM
         private const string BLUE = "#0e0273";
         private RunConfiguration runConfiguration = new RunConfiguration();
         private List<YCStrengthTestSummaryModel> deleteList = null;
+        private List<YCStrengthTestModel> partialDeleteList = null;
         private bool deleteAll = false;
         private int TOT_TEST = 0;
         private decimal CON_HANK = 0.0000m;
         private decimal CON_STD_DEV = 0.0000m;
         private decimal CON_CV = 0.0000m;
         private bool consolidatedReport = false;
+        private bool hasPartialTest = false;
 
         public YCReportWithCSP()
         {
@@ -192,22 +194,56 @@ namespace TQM
                         }
 
                     }
-
+                    List<YCStrengthTestModel> partialTest = null;
+                    hasPartialTest = false;
                     if (summaryModels.Count == 0)
                     {
-                        DisplayAlert("Notice", "No records to display!!!", "OK");
-                        return;
+                        if (testID != "" && summaryModels.Count == 0)
+                        {
+                            long idForDelete = long.Parse(testID);
+                            partialTest = conn.Table<YCStrengthTestModel>().
+                                                            Where(YCStrengthTestModel => YCStrengthTestModel.testID == idForDelete).ToList();
+                        }
+                        if (partialTest.Count > 0 && (partialTest.Count != partialTest[0].totaltestcount))
+                        {
+                            hasPartialTest = true;
+                        }
+                        else
+                        {
+                            DisplayAlert("Notice", "No records to display!!!", "OK");
+                            return;
+                        }
                     }
                     else
                     {
                         if (testID != "")
                         {
                             summaryModels = summaryModels.Where(t => t.testID == long.Parse(testID)).ToList();
+                            if (summaryModels.Count == 0)
+                            {
+                                long idForDelete = long.Parse(testID);
+                                partialTest = conn.Table<YCStrengthTestModel>().
+                                              Where(YCStrengthTestModel => YCStrengthTestModel.testID == idForDelete).ToList();
+                            }
+                            if (partialTest.Count > 0 && (partialTest.Count != partialTest[0].totaltestcount))
+                            {
+                                hasPartialTest = true;
+                            }
+                            else
+                            {
+                                DisplayAlert("Notice", "No records to display!!!", "OK");
+                                return;
+                            }
                         }
-                        if (deleteRequest)
+                        if (deleteRequest && hasPartialTest != true)
                         {
                             deleteAll = true;
                             deleteList = summaryModels;
+                        }
+                        else if (deleteRequest && hasPartialTest)
+                        {
+                            deleteAll = true;
+                            partialDeleteList = partialTest;
                         }
                     }
 
@@ -215,49 +251,87 @@ namespace TQM
                     CON_STD_DEV = 0.0000m;
                     CON_CV = 0.0000m;
 
-                    TOT_TEST = summaryModels.Count;
+                    if (!hasPartialTest)
+                    {
 
-                    foreach (YCStrengthTestSummaryModel testsummary in summaryModels)
+                        TOT_TEST = summaryModels.Count;
+
+                        foreach (YCStrengthTestSummaryModel testsummary in summaryModels)
+                        {
+                            OverallCountStrengthReportModelView report = new OverallCountStrengthReportModelView();
+                            List<YCStrengthTestModel> yctestlist = conn.Table<YCStrengthTestModel>().Where(YCStrengthTestModel => YCStrengthTestModel.testID == testsummary.testID).ToList();
+                            if (yctestlist != null)
+                            {
+                                if (consolidatedReport)
+                                {
+                                    CON_HANK = CON_HANK + formatDecimal(testsummary.avgCSP);
+                                    CON_STD_DEV = CON_STD_DEV + formatDecimal(testsummary.sdCSP);
+                                    CON_CV = CON_CV + formatDecimal(testsummary.cvCSP);
+                                }
+
+                                foreach (YCStrengthTestModel test in yctestlist)
+                                {
+                                    report.Add(test);
+                                }
+                                report.testID = testsummary.testID;
+                                report.userName = testsummary.userName;
+                                report.machineCategory = testsummary.machineCategory;
+                                report.machineName = testsummary.machineName;
+                                report.shift = testsummary.shift;
+                                report.process = testsummary.process;
+                                report.countsysname = testsummary.countsysname;
+                                report.yarnlenunit = testsummary.yarnlenunit;
+                                report.yarnstrengthunit = testsummary.yarnstrengthunit;
+                                report.yarnlength = testsummary.yarnlength;
+                                report.totaltestcount = testsummary.totaltestcount;
+                                report.createdate = testsummary.createdate;
+                                report.testRemark = testsummary.testRemark;
+                                report.testaverage = formatDecimal(testsummary.avgCSP);
+                                report.testsd = formatDecimal(testsummary.sdCSP);
+                                report.testcv = formatDecimal(testsummary.cvCSP);
+                                report.standardHank = formatDecimal(testsummary.standardHank);
+                            }
+                            OVS.Add(report);
+                        }
+                        CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
+                        CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
+                        CON_CV = formatDecimal(CON_CV / TOT_TEST);
+
+                    }
+                    else
                     {
                         OverallCountStrengthReportModelView report = new OverallCountStrengthReportModelView();
-                        List<YCStrengthTestModel> yctestlist = conn.Table<YCStrengthTestModel>().Where(YCStrengthTestModel => YCStrengthTestModel.testID == testsummary.testID).ToList();
-                        if (yctestlist != null)
+                        foreach (YCStrengthTestModel test in partialTest)
                         {
-                            if (consolidatedReport)
-                            {
-                                CON_HANK = CON_HANK + formatDecimal(testsummary.avgCSP);
-                                CON_STD_DEV = CON_STD_DEV + formatDecimal(testsummary.sdCSP);
-                                CON_CV = CON_CV + formatDecimal(testsummary.cvCSP);
-                            }
+                            report.Add(test);
 
-                            foreach (YCStrengthTestModel test in yctestlist)
-                            {
-                                report.Add(test);
-                            }
-                            report.testID = testsummary.testID;
-                            report.userName = testsummary.userName;
-                            report.machineCategory = testsummary.machineCategory;
-                            report.machineName = testsummary.machineName;
-                            report.shift = testsummary.shift;
-                            report.process = testsummary.process;
-                            report.countsysname = testsummary.countsysname;
-                            report.yarnlenunit = testsummary.yarnlenunit;
-                            report.yarnstrengthunit = testsummary.yarnstrengthunit;
-                            report.yarnlength = testsummary.yarnlength;
-                            report.totaltestcount = testsummary.totaltestcount;
-                            report.createdate = testsummary.createdate;
-                            report.testRemark = testsummary.testRemark;
-                            report.testaverage = formatDecimal(testsummary.avgCSP);
-                            report.testsd = formatDecimal(testsummary.sdCSP);
-                            report.testcv = formatDecimal(testsummary.cvCSP);
-                            report.standardHank = formatDecimal(testsummary.standardHank);
                         }
+                        report.testID = partialTest[0].testID;
+                        report.userName = partialTest[0].userName;
+                        report.machineCategory = partialTest[0].machineCategory;
+                        report.machineName = partialTest[0].machineName;
+                        report.shift = partialTest[0].shift;
+                        report.process = partialTest[0].process;
+                        report.countsysname = partialTest[0].countsysname;
+                        report.yarnlenunit = partialTest[0].yarnlenunit;
+                        report.yarnstrengthunit = partialTest[0].yarnstrengthunit;
+                        report.yarnlength = partialTest[0].yarnlength;
+                        report.totaltestcount = partialTest[0].totaltestcount;
+                        report.createdate = partialTest[0].createdate;
+                        report.testRemark = "";
+                        report.testaverage = 0.000m;
+                        report.testsd = 0.000m;
+                        report.testcv = 0.000m;
+                        report.standardHank = formatDecimal(partialTest[0].standardHank);
+
                         OVS.Add(report);
+
                     }
-                    CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
-                    CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
-                    CON_CV = formatDecimal(CON_CV / TOT_TEST);
                     ListOfReport = OVS;
+                    if (hasPartialTest && deleteRequest)
+                    {
+                        btn_saveToPDF.Text = "Delete Improper Test";
+                    }
                 }
                 listview_tcreport.ItemsSource = null;
                 listview_tcreport.ItemsSource = ListOfReport;
@@ -269,6 +343,7 @@ namespace TQM
                     lbl_AvgCV.Text = CON_CV.ToString();
                     grid_consolidated.IsVisible = true;
                 }
+
             }
             catch (Exception ex)
             {
@@ -296,10 +371,28 @@ namespace TQM
             }
         }
 
+        private void partialDeleteRecords(List<YCStrengthTestModel> lstOfRecs)
+        {
+            if (lstOfRecs.Count == 0)
+            {
+                return;
+            }
+            foreach (YCStrengthTestModel rec in lstOfRecs)
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.Table<YCStrengthTestModel>().
+                                        Where(YCStrengthTestModel =>
+                                        YCStrengthTestModel.testID == rec.testID).Delete();
+                }
+            }
+        }
+
         private async Task resetBtn()
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                listview_tcreport.ItemsSource = null;
                 deleteAll = false;
                 img_notification.IsVisible = false;
                 btn_saveToPDF.Text = "Send Report";
@@ -730,6 +823,13 @@ namespace TQM
         {
             try
             {
+                if (deleteAll && hasPartialTest)
+                {
+                    partialDeleteRecords(partialDeleteList);
+                    showAlert("Improper test has been deleted sucessfully!!!");
+                    await resetBtn();
+                    return;
+                }
                 if (!generatePDFreport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
                 else
                 {
