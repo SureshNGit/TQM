@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using TQM.Model;
 
 namespace TQM.ModelView
 {
-    public class OverallCountStrengthReportModelView : List<YCStrengthTestModel>
+    public class OverallCountStrengthReportModelView : List<YCStrengthTestReportModelView>
     {
         public long testID { get; set; }
         public string userName { get; set; }
@@ -26,7 +25,7 @@ namespace TQM.ModelView
         public decimal sdCSP { get; set; }
         public decimal cvCSP { get; set; }
         public DateTime createdate { get; set; }
-        public List<YCStrengthTestModel> ycStrengthTestlist => this;
+        public List<YCStrengthTestReportModelView> ycStrengthTestlist => this;
     }
 
 

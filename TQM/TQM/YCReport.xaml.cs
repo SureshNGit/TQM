@@ -739,7 +739,7 @@ namespace TQM
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
                 pdfDocument.Close(true);
-                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "Count-Report.pdf");
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "Count_Report.pdf");
                 //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
                 //Process.Start(pdfPath);
                 return true;
@@ -831,7 +831,7 @@ namespace TQM
                     {
                         showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
                     }
-                    string fileName = "Count-Report.pdf";
+                    string fileName = "Count_Report.pdf";
                     string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
                     Java.IO.File myDir = new Java.IO.File(root + "/CSPDownloads");
                     Java.IO.File file = new Java.IO.File(myDir, fileName);
@@ -842,7 +842,7 @@ namespace TQM
                     //request.Timeout = Timeout.Infinite;
                     request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                     request.AddParameter("uploadedby", companyName);
-                    request.AddParameter("title", "Count-Report-" + DateTime.Now.ToString());
+                    request.AddParameter("title", "Count_Report-" + DateTime.Now.ToString());
                     request.AddFile("reportpath", filePath);
                     RestResponse response = client.Execute(request);
                     if (response.IsSuccessful)

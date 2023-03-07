@@ -35,11 +35,13 @@ namespace TQM
         private List<YCStrengthTestModel> partialDeleteList = null;
         private bool deleteAll = false;
         private int TOT_TEST = 0;
-        private decimal CON_HANK = 0.0000m;
+        private decimal CON_CSP = 0.0000m;
         private decimal CON_STD_DEV = 0.0000m;
         private decimal CON_CV = 0.0000m;
         private bool consolidatedReport = false;
         private bool hasPartialTest = false;
+        private DateTime reportStartDate;
+        private DateTime reportEndDate;
 
         public YCReportWithCSP()
         {
@@ -64,6 +66,8 @@ namespace TQM
                 btn_saveToPDF.BackgroundColor = Color.Red;
                 btn_saveToPDF.TextColor = Color.White;
             }
+            reportStartDate = startDate;
+            reportEndDate = endDate;
             getReport(startDate, endDate, categoryName, machineID, shift, process, testID, deleteRequest);
         }
 
@@ -255,7 +259,7 @@ namespace TQM
                         }
                     }
 
-                    CON_HANK = 0.0000m;
+                    CON_CSP = 0.0000m;
                     CON_STD_DEV = 0.0000m;
                     CON_CV = 0.0000m;
 
@@ -272,15 +276,87 @@ namespace TQM
                             {
                                 if (consolidatedReport)
                                 {
-                                    CON_HANK = CON_HANK + formatDecimal(testsummary.avgCSP);
+                                    CON_CSP = CON_CSP + formatDecimal(testsummary.avgCSP);
                                     CON_STD_DEV = CON_STD_DEV + formatDecimal(testsummary.sdCSP);
                                     CON_CV = CON_CV + formatDecimal(testsummary.cvCSP);
                                 }
 
+                                YCStrengthTestReportModelView reportView = new YCStrengthTestReportModelView()
+                                {
+                                    testDescription = "",
+                                    count = "grams",
+                                    strength = yctestlist[0].yarnstrengthunit,
+                                    CSP = ""
+                                };
+
+                                report.Add(reportView);
+
                                 foreach (YCStrengthTestModel test in yctestlist)
                                 {
-                                    report.Add(test);
+                                    reportView = new YCStrengthTestReportModelView()
+                                    {
+                                        testDescription = test.testcount.ToString(),
+                                        count = formatDecimal(test.yccalcval).ToString(),
+                                        strength = formatDecimal(test.yarnstrength).ToString(),
+                                        CSP = test.CSP.ToString()
+                                    };
+                                    report.Add(reportView);
                                 }
+
+                                reportView = new YCStrengthTestReportModelView()
+                                {
+                                    testDescription = "AVG",
+                                    count = formatDecimal(testsummary.testaverage).ToString(),
+                                    strength = formatDecimal(testsummary.avgStrength).ToString(),
+                                    CSP = formatDecimal(testsummary.avgCSP).ToString()
+                                };
+                                report.Add(reportView);
+
+                                reportView = new YCStrengthTestReportModelView()
+                                {
+                                    testDescription = "SD",
+                                    count = formatDecimal(testsummary.testsd).ToString(),
+                                    strength = formatDecimal(testsummary.sdStrength).ToString(),
+                                    CSP = formatDecimal(testsummary.sdCSP).ToString()
+                                };
+                                report.Add(reportView);
+
+                                reportView = new YCStrengthTestReportModelView()
+                                {
+                                    testDescription = "CV",
+                                    count = formatDecimal(testsummary.testcv).ToString(),
+                                    strength = formatDecimal(testsummary.cvStrength).ToString(),
+                                    CSP = formatDecimal(testsummary.cvCSP).ToString()
+                                };
+                                report.Add(reportView);
+
+                                reportView = new YCStrengthTestReportModelView()
+                                {
+                                    testDescription = "MIN",
+                                    count = formatDecimal(testsummary.testMin).ToString(),
+                                    strength = formatDecimal(testsummary.StrengthMin).ToString(),
+                                    CSP = Convert.ToInt32(testsummary.CSPMin).ToString()
+                                };
+                                report.Add(reportView);
+
+                                reportView = new YCStrengthTestReportModelView()
+                                {
+                                    testDescription = "MAX",
+                                    count = formatDecimal(testsummary.testMax).ToString(),
+                                    strength = formatDecimal(testsummary.StrengthMax).ToString(),
+                                    CSP = Convert.ToInt32(testsummary.CSPMax).ToString()
+                                };
+                                report.Add(reportView);
+
+                                reportView = new YCStrengthTestReportModelView()
+                                {
+                                    testDescription = "RANGE",
+                                    count = formatDecimal(testsummary.testRange).ToString(),
+                                    strength = formatDecimal(testsummary.StrengthRange).ToString(),
+                                    CSP = Convert.ToInt32(testsummary.CSPRange).ToString()
+                                };
+                                report.Add(reportView);
+
                                 report.testID = testsummary.testID;
                                 report.userName = testsummary.userName;
                                 report.machineCategory = testsummary.machineCategory;
@@ -301,7 +377,7 @@ namespace TQM
                             }
                             OVS.Add(report);
                         }
-                        CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
+                        CON_CSP = formatDecimal(CON_CSP / TOT_TEST);
                         CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
                         CON_CV = formatDecimal(CON_CV / TOT_TEST);
 
@@ -309,9 +385,27 @@ namespace TQM
                     else
                     {
                         OverallCountStrengthReportModelView report = new OverallCountStrengthReportModelView();
+
+                        YCStrengthTestReportModelView reportView = new YCStrengthTestReportModelView()
+                        {
+                            testDescription = "",
+                            count = "grams",
+                            strength = partialTest[0].yarnstrengthunit,
+                            CSP = ""
+                        };
+
+                        report.Add(reportView);
+
                         foreach (YCStrengthTestModel test in partialTest)
                         {
-                            report.Add(test);
+                            reportView = new YCStrengthTestReportModelView()
+                            {
+                                testDescription = test.testcount.ToString(),
+                                count = formatDecimal(test.yccalcval).ToString(),
+                                strength = formatDecimal(test.yarnstrength).ToString(),
+                                CSP = test.CSP.ToString()
+                            };
+                            report.Add(reportView);
 
                         }
                         report.testID = partialTest[0].testID;
@@ -350,7 +444,7 @@ namespace TQM
                 if (consolidatedReport)
                 {
                     lbl_totalTest.Text = TOT_TEST.ToString();
-                    lbl_AvgHank.Text = CON_HANK.ToString();
+                    lbl_AvgHank.Text = CON_CSP.ToString();
                     lbl_AvgSD.Text = CON_STD_DEV.ToString();
                     lbl_AvgCV.Text = CON_CV.ToString();
                     grid_consolidated.IsVisible = true;
@@ -405,6 +499,7 @@ namespace TQM
             Device.BeginInvokeOnMainThread(() =>
             {
                 listview_tcreport.ItemsSource = null;
+                grid_consolidated.IsVisible = false;
                 deleteAll = false;
                 img_notification.IsVisible = false;
                 btn_saveToPDF.Text = "Send Report";
@@ -469,7 +564,7 @@ namespace TQM
                 foreach (OverallCountStrengthReportModelView orl in overallReportList)
                 {
 
-                    List<YCStrengthTestModel> testList = orl.ycStrengthTestlist;
+                    List<YCStrengthTestReportModelView> testList = orl.ycStrengthTestlist;
 
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
@@ -493,7 +588,7 @@ namespace TQM
                         //pdfGridInfo.Rows[0].Cells[0].Style.TextPen = PdfPens.White;
                         //pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 18);
                         pdfGridInfo.Rows[0].Cells[0].Value = "Total Test: " + TOT_TEST;
-                        pdfGridInfo.Rows[0].Cells[1].Value = "Con. Avg. CSP: " + CON_HANK;
+                        pdfGridInfo.Rows[0].Cells[1].Value = "Con. Avg. CSP: " + CON_CSP;
                         pdfGridInfo.Rows[0].Cells[2].Value = "Con. SD: " + CON_STD_DEV;
                         pdfGridInfo.Rows[0].Cells[3].Value = "Con. CV: " + CON_CV;
 
@@ -528,22 +623,25 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[2].Value = "Machine Name: " + orl.machineName;
                     pdfGridInfo.Rows[2].Cells[2].ColumnSpan = 2;
                     pdfGridInfo.Rows[3].Cells[0].Value = "Test System: " + orl.countsysname;
-                    pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
-                    pdfGridInfo.Rows[3].Cells[2].Value = "Length: " + orl.yarnlength;
-                    pdfGridInfo.Rows[3].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[4].Cells[0].Value = "Avg. CSP: " + orl.testaverage + " [Std CSP: " + orl.standardCSP + "]";
-                    pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
-                    //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[2].Value = "SD: " + orl.testsd;
-                    //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[3].Value = "CV: " + orl.testcv;
+                    //pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
+                    pdfGridInfo.Rows[3].Cells[2].Value = "Measuring Unit: " + orl.yarnlength + " " + orl.yarnlenunit;
+                    pdfGridInfo.Rows[3].Cells[3].Value = "Strength Unit: " + orl.yarnstrengthunit;
+
+                    //pdfGridInfo.Rows[4].Cells[0].Value = "Avg. CSP: " + orl.testaverage + " [Std CSP: " + orl.standardCSP + "]";
+                    //pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
+                    ////pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
+                    //pdfGridInfo.Rows[4].Cells[2].Value = "SD: " + orl.testsd;
+                    ////pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
+                    //pdfGridInfo.Rows[4].Cells[3].Value = "CV: " + orl.testcv;
 
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
-                    pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
-                    pdfGridInfo.Rows[5].Cells[1].Value = "Strength Unit: " + orl.yarnstrengthunit;
-                    pdfGridInfo.Rows[5].Cells[2].Value = "Shift: " + orl.shift;
-                    pdfGridInfo.Rows[5].Cells[3].Value = "Process: " + orl.process;
+                    pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
+                    pdfGridInfo.Rows[4].Cells[2].Value = "Shift: " + orl.shift;
+                    pdfGridInfo.Rows[4].Cells[3].Value = "Total Test: " + orl.totaltestcount;
+
+                    pdfGridInfo.Rows[5].Cells[0].Value = "Process: " + orl.process;
+                    pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 4;
 
                     pdfGridInfo.Rows[6].Cells[0].Value = "Remark: " + orl.testRemark;
                     pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 4;
@@ -626,7 +724,7 @@ namespace TQM
 
                     pdfGrid = new PdfGrid();
 
-                    pdfGrid.Columns.Add(5);
+                    pdfGrid.Columns.Add(4);
                     PdfGridRow row = new PdfGridRow(pdfGrid);
                     pdfGrid.Rows.Add(row);
 
@@ -636,44 +734,84 @@ namespace TQM
                     pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[0].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[1].Value = "Sample Weight";
+                    //pdfGrid.Rows[0].Cells[1].Value = "Sample Weight";
+                    //pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    ////pdfGrid.Rows[0].Cells[1].Style.TextPen = PdfPens.Black;
+                    //pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                    pdfGrid.Rows[0].Cells[1].Value = "Count";
                     pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    //pdfGrid.Rows[0].Cells[1].Style.TextPen = PdfPens.Black;
-                    pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[2].Value = "Count";
-                    pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
-                    pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[2].Style.TextPen = PdfPens.Black;
-                    pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                    pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
                     //pdfGrid.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     //pdfGrid.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     //pdfGrid.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
-                    pdfGrid.Rows[0].Cells[3].Value = "Strength";
+                    pdfGrid.Rows[0].Cells[2].Value = "Strength";
+                    pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                    pdfGrid.Rows[0].Cells[3].Value = "CSP";
                     pdfGrid.Rows[0].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
                     pdfGrid.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[4].Value = "CSP";
-                    pdfGrid.Rows[0].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
-                    pdfGrid.Rows[0].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    pdfGrid.Rows[0].Cells[4].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    pdfGrid.Rows[0].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
 
 
 
                     int rowCount = 1;
-                    foreach (YCStrengthTestModel test in testList)
+                    foreach (YCStrengthTestReportModelView test in testList)
                     {
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
-                        pdfGrid.Rows[rowCount].Cells[0].Value = test.testcount.ToString();
-                        pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight).ToString();
-                        pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval).ToString();
-                        pdfGrid.Rows[rowCount].Cells[3].Value = formatDecimal(test.yarnstrength).ToString();
-                        pdfGrid.Rows[rowCount].Cells[4].Value = formatDecimal(test.CSP).ToString();
+                        pdfGrid.Rows[rowCount].Cells[0].Value = test.testDescription.ToString();
+                        //pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight).ToString();
+
+                        decimal number_count;
+                        if (Decimal.TryParse(test.count, out number_count))
+                        {
+                            pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(number_count).ToString();
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[rowCount].Cells[1].Value = test.count.ToString();
+                        }
+
+                        //pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval).ToString();
+                        decimal number_strength;
+                        if (Decimal.TryParse(test.strength, out number_strength))
+                        {
+                            pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(number_strength).ToString();
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[rowCount].Cells[2].Value = test.strength.ToString();
+                        }
+
+                        //pdfGrid.Rows[rowCount].Cells[3].Value = formatDecimal(test.yarnstrength).ToString();
+                        decimal number_csp;
+                        if (Decimal.TryParse(test.CSP, out number_csp))
+                        {
+                            if (test.testDescription.ToString() == "AVG")
+                            {
+                                pdfGrid.Rows[rowCount].Cells[3].Value = Convert.ToInt32(number_csp).ToString();
+                            }
+                            else
+                            {
+                                pdfGrid.Rows[rowCount].Cells[3].Value = number_csp.ToString();
+                            }
+
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[rowCount].Cells[3].Value = test.CSP.ToString();
+                        }
+
+
+                        //pdfGrid.Rows[rowCount].Cells[4].Value = formatDecimal(test.CSP).ToString();
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -682,8 +820,8 @@ namespace TQM
                         pdfGrid.Rows[rowCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[rowCount].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[rowCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        //pdfGrid.Rows[rowCount].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                        //pdfGrid.Rows[rowCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         rowCount++;
                     }
 
@@ -762,7 +900,7 @@ namespace TQM
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
                 pdfDocument.Close(true);
-                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "YC_CSP_Report.pdf");
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "CSP_Report.pdf");
                 //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
                 //Process.Start(pdfPath);
                 return true;
@@ -805,15 +943,23 @@ namespace TQM
                 header.Alignment = PdfAlignmentStyle.TopCenter;
                 header.Graphics.DrawString(companyName, font, brush, new PointF(10, 0));
                 //Title Starts
-                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Underline);
+                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
+                //if (consolidatedReport)
+                //{
+                //    header.Graphics.DrawString("Consolidated YC+CSP Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(135, 16));
+                //}
+                //else
+                //{
+                //    header.Graphics.DrawString("YC+CSP Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                //}
                 if (consolidatedReport)
                 {
-                    header.Graphics.DrawString("Consolidated YC+CSP Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(135, 16));
+                    header.Graphics.DrawString("Consolidated CSP Report (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(135, 16));
                 }
                 else
                 {
-                    header.Graphics.DrawString("YC+CSP Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                    header.Graphics.DrawString("CSP Report (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
                 }
                 //Title Ends
                 pdfDocument.Template.Top = header;
@@ -861,7 +1007,7 @@ namespace TQM
                     {
                         showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
                     }
-                    string fileName = "YC_CSP_Report.pdf";
+                    string fileName = "CSP_Report.pdf";
                     string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
                     Java.IO.File myDir = new Java.IO.File(root + "/CSPDownloads");
                     Java.IO.File file = new Java.IO.File(myDir, fileName);
@@ -872,7 +1018,7 @@ namespace TQM
                     //request.Timeout = Timeout.Infinite;
                     request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                     request.AddParameter("uploadedby", companyName);
-                    request.AddParameter("title", "YC_CSP_Report-" + DateTime.Now.ToString());
+                    request.AddParameter("title", "CSP_Report-" + DateTime.Now.ToString());
                     request.AddFile("reportpath", filePath);
                     RestResponse response = client.Execute(request);
                     if (response.IsSuccessful)
