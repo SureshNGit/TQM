@@ -608,6 +608,9 @@ namespace TQM
                     individualTestResultFrame_FinalOut.IsVisible = true;
                     listview_testresult_FinalOut.ItemsSource = null;
                     listview_testresult_FinalOut.IsVisible = visibility;
+
+
+
                     listview_testresult_FinalOut.ItemsSource = ycStrengthTestModelViewList;
                 }
                 else
@@ -660,12 +663,15 @@ namespace TQM
             {
                 bool dbStatus = true;
                 decimal totalCalcCountVal = 0.0000m;
+                decimal StrengthSum = 0.0000m;
                 decimal CSPSum = 0.0000m;
                 conn.CreateTable<YCStrengthTestModel>();
                 foreach (YCStrengthTestModelView test in ycStrengthTestModelViewList)
                 {
                     totalCalcCountVal = totalCalcCountVal + test.yccalcval;
                     totalCalcCountVal = formatDecimal(totalCalcCountVal);
+                    StrengthSum = CSPSum + test.yarnstrength;
+                    StrengthSum = formatDecimal(StrengthSum);
                     CSPSum = CSPSum + test.CSP;
                     CSPSum = formatDecimal(CSPSum);
                 }
@@ -674,6 +680,10 @@ namespace TQM
                     decimal mean = 0.0000m;
                     decimal sd = 0.0000m;
                     decimal cv = 0.0000m;
+
+                    decimal mean_Strength = 0.0000m;
+                    decimal sd_Strength = 0.0000m;
+                    decimal cv_Strength = 0.0000m;
 
                     decimal mean_CSP = 0.0000m;
                     decimal sd_CSP = 0.0000m;
@@ -703,6 +713,18 @@ namespace TQM
                         mean_CSP = formatDecimal(mean_CSP);
                         cv_CSP = (sd_CSP / mean_CSP) * 100.0000m; //Coefficient of Variation
                         cv_CSP = formatDecimal(cv_CSP);
+
+                        mean_CSP = StrengthSum / ycStrengthTestModelViewList[0].totaltestcount;
+                        decimal IndividualStrengthminusMean = 0m;
+                        foreach (YCStrengthTestModelView test in ycStrengthTestModelViewList)
+                        {
+                            IndividualStrengthminusMean = IndividualStrengthminusMean + ((test.yarnstrength - mean_Strength) * (test.yarnstrength - mean_Strength));
+                        }
+                        sd_Strength = (decimal)Math.Sqrt((double)IndividualStrengthminusMean / (double)(ycStrengthTestModelViewList[0].totaltestcount - 1));//Standard Deviation
+                        sd_Strength = formatDecimal(sd_Strength);
+                        mean_Strength = formatDecimal(mean_Strength);
+                        cv_Strength = (sd_Strength / mean_Strength) * 100.0000m; //Coefficient of Variation
+                        cv_Strength = formatDecimal(cv_Strength);
                     }
                     YCStrengthTestSummaryModel ycStrengthTestSummaryModel = new YCStrengthTestSummaryModel()
                     {
