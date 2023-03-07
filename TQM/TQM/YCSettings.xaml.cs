@@ -271,10 +271,10 @@ namespace TQM
                 {
                     stdHank = decimal.Parse(entry_standardHank.Text.ToString());
                 }
-                decimal stdCSP = 0.0000m;
+                int stdCSP = 0;
                 if (entry_standardCSP.Text.Trim().ToString() != "")
                 {
-                    stdCSP = decimal.Parse(entry_standardCSP.Text.ToString());
+                    stdCSP = Convert.ToInt32(entry_standardCSP.Text.ToString());
                 }
                 YarnCountConfigModel yarnCountConfigModel = new YarnCountConfigModel()
                 {

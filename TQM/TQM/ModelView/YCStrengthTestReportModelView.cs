@@ -3,8 +3,8 @@
     public class YCStrengthTestReportModelView
     {
         public string testDescription { get; set; }
-        public decimal count { get; set; }
-        public decimal strength { get; set; }
-        public decimal CSP { get; set; }
+        public string count { get; set; }
+        public string strength { get; set; }
+        public string CSP { get; set; }
     }
 }

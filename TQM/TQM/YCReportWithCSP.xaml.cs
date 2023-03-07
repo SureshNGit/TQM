@@ -229,6 +229,14 @@ namespace TQM
                             {
                                 hasPartialTest = true;
                             }
+                            else if (partialTest.Count > 0 && (partialTest.Count != partialTest[0].totaltestcount))
+                            {
+                                hasPartialTest = true;
+                            }
+                            else if (summaryModels.Count == 0 && partialTest.Count > 0 && (partialTest.Count == partialTest[0].totaltestcount))
+                            {
+                                hasPartialTest = true;
+                            }
                             else
                             {
                                 DisplayAlert("Notice", "No records to display!!!", "OK");
@@ -289,7 +297,7 @@ namespace TQM
                                 report.testaverage = formatDecimal(testsummary.avgCSP);
                                 report.testsd = formatDecimal(testsummary.sdCSP);
                                 report.testcv = formatDecimal(testsummary.cvCSP);
-                                report.standardHank = formatDecimal(testsummary.standardHank);
+                                report.standardCSP = testsummary.standardCSP;
                             }
                             OVS.Add(report);
                         }
@@ -322,7 +330,7 @@ namespace TQM
                         report.testaverage = 0.000m;
                         report.testsd = 0.000m;
                         report.testcv = 0.000m;
-                        report.standardHank = formatDecimal(partialTest[0].standardHank);
+                        report.standardCSP = partialTest[0].standardCSP;
 
                         OVS.Add(report);
 
@@ -331,6 +339,10 @@ namespace TQM
                     if (hasPartialTest && deleteRequest)
                     {
                         btn_saveToPDF.Text = "Delete Improper Test";
+                    }
+                    else if (hasPartialTest)
+                    {
+                        btn_saveToPDF.IsVisible = false;
                     }
                 }
                 listview_tcreport.ItemsSource = null;
@@ -519,7 +531,7 @@ namespace TQM
                     pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     pdfGridInfo.Rows[3].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[3].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[4].Cells[0].Value = "Avg. CSP: " + orl.testaverage + " [Std CSP: " + orl.standardHank + "]";
+                    pdfGridInfo.Rows[4].Cells[0].Value = "Avg. CSP: " + orl.testaverage + " [Std CSP: " + orl.standardCSP + "]";
                     pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
                     pdfGridInfo.Rows[4].Cells[2].Value = "SD: " + orl.testsd;

@@ -48,7 +48,7 @@ namespace TQM.Model
 
         public decimal testRange { get; set; }
 
-        public decimal standardHank { get; set; }
+        public int standardCSP { get; set; }
 
         public decimal avgStrength { get; set; }
 

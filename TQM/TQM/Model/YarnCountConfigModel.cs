@@ -20,7 +20,7 @@ namespace TQM.Model
 
         public decimal standardHank { get; set; }
 
-        public decimal standardCSP { get; set; }
+        public int standardCSP { get; set; }
 
         public int shiftCount { get; set; }
 

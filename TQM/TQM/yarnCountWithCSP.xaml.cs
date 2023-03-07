@@ -51,11 +51,11 @@ namespace TQM
         private const int BUFFER_WAIT_COUNT = 10;
         private const int BUFFER_WAIT_COUNT_CSP = 200;
         private int TESTCOUNT = 0;
-        private decimal STD_HANK = 0.0000m;
-        private decimal STD_HANK_CURR = 0.0000m;
+        private int STD_CSP = 0;
+        private int STD_CSP_CURR = 0;
         private int currentTestCount = 0;
         private bool isTestStarted = false;
-        private string currentTarget = null;
+        //private string currentTarget = null;
         private bool resumeTest = false;
         private bool pageNavigated = true;
         private RunConfiguration runConfiguration = new RunConfiguration();
@@ -142,8 +142,8 @@ namespace TQM
                     entry_yarnlen.Text = yarncountconfigmodel.yarnLength.ToString();
                     entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
                     TESTCOUNT = yarncountconfigmodel.testcount;
-                    entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardCSP).ToString();
-                    STD_HANK = formatDecimal(yarncountconfigmodel.standardCSP);
+                    entry_standardHank.Text = yarncountconfigmodel.standardCSP.ToString();
+                    STD_CSP = yarncountconfigmodel.standardCSP;
                     updateShift();
                 }
                 else
@@ -236,11 +236,12 @@ namespace TQM
                                             currentTestCount = inValidRec.testcount;
                                             lbl_countsysname.Text = inValidRec.countsysname;
                                             lbl_yarncountunit.Text = inValidRec.yarnlenunit.ToString() + "/ " + inValidRec.yarnstrengthunit.ToString();
+                                            selectedStrengthUnit = inValidRec.yarnstrengthunit.ToString();
                                             entry_yarnlen.Text = inValidRec.yarnlength.ToString();
                                             entry_testcount.Text = inValidRec.totaltestcount.ToString();
                                             TESTCOUNT = inValidRec.totaltestcount;
-                                            entry_standardHank.Text = formatDecimal(inValidRec.standardHank).ToString();
-                                            STD_HANK = formatDecimal(inValidRec.standardHank);
+                                            entry_standardHank.Text = inValidRec.standardCSP.ToString();
+                                            STD_CSP = inValidRec.standardCSP;
 
                                             IList<string> mclist = picker_machinecategory.Items;
                                             int mcindex = 0;
@@ -323,7 +324,7 @@ namespace TQM
                                                     testcount = pt.testcount,
                                                     yarnweight = formatDecimal(pt.yarnweight),
                                                     yccalcval = formatDecimal(pt.yccalcval),
-                                                    standardHank = formatDecimal(pt.standardHank),
+                                                    standardCSP = pt.standardCSP,
                                                     yarnstrength = formatDecimal(pt.yarnstrength),
                                                     CSP = Convert.ToInt32(pt.CSP)
                                                 };
@@ -342,11 +343,12 @@ namespace TQM
                                             currentTestCount = inValidRec.testcount;
                                             lbl_countsysname.Text = inValidRec.countsysname;
                                             lbl_yarncountunit.Text = inValidRec.yarnlenunit.ToString() + "/ " + inValidRec.yarnstrengthunit.ToString();
+                                            selectedStrengthUnit = inValidRec.yarnstrengthunit.ToString();
                                             entry_yarnlen.Text = inValidRec.yarnlength.ToString();
                                             entry_testcount.Text = inValidRec.totaltestcount.ToString();
                                             TESTCOUNT = inValidRec.totaltestcount;
-                                            entry_standardHank.Text = formatDecimal(inValidRec.standardHank).ToString();
-                                            STD_HANK = formatDecimal(inValidRec.standardHank);
+                                            entry_standardHank.Text = inValidRec.standardCSP.ToString();
+                                            STD_CSP = inValidRec.standardCSP;
 
                                             IList<string> mclist = picker_machinecategory.Items;
                                             int mcindex = 0;
@@ -451,11 +453,13 @@ namespace TQM
                                     currentTestCount = lastTest[lastTestTotalCount].testcount + 1;
                                     lbl_countsysname.Text = lastTest[lastTestTotalCount].countsysname;
                                     lbl_yarncountunit.Text = lastTest[lastTestTotalCount].yarnlenunit.ToString() + "/ " + lastTest[lastTestTotalCount].yarnstrengthunit.ToString();
+                                    selectedStrengthUnit = lastTest[lastTestTotalCount].yarnstrengthunit.ToString();
+                                    selectedStrengthUnit = lastTest[lastTestTotalCount].yarnstrengthunit.ToString();
                                     entry_yarnlen.Text = lastTest[lastTestTotalCount].yarnlength.ToString();
                                     entry_testcount.Text = lastTest[lastTestTotalCount].totaltestcount.ToString();
                                     TESTCOUNT = lastTest[lastTestTotalCount].totaltestcount;
-                                    entry_standardHank.Text = formatDecimal(lastTest[lastTestTotalCount].standardHank).ToString();
-                                    STD_HANK = formatDecimal(lastTest[lastTestTotalCount].standardHank);
+                                    entry_standardHank.Text = lastTest[lastTestTotalCount].standardCSP.ToString();
+                                    STD_CSP = lastTest[lastTestTotalCount].standardCSP;
 
                                     IList<string> mclist = picker_machinecategory.Items;
                                     int mcindex = 0;
@@ -538,7 +542,7 @@ namespace TQM
                                             testcount = pt.testcount,
                                             yarnweight = formatDecimal(pt.yarnweight),
                                             yccalcval = formatDecimal(pt.yccalcval),
-                                            standardHank = formatDecimal(pt.standardHank),
+                                            standardCSP = pt.standardCSP,
                                             yarnstrength = formatDecimal(pt.yarnstrength),
                                             CSP = Convert.ToInt32(pt.CSP)
                                         };
@@ -590,8 +594,8 @@ namespace TQM
             {
                 individualTestResultFrame_FinalOut.IsVisible = false;
                 individualTestResultFrame.IsVisible = false;
-                frame_overallSummary_FinalOut.IsVisible = false;
-                frame_overallSummary.IsVisible = false;
+                //frame_overallSummary_FinalOut.IsVisible = false;
+                //frame_overallSummary.IsVisible = false;
             });
         }
 
@@ -609,9 +613,92 @@ namespace TQM
                     listview_testresult_FinalOut.ItemsSource = null;
                     listview_testresult_FinalOut.IsVisible = visibility;
 
+                    List<YCStrengthTestModelView> currentTestList = ycStrengthTestModelViewList.OrderBy(YCStrengthTestModelView => YCStrengthTestModelView.testcount).ToList();
+                    List<YCStrengthTestReportModelView> finalReportList = new List<YCStrengthTestReportModelView>();
 
+                    YCStrengthTestReportModelView reportView = new YCStrengthTestReportModelView()
+                    {
+                        testDescription = "",
+                        count = "grams",
+                        strength = selectedStrengthUnit,
+                        CSP = "lbs"
+                    };
 
-                    listview_testresult_FinalOut.ItemsSource = ycStrengthTestModelViewList;
+                    finalReportList.Add(reportView);
+
+                    foreach (YCStrengthTestModelView test in currentTestList)
+                    {
+                        reportView = new YCStrengthTestReportModelView()
+                        {
+                            testDescription = test.testcount.ToString(),
+                            count = formatDecimal(test.yccalcval).ToString(),
+                            strength = formatDecimal(test.yarnstrength).ToString(),
+                            CSP = test.CSP.ToString()
+                        };
+                        finalReportList.Add(reportView);
+                    };
+
+                    using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                    {
+                        YCStrengthTestSummaryModel testSummary = conn.Table<YCStrengthTestSummaryModel>().Where(YCStrengthTestSummaryModel => YCStrengthTestSummaryModel.testID == currentTestID).FirstOrDefault();
+                        if (testSummary != null)
+                        {
+                            reportView = new YCStrengthTestReportModelView()
+                            {
+                                testDescription = "AVG",
+                                count = formatDecimal(testSummary.testaverage).ToString(),
+                                strength = formatDecimal(testSummary.avgStrength).ToString(),
+                                CSP = formatDecimal(testSummary.avgCSP).ToString()
+                            };
+                            finalReportList.Add(reportView);
+
+                            reportView = new YCStrengthTestReportModelView()
+                            {
+                                testDescription = "SD",
+                                count = formatDecimal(testSummary.testsd).ToString(),
+                                strength = formatDecimal(testSummary.sdStrength).ToString(),
+                                CSP = formatDecimal(testSummary.sdCSP).ToString()
+                            };
+                            finalReportList.Add(reportView);
+
+                            reportView = new YCStrengthTestReportModelView()
+                            {
+                                testDescription = "CV",
+                                count = formatDecimal(testSummary.testcv).ToString(),
+                                strength = formatDecimal(testSummary.cvStrength).ToString(),
+                                CSP = formatDecimal(testSummary.cvCSP).ToString()
+                            };
+                            finalReportList.Add(reportView);
+
+                            reportView = new YCStrengthTestReportModelView()
+                            {
+                                testDescription = "MIN",
+                                count = formatDecimal(testSummary.testMin).ToString(),
+                                strength = formatDecimal(testSummary.StrengthMin).ToString(),
+                                CSP = Convert.ToInt32(testSummary.CSPMin).ToString()
+                            };
+                            finalReportList.Add(reportView);
+
+                            reportView = new YCStrengthTestReportModelView()
+                            {
+                                testDescription = "MAX",
+                                count = formatDecimal(testSummary.testMax).ToString(),
+                                strength = formatDecimal(testSummary.StrengthMax).ToString(),
+                                CSP = Convert.ToInt32(testSummary.CSPMax).ToString()
+                            };
+                            finalReportList.Add(reportView);
+
+                            reportView = new YCStrengthTestReportModelView()
+                            {
+                                testDescription = "RANGE",
+                                count = formatDecimal(testSummary.testRange).ToString(),
+                                strength = formatDecimal(testSummary.StrengthRange).ToString(),
+                                CSP = Convert.ToInt32(testSummary.CSPRange).ToString()
+                            };
+                            finalReportList.Add(reportView);
+                        }
+                    }
+                    listview_testresult_FinalOut.ItemsSource = finalReportList;
                 }
                 else
                 {
@@ -624,38 +711,64 @@ namespace TQM
                     if (ycStrengthTestModelViewList != null)
                     {
                         listview_testresult.ItemsSource = null;
-                        listview_testresult.ItemsSource = ycStrengthTestModelViewList.OrderByDescending(YCStrengthTestModelView => YCStrengthTestModelView.testcount);
+                        List<YCStrengthTestModelView> currentTestList = ycStrengthTestModelViewList.OrderByDescending(YCStrengthTestModelView => YCStrengthTestModelView.testcount).ToList();
+                        List<YCStrengthTestReportModelView> finalReportList = new List<YCStrengthTestReportModelView>();
+
+                        YCStrengthTestReportModelView reportView = new YCStrengthTestReportModelView()
+                        {
+                            testDescription = "",
+                            count = "grams",
+                            strength = selectedStrengthUnit,
+                            CSP = "lbs"
+                        };
+
+                        finalReportList.Add(reportView);
+
+                        foreach (YCStrengthTestModelView test in currentTestList)
+                        {
+                            reportView = new YCStrengthTestReportModelView()
+                            {
+                                testDescription = test.testcount.ToString(),
+                                count = formatDecimal(test.yccalcval).ToString(),
+                                strength = formatDecimal(test.yarnstrength).ToString(),
+                                CSP = test.CSP.ToString()
+                            };
+                            finalReportList.Add(reportView);
+                        };
+
+                        listview_testresult.ItemsSource = finalReportList;
+
+
+                        //if (listview_testresult.ItemsSource != null)
+                        //{
+                        //    YCTestModelView lastRow = listview_testresult.ItemsSource.Cast<YCTestModelView>().LastOrDefault();
+                        //    listview_testresult.ScrollTo(lastRow, ScrollToPosition.MakeVisible, true);
+                        //}
                     }
-
-                    //if (listview_testresult.ItemsSource != null)
-                    //{
-                    //    YCTestModelView lastRow = listview_testresult.ItemsSource.Cast<YCTestModelView>().LastOrDefault();
-                    //    listview_testresult.ScrollTo(lastRow, ScrollToPosition.MakeVisible, true);
-                    //}
                 }
             });
         }
 
-        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true, bool showFinalOut = false)
-        {
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                if (showFinalOut)
-                {
-                    frame_overallSummary_FinalOut.IsVisible = visibility;
-                    lbl_average_FinalOut.Text = mean.ToString();
-                    lbl_sd_FinalOut.Text = sd.ToString();
-                    lbl_cv_FinalOut.Text = cv.ToString();
-                }
-                else
-                {
-                    frame_overallSummary.IsVisible = visibility;
-                    lbl_average.Text = mean.ToString();
-                    lbl_sd.Text = sd.ToString();
-                    lbl_cv.Text = cv.ToString();
-                }
-            });
-        }
+        //private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true, bool showFinalOut = false)
+        //{
+        //    Device.BeginInvokeOnMainThread(() =>
+        //    {
+        //        if (showFinalOut)
+        //        {
+        //            frame_overallSummary_FinalOut.IsVisible = visibility;
+        //            lbl_average_FinalOut.Text = mean.ToString();
+        //            lbl_sd_FinalOut.Text = sd.ToString();
+        //            lbl_cv_FinalOut.Text = cv.ToString();
+        //        }
+        //        else
+        //        {
+        //            frame_overallSummary.IsVisible = visibility;
+        //            lbl_average.Text = mean.ToString();
+        //            lbl_sd.Text = sd.ToString();
+        //            lbl_cv.Text = cv.ToString();
+        //        }
+        //    });
+        //}
 
         private async void updateDB()
         {
@@ -665,6 +778,21 @@ namespace TQM
                 decimal totalCalcCountVal = 0.0000m;
                 decimal StrengthSum = 0.0000m;
                 decimal CSPSum = 0.0000m;
+
+                decimal min_Count = 0.0000m;
+                decimal max_Count = 0.0000m;
+                decimal range_Count = 0.0000m;
+
+                decimal min_Strength = 0.0000m;
+                decimal max_Strength = 0.0000m;
+                decimal range_Strength = 0.0000m;
+
+                decimal min_CSP = 0.0000m;
+                decimal max_CSP = 0.0000m;
+                decimal range_CSP = 0.0000m;
+
+
+
                 conn.CreateTable<YCStrengthTestModel>();
                 foreach (YCStrengthTestModelView test in ycStrengthTestModelViewList)
                 {
@@ -681,13 +809,17 @@ namespace TQM
                     decimal sd = 0.0000m;
                     decimal cv = 0.0000m;
 
+
                     decimal mean_Strength = 0.0000m;
                     decimal sd_Strength = 0.0000m;
                     decimal cv_Strength = 0.0000m;
 
+
                     decimal mean_CSP = 0.0000m;
                     decimal sd_CSP = 0.0000m;
                     decimal cv_CSP = 0.0000m;
+
+
                     if (ycStrengthTestModelViewList[0].totaltestcount > 1)
                     {
                         mean = totalCalcCountVal / ycStrengthTestModelViewList[0].totaltestcount;
@@ -702,6 +834,8 @@ namespace TQM
                         cv = (sd / mean) * 100.0000m; //Coefficient of Variation
                         cv = formatDecimal(cv);
 
+
+
                         mean_CSP = CSPSum / ycStrengthTestModelViewList[0].totaltestcount;
                         decimal IndividualCSPminusMean = 0m;
                         foreach (YCStrengthTestModelView test in ycStrengthTestModelViewList)
@@ -714,7 +848,7 @@ namespace TQM
                         cv_CSP = (sd_CSP / mean_CSP) * 100.0000m; //Coefficient of Variation
                         cv_CSP = formatDecimal(cv_CSP);
 
-                        mean_CSP = StrengthSum / ycStrengthTestModelViewList[0].totaltestcount;
+                        mean_Strength = StrengthSum / ycStrengthTestModelViewList[0].totaltestcount;
                         decimal IndividualStrengthminusMean = 0m;
                         foreach (YCStrengthTestModelView test in ycStrengthTestModelViewList)
                         {
@@ -725,6 +859,27 @@ namespace TQM
                         mean_Strength = formatDecimal(mean_Strength);
                         cv_Strength = (sd_Strength / mean_Strength) * 100.0000m; //Coefficient of Variation
                         cv_Strength = formatDecimal(cv_Strength);
+
+
+                        YCStrengthTestModelView countMinRec = ycStrengthTestModelViewList.OrderBy(YCStrengthTestModel => YCStrengthTestModel.yccalcval).First();
+                        min_Count = formatDecimal(countMinRec.yccalcval);
+                        YCStrengthTestModelView countMaxRec = ycStrengthTestModelViewList.OrderByDescending(YCStrengthTestModel => YCStrengthTestModel.yccalcval).First();
+                        max_Count = formatDecimal(countMaxRec.yccalcval);
+                        range_Count = formatDecimal(max_Count - min_Count);
+
+                        YCStrengthTestModelView countMinRec_Strength = ycStrengthTestModelViewList.OrderBy(YCStrengthTestModel => YCStrengthTestModel.yarnstrength).First();
+                        min_Strength = formatDecimal(countMinRec_Strength.yarnstrength);
+                        YCStrengthTestModelView countMaxRec_Strength = ycStrengthTestModelViewList.OrderByDescending(YCStrengthTestModel => YCStrengthTestModel.yarnstrength).First();
+                        max_Strength = formatDecimal(countMaxRec_Strength.yarnstrength);
+                        range_Strength = formatDecimal(max_Strength - min_Strength);
+
+                        YCStrengthTestModelView countMinRec_CSP = ycStrengthTestModelViewList.OrderBy(YCStrengthTestModel => YCStrengthTestModel.CSP).First();
+                        min_CSP = formatDecimal(countMinRec_CSP.CSP);
+                        YCStrengthTestModelView countMaxRec_CSP = ycStrengthTestModelViewList.OrderByDescending(YCStrengthTestModel => YCStrengthTestModel.CSP).First();
+                        max_CSP = formatDecimal(countMaxRec_CSP.CSP);
+                        range_CSP = formatDecimal(max_CSP - min_CSP);
+
+
                     }
                     YCStrengthTestSummaryModel ycStrengthTestSummaryModel = new YCStrengthTestSummaryModel()
                     {
@@ -745,11 +900,23 @@ namespace TQM
                         testaverage = mean,
                         testsd = sd,
                         testcv = cv,
-                        standardHank = STD_HANK_CURR,
-                        testRemark = "",
+                        testMin = min_Count,
+                        testMax = max_Count,
+                        testRange = range_Count,
+                        standardCSP = STD_CSP_CURR,
+                        avgStrength = mean_Strength,
+                        sdStrength = sd_Strength,
+                        cvStrength = cv_Strength,
+                        StrengthMin = min_Strength,
+                        StrengthMax = max_Strength,
+                        StrengthRange = range_Strength,
                         avgCSP = mean_CSP,
                         sdCSP = sd_CSP,
                         cvCSP = cv_CSP,
+                        CSPMin = min_CSP,
+                        CSPMax = max_CSP,
+                        CSPRange = range_CSP,
+                        testRemark = "",
                         createdate = DateTime.Now
                     };
                     conn.CreateTable<YCStrengthTestSummaryModel>();
@@ -761,7 +928,7 @@ namespace TQM
                     if (dbStatus)
                     {
                         await refListView(true, true);
-                        await refOverallSummary(mean_CSP, sd_CSP, cv_CSP, true, true);
+                        //await refOverallSummary(mean_CSP, sd_CSP, cv_CSP, true, true);
                     }
                 }
             }
@@ -855,11 +1022,12 @@ namespace TQM
                                             currentTestCount = inValidRec.testcount;
                                             lbl_countsysname.Text = inValidRec.countsysname;
                                             lbl_yarncountunit.Text = inValidRec.yarnlenunit.ToString() + "/ " + inValidRec.yarnstrengthunit.ToString();
+                                            selectedStrengthUnit = inValidRec.yarnstrengthunit.ToString();
                                             entry_yarnlen.Text = inValidRec.yarnlength.ToString();
                                             entry_testcount.Text = inValidRec.totaltestcount.ToString();
                                             TESTCOUNT = inValidRec.totaltestcount;
-                                            entry_standardHank.Text = formatDecimal(inValidRec.standardHank).ToString();
-                                            STD_HANK = formatDecimal(inValidRec.standardHank);
+                                            entry_standardHank.Text = inValidRec.standardCSP.ToString();
+                                            STD_CSP = inValidRec.standardCSP;
 
                                             IList<string> mclist = picker_machinecategory.Items;
                                             int mcindex = 0;
@@ -941,7 +1109,7 @@ namespace TQM
                                                     testcount = pt.testcount,
                                                     yarnweight = formatDecimal(pt.yarnweight),
                                                     yccalcval = formatDecimal(pt.yccalcval),
-                                                    standardHank = formatDecimal(pt.standardHank),
+                                                    standardCSP = pt.standardCSP,
                                                     yarnstrength = formatDecimal(pt.yarnstrength),
                                                     CSP = Convert.ToInt32(pt.CSP)
                                                 };
@@ -998,7 +1166,7 @@ namespace TQM
                     entry_testcount.IsEnabled = true;
                     entry_testcount.Text = TESTCOUNT.ToString();
                     entry_standardHank.IsEnabled = true;
-                    entry_standardHank.Text = STD_HANK_CURR.ToString();
+                    entry_standardHank.Text = STD_CSP_CURR.ToString();
                     picker_machinecategory.IsEnabled = true;
                     picker_machinecategory.SelectedIndex = 0;
                     picker_machinename.IsEnabled = true;
@@ -1062,7 +1230,19 @@ namespace TQM
                 hideFrames();
                 updateShift();
                 await refListView(false);
-                await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
+                //await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
+            }
+
+            if (lbl_countsysname.Text.Trim() != "Nec")
+            {
+                await DisplayAlert("Attention", "Count system name/method should be 'NEC'. Please change it in Settings!!!", "Ok");
+                return;
+            }
+
+            if (!lbl_yarncountunit.Text.Trim().Contains("Yard"))
+            {
+                await DisplayAlert("Attention", "Lea measuring unit should be 'Yard'. Please change it in Settings !!!", "Ok");
+                return;
             }
 
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
@@ -1073,6 +1253,11 @@ namespace TQM
             if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
             {
                 await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+                return;
+            }
+            if (int.Parse(entry_yarnlen.Text.Trim()) != 120 || int.Parse(entry_yarnlen.Text.Trim()) != 60)
+            {
+                await DisplayAlert("Attention", "Yarn Length should be either 120 or 60 yards!!!", "Ok");
                 return;
             }
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
@@ -1142,7 +1327,7 @@ namespace TQM
                 UpdateUserNotification("Balance - COMMUNICATION ERROR!!!");
                 return;
             }
-            currentTarget = "YCB";
+            //currentTarget = "YCB";
             string testCount_str = entry_testcount.Text;
             int testCount = int.Parse(testCount_str);
 
@@ -1198,7 +1383,7 @@ namespace TQM
             selectedStrengthUnit = lbl_yarncountunit.Text.ToString().Split('/')[1].Trim();
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
-            STD_HANK_CURR = decimal.Parse(entry_standardHank.Text);
+            STD_CSP_CURR = Convert.ToInt32(entry_standardHank.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
             selectedProcess = "";
             if (picker_process.SelectedIndex > 0)
@@ -1366,7 +1551,7 @@ namespace TQM
                             testcount = i + 1,
                             yarnweight = current_stable_data,
                             yccalcval = currentCalculatedValue,
-                            standardHank = STD_HANK_CURR,
+                            standardCSP = STD_CSP_CURR,
                             yarnstrength = 0.0000m,
                             CSP = 0,
                         };
@@ -1392,7 +1577,7 @@ namespace TQM
                                 testcount = i + 1,
                                 yarnweight = current_stable_data,
                                 yccalcval = currentCalculatedValue,
-                                standardHank = STD_HANK_CURR,
+                                standardCSP = STD_CSP_CURR,
                                 yarnstrength = 0.0000m,
                                 CSP = 0,
                                 createdate = DateTime.Now
@@ -1513,13 +1698,29 @@ namespace TQM
                             decimal CSP = 0.0000m;
                             if (selectedStrengthUnit == "Kg")
                             {
-                                yarnstrength = formatDecimal(current_stable_data);
-                                CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * (yarnstrength * 2.20462m));
+                                if (selectedYarnLen == 120.0000m)
+                                {
+                                    yarnstrength = formatDecimal(current_stable_data);
+                                    CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * (yarnstrength * 2.20462m));
+                                }
+                                else if (selectedYarnLen == 60.0000m)
+                                {
+                                    yarnstrength = formatDecimal(current_stable_data * 2.0000m);
+                                    CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * (yarnstrength * 2.20462m));
+                                }
                             }
                             else if (selectedStrengthUnit == "lbs")
                             {
-                                yarnstrength = formatDecimal(current_stable_data * 2.20462m);
-                                CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * yarnstrength);
+                                if (selectedYarnLen == 120.0000m)
+                                {
+                                    yarnstrength = formatDecimal(current_stable_data * 2.20462m);
+                                    CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * yarnstrength);
+                                }
+                                else if (selectedYarnLen == 60.0000m)
+                                {
+                                    yarnstrength = formatDecimal((current_stable_data * 2) * 2.20462m);
+                                    CSP = formatDecimal(ycStrengthTestModelViewList[i].yccalcval * yarnstrength);
+                                }
                             }
 
 
@@ -1602,7 +1803,7 @@ namespace TQM
                     if (passCount > 0)
                     {
                         await refListView();
-                        await refOverallSummary();
+                        //await refOverallSummary();
                     }
                 }
 
