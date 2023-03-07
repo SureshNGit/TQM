@@ -45,8 +45,8 @@ namespace TQM
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
-        private decimal STD_HANK = 0.0000m;
-        private decimal STD_HANK_CURR = 0.0000m;
+        private decimal STD_COUNT = 0.0000m;
+        private decimal STD_COUNT_CURR = 0.0000m;
         private int currentTestCount = 0;
         private bool isTestStarted = false;
         private RunConfiguration runConfiguration = new RunConfiguration();
@@ -70,7 +70,7 @@ namespace TQM
                     entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
                     TESTCOUNT = yarncountconfigmodel.testcount;
                     entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
-                    STD_HANK = formatDecimal(yarncountconfigmodel.standardHank);
+                    STD_COUNT = formatDecimal(yarncountconfigmodel.standardHank);
                     updateShift();
                 }
                 else
@@ -158,8 +158,8 @@ namespace TQM
             {
                 individualTestResultFrame_FinalOut.IsVisible = false;
                 individualTestResultFrame.IsVisible = false;
-                frame_overallSummary_FinalOut.IsVisible = false;
-                frame_overallSummary.IsVisible = false;
+                //frame_overallSummary_FinalOut.IsVisible = false;
+                //frame_overallSummary.IsVisible = false;
             });
         }
 
@@ -176,7 +176,85 @@ namespace TQM
                     individualTestResultFrame_FinalOut.IsVisible = true;
                     listview_testresult_FinalOut.ItemsSource = null;
                     listview_testresult_FinalOut.IsVisible = visibility;
-                    listview_testresult_FinalOut.ItemsSource = ycTestModelViewlist;
+
+                    List<YCTestModelView> currentTestList = ycTestModelViewlist.OrderBy(YCTestModelView => YCTestModelView.testcount).ToList();
+                    List<YCTestReportModelView> finalReportList = new List<YCTestReportModelView>();
+
+                    YCTestReportModelView reportView = new YCTestReportModelView()
+                    {
+                        testDescription = "",
+                        weight = "grams",
+                        count = ""
+                    };
+
+                    finalReportList.Add(reportView);
+
+                    foreach (YCTestModelView test in currentTestList)
+                    {
+                        reportView = new YCTestReportModelView()
+                        {
+                            testDescription = test.testcount.ToString(),
+                            weight = formatDecimal(test.yarnweight).ToString(),
+                            count = formatDecimal(test.yccalcval).ToString()
+                        };
+                        finalReportList.Add(reportView);
+                    };
+
+                    using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                    {
+                        YCTestSummaryModel testSummary = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel => YCTestSummaryModel.testID == currentTestID).FirstOrDefault();
+                        if (testSummary != null)
+                        {
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "AVG",
+                                weight = formatDecimal(testSummary.avgWeight).ToString(),
+                                count = formatDecimal(testSummary.testaverage).ToString()
+                            };
+                            finalReportList.Add(reportView);
+
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "SD",
+                                weight = formatDecimal(testSummary.sdWeight).ToString(),
+                                count = formatDecimal(testSummary.testsd).ToString()
+                            };
+                            finalReportList.Add(reportView);
+
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "CV",
+                                weight = formatDecimal(testSummary.cvWeight).ToString(),
+                                count = formatDecimal(testSummary.testcv).ToString()
+                            };
+                            finalReportList.Add(reportView);
+
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "MIN",
+                                weight = formatDecimal(testSummary.minWeight).ToString(),
+                                count = formatDecimal(testSummary.minTest).ToString()
+                            };
+                            finalReportList.Add(reportView);
+
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "MAX",
+                                weight = formatDecimal(testSummary.maxWeight).ToString(),
+                                count = formatDecimal(testSummary.maxTest).ToString()
+                            };
+                            finalReportList.Add(reportView);
+
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "RANGE",
+                                weight = formatDecimal(testSummary.rangeWeight).ToString(),
+                                count = formatDecimal(testSummary.rangeTest).ToString()
+                            };
+                            finalReportList.Add(reportView);
+                        }
+                    }
+                    listview_testresult_FinalOut.ItemsSource = finalReportList;
                 }
                 else
                 {
@@ -189,7 +267,30 @@ namespace TQM
                     if (ycTestModelViewlist != null)
                     {
                         listview_testresult.ItemsSource = null;
-                        listview_testresult.ItemsSource = ycTestModelViewlist.OrderByDescending(YCTestModelView => YCTestModelView.testcount);
+                        List<YCTestModelView> currentTestList = ycTestModelViewlist.OrderByDescending(YCTestModelView => YCTestModelView.testcount).ToList();
+                        List<YCTestReportModelView> finalReportList = new List<YCTestReportModelView>();
+
+                        YCTestReportModelView reportView = new YCTestReportModelView()
+                        {
+                            testDescription = "",
+                            weight = "grams",
+                            count = ""
+                        };
+
+                        finalReportList.Add(reportView);
+
+                        foreach (YCTestModelView test in currentTestList)
+                        {
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = test.testcount.ToString(),
+                                weight = formatDecimal(test.yarnweight).ToString(),
+                                count = formatDecimal(test.yccalcval).ToString()
+                            };
+                            finalReportList.Add(reportView);
+                        };
+
+                        listview_testresult.ItemsSource = finalReportList;
                     }
 
                     //if (listview_testresult.ItemsSource != null)
@@ -201,26 +302,26 @@ namespace TQM
             });
         }
 
-        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true, bool showFinalOut = false)
-        {
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                if (showFinalOut)
-                {
-                    frame_overallSummary_FinalOut.IsVisible = visibility;
-                    lbl_average_FinalOut.Text = mean.ToString();
-                    lbl_sd_FinalOut.Text = sd.ToString();
-                    lbl_cv_FinalOut.Text = cv.ToString();
-                }
-                else
-                {
-                    frame_overallSummary.IsVisible = visibility;
-                    lbl_average.Text = mean.ToString();
-                    lbl_sd.Text = sd.ToString();
-                    lbl_cv.Text = cv.ToString();
-                }
-            });
-        }
+        //private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true, bool showFinalOut = false)
+        //{
+        //    Device.BeginInvokeOnMainThread(() =>
+        //    {
+        //        if (showFinalOut)
+        //        {
+        //            frame_overallSummary_FinalOut.IsVisible = visibility;
+        //            lbl_average_FinalOut.Text = mean.ToString();
+        //            lbl_sd_FinalOut.Text = sd.ToString();
+        //            lbl_cv_FinalOut.Text = cv.ToString();
+        //        }
+        //        else
+        //        {
+        //            frame_overallSummary.IsVisible = visibility;
+        //            lbl_average.Text = mean.ToString();
+        //            lbl_sd.Text = sd.ToString();
+        //            lbl_cv.Text = cv.ToString();
+        //        }
+        //    });
+        //}
 
         private async void updateDB()
         {
@@ -228,6 +329,7 @@ namespace TQM
             {
                 bool dbStatus = true;
                 decimal totalCalcCountVal = 0.0000m;
+                decimal totalweight = 0.0000m;
                 conn.CreateTable<YCTestModel>();
                 foreach (YCTestModelView test in ycTestModelViewlist)
                 {
@@ -259,12 +361,26 @@ namespace TQM
                     }
                     totalCalcCountVal = totalCalcCountVal + test.yccalcval;
                     totalCalcCountVal = formatDecimal(totalCalcCountVal);
+
+                    totalweight = totalweight + test.yarnweight;
+                    totalweight = formatDecimal(totalweight);
                 }
                 if (dbStatus)
                 {
                     decimal mean = 0.0000m;
                     decimal sd = 0.0000m;
                     decimal cv = 0.0000m;
+                    decimal min_test = 0.0000m;
+                    decimal max_test = 0.0000m;
+                    decimal range_test = 0.0000m;
+
+                    decimal mean_weight = 0.0000m;
+                    decimal sd_weigth = 0.0000m;
+                    decimal cv_weight = 0.0000m;
+                    decimal min_weight = 0.0000m;
+                    decimal max_weight = 0.0000m;
+                    decimal range_weight = 0.0000m;
+
                     if (ycTestModelViewlist[0].totaltestcount > 1)
                     {
                         mean = totalCalcCountVal / ycTestModelViewlist[0].totaltestcount;
@@ -278,6 +394,32 @@ namespace TQM
                         mean = formatDecimal(mean);
                         cv = (sd / mean) * 100.0000m; //Coefficient of Variation
                         cv = formatDecimal(cv);
+
+
+                        mean_weight = totalweight / ycTestModelViewlist[0].totaltestcount;
+                        decimal IndividualWeightminusMean = 0m;
+                        foreach (YCTestModelView test in ycTestModelViewlist)
+                        {
+                            IndividualWeightminusMean = IndividualWeightminusMean + ((test.yarnweight - mean_weight) * (test.yarnweight - mean_weight));
+                        }
+                        sd_weigth = (decimal)Math.Sqrt((double)IndividualWeightminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
+                        sd_weigth = formatDecimal(sd_weigth);
+                        mean_weight = formatDecimal(mean_weight);
+                        cv_weight = (sd_weigth / mean_weight) * 100.0000m; //Coefficient of Variation
+                        cv_weight = formatDecimal(cv_weight);
+
+                        YCTestModelView minRec_test = ycTestModelViewlist.OrderBy(YCTestModel => YCTestModel.yccalcval).FirstOrDefault();
+                        min_test = formatDecimal(minRec_test.yccalcval);
+                        YCTestModelView maxRec_test = ycTestModelViewlist.OrderByDescending(YCTestModel => YCTestModel.yccalcval).FirstOrDefault();
+                        max_test = formatDecimal(maxRec_test.yccalcval);
+                        range_test = formatDecimal(max_test - min_test);
+
+                        YCTestModelView minRec_weight = ycTestModelViewlist.OrderBy(YCTestModel => YCTestModel.yarnweight).FirstOrDefault();
+                        min_weight = formatDecimal(minRec_weight.yarnweight);
+                        YCTestModelView maxRec_weight = ycTestModelViewlist.OrderByDescending(YCTestModel => YCTestModel.yarnweight).FirstOrDefault();
+                        max_weight = formatDecimal(maxRec_weight.yarnweight);
+                        range_weight = formatDecimal(max_weight - min_weight);
+
                     }
                     YCTestSummaryModel ycTestSummaryModel = new YCTestSummaryModel()
                     {
@@ -297,7 +439,16 @@ namespace TQM
                         testaverage = mean,
                         testsd = sd,
                         testcv = cv,
-                        standardHank = STD_HANK_CURR,
+                        minTest = min_test,
+                        maxTest = max_test,
+                        rangeTest = range_test,
+                        avgWeight = mean_weight,
+                        sdWeight = sd_weigth,
+                        cvWeight = cv_weight,
+                        minWeight = min_weight,
+                        maxWeight = max_weight,
+                        rangeWeight = range_weight,
+                        standardCount = STD_COUNT_CURR,
                         createdate = DateTime.Now
                     };
                     conn.CreateTable<YCTestSummaryModel>();
@@ -309,7 +460,7 @@ namespace TQM
                     if (dbStatus)
                     {
                         await refListView(true, true);
-                        await refOverallSummary(mean, sd, cv, true, true);
+                        //await refOverallSummary(mean, sd, cv, true, true);
                     }
                 }
 
@@ -331,7 +482,7 @@ namespace TQM
                     entry_testcount.IsEnabled = true;
                     entry_testcount.Text = TESTCOUNT.ToString();
                     entry_standardHank.IsEnabled = true;
-                    entry_standardHank.Text = STD_HANK_CURR.ToString();
+                    entry_standardHank.Text = STD_COUNT_CURR.ToString();
                     picker_machinecategory.IsEnabled = true;
                     picker_machinecategory.SelectedIndex = 0;
                     picker_machinename.IsEnabled = true;
@@ -384,7 +535,7 @@ namespace TQM
             UpdateUserNotification("");
             hideFrames();
             await refListView(false);
-            await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
+            //await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
@@ -496,7 +647,7 @@ namespace TQM
             selectedCountUnit = lbl_yarncountunit.Text;
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
-            STD_HANK_CURR = decimal.Parse(entry_standardHank.Text);
+            STD_COUNT_CURR = decimal.Parse(entry_standardHank.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
             selectedProcess = "";
             if (picker_process.SelectedIndex > 0)
@@ -660,7 +811,7 @@ namespace TQM
                     if (passCount > 0)
                     {
                         await refListView();
-                        await refOverallSummary();
+                        //await refOverallSummary();
                     }
                 }
                 if (runResult)

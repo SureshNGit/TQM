@@ -621,7 +621,7 @@ namespace TQM
                         testDescription = "",
                         count = "grams",
                         strength = selectedStrengthUnit,
-                        CSP = "lbs"
+                        CSP = ""
                     };
 
                     finalReportList.Add(reportView);
@@ -719,7 +719,7 @@ namespace TQM
                             testDescription = "",
                             count = "grams",
                             strength = selectedStrengthUnit,
-                            CSP = "lbs"
+                            CSP = ""
                         };
 
                         finalReportList.Add(reportView);
@@ -1255,7 +1255,7 @@ namespace TQM
                 await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
                 return;
             }
-            if (int.Parse(entry_yarnlen.Text.Trim()) != 120 || int.Parse(entry_yarnlen.Text.Trim()) != 60)
+            if (int.Parse(entry_yarnlen.Text.Trim()) != 120 && int.Parse(entry_yarnlen.Text.Trim()) != 60)
             {
                 await DisplayAlert("Attention", "Yarn Length should be either 120 or 60 yards!!!", "Ok");
                 return;

@@ -40,7 +40,25 @@ namespace TQM.Model
 
         public decimal testcv { get; set; }
 
-        public decimal standardHank { get; set; }
+        public decimal minTest { get; set; }
+
+        public decimal maxTest { get; set; }
+
+        public decimal rangeTest { get; set; }
+
+        public decimal avgWeight { get; set; }
+
+        public decimal sdWeight { get; set; }
+
+        public decimal cvWeight { get; set; }
+
+        public decimal minWeight { get; set; }
+
+        public decimal maxWeight { get; set; }
+
+        public decimal rangeWeight { get; set; }
+
+        public decimal standardCount { get; set; }
 
         public string testRemark { get; set; }
 

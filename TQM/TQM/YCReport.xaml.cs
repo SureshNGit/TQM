@@ -34,10 +34,12 @@ namespace TQM
         private List<YCTestSummaryModel> deleteList = null;
         private bool deleteAll = false;
         private int TOT_TEST = 0;
-        private decimal CON_HANK = 0.0000m;
+        private decimal CON_COUNT = 0.0000m;
         private decimal CON_STD_DEV = 0.0000m;
         private decimal CON_CV = 0.0000m;
         private bool consolidatedReport = false;
+        private DateTime reportStartDate;
+        private DateTime reportEndDate;
 
         public YCReport()
         {
@@ -50,11 +52,11 @@ namespace TQM
             consolidatedReport = isConsolidated;
             if (consolidatedReport)
             {
-                lbl_reportHeader.Text = "Consolidated YC Report";
+                lbl_reportHeader.Text = "Consolidated Count Report";
             }
             else
             {
-                lbl_reportHeader.Text = "YC Report";
+                lbl_reportHeader.Text = "Count Report";
             }
             if (deleteRequest)
             {
@@ -62,6 +64,8 @@ namespace TQM
                 btn_saveToPDF.BackgroundColor = Color.Red;
                 btn_saveToPDF.TextColor = Color.White;
             }
+            reportStartDate = startDate;
+            reportEndDate = endDate;
             getReport(startDate, endDate, categoryName, machineID, shift, process, testID, deleteRequest);
         }
 
@@ -222,7 +226,7 @@ namespace TQM
                         }
                     }
 
-                    CON_HANK = 0.0000m;
+                    CON_COUNT = 0.0000m;
                     CON_STD_DEV = 0.0000m;
                     CON_CV = 0.0000m;
 
@@ -236,15 +240,79 @@ namespace TQM
                         {
                             if (consolidatedReport)
                             {
-                                CON_HANK = CON_HANK + formatDecimal(testsummary.testaverage);
+                                CON_COUNT = CON_COUNT + formatDecimal(testsummary.testaverage);
                                 CON_STD_DEV = CON_STD_DEV + formatDecimal(testsummary.testsd);
                                 CON_CV = CON_CV + formatDecimal(testsummary.testcv);
                             }
 
+                            YCTestReportModelView reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "",
+                                weight = "grams",
+                                count = ""
+                            };
+
+                            report.Add(reportView);
+
                             foreach (YCTestModel test in yctestlist)
                             {
-                                report.Add(test);
+                                reportView = new YCTestReportModelView()
+                                {
+                                    testDescription = test.testcount.ToString(),
+                                    weight = formatDecimal(test.yarnweight).ToString(),
+                                    count = formatDecimal(test.yccalcval).ToString()
+                                };
+                                report.Add(reportView);
                             }
+
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "AVG",
+                                weight = formatDecimal(testsummary.avgWeight).ToString(),
+                                count = formatDecimal(testsummary.testaverage).ToString()
+                            };
+                            report.Add(reportView);
+
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "SD",
+                                weight = formatDecimal(testsummary.sdWeight).ToString(),
+                                count = formatDecimal(testsummary.testsd).ToString()
+                            };
+                            report.Add(reportView);
+
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "CV",
+                                weight = formatDecimal(testsummary.cvWeight).ToString(),
+                                count = formatDecimal(testsummary.testcv).ToString()
+                            };
+                            report.Add(reportView);
+
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "MIN",
+                                weight = formatDecimal(testsummary.minWeight).ToString(),
+                                count = formatDecimal(testsummary.minTest).ToString()
+                            };
+                            report.Add(reportView);
+
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "MAX",
+                                weight = formatDecimal(testsummary.maxWeight).ToString(),
+                                count = formatDecimal(testsummary.maxTest).ToString()
+                            };
+                            report.Add(reportView);
+
+                            reportView = new YCTestReportModelView()
+                            {
+                                testDescription = "RANGE",
+                                weight = formatDecimal(testsummary.rangeWeight).ToString(),
+                                count = formatDecimal(testsummary.rangeTest).ToString()
+                            };
+                            report.Add(reportView);
+
                             report.testID = testsummary.testID;
                             report.userName = testsummary.userName;
                             report.machineCategory = testsummary.machineCategory;
@@ -262,11 +330,11 @@ namespace TQM
                             report.testsd = formatDecimal(testsummary.testsd);
                             report.testcv = formatDecimal(testsummary.testcv);
                             //report.standardHank = formatDecimal(stdHank);
-                            report.standardHank = formatDecimal(testsummary.standardHank);
+                            report.standardCount = formatDecimal(testsummary.standardCount);
                         }
                         OVS.Add(report);
                     }
-                    CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
+                    CON_COUNT = formatDecimal(CON_COUNT / TOT_TEST);
                     CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
                     CON_CV = formatDecimal(CON_CV / TOT_TEST);
                     ListOfReport = OVS;
@@ -276,7 +344,7 @@ namespace TQM
                 if (consolidatedReport)
                 {
                     lbl_totalTest.Text = TOT_TEST.ToString();
-                    lbl_AvgHank.Text = CON_HANK.ToString();
+                    lbl_AvgHank.Text = CON_COUNT.ToString();
                     lbl_AvgSD.Text = CON_STD_DEV.ToString();
                     lbl_AvgCV.Text = CON_CV.ToString();
                     grid_consolidated.IsVisible = true;
@@ -376,7 +444,7 @@ namespace TQM
                 foreach (OverallReportModelView orl in overallReportList)
                 {
 
-                    List<YCTestModel> testList = orl.yctestlist;
+                    List<YCTestReportModelView> testList = orl.yctestlist;
 
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
@@ -400,7 +468,7 @@ namespace TQM
                         //pdfGridInfo.Rows[0].Cells[0].Style.TextPen = PdfPens.White;
                         //pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 18);
                         pdfGridInfo.Rows[0].Cells[0].Value = "Total Test: " + TOT_TEST;
-                        pdfGridInfo.Rows[0].Cells[1].Value = "Con. HANK: " + CON_HANK;
+                        pdfGridInfo.Rows[0].Cells[1].Value = "Con. HANK: " + CON_COUNT;
                         pdfGridInfo.Rows[0].Cells[2].Value = "Con. SD: " + CON_STD_DEV;
                         pdfGridInfo.Rows[0].Cells[3].Value = "Con. CV: " + CON_CV;
 
@@ -435,20 +503,21 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[2].Value = "Machine Name: " + orl.machineName;
                     pdfGridInfo.Rows[2].Cells[2].ColumnSpan = 2;
                     pdfGridInfo.Rows[3].Cells[0].Value = "Test System: " + orl.countsysname;
-                    pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
-                    pdfGridInfo.Rows[3].Cells[2].Value = "Length: " + orl.yarnlength;
+                    //pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
+                    pdfGridInfo.Rows[3].Cells[2].Value = "Length: " + orl.yarnlength + " " + orl.yarnlenunit;
                     pdfGridInfo.Rows[3].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + orl.testaverage + " [Std Hank: " + orl.standardHank + "]";
+                    //pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + orl.testaverage + " [Std Hank: " + orl.standardCount + "]";
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[1].Value = "SD: " + orl.testsd;
+                    //pdfGridInfo.Rows[4].Cells[1].Value = "SD: " + orl.testsd;
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[2].Value = "CV: " + orl.testcv;
+                    //pdfGridInfo.Rows[4].Cells[2].Value = "CV: " + orl.testcv;
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
-                    pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
-                    pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 2;
-                    pdfGridInfo.Rows[5].Cells[2].Value = "Shift: " + orl.shift;
-                    pdfGridInfo.Rows[5].Cells[3].Value = "Process: " + orl.process;
+                    pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
+                    pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
+                    pdfGridInfo.Rows[4].Cells[2].Value = "Shift: " + orl.shift;
+
+                    pdfGridInfo.Rows[5].Cells[0].Value = "Process: " + orl.process;
 
                     pdfGridInfo.Rows[6].Cells[0].Value = "Remark: " + orl.testRemark;
                     pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 4;
@@ -547,7 +616,7 @@ namespace TQM
                     pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[1].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[2].Value = "Hank";
+                    pdfGrid.Rows[0].Cells[2].Value = "Count";
                     pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -560,13 +629,32 @@ namespace TQM
 
 
                     int rowCount = 1;
-                    foreach (YCTestModel test in testList)
+
+                    foreach (YCTestReportModelView test in testList)
                     {
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
-                        pdfGrid.Rows[rowCount].Cells[0].Value = test.testcount.ToString();
-                        pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight).ToString();
-                        pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval).ToString();
+                        pdfGrid.Rows[rowCount].Cells[0].Value = test.testDescription.ToString();
+                        decimal number;
+                        if (Decimal.TryParse(test.weight, out number))
+                        {
+                            pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(number).ToString();
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[rowCount].Cells[1].Value = test.weight.ToString();
+                        }
+                        decimal number_count;
+                        if (Decimal.TryParse(test.count, out number_count))
+                        {
+                            pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(number_count).ToString();
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[rowCount].Cells[2].Value = test.count.ToString();
+                        }
+
+                        //pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(decimal.Parse(test.count)).ToString();
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -651,7 +739,7 @@ namespace TQM
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
                 pdfDocument.Close(true);
-                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "YC-Report.pdf");
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "Count-Report.pdf");
                 //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
                 //Process.Start(pdfPath);
                 return true;
@@ -694,15 +782,15 @@ namespace TQM
                 header.Alignment = PdfAlignmentStyle.TopCenter;
                 header.Graphics.DrawString(companyName, font, brush, new PointF(10, 0));
                 //Title Starts
-                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Underline);
+                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
                 if (consolidatedReport)
                 {
-                    header.Graphics.DrawString("Consolidated YC Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(135, 16));
+                    header.Graphics.DrawString("Consolidated Count Report (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(135, 16));
                 }
                 else
                 {
-                    header.Graphics.DrawString("YC Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                    header.Graphics.DrawString("Count Report (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
                 }
                 //Title Ends
                 pdfDocument.Template.Top = header;
@@ -743,7 +831,7 @@ namespace TQM
                     {
                         showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
                     }
-                    string fileName = "YC-Report.pdf";
+                    string fileName = "Count-Report.pdf";
                     string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
                     Java.IO.File myDir = new Java.IO.File(root + "/CSPDownloads");
                     Java.IO.File file = new Java.IO.File(myDir, fileName);
@@ -754,7 +842,7 @@ namespace TQM
                     //request.Timeout = Timeout.Infinite;
                     request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                     request.AddParameter("uploadedby", companyName);
-                    request.AddParameter("title", "YC-Report-" + DateTime.Now.ToString());
+                    request.AddParameter("title", "Count-Report-" + DateTime.Now.ToString());
                     request.AddFile("reportpath", filePath);
                     RestResponse response = client.Execute(request);
                     if (response.IsSuccessful)
