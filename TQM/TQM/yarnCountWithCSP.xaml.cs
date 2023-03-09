@@ -235,6 +235,7 @@ namespace TQM
                                             currentTestID = inValidRec.testID;
                                             currentTestCount = inValidRec.testcount;
                                             lbl_countsysname.Text = inValidRec.countsysname;
+                                            selectedSysName = inValidRec.countsysname;
                                             lbl_yarncountunit.Text = inValidRec.yarnlenunit.ToString() + "/ " + inValidRec.yarnstrengthunit.ToString();
                                             selectedStrengthUnit = inValidRec.yarnstrengthunit.ToString();
                                             entry_yarnlen.Text = inValidRec.yarnlength.ToString();
@@ -342,6 +343,7 @@ namespace TQM
                                             currentTestID = inValidRec.testID;
                                             currentTestCount = inValidRec.testcount;
                                             lbl_countsysname.Text = inValidRec.countsysname;
+                                            selectedSysName = inValidRec.countsysname;
                                             lbl_yarncountunit.Text = inValidRec.yarnlenunit.ToString() + "/ " + inValidRec.yarnstrengthunit.ToString();
                                             selectedStrengthUnit = inValidRec.yarnstrengthunit.ToString();
                                             entry_yarnlen.Text = inValidRec.yarnlength.ToString();
@@ -452,6 +454,7 @@ namespace TQM
                                     currentTestID = lastTest[lastTestTotalCount].testID;
                                     currentTestCount = lastTest[lastTestTotalCount].testcount + 1;
                                     lbl_countsysname.Text = lastTest[lastTestTotalCount].countsysname;
+                                    selectedSysName = lastTest[lastTestTotalCount].countsysname;
                                     lbl_yarncountunit.Text = lastTest[lastTestTotalCount].yarnlenunit.ToString() + "/ " + lastTest[lastTestTotalCount].yarnstrengthunit.ToString();
                                     selectedStrengthUnit = lastTest[lastTestTotalCount].yarnstrengthunit.ToString();
                                     selectedStrengthUnit = lastTest[lastTestTotalCount].yarnstrengthunit.ToString();
@@ -619,7 +622,7 @@ namespace TQM
                     YCStrengthTestReportModelView reportView = new YCStrengthTestReportModelView()
                     {
                         testDescription = "",
-                        count = "grams",
+                        count = selectedSysName,
                         strength = selectedStrengthUnit,
                         CSP = ""
                     };
@@ -648,7 +651,7 @@ namespace TQM
                                 testDescription = "AVG",
                                 count = formatDecimal(testSummary.testaverage).ToString(),
                                 strength = formatDecimal(testSummary.avgStrength).ToString(),
-                                CSP = formatDecimal(testSummary.avgCSP).ToString()
+                                CSP = Convert.ToInt32(testSummary.avgCSP).ToString()
                             };
                             finalReportList.Add(reportView);
 
@@ -657,7 +660,7 @@ namespace TQM
                                 testDescription = "SD",
                                 count = formatDecimal(testSummary.testsd).ToString(),
                                 strength = formatDecimal(testSummary.sdStrength).ToString(),
-                                CSP = formatDecimal(testSummary.sdCSP).ToString()
+                                CSP = Math.Round(testSummary.sdCSP, 1).ToString()
                             };
                             finalReportList.Add(reportView);
 
@@ -666,7 +669,7 @@ namespace TQM
                                 testDescription = "CV",
                                 count = formatDecimal(testSummary.testcv).ToString(),
                                 strength = formatDecimal(testSummary.cvStrength).ToString(),
-                                CSP = formatDecimal(testSummary.cvCSP).ToString()
+                                CSP = Math.Round(testSummary.cvCSP, 1).ToString()
                             };
                             finalReportList.Add(reportView);
 
@@ -717,7 +720,7 @@ namespace TQM
                         YCStrengthTestReportModelView reportView = new YCStrengthTestReportModelView()
                         {
                             testDescription = "",
-                            count = "grams",
+                            count = selectedSysName,
                             strength = selectedStrengthUnit,
                             CSP = ""
                         };
@@ -798,7 +801,7 @@ namespace TQM
                 {
                     totalCalcCountVal = totalCalcCountVal + test.yccalcval;
                     totalCalcCountVal = formatDecimal(totalCalcCountVal);
-                    StrengthSum = CSPSum + test.yarnstrength;
+                    StrengthSum = StrengthSum + test.yarnstrength;
                     StrengthSum = formatDecimal(StrengthSum);
                     CSPSum = CSPSum + test.CSP;
                     CSPSum = formatDecimal(CSPSum);
@@ -1021,6 +1024,7 @@ namespace TQM
                                             currentTestID = inValidRec.testID;
                                             currentTestCount = inValidRec.testcount;
                                             lbl_countsysname.Text = inValidRec.countsysname;
+                                            selectedSysName = inValidRec.countsysname;
                                             lbl_yarncountunit.Text = inValidRec.yarnlenunit.ToString() + "/ " + inValidRec.yarnstrengthunit.ToString();
                                             selectedStrengthUnit = inValidRec.yarnstrengthunit.ToString();
                                             entry_yarnlen.Text = inValidRec.yarnlength.ToString();

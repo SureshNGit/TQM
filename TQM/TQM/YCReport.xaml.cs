@@ -249,7 +249,7 @@ namespace TQM
                             {
                                 testDescription = "",
                                 weight = "grams",
-                                count = ""
+                                count = yctestlist[0].countsysname
                             };
 
                             report.Add(reportView);

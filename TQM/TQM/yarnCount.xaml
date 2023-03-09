@@ -323,7 +323,9 @@
                         <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273">
                             <Label Text="Sample No" WidthRequest="150" TextColor="White" FontSize="20"/>
                             <Label Text="Sample Weigth" WidthRequest="230" TextColor="White" FontSize="20"/>
-                            <Label Text="Count" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Label Text="Count" WidthRequest="120" TextColor="White" FontSize="20"/>
+                            <Button Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1" HorizontalOptions="End" Text="+" 
+                             x:Name="btn_comment"  Clicked="btn_comment_Clicked" BackgroundColor="Red" TextColor="white"/>
                         </StackLayout>
                     </ListView.Header>
                     <ListView.ItemTemplate>
@@ -333,7 +335,7 @@
                                          RowSpacing="2">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="155"/>
-                                        <ColumnDefinition Width="235"/>
+                                        <ColumnDefinition Width="240"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Label Grid.Column="0" Grid.Row="0"

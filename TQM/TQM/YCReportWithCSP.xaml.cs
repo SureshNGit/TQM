@@ -223,28 +223,27 @@ namespace TQM
                         if (testID != "")
                         {
                             summaryModels = summaryModels.Where(t => t.testID == long.Parse(testID)).ToList();
-                            if (summaryModels.Count == 0)
-                            {
-                                long idForDelete = long.Parse(testID);
-                                partialTest = conn.Table<YCStrengthTestModel>().
-                                              Where(YCStrengthTestModel => YCStrengthTestModel.testID == idForDelete).ToList();
-                            }
+
+                            long idForDelete = long.Parse(testID);
+                            partialTest = conn.Table<YCStrengthTestModel>().
+                                          Where(YCStrengthTestModel => YCStrengthTestModel.testID == idForDelete).ToList();
+
                             if (partialTest.Count > 0 && (partialTest.Count != partialTest[0].totaltestcount))
                             {
                                 hasPartialTest = true;
                             }
-                            else if (partialTest.Count > 0 && (partialTest.Count != partialTest[0].totaltestcount))
-                            {
-                                hasPartialTest = true;
-                            }
+
                             else if (summaryModels.Count == 0 && partialTest.Count > 0 && (partialTest.Count == partialTest[0].totaltestcount))
                             {
                                 hasPartialTest = true;
                             }
                             else
                             {
-                                DisplayAlert("Notice", "No records to display!!!", "OK");
-                                return;
+                                if (summaryModels.Count == 0 && partialTest.Count == 0)
+                                {
+                                    DisplayAlert("Notice", "No records to display!!!", "OK");
+                                    return;
+                                }
                             }
                         }
                         if (deleteRequest && hasPartialTest != true)
@@ -284,7 +283,7 @@ namespace TQM
                                 YCStrengthTestReportModelView reportView = new YCStrengthTestReportModelView()
                                 {
                                     testDescription = "",
-                                    count = "grams",
+                                    count = yctestlist[0].countsysname,
                                     strength = yctestlist[0].yarnstrengthunit,
                                     CSP = ""
                                 };
@@ -308,7 +307,7 @@ namespace TQM
                                     testDescription = "AVG",
                                     count = formatDecimal(testsummary.testaverage).ToString(),
                                     strength = formatDecimal(testsummary.avgStrength).ToString(),
-                                    CSP = formatDecimal(testsummary.avgCSP).ToString()
+                                    CSP = Convert.ToInt32(testsummary.avgCSP).ToString()
                                 };
                                 report.Add(reportView);
 
@@ -317,7 +316,7 @@ namespace TQM
                                     testDescription = "SD",
                                     count = formatDecimal(testsummary.testsd).ToString(),
                                     strength = formatDecimal(testsummary.sdStrength).ToString(),
-                                    CSP = formatDecimal(testsummary.sdCSP).ToString()
+                                    CSP = Math.Round(testsummary.sdCSP, 1).ToString()
                                 };
                                 report.Add(reportView);
 
@@ -326,7 +325,7 @@ namespace TQM
                                     testDescription = "CV",
                                     count = formatDecimal(testsummary.testcv).ToString(),
                                     strength = formatDecimal(testsummary.cvStrength).ToString(),
-                                    CSP = formatDecimal(testsummary.cvCSP).ToString()
+                                    CSP = Math.Round(testsummary.cvCSP, 1).ToString()
                                 };
                                 report.Add(reportView);
 

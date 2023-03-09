@@ -335,6 +335,8 @@
                             <Label Text="Count" WidthRequest="200" TextColor="White" FontSize="20"/>
                             <Label Text="Strength" WidthRequest="200" TextColor="White" FontSize="20"/>
                             <Label Text="CSP" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Button Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="1" HorizontalOptions="End" Text="+" 
+                            x:Name="btn_comment"  Clicked="btn_comment_Clicked" BackgroundColor="Red" TextColor="white"/>
                         </StackLayout>
                     </ListView.Header>
                     <ListView.ItemTemplate>
@@ -345,9 +347,9 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100"/>
                                         <!--<ColumnDefinition Width="140"/>-->
-                                        <ColumnDefinition Width="20"/>
-                                        <ColumnDefinition Width="160"/>
-                                        <ColumnDefinition Width="160"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="130"/>
                                     </Grid.ColumnDefinitions>
                                     <Label Grid.Column="0" Grid.Row="0"
                                        Text="{Binding testDescription}" FontSize="16"/>

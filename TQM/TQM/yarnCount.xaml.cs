@@ -184,7 +184,7 @@ namespace TQM
                     {
                         testDescription = "",
                         weight = "grams",
-                        count = ""
+                        count = selectedSysName
                     };
 
                     finalReportList.Add(reportView);
@@ -274,7 +274,7 @@ namespace TQM
                         {
                             testDescription = "",
                             weight = "grams",
-                            count = ""
+                            count = selectedSysName
                         };
 
                         finalReportList.Add(reportView);
