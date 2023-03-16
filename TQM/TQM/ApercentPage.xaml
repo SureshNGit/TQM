@@ -253,7 +253,7 @@
                         <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273">
                             <Label Text="Sample No" WidthRequest="155" TextColor="White" FontSize="16"/>
                             <Label Text="Weigth" WidthRequest="155" TextColor="White" FontSize="16"/>
-                            <Label Text="Hank" WidthRequest="155" TextColor="White" FontSize="16"/>
+                            <Label Text="Hank" WidthRequest="155" x:Name="lbl_testresult_stadHank" TextColor="White" FontSize="16"/>
                         </StackLayout>
                     </ListView.Header>
                     <ListView.ItemTemplate>

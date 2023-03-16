@@ -121,7 +121,7 @@
             <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Process" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Standard Hank" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Standard Hank" FontSize="16" TextColor="#0e0273" x:Name="lbl_standHank"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
             <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_countsysname" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
             <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarncountunit" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
@@ -265,7 +265,7 @@
                         <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273">
                             <Label Text="Sample No" WidthRequest="150" TextColor="White" FontSize="20"/>
                             <Label Text="Sample Weigth" WidthRequest="230" TextColor="White" FontSize="20"/>
-                            <Label Text="Hank" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Label Text="Hank" WidthRequest="200" TextColor="White" x:Name="lbl_testresult_stadHank" FontSize="20"/>
                         </StackLayout>
                     </ListView.Header>
                     <ListView.ItemTemplate>
@@ -328,7 +328,7 @@
                         <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273">
                             <Label Text="Sample No" WidthRequest="150" TextColor="White" FontSize="20"/>
                             <Label Text="Sample Weigth" WidthRequest="230" TextColor="White" FontSize="20"/>
-                            <Label Text="Hank" WidthRequest="200" TextColor="White" FontSize="20"/>
+                            <Label Text="Hank" WidthRequest="200" x:Name="lbl_testresult_Final_stadHank" TextColor="White" FontSize="20"/>
                         </StackLayout>
                     </ListView.Header>
                     <ListView.ItemTemplate>

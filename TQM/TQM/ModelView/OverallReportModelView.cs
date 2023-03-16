@@ -21,6 +21,10 @@ namespace TQM.ModelView
         public decimal testsd { get; set; }
         public decimal testcv { get; set; }
         public string testRemark { get; set; }
+        public bool isSpinning { get; set; } = false;
+        public bool otherThanSpinning { get; set; } = false;
+        public bool isIndividualReport { get; set; } = true;
+        public bool isConsolidatedReport { get; set; } = false;
         public DateTime createdate { get; set; }
         public List<YCTestModel> yctestlist => this;
     }

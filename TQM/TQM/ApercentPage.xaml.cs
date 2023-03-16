@@ -422,6 +422,15 @@ namespace TQM
                         listview_testresult_individual.ItemsSource = null;
                         listview_testresult_individual.ItemsSource = ycTestApercentModelViewlist.OrderByDescending(YCTestApercentModelView => YCTestApercentModelView.testcount); ;
                     }
+
+                    if (selectedMachineCategory == "Spinning")
+                    {
+                        lbl_testresult_stadHank.Text = "Count";
+                    }
+                    else
+                    {
+                        lbl_testresult_stadHank.Text = "Hank";
+                    }
                 }
             });
         }
@@ -531,15 +540,30 @@ namespace TQM
                     };
                     OVS.Add(apercentReportModelView);
 
-                    apercentReportModelView = new ApercentReportModelView()
+                    if (apercentCalc.machineCategory == "Spinning")
                     {
-                        testID = apercentCalc.testID,
-                        description = "HANK",
-                        nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
-                        N = formatDecimal(apercentCalc.testaverage_N),
-                        nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
-                    };
-                    OVS.Add(apercentReportModelView);
+                        apercentReportModelView = new ApercentReportModelView()
+                        {
+                            testID = apercentCalc.testID,
+                            description = "Count",
+                            nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
+                            N = formatDecimal(apercentCalc.testaverage_N),
+                            nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
+                        };
+                        OVS.Add(apercentReportModelView);
+                    }
+                    else
+                    {
+                        apercentReportModelView = new ApercentReportModelView()
+                        {
+                            testID = apercentCalc.testID,
+                            description = "Hank",
+                            nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
+                            N = formatDecimal(apercentCalc.testaverage_N),
+                            nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
+                        };
+                        OVS.Add(apercentReportModelView);
+                    }
 
                     apercentReportModelView = new ApercentReportModelView()
                     {

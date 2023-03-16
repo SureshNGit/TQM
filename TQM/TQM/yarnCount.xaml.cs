@@ -144,6 +144,14 @@ namespace TQM
                     listview_testresult_FinalOut.ItemsSource = null;
                     listview_testresult_FinalOut.IsVisible = visibility;
                     listview_testresult_FinalOut.ItemsSource = ycTestModelViewlist;
+                    if (selectedMachineCategory == "Spinning")
+                    {
+                        lbl_testresult_Final_stadHank.Text = "Count";
+                    }
+                    else
+                    {
+                        lbl_testresult_Final_stadHank.Text = "Hank";
+                    }
                 }
                 else
                 {
@@ -159,11 +167,14 @@ namespace TQM
                         listview_testresult.ItemsSource = ycTestModelViewlist.OrderByDescending(YCTestModelView => YCTestModelView.testcount);
                     }
 
-                    //if (listview_testresult.ItemsSource != null)
-                    //{
-                    //    YCTestModelView lastRow = listview_testresult.ItemsSource.Cast<YCTestModelView>().LastOrDefault();
-                    //    listview_testresult.ScrollTo(lastRow, ScrollToPosition.MakeVisible, true);
-                    //}
+                    if (selectedMachineCategory == "Spinning")
+                    {
+                        lbl_testresult_stadHank.Text = "Count";
+                    }
+                    else
+                    {
+                        lbl_testresult_stadHank.Text = "Hank";
+                    }
                 }
             });
         }
@@ -758,10 +769,9 @@ namespace TQM
         {
             try
             {
-                _socket.Close();
-                _socket.Dispose();
-                device.Dispose();
-                adapter.Dispose();
+                if (_socket != null) { _socket.Close(); _socket.Dispose(); }
+                if (device != null) { device.Dispose(); }
+                if (adapter != null) { adapter.Dispose(); }
             }
             catch (Exception ex)
             {
@@ -910,6 +920,7 @@ namespace TQM
                 if (selectedMachineCategory == "" || selectedMachineCategory == null)
                 {
                     picker_machinename.ItemsSource = null;
+                    lbl_standHank.Text = "Standard Hank";
                 }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
@@ -935,6 +946,14 @@ namespace TQM
                     {
                         entry_yarnlen.Text = "";
                     }
+                }
+                if (selectedMachineCategory == "Spinning")
+                {
+                    lbl_standHank.Text = "Standard Count";
+                }
+                else
+                {
+                    lbl_standHank.Text = "Standard Hank";
                 }
             }
             catch (Exception ex)

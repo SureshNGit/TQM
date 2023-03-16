@@ -273,14 +273,28 @@ namespace TQM
                             };
                             report.Add(StretchReportModelView);
 
-                            StretchReportModelView = new StretchReportModelView()
+                            if (stretchCalc.machineCategory == "Spinning")
                             {
-                                testID = stretchCalc.testID,
-                                description = "HANK",
-                                IB = formatDecimal(stretchCalc.testaverage_IB),
-                                FB = formatDecimal(stretchCalc.testaverage_FB),
-                            };
-                            report.Add(StretchReportModelView);
+                                StretchReportModelView = new StretchReportModelView()
+                                {
+                                    testID = stretchCalc.testID,
+                                    description = "Count",
+                                    IB = formatDecimal(stretchCalc.testaverage_IB),
+                                    FB = formatDecimal(stretchCalc.testaverage_FB),
+                                };
+                                report.Add(StretchReportModelView);
+                            }
+                            else
+                            {
+                                StretchReportModelView = new StretchReportModelView()
+                                {
+                                    testID = stretchCalc.testID,
+                                    description = "Hank",
+                                    IB = formatDecimal(stretchCalc.testaverage_IB),
+                                    FB = formatDecimal(stretchCalc.testaverage_FB),
+                                };
+                                report.Add(StretchReportModelView);
+                            }
 
                             StretchReportModelView = new StretchReportModelView()
                             {

@@ -445,14 +445,28 @@ namespace TQM
                         };
                         OVS.Add(StretchReportModelView);
 
-                        StretchReportModelView = new StretchReportModelView()
+                        if (selectedMachineCategory == "Spinning")
                         {
-                            testID = stretchCalcList_finalOut.testID,
-                            description = "HANK",
-                            IB = formatDecimal(stretchCalcList_finalOut.testaverage_IB),
-                            FB = formatDecimal(stretchCalcList_finalOut.testaverage_FB),
-                        };
-                        OVS.Add(StretchReportModelView);
+                            StretchReportModelView = new StretchReportModelView()
+                            {
+                                testID = stretchCalcList_finalOut.testID,
+                                description = "Count",
+                                IB = formatDecimal(stretchCalcList_finalOut.testaverage_IB),
+                                FB = formatDecimal(stretchCalcList_finalOut.testaverage_FB),
+                            };
+                            OVS.Add(StretchReportModelView);
+                        }
+                        else
+                        {
+                            StretchReportModelView = new StretchReportModelView()
+                            {
+                                testID = stretchCalcList_finalOut.testID,
+                                description = "Hank",
+                                IB = formatDecimal(stretchCalcList_finalOut.testaverage_IB),
+                                FB = formatDecimal(stretchCalcList_finalOut.testaverage_FB),
+                            };
+                            OVS.Add(StretchReportModelView);
+                        }
 
                         StretchReportModelView = new StretchReportModelView()
                         {

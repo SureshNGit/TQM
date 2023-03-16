@@ -303,15 +303,30 @@ namespace TQM
                             };
                             report.Add(apercentReportModelView);
 
-                            apercentReportModelView = new ApercentReportModelView()
+                            if (apercentCalc.machineCategory == "Spinning")
                             {
-                                testID = apercentCalc.testID,
-                                description = "HANK",
-                                nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
-                                N = formatDecimal(apercentCalc.testaverage_N),
-                                nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
-                            };
-                            report.Add(apercentReportModelView);
+                                apercentReportModelView = new ApercentReportModelView()
+                                {
+                                    testID = apercentCalc.testID,
+                                    description = "Count",
+                                    nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
+                                    N = formatDecimal(apercentCalc.testaverage_N),
+                                    nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
+                                };
+                                report.Add(apercentReportModelView);
+                            }
+                            else
+                            {
+                                apercentReportModelView = new ApercentReportModelView()
+                                {
+                                    testID = apercentCalc.testID,
+                                    description = "Hank",
+                                    nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
+                                    N = formatDecimal(apercentCalc.testaverage_N),
+                                    nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
+                                };
+                                report.Add(apercentReportModelView);
+                            }
 
                             apercentReportModelView = new ApercentReportModelView()
                             {
