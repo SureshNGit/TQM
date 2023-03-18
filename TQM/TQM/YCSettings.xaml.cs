@@ -20,55 +20,56 @@ namespace TQM
             try
             {
                 InitializeComponent();
-                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-                {
-                    conn.CreateTable<YarnCountConfigModel>();
-                    List<YarnCountConfigModel> ycConfigList = conn.Table<YarnCountConfigModel>().ToList();
-                    if (ycConfigList.Count > 0)
-                    {
-                        btn_save.Text = "Update";
-                        currentID = ycConfigList[0].ID;
-                        IList<string> countsystemlist = picker_countsysname.Items;
-                        int countsysindex = 0;
-                        foreach (string countsystem in countsystemlist)
-                        {
-                            if (countsystem != ycConfigList[0].countsysname.ToString())
-                            {
-                                countsysindex++;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                        picker_countsysname.SelectedIndex = countsysindex;
-                        IList<string> yarncountlenunitlist = picker_yarnlengthunit.Items;
-                        int yarncountlenindex = 0;
-                        foreach (string yclenunit in yarncountlenunitlist)
-                        {
-                            if (yclenunit != ycConfigList[0].yarnlenunit.ToString())
-                            {
-                                yarncountlenindex++;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                        picker_yarnlengthunit.SelectedIndex = yarncountlenindex;
-                        entry_sliverlength.Text = ycConfigList[0].sliverlength.ToString();
-                        entry_rovinglength.Text = ycConfigList[0].rovinglength.ToString();
-                        entry_testcount.Text = ycConfigList[0].testcount.ToString();
-                        entry_standardHank.Text = ycConfigList[0].standardHank.ToString();
-                        entry_testcountApercent.Text = ycConfigList[0].testcountApercent.ToString();
-                        entry_testcountStretch.Text = ycConfigList[0].testcountStretch.ToString();
-                        entry_testcountNoils.Text = ycConfigList[0].testcountNoils.ToString();
-                    }
-                    else
-                    {
-                        btn_save.Text = "Save";
-                    }
-                }
+                fetchConfig();
+                //using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                //{
+                //    conn.CreateTable<YarnCountConfigModel>();
+                //    List<YarnCountConfigModel> ycConfigList = conn.Table<YarnCountConfigModel>().ToList();
+                //    if (ycConfigList.Count > 0)
+                //    {
+                //        btn_save.Text = "Update";
+                //        currentID = ycConfigList[0].ID;
+                //        IList<string> countsystemlist = picker_countsysname.Items;
+                //        int countsysindex = 0;
+                //        foreach (string countsystem in countsystemlist)
+                //        {
+                //            if (countsystem != ycConfigList[0].countsysname.ToString())
+                //            {
+                //                countsysindex++;
+                //            }
+                //            else
+                //            {
+                //                break;
+                //            }
+                //        }
+                //        picker_countsysname.SelectedIndex = countsysindex;
+                //        IList<string> yarncountlenunitlist = picker_yarnlengthunit.Items;
+                //        int yarncountlenindex = 0;
+                //        foreach (string yclenunit in yarncountlenunitlist)
+                //        {
+                //            if (yclenunit != ycConfigList[0].yarnlenunit.ToString())
+                //            {
+                //                yarncountlenindex++;
+                //            }
+                //            else
+                //            {
+                //                break;
+                //            }
+                //        }
+                //        picker_yarnlengthunit.SelectedIndex = yarncountlenindex;
+                //        entry_sliverlength.Text = ycConfigList[0].sliverlength.ToString();
+                //        entry_rovinglength.Text = ycConfigList[0].rovinglength.ToString();
+                //        entry_testcount.Text = ycConfigList[0].testcount.ToString();
+                //        entry_standardHank.Text = ycConfigList[0].standardHank.ToString();
+                //        entry_testcountApercent.Text = ycConfigList[0].testcountApercent.ToString();
+                //        entry_testcountStretch.Text = ycConfigList[0].testcountStretch.ToString();
+                //        entry_testcountNoils.Text = ycConfigList[0].testcountNoils.ToString();
+                //    }
+                //    else
+                //    {
+                //        btn_save.Text = "Save";
+                //    }
+                //}
             }
             catch (Exception ex)
             {
@@ -86,7 +87,7 @@ namespace TQM
                     List<YarnCountConfigModel> ycConfigList = conn.Table<YarnCountConfigModel>().ToList();
                     if (ycConfigList.Count > 0)
                     {
-                        btn_save.Text = "Update";
+
                         YarnCountConfigModel SettingWithMachine = ycConfigList.Where(YarnCountConfigModel =>
                                                 (YarnCountConfigModel.machineCategory != null || YarnCountConfigModel.machineCategory != "")).FirstOrDefault();
                         if (SettingWithMachine == null)
@@ -129,7 +130,7 @@ namespace TQM
                 currentID = Guid.Empty;
                 picker_countsysname.SelectedIndex = 0;
                 picker_yarnlengthunit.SelectedIndex = 0;
-                entry_lealength.Text = "";
+                picker_leaLength.SelectedIndex = 0;
                 entry_sliverlength.Text = "";
                 entry_rovinglength.Text = "";
                 entry_testcount.Text = "";
@@ -142,6 +143,7 @@ namespace TQM
                 toggleShift();
                 return;
             }
+            btn_save.Text = "Update";
             currentID = ycConfig.ID;
 
             IList<string> machineCategorylist = picker_machinecategory.Items;
@@ -207,7 +209,14 @@ namespace TQM
                 }
             }
             picker_yarnlengthunit.SelectedIndex = yarncountlenindex;
-            entry_lealength.Text = ycConfig.lealength.ToString();
+            if (ycConfig.lealength == 60)
+            {
+                picker_leaLength.SelectedIndex = 1;
+            }
+            else
+            {
+                picker_leaLength.SelectedIndex = 2;
+            }
             entry_sliverlength.Text = ycConfig.sliverlength.ToString();
             entry_rovinglength.Text = ycConfig.rovinglength.ToString();
             entry_testcount.Text = ycConfig.testcount.ToString();
@@ -273,8 +282,6 @@ namespace TQM
 
                 if (picker_countsysname.SelectedItem.ToString() == "" ||
                     picker_yarnlengthunit.SelectedItem.ToString() == "" ||
-                    entry_sliverlength.Text.Trim().ToString() == "" ||
-                    entry_rovinglength.Text.Trim().ToString() == "" ||
                     entry_testcount.Text.Trim().ToString() == "" ||
                     entry_testcountApercent.Text.Trim().ToString() == "" ||
                     entry_testcountStretch.Text.Trim().ToString() == "" ||
@@ -282,6 +289,23 @@ namespace TQM
                 {
                     DisplayAlert("Attention", "Please fill all fields with valid data to proceed!!!", "OK");
                     return;
+                }
+
+                if (selectedMachineCategory == "Spinning")
+                {
+                    if (picker_leaLength.SelectedIndex == -1 || picker_leaLength.SelectedIndex == 0)
+                    {
+                        DisplayAlert("Attention", "Lea length should not be blank!!!", "Ok");
+                        return;
+                    }
+                }
+                else
+                {
+                    if (entry_sliverlength.Text.Trim().ToString() == "" || entry_rovinglength.Text.Trim().ToString() == "")
+                    {
+                        DisplayAlert("Attention", "Sliver and Roving length should not be blank!!!", "Ok");
+                        return;
+                    }
                 }
 
                 if (entry_hankDeviationPercent.Text.Trim().Contains(".") || entry_hankDeviationPercent.Text.Trim().Contains("-"))
@@ -438,7 +462,11 @@ namespace TQM
                 int enteredRovingLength = 0;
                 if (selectedMachineCategory == "Spinning")
                 {
-                    enteredLeaLength = int.Parse(entry_lealength.Text.ToString());
+                    enteredLeaLength = 120;
+                    if (picker_leaLength.SelectedItem == "Half Lea")
+                    {
+                        enteredLeaLength = 60;
+                    }
                 }
                 else
                 {
@@ -505,7 +533,7 @@ namespace TQM
 
         private void toggleShift()
         {
-            if (picker_shiftCount.SelectedIndex != -1 || picker_shiftCount.SelectedIndex != 0)
+            if (picker_shiftCount.SelectedIndex != -1 && picker_shiftCount.SelectedIndex != 0)
             {
                 if (picker_shiftCount.SelectedItem.ToString() == "1")
                 {
@@ -567,7 +595,7 @@ namespace TQM
                     if (selectedMachineCategory == "Spinning")
                     {
                         lbl_lealength.IsVisible = true;
-                        entry_lealength.IsVisible = true;
+                        picker_leaLength.IsVisible = true;
                         lbl_sliverlength.IsVisible = false;
                         entry_sliverlength.IsVisible = false;
                         lbl_rovinglength.IsVisible = false;
@@ -578,7 +606,7 @@ namespace TQM
                     else
                     {
                         lbl_lealength.IsVisible = false;
-                        entry_lealength.IsVisible = false;
+                        picker_leaLength.IsVisible = false;
                         lbl_sliverlength.IsVisible = true;
                         entry_sliverlength.IsVisible = true;
                         lbl_rovinglength.IsVisible = true;
@@ -587,6 +615,7 @@ namespace TQM
                         lbl_hankDeviation.Text = "Hank Deviation %";
                     }
                 }
+                populateSettingsField(null);
             }
             catch (Exception ex)
             {

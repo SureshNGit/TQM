@@ -60,25 +60,25 @@ namespace TQM
                 //conn.DropTable<YCTestApercentSummaryModel>();
                 //conn.DropTable<YCTestApercentCalculatedModel>();
 
-                conn.CreateTable<YarnCountConfigModel>();
-                YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
-                if (yarncountconfigmodel != null)
-                {
-                    lbl_countsysname.Text = yarncountconfigmodel.countsysname;
-                    lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
-                    entry_yarnlen.Text = "";
-                    entry_testcount.Text = yarncountconfigmodel.testcountApercent.ToString();
-                    TESTCOUNT = yarncountconfigmodel.testcountApercent;
-                }
-                else
-                {
-                    lbl_countsysname.Text = "";
-                    lbl_yarncountunit.Text = "";
-                    entry_yarnlen.Text = "";
-                    entry_testcount.Text = "";
-                    picker_shift.SelectedIndex = 0;
-                    picker_process.SelectedIndex = 0;
-                }
+                //conn.CreateTable<YarnCountConfigModel>();
+                //YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                //if (yarncountconfigmodel != null)
+                //{
+                //    lbl_countsysname.Text = yarncountconfigmodel.countsysname;
+                //    lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
+                //    entry_yarnlen.Text = "";
+                //    entry_testcount.Text = yarncountconfigmodel.testcountApercent.ToString();
+                //    TESTCOUNT = yarncountconfigmodel.testcountApercent;
+                //}
+                //else
+                //{
+                //    lbl_countsysname.Text = "";
+                //    lbl_yarncountunit.Text = "";
+                //    entry_yarnlen.Text = "";
+                //    entry_testcount.Text = "";
+                //    picker_shift.SelectedIndex = 0;
+                //    picker_process.SelectedIndex = 0;
+                //}
 
                 conn.CreateTable<YCTestApercentModel>();
                 conn.CreateTable<YCTestApercentSummaryModel>();
@@ -314,6 +314,73 @@ namespace TQM
                 }
 
 
+            }
+        }
+
+        private void populateTestParams(string mCat, Guid mid, string mac)
+        {
+            if (mCat == "" && mid == Guid.Empty && mac == "")
+            {
+                lbl_countsysname.Text = "";
+                lbl_yarncountunit.Text = "";
+                entry_yarnlen.Text = "";
+                entry_testcount.Text = "";
+                picker_shift.SelectedIndex = 0;
+                picker_process.SelectedIndex = 0;
+                return;
+            }
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                conn.CreateTable<YarnCountConfigModel>();
+                YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().Where(YarnCountConfigModel =>
+                                                            (YarnCountConfigModel.machineCategory == mCat &&
+                                                            YarnCountConfigModel.machineID == mid &&
+                                                            YarnCountConfigModel.machineName == mac)).FirstOrDefault();
+                if (yarncountconfigmodel != null)
+                {
+                    lbl_countsysname.Text = yarncountconfigmodel.countsysname;
+                    lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
+                    if (mCat == "Simplex/SpeedFrame")
+                    {
+                        entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
+                    }
+                    else if (mCat == "Spinning")
+                    {
+                        entry_yarnlen.Text = yarncountconfigmodel.lealength.ToString();
+                    }
+                    else
+                    {
+                        entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
+                    }
+                    entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
+                    TESTCOUNT = yarncountconfigmodel.testcount;
+
+                    TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
+                    TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
+                    TimeSpan shit3time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift3time).TotalHours);
+                    TimeSpan currentTime = TimeSpan.FromHours(TimeSpan.Parse(DateTime.Now.Hour.ToString() + ":" + DateTime.Now.Minute.ToString()).TotalHours);
+                    if (currentTime >= shit1time && currentTime < shit2time)
+                    {
+                        picker_shift.SelectedItem = "Shift-1";
+                    }
+                    else if (currentTime >= shit2time && currentTime < shit3time)
+                    {
+                        picker_shift.SelectedItem = "Shift-2";
+                    }
+                    else
+                    {
+                        picker_shift.SelectedItem = "Shift-3";
+                    }
+                }
+                else
+                {
+                    lbl_countsysname.Text = "";
+                    lbl_yarncountunit.Text = "";
+                    entry_yarnlen.Text = "";
+                    entry_testcount.Text = "";
+                    picker_shift.SelectedIndex = 0;
+                    picker_process.SelectedIndex = 0;
+                }
             }
         }
 
@@ -1760,25 +1827,26 @@ namespace TQM
                     List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
                     picker_machinename.ItemsSource = machineModelList;
 
-                    conn.CreateTable<YarnCountConfigModel>();
-                    YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
-                    if (yarncountconfigmodel != null)
-                    {
-                        if (selectedMachineCategory == "Simplex/SpeedFrame")
-                        {
-                            entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
-                        }
-                        else
-                        {
-                            entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
-                        }
+                    //conn.CreateTable<YarnCountConfigModel>();
+                    //YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
+                    //if (yarncountconfigmodel != null)
+                    //{
+                    //    if (selectedMachineCategory == "Simplex/SpeedFrame")
+                    //    {
+                    //        entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
+                    //    }
+                    //    else
+                    //    {
+                    //        entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
+                    //    }
 
-                    }
-                    else
-                    {
-                        entry_yarnlen.Text = "";
-                    }
+                    //}
+                    //else
+                    //{
+                    //    entry_yarnlen.Text = "";
+                    //}
                 }
+                populateTestParams("", Guid.Empty, "");
             }
             catch (Exception ex)
             {
@@ -1795,11 +1863,13 @@ namespace TQM
                 {
                     selectedMachineID = Guid.Empty;
                     selectedMachineName = null;
+                    populateTestParams("", Guid.Empty, "");
                     return;
                 }
                 selectedMachineID = (Guid)source[picker_machinename.SelectedIndex].ID;
                 MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
                 selectedMachineName = selectedMachine.machineName;
+                populateTestParams(selectedMachineCategory, selectedMachineID, selectedMachineName);
             }
             catch (Exception ex)
             {

@@ -113,31 +113,33 @@
             <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="9" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
 
 
-            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Test System Name" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Margin="5"/>
-            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Unit" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
-            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Sample Length" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Sample" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Test System Name" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Margin="5"/>
+            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Unit" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
+            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Sample Length" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Sample" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Process" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
-            <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_countsysname" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
-            <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarncountunit" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
+            <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_countsysname" Text="" IsEnabled="False"
+                   FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
+            <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarncountunit" Text="" IsEnabled="False"
+                   FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
             <!--<Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarnlen" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50" />-->
-            <Entry Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_yarnlen" TextColor="Green" FontSize="16" Keyboard="Numeric"
+            <Entry Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_yarnlen" TextColor="Green" FontSize="16" Keyboard="Numeric"
                  HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
             </Entry>
-            <Entry Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_testcount" TextColor="Green" FontSize="16" Keyboard="Numeric"
+            <Entry Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_testcount" TextColor="Green" FontSize="16" Keyboard="Numeric"
                  HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
             </Entry>
-            <Picker Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+            <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
                     x:Name="picker_machinecategory" TextColor="Green" FontSize="16" SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
@@ -155,7 +157,7 @@
                     <effects:PlainEntry/>
                 </Picker.Effects>
             </Picker>
-            <Picker Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding machineName}" SelectedIndexChanged="picker_machinename_SelectedIndexChanged" 
+            <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding machineName}" SelectedIndexChanged="picker_machinename_SelectedIndexChanged" 
                     x:Name="picker_machinename" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Picker.Effects>
                     <effects:PlainEntry/>
