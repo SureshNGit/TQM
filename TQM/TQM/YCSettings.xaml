@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TQM.YCSettings" BackgroundColor="White" NavigationPage.HasBackButton="False">
+             x:Class="TQM.YCSettings" xmlns:effects="clr-namespace:TQM.Effects" BackgroundColor="White" NavigationPage.HasBackButton="False">
 
     <NavigationPage.TitleView>
         <StackLayout BackgroundColor="White">
@@ -25,7 +25,7 @@
 
     <ContentPage.Content>
         <StackLayout>
-            <Grid Margin="200,5">
+            <Grid Margin="20,15">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -43,11 +43,38 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Text="Test System" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" x:Name="picker_countsysname" TextColor="Green" FontSize="16"
+                <Label Grid.Row="0" Grid.Column="0" Text="Machine Category" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                    x:Name="picker_machinecategory" TextColor="Green" FontSize="16" SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String></x:String>
+                            <x:String>Carding</x:String>
+                            <x:String>Breaker Drawing</x:String>
+                            <x:String>Comber</x:String>
+                            <x:String>Drawing</x:String>
+                            <x:String>RSB</x:String>
+                            <x:String>Simplex/SpeedFrame</x:String>
+                            <x:String>Spinning</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                    <!--<Picker.Effects>
+                        <effects:PlainEntry/>
+                    </Picker.Effects>-->
+                </Picker>
+                <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Text="Machine Name" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Picker Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding machineName}" SelectedIndexChanged="picker_machinename_SelectedIndexChanged" 
+                    x:Name="picker_machinename" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+                    <!--<Picker.Effects>
+                        <effects:PlainEntry/>
+                    </Picker.Effects>-->
+                </Picker>
+                <Label Grid.Row="1" Grid.Column="0" Text="Test System" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" x:Name="picker_countsysname" TextColor="Green" FontSize="16"
                         VerticalTextAlignment="Center" HorizontalTextAlignment="Center">   
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
+                            <x:String></x:String>
                             <x:String>Nec</x:String>
                             <x:String>Nm</x:String>
                             <x:String>Den</x:String>
@@ -55,53 +82,101 @@
                         </x:Array>
                     </Picker.ItemsSource>       
                 </Picker>
-                <Label Grid.Row="1" Grid.Column="0" Text="Sample Length Unit" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" x:Name="picker_yarnlengthunit" TextColor="Green" FontSize="16"
+                <Label Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Text="Sample Length Unit" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Picker Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="1" x:Name="picker_yarnlengthunit" TextColor="Green" FontSize="16"
                         VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
+                            <x:String></x:String>
                             <x:String>Yard</x:String>
                             <x:String>Meter</x:String>
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>
-                <Label Grid.Row="2" Grid.Column="0" Text="Sliver Length" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+
+
+                <Label Grid.Row="2" Grid.Column="0" x:Name="lbl_lealength" Text="Lea Length" IsVisible="false"
+                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_lealength" 
+                       Keyboard="Numeric" TextColor="Green" FontSize="16" IsVisible="false"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+
+                <Label Grid.Row="2" Grid.Column="0" x:Name="lbl_sliverlength" Text="Sliver Length" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
                 <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_sliverlength" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-                <Label Grid.Row="3" Grid.Column="0" Text="Roving Length" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_rovinglength" Keyboard="Numeric" TextColor="Green" FontSize="16"
-                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-                <Label Grid.Row="4" Grid.Column="0" Text="Test Sample (Wrapping)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcount" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" x:Name="lbl_rovinglength" Text="Roving Length" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_rovinglength" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
                 
-                <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Text="Standard Hank (Wrapping)" HorizontalOptions="Start" TextColor="Red" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="1" Text = "" x:Name="entry_standardHank" Keyboard="Numeric" TextColor="red" FontSize="16"
+                
+                <Label Grid.Row="3" Grid.Column="0" Text="Test Sample (Wrapping)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcount" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
                 
-                <Label Grid.Row="5" Grid.Column="0" Text="Test Sample (A%)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountApercent" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Text="Standard Hank (Wrapping)" x:Name="lbl_standardHank"
+                       HorizontalOptions="Start" TextColor="Red" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_standardHank" Keyboard="Numeric" TextColor="red" FontSize="16"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+
+                <Label Grid.Row="4" Grid.Column="0" Text="Hank Deviation %" HorizontalOptions="Start" x:Name="lbl_hankDeviation"
+                       TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_hankDeviationPercent" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+
+                <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Text="Test Sample (A%)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountApercent" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
                 <!--<Label Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Text="Standard Hank (A%)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
                 <Entry Grid.Row="5" Grid.Column="4" Grid.ColumnSpan="1" Text = "" x:Name="entry_standardHank_Apercent" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>-->
 
-                <Label Grid.Row="6" Grid.Column="0" Text="Test Sample (Stretch)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountStretch" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Sample (Stretch)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountStretch" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
                 <!--<Label Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" Text="Standard Hank (Stretch)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
                 <Entry Grid.Row="6" Grid.Column="4" Grid.ColumnSpan="1" Text = "" x:Name="entry_standardHank_Stretch" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>-->
 
-                <Label Grid.Row="7" Grid.Column="0" Text="Test Sample (Noils)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountNoils" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Text="Test Sample (Noils)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountNoils" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
                 <!--<Label Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" Text="Standard Hank (Noils)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
                 <Entry Grid.Row="7" Grid.Column="4" Grid.ColumnSpan="1" Text = "" x:Name="entry_standardHank_Noils" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>-->
+
+                <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1"  Text="No.Of Shift(s)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Picker Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" x:Name="picker_shiftCount" TextColor="Green" FontSize="16"
+                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center" SelectedIndexChanged="picker_shiftCount_SelectedIndexChanged">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String></x:String>
+                            <x:String>1</x:String>
+                            <x:String>2</x:String>
+                            <x:String>3</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+
+                <Label x:Name="shift1label" Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" Text="Shift-1 Start Time (in 24hrs)" 
+                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0" IsVisible="False" />
+                <TimePicker Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="1" x:Name="Shift1_timePicker"
+                    Time="11:00:00" HorizontalOptions="Center"
+                    Format="HH:mm" TextColor="Green" IsVisible="False" />
+
+                <Label  x:Name="shift2label" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift-2 Start Time (in 24hrs)" 
+                        HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0" IsVisible="False" />
+                <TimePicker Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" x:Name="Shift2_timePicker"
+                    Time="11:00:00" HorizontalOptions="Center"
+                    Format="HH:mm" TextColor="Green" IsVisible="False" />
+
+                <Label  x:Name="shift3label" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" Text="Shift-3 Start Time (in 24hrs)" 
+                        HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0" IsVisible="False" />
+                <TimePicker Grid.Row="7" Grid.Column="3" Grid.ColumnSpan="1" x:Name="Shift3_timePicker"
+                    Time="11:00:00" HorizontalOptions="Center"
+                    Format="HH:mm" TextColor="Green" IsVisible="False" />
 
             </Grid>
         </StackLayout>
