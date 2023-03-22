@@ -8,5 +8,6 @@
         public string testAverage { get; set; }
         public string standardDeviation { get; set; }
         public string CoEfficientOfVariation { get; set; }
+        public string testDuration { get; set; }
     }
 }

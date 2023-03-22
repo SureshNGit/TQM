@@ -269,8 +269,9 @@ namespace TQM
                                 consolItems.standardDeviation = testsummary.testsd.ToString();
                                 consolItems.CoEfficientOfVariation = testsummary.testcv.ToString();
 
-
-
+                                YCTestModel firstTest = yctestlist.Where(YCTestModel => YCTestModel.testcount == 1).FirstOrDefault();
+                                TimeSpan duration = (firstTest.createdate - testsummary.createdate).Duration();
+                                consolItems.testDuration = duration.Hours.ToString() + ":" + duration.Minutes.ToString() + ":" + duration.Seconds.ToString();
 
 
                                 counter++;
@@ -816,55 +817,55 @@ namespace TQM
 
                 }
 
-                int totalRow_header = 7;
-                int totalRow_header_height = totalRow_header * 18;
+                //int totalRow_header = 7;
+                //int totalRow_header_height = totalRow_header * 18;
 
-                if (overallHeight == 0)
-                {
-                    result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
-                    overallHeight = result.Bounds.Height + 35;
-                }
-                else
-                {
-                    int prevPageCount = result.Page.Section.Pages.Count;
-                    if (newPageAdded_Body)
-                    {
-                        newPageAdded_Body = false;
-                        result = pdfGridInfo.Draw(pdfPage, new PointF(10, overallHeight), layoutFormat);
-                    }
-                    else
-                    {
-                        if ((overallHeight + totalRow_header_height + (overallReportList.Count * 18)) > 730)
-                        {
-                            pdfPage = pdfDocument.Pages.Add();
-                            result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
-                            overallHeight = 0;
-                            newPageAdded_Header = true;
-                            pdfPage = result.Page;
-                            overallHeight = result.Bounds.Height + 5;
-                        }
-                        else
-                        {
-                            result = pdfGridInfo.Draw(result.Page, new PointF(10, (overallHeight)));
-                        }
-                    }
+                //if (overallHeight == 0)
+                //{
+                //    result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
+                //    overallHeight = result.Bounds.Height + 35;
+                //}
+                //else
+                //{
+                //    int prevPageCount = result.Page.Section.Pages.Count;
+                //    if (newPageAdded_Body)
+                //    {
+                //        newPageAdded_Body = false;
+                //        result = pdfGridInfo.Draw(pdfPage, new PointF(10, overallHeight), layoutFormat);
+                //    }
+                //    else
+                //    {
+                //        if ((overallHeight + totalRow_header_height + (overallReportList.Count * 18)) > 730)
+                //        {
+                //            pdfPage = pdfDocument.Pages.Add();
+                //            result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
+                //            overallHeight = 0;
+                //            newPageAdded_Header = true;
+                //            pdfPage = result.Page;
+                //            overallHeight = result.Bounds.Height + 5;
+                //        }
+                //        else
+                //        {
+                //            result = pdfGridInfo.Draw(result.Page, new PointF(10, (overallHeight)));
+                //        }
+                //    }
 
-                    if (prevPageCount < result.Page.Section.Pages.Count)
-                    {
-                        overallHeight = 0;
-                        newPageAdded_Header = true;
-                        pdfPage = result.Page;
-                        overallHeight = result.Bounds.Height + 5;
-                    }
-                    else
-                    {
-                        overallHeight = overallHeight + result.Bounds.Height + 5;
-                    }
-                }
+                //    if (prevPageCount < result.Page.Section.Pages.Count)
+                //    {
+                //        overallHeight = 0;
+                //        newPageAdded_Header = true;
+                //        pdfPage = result.Page;
+                //        overallHeight = result.Bounds.Height + 5;
+                //    }
+                //    else
+                //    {
+                //        overallHeight = overallHeight + result.Bounds.Height + 5;
+                //    }
+                //}
 
                 pdfGrid = new PdfGrid();
 
-                pdfGrid.Columns.Add(6);
+                pdfGrid.Columns.Add(7);
                 PdfGridRow row = new PdfGridRow(pdfGrid);
                 pdfGrid.Rows.Add(row);
 
@@ -898,6 +899,11 @@ namespace TQM
                 pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                 pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
                 pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                pdfGrid.Rows[0].Cells[6].Value = "Duration";
+                pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
+                pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
 
 
 
@@ -912,6 +918,7 @@ namespace TQM
                     pdfGrid.Rows[rowCount].Cells[3].Value = formatDecimal(Decimal.Parse(orl.testAverage)).ToString();
                     pdfGrid.Rows[rowCount].Cells[4].Value = formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString();
                     pdfGrid.Rows[rowCount].Cells[5].Value = formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString();
+                    pdfGrid.Rows[rowCount].Cells[6].Value = orl.testDuration;
                     pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -924,6 +931,8 @@ namespace TQM
                     pdfGrid.Rows[rowCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[rowCount].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[rowCount].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[rowCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[rowCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     rowCount++;
                 }
 
