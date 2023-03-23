@@ -41,6 +41,7 @@ namespace TQM
         private int selectedTestCount = 0;
         private string selectedShift = null;
         private string selectedProcess = null;
+        private int selectedDeviationPercent = 0;
         private const string RED = "#FF0000";
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
@@ -49,6 +50,7 @@ namespace TQM
         private decimal STD_HANK_CURR = 0.0000m;
         private int currentTestCount = 0;
         private bool isTestStarted = false;
+        private dynamic currentTestStartTime = null;
         private RunConfiguration runConfiguration = new RunConfiguration();
 
         public yarnCount()
@@ -90,6 +92,7 @@ namespace TQM
         {
             if (mCat == "" && mid == Guid.Empty && mac == "")
             {
+                selectedDeviationPercent = 0;
                 lbl_countsysname.Text = "";
                 lbl_yarncountunit.Text = "";
                 entry_yarnlen.Text = "";
@@ -108,6 +111,7 @@ namespace TQM
                                                             YarnCountConfigModel.machineName == mac)).FirstOrDefault();
                 if (yarncountconfigmodel != null)
                 {
+                    selectedDeviationPercent = yarncountconfigmodel.deviationPercent;
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
                     lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
                     if (mCat == "Simplex/SpeedFrame")
@@ -272,6 +276,29 @@ namespace TQM
             });
         }
 
+
+        private string formatTime(DateTime startDateTime)
+        {
+            TimeSpan duration = (DateTime.Now - startDateTime).Duration();
+            string hrs = duration.Hours.ToString();
+            if (hrs.Length < 2)
+            {
+                hrs = "0" + hrs;
+            }
+            string mins = duration.Minutes.ToString();
+            if (mins.Length < 2)
+            {
+                mins = "0" + mins;
+            }
+            string sec = duration.Seconds.ToString();
+            if (sec.Length < 2)
+            {
+                sec = "0" + sec;
+            }
+            //return hrs + "h:" + mins + "m:" + sec + "s";
+            return hrs + ":" + mins + ":" + sec;
+        }
+
         private async void updateDB()
         {
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -329,6 +356,11 @@ namespace TQM
                         cv = (sd / mean) * 100.0000m; //Coefficient of Variation
                         cv = formatDecimal(cv);
                     }
+                    //TimeSpan duration = (DateTime.Now - currentTestStartTime).Duration();
+                    //string testDuration = duration.Hours.ToString() + ":" + duration.Minutes.ToString() + ":" + duration.Seconds.ToString();
+
+                    string testDuration = formatTime(currentTestStartTime);
+
                     YCTestSummaryModel ycTestSummaryModel = new YCTestSummaryModel()
                     {
                         ID = Guid.NewGuid(),
@@ -348,6 +380,8 @@ namespace TQM
                         testsd = sd,
                         testcv = cv,
                         standardHank = STD_HANK_CURR,
+                        deviationPercent = selectedDeviationPercent,
+                        testDuration = testDuration,
                         createdate = DateTime.Now
                     };
                     conn.CreateTable<YCTestSummaryModel>();
@@ -371,6 +405,7 @@ namespace TQM
             try
             {
                 current_stable_data = 0;
+                currentTestStartTime = null;
                 if (fullreset) { ImageNotification(null); UpdateUserNotification(""); }
                 if (dispose) { disposeble(); }
                 Device.BeginInvokeOnMainThread(() =>
@@ -426,6 +461,8 @@ namespace TQM
         [Obsolete]
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
+            currentTestStartTime = null;
+            currentTestStartTime = DateTime.Now;
             lbl_TestID.Text = "";
             isTestStarted = true;
             ImageNotification("null");

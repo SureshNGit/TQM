@@ -42,7 +42,11 @@ namespace TQM.Model
 
         public decimal standardHank { get; set; }
 
+        public int deviationPercent { get; set; }
+
         public string testRemark { get; set; }
+
+        public string testDuration { get; set; }
 
         public DateTime createdate { get; set; }
 

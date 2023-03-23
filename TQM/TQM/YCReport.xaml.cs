@@ -33,6 +33,7 @@ namespace TQM
         public List<YCTestConsolidatedReportMV> ListOfConsolidatedReports { get { return _listOfConsolidatedReports; } set { _listOfConsolidatedReports = value; base.OnPropertyChanged(); } }
 
         private string selectedCompanyName = null;
+        private string selectedMachineCategory = null;
         private const string BLUE = "#0e0273";
         private RunConfiguration runConfiguration = new RunConfiguration();
         private List<YCTestSummaryModel> deleteList = null;
@@ -42,23 +43,39 @@ namespace TQM
         private decimal CON_STD_DEV = 0.0000m;
         private decimal CON_CV = 0.0000m;
         private bool consolidatedReport = false;
+        private DateTime reportStartDate;
+        private DateTime reportEndDate;
 
         public YCReport()
         {
             InitializeComponent();
         }
 
-        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest, bool isConsolidated)
+        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string standHank, bool deleteRequest, bool isConsolidated)
         {
             InitializeComponent();
             consolidatedReport = isConsolidated;
             if (consolidatedReport)
             {
-                lbl_reportHeader.Text = "Consolidated Wrapping Report";
+                if (categoryName != null && categoryName != "")
+                {
+                    lbl_reportHeader.Text = "Con. Wrapping Report - " + categoryName;
+                }
+                else
+                {
+                    lbl_reportHeader.Text = "Con. Wrapping Report - All";
+                }
             }
             else
             {
-                lbl_reportHeader.Text = "Wrapping Report";
+                if (categoryName != null && categoryName != "")
+                {
+                    lbl_reportHeader.Text = "Wrapping Report - " + categoryName;
+                }
+                else
+                {
+                    lbl_reportHeader.Text = "Wrapping Report - All";
+                }
             }
             if (deleteRequest)
             {
@@ -66,10 +83,16 @@ namespace TQM
                 btn_saveToPDF.BackgroundColor = Color.Red;
                 btn_saveToPDF.TextColor = Color.White;
             }
-            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, deleteRequest);
+            if (categoryName != null && categoryName != "")
+            {
+                selectedMachineCategory = categoryName;
+            }
+            reportStartDate = startDate;
+            reportEndDate = endDate;
+            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, standHank, deleteRequest);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string standHank, bool deleteRequest)
         {
             try
             {
@@ -220,6 +243,15 @@ namespace TQM
                         {
                             ycTestSummaryModels = ycTestSummaryModels.Where(t => t.testID == long.Parse(testID)).ToList();
                         }
+                        if (standHank != "")
+                        {
+                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.standardHank == Decimal.Parse(standHank)).ToList();
+                        }
+                        if (ycTestSummaryModels.Count == 0)
+                        {
+                            DisplayAlert("Notice", "No records to display!!!", "OK");
+                            return;
+                        }
                         if (deleteRequest)
                         {
                             deleteAll = true;
@@ -262,16 +294,35 @@ namespace TQM
                                 }
 
 
+                                decimal maxRangeVal = testsummary.standardHank + (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
+                                decimal minRangeVal = testsummary.standardHank - (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
+
+                                if (testsummary.testaverage < minRangeVal || testsummary.testaverage > maxRangeVal)
+                                {
+                                    consolItems.isRed = true;
+                                    consolItems.isWhite = false;
+                                }
+                                else
+                                {
+                                    consolItems.isRed = false;
+                                    consolItems.isWhite = true;
+                                }
+
                                 consolItems.serialNo = (counter + 1).ToString();
                                 consolItems.testID = testsummary.testID.ToString();
-                                consolItems.standardValue = testsummary.standardHank.ToString();
-                                consolItems.testAverage = testsummary.testaverage.ToString();
-                                consolItems.standardDeviation = testsummary.testsd.ToString();
-                                consolItems.CoEfficientOfVariation = testsummary.testcv.ToString();
+                                consolItems.machineName = testsummary.machineName;
+                                consolItems.testDate = testsummary.createdate.Day.ToString() + "-" + testsummary.createdate.Month.ToString() + "-" + testsummary.createdate.Year.ToString();
+                                consolItems.shift = testsummary.shift;
+                                consolItems.standardValue = formatDecimal(testsummary.standardHank).ToString() + " " + "\u00B1" + testsummary.deviationPercent.ToString();
+                                consolItems.testAverage = formatDecimal(testsummary.testaverage).ToString();
+                                consolItems.standardDeviation = formatDecimal(testsummary.testsd).ToString();
+                                consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
+                                consolItems.testDuration = testsummary.testDuration;
+                                consolItems.remarks = testsummary.testRemark;
 
-                                YCTestModel firstTest = yctestlist.Where(YCTestModel => YCTestModel.testcount == 1).FirstOrDefault();
-                                TimeSpan duration = (firstTest.createdate - testsummary.createdate).Duration();
-                                consolItems.testDuration = duration.Hours.ToString() + ":" + duration.Minutes.ToString() + ":" + duration.Seconds.ToString();
+                                //YCTestModel firstTest = yctestlist.Where(YCTestModel => YCTestModel.testcount == 1).FirstOrDefault();
+                                //TimeSpan duration = (firstTest.createdate - testsummary.createdate).Duration();
+                                //consolItems.testDuration = duration.Hours.ToString() + ":" + duration.Minutes.ToString() + ":" + duration.Seconds.ToString();
 
 
                                 counter++;
@@ -327,18 +378,41 @@ namespace TQM
                         }
                     }
 
+
                     if (consolidatedReport)
                     {
                         CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
                         CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
                         CON_CV = formatDecimal(CON_CV / TOT_TEST);
+
+                        YCTestConsolidatedReportMV consolItems = new YCTestConsolidatedReportMV()
+                        {
+                            serialNo = "Average",
+                            testID = "",
+                            machineName = "",
+                            testDate = "",
+                            shift = "",
+                            standardValue = "",
+                            testAverage = CON_HANK.ToString(),
+                            standardDeviation = CON_STD_DEV.ToString(),
+                            CoEfficientOfVariation = CON_CV.ToString(),
+                            testDuration = "",
+                            remarks = "",
+                            isWhite = true,
+                            isRed = false
+
+
+                        };
+
+                        OverallConsolidatedReports.Add(consolItems);
+
                         ListOfConsolidatedReports = OverallConsolidatedReports;
                     }
                     else
                     {
-                        CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
-                        CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
-                        CON_CV = formatDecimal(CON_CV / TOT_TEST);
+                        //CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
+                        //CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
+                        //CON_CV = formatDecimal(CON_CV / TOT_TEST);
                         ListOfReport = OVS;
                     }
 
@@ -351,7 +425,7 @@ namespace TQM
                     lbl_AvgHank.Text = CON_HANK.ToString();
                     lbl_AvgSD.Text = CON_STD_DEV.ToString();
                     lbl_AvgCV.Text = CON_CV.ToString();
-                    grid_consolidated.IsVisible = true;
+                    //grid_consolidated.IsVisible = true;
 
                     listview_tcreport.IsVisible = false;
                     listview_tcConsolidatedReport.IsVisible = true;
@@ -781,91 +855,122 @@ namespace TQM
                 //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                 PdfGrid pdfGridInfo = new PdfGrid();
                 pdfGridInfo.RepeatHeader = true;
-                pdfGridInfo.Columns.Add(4);
-                pdfGridInfo.Rows.Add();
+                //pdfGridInfo.Columns.Add(4);
+                //pdfGridInfo.Rows.Add();
+                //pdfGridInfo.Rows.Add();
+                //if (tableNo == 1)
+                //{
 
-                if (tableNo == 1)
+                //    pdfGridInfo.Rows[0].Cells[0].Value = "Total Test: " + TOT_TEST;
+                //    pdfGridInfo.Rows[0].Cells[1].Value = "Con. HANK: " + CON_HANK;
+                //    pdfGridInfo.Rows[0].Cells[2].Value = "Con. SD: " + CON_STD_DEV;
+                //    pdfGridInfo.Rows[0].Cells[3].Value = "Con. CV: " + CON_CV;
+
+                //    PdfBrush brush_bg_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                //    pdfGridInfo.Rows[0].Cells[0].Style.BackgroundBrush = brush_bg_con;
+                //    pdfGridInfo.Rows[0].Cells[1].Style.BackgroundBrush = brush_bg_con;
+                //    pdfGridInfo.Rows[0].Cells[2].Style.BackgroundBrush = brush_bg_con;
+                //    pdfGridInfo.Rows[0].Cells[3].Style.BackgroundBrush = brush_bg_con;
+                //    PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.DarkGreen);
+                //    pdfGridInfo.Rows[0].Cells[0].Style.TextBrush = brush_con;
+                //    pdfGridInfo.Rows[0].Cells[1].Style.TextBrush = brush_con;
+                //    pdfGridInfo.Rows[0].Cells[2].Style.TextBrush = brush_con;
+                //    pdfGridInfo.Rows[0].Cells[3].Style.TextBrush = brush_con;
+                //    pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                //    pdfGridInfo.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                //    pdfGridInfo.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                //    pdfGridInfo.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                //    PdfStringFormat format = new PdfStringFormat();
+                //    format.Alignment = PdfTextAlignment.Center;
+                //    format.LineAlignment = PdfVerticalAlignment.Middle;
+                //    pdfGridInfo.Rows[0].Cells[0].Style.StringFormat = format;
+                //    pdfGridInfo.Rows[0].Cells[1].Style.StringFormat = format;
+                //    pdfGridInfo.Rows[0].Cells[2].Style.StringFormat = format;
+                //    pdfGridInfo.Rows[0].Cells[3].Style.StringFormat = format;
+
+
+                //    pdfGridInfo.Rows[1].Cells[0].Value = "Machine Name: " + overallReportList[0].machineName;
+                //    pdfGridInfo.Rows[1].Cells[0].ColumnSpan = 4;
+
+
+
+                //    pdfGridInfo.Rows[1].Cells[0].Style.BackgroundBrush = brush_bg_con;
+                //    pdfGridInfo.Rows[1].Cells[1].Style.BackgroundBrush = brush_bg_con;
+                //    pdfGridInfo.Rows[1].Cells[2].Style.BackgroundBrush = brush_bg_con;
+                //    pdfGridInfo.Rows[1].Cells[3].Style.BackgroundBrush = brush_bg_con;
+
+                //    pdfGridInfo.Rows[1].Cells[0].Style.TextBrush = brush_con;
+                //    pdfGridInfo.Rows[1].Cells[1].Style.TextBrush = brush_con;
+                //    pdfGridInfo.Rows[1].Cells[2].Style.TextBrush = brush_con;
+                //    pdfGridInfo.Rows[1].Cells[3].Style.TextBrush = brush_con;
+                //    pdfGridInfo.Rows[1].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                //    pdfGridInfo.Rows[1].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                //    pdfGridInfo.Rows[1].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                //    pdfGridInfo.Rows[1].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+
+                //    format.Alignment = PdfTextAlignment.Center;
+                //    format.LineAlignment = PdfVerticalAlignment.Middle;
+                //    pdfGridInfo.Rows[1].Cells[0].Style.StringFormat = format;
+                //    pdfGridInfo.Rows[1].Cells[1].Style.StringFormat = format;
+                //    pdfGridInfo.Rows[1].Cells[2].Style.StringFormat = format;
+                //    pdfGridInfo.Rows[1].Cells[3].Style.StringFormat = format;
+
+                //    pdfGridInfo.Rows[1].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                //    pdfGridInfo.Rows[1].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                //    pdfGridInfo.Rows[1].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                //    pdfGridInfo.Rows[1].Cells[3].Style.Borders.All = PdfPens.Transparent;
+
+                //}
+
+                int totalRow_header = 1;
+                int totalRow_header_height = totalRow_header * 18;
+
+                if (overallHeight == 0)
                 {
-
-                    pdfGridInfo.Rows[0].Cells[0].Value = "Total Test: " + TOT_TEST;
-                    pdfGridInfo.Rows[0].Cells[1].Value = "Con. HANK: " + CON_HANK;
-                    pdfGridInfo.Rows[0].Cells[2].Value = "Con. SD: " + CON_STD_DEV;
-                    pdfGridInfo.Rows[0].Cells[3].Value = "Con. CV: " + CON_CV;
-
-                    PdfBrush brush_bg_con = new PdfSolidBrush(Syncfusion.Drawing.Color.LightSteelBlue);
-                    pdfGridInfo.Rows[0].Cells[0].Style.BackgroundBrush = brush_bg_con;
-                    pdfGridInfo.Rows[0].Cells[1].Style.BackgroundBrush = brush_bg_con;
-                    pdfGridInfo.Rows[0].Cells[2].Style.BackgroundBrush = brush_bg_con;
-                    pdfGridInfo.Rows[0].Cells[3].Style.BackgroundBrush = brush_bg_con;
-                    PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Red);
-                    pdfGridInfo.Rows[0].Cells[0].Style.TextBrush = brush_con;
-                    pdfGridInfo.Rows[0].Cells[1].Style.TextBrush = brush_con;
-                    pdfGridInfo.Rows[0].Cells[2].Style.TextBrush = brush_con;
-                    pdfGridInfo.Rows[0].Cells[3].Style.TextBrush = brush_con;
-                    pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
-                    pdfGridInfo.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
-                    pdfGridInfo.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
-                    pdfGridInfo.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
-                    PdfStringFormat format = new PdfStringFormat();
-                    format.Alignment = PdfTextAlignment.Left;
-                    format.LineAlignment = PdfVerticalAlignment.Middle;
-                    pdfGridInfo.Rows[0].Cells[0].Style.StringFormat = format;
-                    pdfGridInfo.Rows[0].Cells[1].Style.StringFormat = format;
-                    pdfGridInfo.Rows[0].Cells[2].Style.StringFormat = format;
-                    pdfGridInfo.Rows[0].Cells[3].Style.StringFormat = format;
-
-
+                    result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
+                    overallHeight = result.Bounds.Height + 35;
                 }
+                else
+                {
+                    int prevPageCount = result.Page.Section.Pages.Count;
+                    if (newPageAdded_Body)
+                    {
+                        newPageAdded_Body = false;
+                        result = pdfGridInfo.Draw(pdfPage, new PointF(10, overallHeight), layoutFormat);
+                    }
+                    else
+                    {
+                        if ((overallHeight + totalRow_header_height + (1 * 18)) > 730)
+                        {
+                            pdfPage = pdfDocument.Pages.Add();
+                            result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
+                            overallHeight = 0;
+                            newPageAdded_Header = true;
+                            pdfPage = result.Page;
+                            overallHeight = result.Bounds.Height + 5;
+                        }
+                        else
+                        {
+                            result = pdfGridInfo.Draw(result.Page, new PointF(10, (overallHeight)));
+                        }
+                    }
 
-                //int totalRow_header = 7;
-                //int totalRow_header_height = totalRow_header * 18;
-
-                //if (overallHeight == 0)
-                //{
-                //    result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
-                //    overallHeight = result.Bounds.Height + 35;
-                //}
-                //else
-                //{
-                //    int prevPageCount = result.Page.Section.Pages.Count;
-                //    if (newPageAdded_Body)
-                //    {
-                //        newPageAdded_Body = false;
-                //        result = pdfGridInfo.Draw(pdfPage, new PointF(10, overallHeight), layoutFormat);
-                //    }
-                //    else
-                //    {
-                //        if ((overallHeight + totalRow_header_height + (overallReportList.Count * 18)) > 730)
-                //        {
-                //            pdfPage = pdfDocument.Pages.Add();
-                //            result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
-                //            overallHeight = 0;
-                //            newPageAdded_Header = true;
-                //            pdfPage = result.Page;
-                //            overallHeight = result.Bounds.Height + 5;
-                //        }
-                //        else
-                //        {
-                //            result = pdfGridInfo.Draw(result.Page, new PointF(10, (overallHeight)));
-                //        }
-                //    }
-
-                //    if (prevPageCount < result.Page.Section.Pages.Count)
-                //    {
-                //        overallHeight = 0;
-                //        newPageAdded_Header = true;
-                //        pdfPage = result.Page;
-                //        overallHeight = result.Bounds.Height + 5;
-                //    }
-                //    else
-                //    {
-                //        overallHeight = overallHeight + result.Bounds.Height + 5;
-                //    }
-                //}
+                    if (prevPageCount < result.Page.Section.Pages.Count)
+                    {
+                        overallHeight = 0;
+                        newPageAdded_Header = true;
+                        pdfPage = result.Page;
+                        overallHeight = result.Bounds.Height + 5;
+                    }
+                    else
+                    {
+                        overallHeight = overallHeight + result.Bounds.Height + 5;
+                    }
+                }
 
                 pdfGrid = new PdfGrid();
 
-                pdfGrid.Columns.Add(7);
+                pdfGrid.Columns.Add(11);
                 PdfGridRow row = new PdfGridRow(pdfGrid);
                 pdfGrid.Rows.Add(row);
 
@@ -873,37 +978,75 @@ namespace TQM
                 pdfGrid.Rows[0].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                 pdfGrid.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                 pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
-                pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                pdfGrid.Rows[0].Cells[1].Value = "Test ID";
+                pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                pdfGrid.Rows[0].Cells[1].Value = "Date";
                 pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
                 pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                 pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
-                pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                pdfGrid.Rows[0].Cells[2].Value = "Std. Count";
+                pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                pdfGrid.Rows[0].Cells[2].Value = "ID";
                 pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
                 pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                 pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
-                pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                pdfGrid.Rows[0].Cells[3].Value = "Avg. Count";
+                pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                pdfGrid.Rows[0].Cells[3].Value = "Mac Name";
                 pdfGrid.Rows[0].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
                 pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                 pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
-                pdfGrid.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                pdfGrid.Rows[0].Cells[4].Value = "SD";
+                pdfGrid.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                pdfGrid.Rows[0].Cells[4].Value = "Shift";
                 pdfGrid.Rows[0].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
                 pdfGrid.Rows[0].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                 pdfGrid.Rows[0].Cells[4].Style.BackgroundBrush = PdfBrushes.LightGray;
-                pdfGrid.Rows[0].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                pdfGrid.Rows[0].Cells[5].Value = "CV";
-                pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
-                pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
-                pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                pdfGrid.Rows[0].Cells[6].Value = "Duration";
-                pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
-                pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
-                pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                pdfGrid.Rows[0].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+                if (selectedMachineCategory == "Spinning")
+                {
+                    pdfGrid.Rows[0].Cells[5].Value = "Std. Count";
+                    pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    pdfGrid.Rows[0].Cells[6].Value = "Avg. Count";
+                    pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                }
+                else
+                {
+                    pdfGrid.Rows[0].Cells[5].Value = "Std. Hank";
+                    pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    pdfGrid.Rows[0].Cells[6].Value = "Avg. Hank";
+                    pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                }
+
+                pdfGrid.Rows[0].Cells[7].Value = "SD";
+                pdfGrid.Rows[0].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                pdfGrid.Rows[0].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                pdfGrid.Rows[0].Cells[7].Style.BackgroundBrush = PdfBrushes.LightGray;
+                pdfGrid.Rows[0].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                pdfGrid.Rows[0].Cells[8].Value = "CV";
+                pdfGrid.Rows[0].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
+                pdfGrid.Rows[0].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                pdfGrid.Rows[0].Cells[9].Value = "Duration";
+                pdfGrid.Rows[0].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
+                pdfGrid.Rows[0].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                pdfGrid.Rows[0].Cells[9].Style.BackgroundBrush = PdfBrushes.LightGray;
+                pdfGrid.Rows[0].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                pdfGrid.Rows[0].Cells[10].Value = "Remark";
+                pdfGrid.Rows[0].Cells[10].StringFormat.Alignment = PdfTextAlignment.Center;
+                pdfGrid.Rows[0].Cells[10].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                pdfGrid.Rows[0].Cells[10].Style.BackgroundBrush = PdfBrushes.LightGray;
+                pdfGrid.Rows[0].Cells[10].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
 
 
 
@@ -912,13 +1055,39 @@ namespace TQM
                 {
                     row = new PdfGridRow(pdfGrid);
                     pdfGrid.Rows.Add(row);
-                    pdfGrid.Rows[rowCount].Cells[0].Value = orl.serialNo.ToString();
-                    pdfGrid.Rows[rowCount].Cells[1].Value = orl.testID.ToString();
-                    pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(Decimal.Parse(orl.standardValue)).ToString();
-                    pdfGrid.Rows[rowCount].Cells[3].Value = formatDecimal(Decimal.Parse(orl.testAverage)).ToString();
-                    pdfGrid.Rows[rowCount].Cells[4].Value = formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString();
-                    pdfGrid.Rows[rowCount].Cells[5].Value = formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString();
-                    pdfGrid.Rows[rowCount].Cells[6].Value = orl.testDuration;
+                    pdfGrid.Rows[rowCount].Cells[0].Value = orl.serialNo;
+                    pdfGrid.Rows[rowCount].Cells[1].Value = orl.testDate;
+                    pdfGrid.Rows[rowCount].Cells[2].Value = orl.testID;
+                    pdfGrid.Rows[rowCount].Cells[3].Value = orl.machineName;
+                    pdfGrid.Rows[rowCount].Cells[4].Value = orl.shift;
+                    pdfGrid.Rows[rowCount].Cells[5].Value = orl.standardValue;
+
+                    if (orl.testAverage != null && orl.testAverage != "")
+                    {
+                        pdfGrid.Rows[rowCount].Cells[6].Value = formatDecimal(Decimal.Parse(orl.testAverage)).ToString();
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[rowCount].Cells[6].Value = orl.testAverage;
+                    }
+                    if (orl.standardDeviation != null && orl.standardDeviation != "")
+                    {
+                        pdfGrid.Rows[rowCount].Cells[7].Value = formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString();
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[rowCount].Cells[7].Value = orl.standardDeviation;
+                    }
+                    if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
+                    {
+                        pdfGrid.Rows[rowCount].Cells[8].Value = formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString();
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[rowCount].Cells[8].Value = orl.CoEfficientOfVariation;
+                    }
+                    pdfGrid.Rows[rowCount].Cells[9].Value = orl.testDuration;
+                    pdfGrid.Rows[rowCount].Cells[10].Value = orl.remarks;
                     pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -931,8 +1100,62 @@ namespace TQM
                     pdfGrid.Rows[rowCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[rowCount].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[rowCount].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    pdfGrid.Rows[rowCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
-                    pdfGrid.Rows[rowCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+                    if (orl.isWhite)
+                    {
+                        pdfGrid.Rows[rowCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[rowCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[rowCount].Cells[6].Style.BackgroundBrush = PdfBrushes.White;
+                        //pdfGrid.Rows[rowCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[rowCount].Cells[6].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[rowCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[rowCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[rowCount].Cells[6].Style.BackgroundBrush = PdfBrushes.Red;
+                        //pdfGrid.Rows[rowCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGrid.Rows[rowCount].Cells[6].Style.TextBrush = brush_con;
+                    }
+
+                    pdfGrid.Rows[rowCount].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[rowCount].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[rowCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[rowCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[rowCount].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[rowCount].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[rowCount].Cells[10].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[rowCount].Cells[10].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+                    if (rowCount == overallReportList.Count)
+                    {
+                        pdfGrid.Rows[rowCount].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[rowCount].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[rowCount].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[rowCount].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[rowCount].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[rowCount].Cells[5].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[rowCount].Cells[6].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[rowCount].Cells[7].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[rowCount].Cells[8].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[rowCount].Cells[9].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[rowCount].Cells[10].Style.Borders.All = PdfPens.Transparent;
+
+                        pdfGrid.Rows[rowCount].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[rowCount].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[rowCount].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[rowCount].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[rowCount].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[rowCount].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[rowCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[rowCount].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[rowCount].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[rowCount].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[rowCount].Cells[10].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    }
+
                     rowCount++;
                 }
 
@@ -941,6 +1164,7 @@ namespace TQM
                 if (result == null && overallHeight == 0)
                 {
                     result = pdfGrid.Draw(pdfPage, new PointF(10, result.Bounds.Height + 10), layoutFormat);
+                    //result = pdfGridInfo.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
                     overallHeight = result.Bounds.Height + 30;
                 }
                 else if (result == null && overallHeight > 0)
@@ -1054,15 +1278,22 @@ namespace TQM
                 header.Alignment = PdfAlignmentStyle.TopCenter;
                 header.Graphics.DrawString(companyName, font, brush, new PointF(10, 0));
                 //Title Starts
-                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Underline);
+                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
                 if (consolidatedReport)
                 {
-                    header.Graphics.DrawString("Consolidated Wrapping Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(135, 16));
+                    header.Graphics.DrawString("Con. Wrappping Report - " + selectedMachineCategory + " (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(135, 26));
                 }
                 else
                 {
-                    header.Graphics.DrawString("Wrapping Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                    if (selectedMachineCategory != null)
+                    {
+                        header.Graphics.DrawString("Wrapping Report - " + selectedMachineCategory + " (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                    }
+                    else
+                    {
+                        header.Graphics.DrawString("Wrapping Report - All (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                    }
                 }
                 //Title Ends
                 pdfDocument.Template.Top = header;

@@ -94,6 +94,19 @@ namespace TQM
                         testID = entry_testID.Text.Trim();
                     }
                 }
+                string standHank = "";
+                if (entry_standHank.Text.Trim() != "")
+                {
+                    if (entry_standHank.Text.Contains("-"))
+                    {
+                        DisplayAlert("Attention", "Standard Hank should not be decimal", "OK");
+                        return;
+                    }
+                    else
+                    {
+                        standHank = entry_standHank.Text.Trim();
+                    }
+                }
                 string selectedCategory = null;
                 string shift = "";
                 if (picker_shift.SelectedItem != null)
@@ -117,14 +130,15 @@ namespace TQM
                 {
                     if (is_consolidated)
                     {
-                        if (selectedCategory == null || selectedMachineID == Guid.Empty)
+                        //if ((selectedCategory == null || selectedMachineID == Guid.Empty) && standHank == "")
+                        if (selectedCategory == null || selectedCategory == "")
                         {
-                            DisplayAlert("Attention", "Please select machine for consolidated report", "OK");
+                            DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
                             return;
                         }
                     }
                     Navigation.PushAsync(new YCReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false, is_consolidated));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, standHank, false, is_consolidated));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
@@ -175,6 +189,14 @@ namespace TQM
                     List<MachineModel> machines = conn.Table<MachineModel>().Where(
                         MachineModel => MachineModel.machineCategory == selectedCategory).ToList();
                     picker_machinename.ItemsSource = machines;
+                    if (selectedCategory == "Spinning")
+                    {
+                        lbl_stadHank.Text = "Std. Count:";
+                    }
+                    else
+                    {
+                        lbl_stadHank.Text = "Std. Hank:";
+                    }
                 }
             }
             catch (Exception ex)
@@ -215,6 +237,19 @@ namespace TQM
                         testID = entry_testID.Text.Trim();
                     }
                 }
+                string standHank = "";
+                if (entry_standHank.Text.Trim() != "")
+                {
+                    if (entry_standHank.Text.Contains("-"))
+                    {
+                        DisplayAlert("Attention", "Standard Hank should not be decimal", "OK");
+                        return;
+                    }
+                    else
+                    {
+                        standHank = entry_standHank.Text.Trim();
+                    }
+                }
                 string selectedCategory = null;
                 string shift = "";
                 if (picker_shift.SelectedItem != null)
@@ -236,8 +271,17 @@ namespace TQM
                 if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
                 if (picker_reportName.SelectedItem.ToString() == "Wrapping")
                 {
+                    if (is_consolidated)
+                    {
+                        //if ((selectedCategory == null || selectedMachineID == Guid.Empty) && standHank == "")
+                        if (selectedCategory == null || selectedCategory == "")
+                        {
+                            DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
+                            return;
+                        }
+                    }
                     Navigation.PushAsync(new YCReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true, is_consolidated));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, standHank, true, is_consolidated));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
@@ -276,6 +320,9 @@ namespace TQM
                     lbl_testID.IsVisible = false;
                     entry_testID.IsVisible = false;
                     btn_deleteRecords.IsVisible = false;
+                    picker_reportName.IsEnabled = false;
+                    //lbl_stadHank.IsVisible = true;
+                    //entry_standHank.IsVisible = true;
                 }
                 else
                 {
@@ -289,6 +336,9 @@ namespace TQM
                     lbl_testID.IsVisible = true;
                     entry_testID.IsVisible = true;
                     btn_deleteRecords.IsVisible = true;
+                    picker_reportName.IsEnabled = true;
+                    //lbl_stadHank.IsVisible = false;
+                    //entry_standHank.IsVisible = false;
                 }
             }
             catch (Exception ex)
