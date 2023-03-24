@@ -3,8 +3,8 @@
     internal class RunConfiguration
     {
         //Demo balance serail no: G85219651634
-        //Test balance serail no: DS85223849198
-        private string balanceSerialNo = "DS85222849198";
+        //Test balance serail no: DS85222849198
+        private string balanceSerialNo = "G85215519962";
         private string tqmAppUserID = "tqmuser";
 
         public string getBalanceSerialNo()

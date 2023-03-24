@@ -53,7 +53,7 @@
                             <x:String>Breaker Drawing</x:String>
                             <x:String>Comber</x:String>
                             <x:String>Drawing</x:String>
-                            <x:String>RSB</x:String>
+                            <!--<x:String>RSB</x:String>-->
                             <x:String>Simplex/SpeedFrame</x:String>
                             <x:String>Spinning</x:String>
                         </x:Array>
@@ -97,7 +97,10 @@
 
                 <Label Grid.Row="2" Grid.Column="0" x:Name="lbl_lealength" Text="Lea Length" IsVisible="false"
                        HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Picker Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="picker_leaLength" TextColor="Green" FontSize="16"
+                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_leaLength" 
+                       Keyboard="Numeric" TextColor="Green" FontSize="16" IsVisible="false"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                <!--<Picker Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="picker_leaLength" TextColor="Green" FontSize="16"
                         VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsVisible="false">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
@@ -106,13 +109,17 @@
                             <x:String>Full Lea</x:String>
                         </x:Array>
                     </Picker.ItemsSource>
-                </Picker>
+                </Picker>-->
 
-                <Label Grid.Row="2" Grid.Column="0" x:Name="lbl_sliverlength" Text="Sliver Length" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_sliverlength" Keyboard="Numeric" TextColor="Green" FontSize="16"
-                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-                <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" x:Name="lbl_rovinglength" Text="Roving Length" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_rovinglength" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="2" Grid.Column="0" x:Name="lbl_sliverlength" Text="Sliver Length" IsVisible="false"
+                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_sliverlength" 
+                       Keyboard="Numeric" TextColor="Green" FontSize="16" IsVisible="false"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" x:Name="lbl_rovinglength" IsVisible="false"
+                       Text="Roving Length" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                <Entry Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_rovinglength"
+                       Keyboard="Numeric" TextColor="Green" FontSize="16" IsVisible="false"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
                 
                 
@@ -130,24 +137,42 @@
                 <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_hankDeviationPercent" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
-                <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Text="Test Sample (A%)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountApercent" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="Test Sample (A%)" IsVisible="false"
+                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" x:Name="lbl_testCountApercent" Margin="0,10,0,0"/>
+                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountApercent" 
+                       Keyboard="Numeric" TextColor="Green" FontSize="16" IsVisible="false"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+
+                <Label Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Text="Standard A%" IsVisible="false"
+                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" x:Name="lbl_standardApercent" Margin="0,10,0,0"/>
+                <Entry Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_standardApercent" 
+                       Keyboard="Numeric" TextColor="Green" FontSize="16" IsVisible="false"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
                 <!--<Label Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Text="Standard Hank (A%)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
                 <Entry Grid.Row="5" Grid.Column="4" Grid.ColumnSpan="1" Text = "" x:Name="entry_standardHank_Apercent" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>-->
 
-                <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Sample (Stretch)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountStretch" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Sample (Stretch)" IsVisible="false"
+                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" x:Name="lbl_testCountStretch" Margin="0,10,0,0"/>
+                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountStretch" 
+                       Keyboard="Numeric" TextColor="Green" FontSize="16" IsVisible="false"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
                 <!--<Label Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" Text="Standard Hank (Stretch)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
                 <Entry Grid.Row="6" Grid.Column="4" Grid.ColumnSpan="1" Text = "" x:Name="entry_standardHank_Stretch" Keyboard="Numeric" TextColor="Green" FontSize="16"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>-->
 
-                <Label Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Text="Test Sample (Noils)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                <Entry Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountNoils" Keyboard="Numeric" TextColor="Green" FontSize="16"
+                <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="Test Sample (Noils)" IsVisible="false"
+                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" x:Name="lbl_testCountNoils" Margin="0,10,0,0"/>
+                <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_testcountNoils" 
+                       Keyboard="Numeric" TextColor="Green" FontSize="16" IsVisible="false"
+                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+
+                <Label Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Text="Standard Noils %" IsVisible="false"
+                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" x:Name="lbl_standardNoils" Margin="0,10,0,0"/>
+                <Entry Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_standardNoils" 
+                       Keyboard="Numeric" TextColor="Green" FontSize="16" IsVisible="false"
                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
                 <!--<Label Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" Text="Standard Hank (Noils)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>

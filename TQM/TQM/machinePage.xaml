@@ -75,7 +75,7 @@
                                         <x:String>Breaker Drawing</x:String>
                                         <x:String>Comber</x:String>
                                         <x:String>Drawing</x:String>
-                                        <x:String>RSB</x:String>
+                                        <!--<x:String>RSB</x:String>-->
                                         <x:String>Simplex/SpeedFrame</x:String>
                                         <x:String>Spinning</x:String>
                                     </x:Array>
