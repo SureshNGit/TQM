@@ -146,13 +146,13 @@
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
                         <x:String></x:String>
-                        <x:String>Carding</x:String>
+                        <!--<x:String>Carding</x:String>
                         <x:String>Breaker Drawing</x:String>
-                        <x:String>Comber</x:String>
+                        <x:String>Comber</x:String>-->
                         <x:String>Drawing</x:String>
-                        <x:String>RSB</x:String>
+                        <!--<x:String>RSB</x:String>
                         <x:String>Simplex/SpeedFrame</x:String>
-                        <x:String>Spinning</x:String>
+                        <x:String>Spinning</x:String>-->
                     </x:Array>
                 </Picker.ItemsSource>
                 <Picker.Effects>
@@ -254,7 +254,7 @@
                     <ListView.Header>
                         <StackLayout Orientation="Horizontal" VerticalOptions="Start" BackgroundColor="#0e0273">
                             <Label Text="Sample No" WidthRequest="155" TextColor="White" FontSize="16"/>
-                            <Label Text="Weigth" WidthRequest="155" TextColor="White" FontSize="16"/>
+                            <Label Text="Weight" WidthRequest="155" TextColor="White" FontSize="16"/>
                             <Label Text="Hank" WidthRequest="155" x:Name="lbl_testresult_stadHank" TextColor="White" FontSize="16"/>
                         </StackLayout>
                     </ListView.Header>

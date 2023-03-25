@@ -54,7 +54,7 @@
                                     x:Name="btn_clear" Clicked="btn_clear_Clicked" 
                                     BackgroundColor="Red" TextColor="White" CornerRadius="25"/>
                         </Grid>
-                        <Grid Margin="35,0">
+                        <Grid Margin="15,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -88,15 +88,22 @@
                                     Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked" 
                                     BackgroundColor="#0e0273" TextColor="White" CornerRadius="25"/>
                         </Grid>
-                        <Label x:Name="lbl_searchresultheader" FontSize="25" TextColor="black" IsVisible="false" Text="Search Results:" TextDecorations="Underline" />
+                        <Label x:Name="lbl_searchresultheader" FontSize="25" TextColor="Red" IsVisible="false" Text="Search Results:"  />
                     </StackLayout>
                 </ListView.Header>
                 <ListView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate >
                         <!--<TextCell TextColor="black" Text="{Binding machineName}" />-->
-                        <ViewCell Tapped="ViewCell_Tapped">
-                            <StackLayout>
-                                <Label Margin="35,5,0,0" Text="{Binding machineName}" TextColor="Black" FontSize="25"/>
+                        <ViewCell Tapped="ViewCell_Tapped" >
+                            <StackLayout Margin="35,10,0,0">
+                                <Label Margin="200,5,0,0" TextColor="blue" FontSize="20">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{} Machine Category: {0} ~  Machine Name: {1}">
+                                            <Binding Path="machineCategory"/>
+                                            <Binding Path="machineName"/>
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>

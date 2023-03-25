@@ -62,7 +62,7 @@
                 <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="1" Text="Report Name"  
                        FontSize="20" TextColor="#0e0273" Margin="0,10"/>
                 <Picker Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" x:Name="picker_reportName" HorizontalTextAlignment="Center" 
-                        TextColor="Green" FontSize="25">
+                        TextColor="Green" FontSize="25" SelectedIndexChanged="picker_reportName_SelectedIndexChanged">
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String></x:String>
@@ -104,13 +104,13 @@
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String></x:String>
-                            <x:String>Carding</x:String>
+                            <!--<x:String>Carding</x:String>
                             <x:String>Breaker Drawing</x:String>
                             <x:String>Comber</x:String>
                             <x:String>Drawing</x:String>
-                            <x:String>RSB</x:String>
+                            --><!--<x:String>RSB</x:String>--><!--
                             <x:String>Simplex/SpeedFrame</x:String>
-                            <x:String>Spinning</x:String>
+                            <x:String>Spinning</x:String>-->
                         </x:Array>
                     </Picker.ItemsSource>
                 </Picker>

@@ -182,6 +182,7 @@ namespace TQM
         {
             try
             {
+                if (picker_machinecategory.SelectedItem == null) { return; }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     string selectedCategory = picker_machinecategory.SelectedItem.ToString();
@@ -346,6 +347,61 @@ namespace TQM
                 DisplayAlert("Notice-ReportType", ex.Message.ToString(), "Ok");
             }
 
+        }
+
+        private void picker_reportName_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (picker_reportName.SelectedItem == null) { return; }
+                string selectedReportName = picker_reportName.SelectedItem.ToString();
+                if (selectedReportName == "Wrapping")
+                {
+                    var lst_macCategory = new List<string>();
+                    lst_macCategory.Add("");
+                    lst_macCategory.Add("Carding");
+                    lst_macCategory.Add("Breaker Drawing");
+                    lst_macCategory.Add("Comber");
+                    lst_macCategory.Add("Drawing");
+                    lst_macCategory.Add("Simplex/SpeedFrame");
+                    lst_macCategory.Add("Spinning");
+                    picker_machinecategory.ItemsSource = lst_macCategory;
+                }
+                else if (selectedReportName == "A%")
+                {
+                    var lst_macCategory = new List<string>();
+                    //lst_macCategory.Add("");
+                    lst_macCategory.Add("Drawing");
+                    picker_machinecategory.ItemsSource = lst_macCategory;
+                    picker_machinecategory.SelectedIndex = 0;
+                }
+                else if (selectedReportName == "Stretch")
+                {
+                    var lst_macCategory = new List<string>();
+                    //lst_macCategory.Add("");
+                    lst_macCategory.Add("Simplex/SpeedFrame");
+                    picker_machinecategory.ItemsSource = lst_macCategory;
+                    picker_machinecategory.SelectedIndex = 0;
+                }
+                else if (selectedReportName == "Noils")
+                {
+                    var lst_macCategory = new List<string>();
+                    //lst_macCategory.Add("");
+                    lst_macCategory.Add("Comber");
+                    picker_machinecategory.ItemsSource = lst_macCategory;
+                    picker_machinecategory.SelectedIndex = 0;
+                }
+                else
+                {
+                    var lst_macCategory = new List<string>();
+                    lst_macCategory.Add("");
+                    picker_machinecategory.ItemsSource = lst_macCategory;
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice-ReportName", ex.Message.ToString(), "Ok");
+            }
         }
     }
 }

@@ -140,6 +140,7 @@ namespace TQM
                 entry_testcountApercent.Text = "";
                 entry_standardApercent.Text = "";
                 entry_testcountStretch.Text = "";
+                entry_standardStretch.Text = "";
                 entry_testcountNoils.Text = "";
                 entry_standardNoils.Text = "";
                 picker_shiftCount.SelectedIndex = 0;
@@ -163,6 +164,7 @@ namespace TQM
                 entry_testcountApercent.Text = "";
                 entry_standardApercent.Text = "";
                 entry_testcountStretch.Text = "";
+                entry_standardStretch.Text = "";
                 entry_testcountNoils.Text = "";
                 entry_standardNoils.Text = "";
                 if (ycConfig.shiftCount > 0)
@@ -297,6 +299,7 @@ namespace TQM
             entry_testcountApercent.Text = ycConfig.testcountApercent.ToString();
             entry_standardApercent.Text = ycConfig.standardApercent.ToString();
             entry_testcountStretch.Text = ycConfig.testcountStretch.ToString();
+            entry_standardStretch.Text = ycConfig.standardStretch.ToString();
             entry_testcountNoils.Text = ycConfig.testcountNoils.ToString();
             entry_standardNoils.Text = ycConfig.standardNoils.ToString();
 
@@ -369,7 +372,9 @@ namespace TQM
                     entry_sliverlength.Text = "0";
                     entry_rovinglength.Text = "0";
                     entry_testcountApercent.Text = "0";
+                    entry_standardApercent.Text = "0";
                     entry_testcountStretch.Text = "0";
+                    entry_standardStretch.Text = "0";
                     entry_testcountNoils.Text = "0";
                     entry_standardNoils.Text = "0";
                     entry_standardApercent.Text = "0";
@@ -430,7 +435,9 @@ namespace TQM
                     entry_rovinglength.Text = "0";
                     entry_leaLength.Text = "0";
                     entry_testcountApercent.Text = "0";
+                    entry_standardApercent.Text = "0";
                     entry_testcountStretch.Text = "0";
+                    entry_standardStretch.Text = "0";
                     entry_testcountNoils.Text = "0";
                     entry_standardNoils.Text = "0";
                     entry_standardApercent.Text = "0";
@@ -484,8 +491,9 @@ namespace TQM
                     entry_rovinglength.Text = "0";
                     entry_leaLength.Text = "0";
                     entry_testcountApercent.Text = "0";
-                    entry_testcountStretch.Text = "0";
                     entry_standardApercent.Text = "0";
+                    entry_testcountStretch.Text = "0";
+                    entry_standardStretch.Text = "0";
 
                     if (entry_sliverlength.Text.Trim().ToString() == "")
                     {
@@ -556,6 +564,7 @@ namespace TQM
                     entry_rovinglength.Text = "0";
                     entry_leaLength.Text = "0";
                     entry_testcountStretch.Text = "0";
+                    entry_standardStretch.Text = "0";
                     entry_testcountNoils.Text = "0";
                     entry_standardNoils.Text = "0";
 
@@ -684,6 +693,16 @@ namespace TQM
                         DisplayAlert("Attention", "Test sample (Stretch) should not be blank or zero!!!", "Ok");
                         return;
                     }
+                    if (entry_standardStretch.Text.Trim() == "." || entry_standardStretch.Text.Trim() == "-")
+                    {
+                        DisplayAlert("Attention", "Standard Stretch is invalid. Please check!!!", "Ok");
+                        return;
+                    }
+                    if (entry_standardStretch.Text.Trim() == "" || decimal.Parse(entry_standardStretch.Text.Trim()) <= 0m)
+                    {
+                        DisplayAlert("Attention", "Standard Stretch should not be blank or zero or negative!!!", "Ok");
+                        return;
+                    }
                 }
 
                 if (picker_shiftCount.SelectedIndex == -1 || picker_shiftCount.SelectedItem.ToString() == "")
@@ -782,7 +801,12 @@ namespace TQM
                 decimal stdApercent = 0.0000m;
                 if (entry_standardApercent.Text.Trim().ToString() != "")
                 {
-                    stdNoils = decimal.Parse(entry_standardApercent.Text.ToString());
+                    stdApercent = decimal.Parse(entry_standardApercent.Text.ToString());
+                }
+                decimal stdStretch = 0.0000m;
+                if (entry_standardStretch.Text.Trim().ToString() != "")
+                {
+                    stdStretch = decimal.Parse(entry_standardStretch.Text.ToString());
                 }
                 int enteredLeaLength = 0;
                 int enteredSliverLength = 0;
@@ -818,6 +842,7 @@ namespace TQM
                     testcountApercent = int.Parse(entry_testcountApercent.Text.ToString()),
                     standardApercent = stdApercent,
                     testcountStretch = int.Parse(entry_testcountStretch.Text.ToString()),
+                    standardStretch = stdStretch,
                     testcountNoils = int.Parse(entry_testcountNoils.Text.ToString()),
                     standardNoils = stdNoils,
                     shiftCount = int.Parse(picker_shiftCount.SelectedItem.ToString()),
@@ -938,6 +963,8 @@ namespace TQM
                         entry_standardNoils.IsVisible = false;
                         lbl_standardApercent.IsVisible = false;
                         entry_standardApercent.IsVisible = false;
+                        lbl_standardStretch.IsVisible = false;
+                        entry_standardStretch.IsVisible = false;
 
                         lbl_lealength.IsVisible = true;
                         //picker_leaLength.IsVisible = true;
@@ -962,6 +989,8 @@ namespace TQM
                         entry_standardNoils.IsVisible = false;
                         lbl_standardApercent.IsVisible = false;
                         entry_standardApercent.IsVisible = false;
+                        lbl_standardStretch.IsVisible = false;
+                        entry_standardStretch.IsVisible = false;
 
 
                         lbl_sliverlength.IsVisible = true;
@@ -982,6 +1011,8 @@ namespace TQM
                         entry_leaLength.IsVisible = false;
                         lbl_standardApercent.IsVisible = false;
                         entry_standardApercent.IsVisible = false;
+                        lbl_standardStretch.IsVisible = false;
+                        entry_standardStretch.IsVisible = false;
 
                         lbl_testCountNoils.IsVisible = true;
                         entry_testcountNoils.IsVisible = true;
@@ -1006,6 +1037,8 @@ namespace TQM
                         entry_leaLength.IsVisible = false;
                         lbl_standardNoils.IsVisible = false;
                         entry_standardNoils.IsVisible = false;
+                        lbl_standardStretch.IsVisible = false;
+                        entry_standardStretch.IsVisible = false;
 
                         lbl_testCountApercent.IsVisible = true;
                         entry_testcountApercent.IsVisible = true;
@@ -1021,8 +1054,8 @@ namespace TQM
                     {
                         lbl_sliverlength.IsVisible = false;
                         entry_sliverlength.IsVisible = false;
-                        lbl_testCountApercent.IsVisible = true;
-                        entry_testcountApercent.IsVisible = true;
+                        lbl_testCountApercent.IsVisible = false;
+                        entry_testcountApercent.IsVisible = false;
                         lbl_testCountNoils.IsVisible = false;
                         entry_testcountNoils.IsVisible = false;
                         lbl_lealength.IsVisible = false;
@@ -1037,6 +1070,8 @@ namespace TQM
                         entry_testcountStretch.IsVisible = true;
                         lbl_rovinglength.IsVisible = true;
                         entry_rovinglength.IsVisible = true;
+                        lbl_standardStretch.IsVisible = true;
+                        entry_standardStretch.IsVisible = true;
                         lbl_standardHank.Text = "Standard Hank (Wrapping)";
                         lbl_hankDeviation.Text = "Hank Deviation %";
                     }
