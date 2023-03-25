@@ -32,6 +32,7 @@ namespace TQM.Model
         public decimal yarnlength { get; set; }
 
         public int totaltestcount { get; set; }
+        public decimal standardNoils { get; set; }
 
         public decimal average_wt_sliverwt { get; set; }
 

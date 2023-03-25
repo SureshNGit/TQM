@@ -146,14 +146,32 @@
                                     <Label Grid.Column="4" Grid.Row="4" Grid.ColumnSpan="2" HorizontalTextAlignment="Center" Margin="25,0,0,0"
                                     Text="{Binding apercent_nPlus1}" FontSize="14" TextColor="red"/>-->
 
+
                                     <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1"
-                                    Text="A% (N-1)" FontSize="14" TextColor="#0e0273"/>
+                                    Text="Std. A%" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="90,0,0,0"
-                                    Text="{Binding apercent_nMinus1}" FontSize="14" TextColor="red"/>
+                                    Text="{Binding standardApercent}" FontSize="14" TextColor="green"/>
+                                     
                                     <Label Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1"
+                                    Text="A% (N-1)" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" 
+                                           Margin="90,0,0,0" IsVisible="{Binding isGREEN_NM1}"
+                                    Text="{Binding apercent_nMinus1}" FontSize="14" TextColor="green"/>
+                                    <Label Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" 
+                                           Margin="90,0,0,0" IsVisible="{Binding isRED_NM1}" BackgroundColor="Yellow"
+                                    Text="{Binding apercent_nMinus1}" FontSize="14" TextColor="red" FontAttributes="Bold" />
+
+
+
+
+                                    <Label Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1"
                                     Text="A% (N+1)" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="80,0,0,0"
-                                    Text="{Binding apercent_nPlus1}" FontSize="14" TextColor="red"/>
+                                    <Label Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" 
+                                           Margin="80,0,0,0" IsVisible="{Binding isGREEN_NP1}"
+                                    Text="{Binding apercent_nPlus1}" FontSize="14" TextColor="green"/>
+                                    <Label Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" 
+                                           Margin="80,0,0,0" IsVisible="{Binding isRED_NP1}" BackgroundColor="Yellow"
+                                    Text="{Binding apercent_nPlus1}" FontSize="14" TextColor="red" FontAttributes="Bold"/>
 
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" 
                                     Text="Date" FontSize="14" TextColor="#0e0273"/>

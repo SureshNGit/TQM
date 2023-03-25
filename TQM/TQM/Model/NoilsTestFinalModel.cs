@@ -11,6 +11,7 @@ namespace TQM.Model
         public long testID { get; set; }
 
         public int testcount { get; set; }
+        public decimal standardNoils { get; set; }
 
         public decimal weigth_sliver { get; set; }
 

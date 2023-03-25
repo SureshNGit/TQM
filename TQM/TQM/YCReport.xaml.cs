@@ -294,8 +294,11 @@ namespace TQM
                                 }
 
 
-                                decimal maxRangeVal = testsummary.standardHank + (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
-                                decimal minRangeVal = testsummary.standardHank - (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
+                                //decimal maxRangeVal = testsummary.standardHank + (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
+                                //decimal minRangeVal = testsummary.standardHank - (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
+
+                                decimal maxRangeVal = testsummary.standardHank + testsummary.deviationPercent;
+                                decimal minRangeVal = testsummary.standardHank - testsummary.deviationPercent;
 
                                 if (testsummary.testaverage < minRangeVal || testsummary.testaverage > maxRangeVal)
                                 {
@@ -1292,7 +1295,7 @@ namespace TQM
                     }
                     else
                     {
-                        header.Graphics.DrawString("Wrapping Report - All (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                        header.Graphics.DrawString("Wrapping Report - (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
                     }
                 }
                 //Title Ends

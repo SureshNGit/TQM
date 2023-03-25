@@ -33,5 +33,6 @@ namespace TQM.ModelView
 
         public decimal yccalcval { get; set; }
 
+        public decimal standardNoils { get; set; }
     }
 }

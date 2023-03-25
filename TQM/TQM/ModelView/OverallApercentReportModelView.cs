@@ -24,6 +24,15 @@ namespace TQM.ModelView
         public string testType { get; set; }
 
         public int totaltestcount { get; set; }
+        public decimal standardApercent { get; set; }
+
+        public bool isRED_NM1 { get; set; } = false;
+
+        public bool isGREEN_NM1 { get; set; } = true;
+
+        public bool isRED_NP1 { get; set; } = false;
+
+        public bool isGREEN_NP1 { get; set; } = true;
 
         public decimal testaverage_nMinus1 { get; set; }
 

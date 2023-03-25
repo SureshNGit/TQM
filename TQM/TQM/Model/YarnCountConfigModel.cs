@@ -45,6 +45,7 @@ namespace TQM.Model
 
         public string shift3time { get; set; }
 
+        public DateTime createdate { get; set; } = DateTime.Now;
         public bool dataSyncStatus { get; set; } = false;
 
 

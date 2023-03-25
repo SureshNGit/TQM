@@ -41,6 +41,8 @@ namespace TQM.Model
 
         public decimal yccalcval { get; set; }
 
+        public decimal standardNoils { get; set; }
+
         public bool status { get; set; }
 
         public DateTime createdate { get; set; }

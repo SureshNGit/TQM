@@ -23,6 +23,11 @@ namespace TQM.ModelView
         public string testType { get; set; }
 
         public int totaltestcount { get; set; }
+        public decimal standardStretch { get; set; }
+
+        public bool isGREEN { get; set; } = true;
+
+        public bool isRED { get; set; } = false;
 
         public decimal testaverage_IB { get; set; }
 

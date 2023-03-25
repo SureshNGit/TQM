@@ -147,13 +147,19 @@
                                     Text="{Binding apercent_nPlus1}" FontSize="14" TextColor="red"/>-->
 
                                     <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1"
-                                    Text="Stretch %" FontSize="14" TextColor="#0e0273"/>
+                                    Text="Std. Stretch %" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="90,0,0,0"
-                                    Text="{Binding stretch}" FontSize="14" TextColor="red"/>
-                                    <!--<Label Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1"
-                                    Text="A% (N+1)" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="80,0,0,0"
-                                    Text="{Binding apercent_nPlus1}" FontSize="14" TextColor="red"/>-->
+                                    Text="{Binding standardStretch}" FontSize="14" TextColor="green" FontAttributes="Bold"/>
+
+                                    <Label Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" Margin="25,0,0,0"
+                                    Text="Stretch %" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" HorizontalTextAlignment="Center" 
+                                           Margin="90,0,0,0" IsVisible="{Binding isGREEN}"
+                                    Text="{Binding stretch}" FontSize="14" TextColor="green" FontAttributes="Bold"/>
+                                    <Label Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" HorizontalTextAlignment="Center" 
+                                           Margin="90,0,0,0" BackgroundColor="Yellow" IsVisible="{Binding isRED}"
+                                    Text="{Binding stretch}" FontSize="14" TextColor="red" FontAttributes="Bold"/>
+
 
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" 
                                     Text="Date" FontSize="14" TextColor="#0e0273"/>

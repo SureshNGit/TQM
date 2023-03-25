@@ -46,6 +46,7 @@ namespace TQM
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
+        private decimal STD_APERCENT_CURR = 0.0000m;
         private int currentTestCount = 0;
         private bool isTestStarted = false;
         private YCTestApercentCalculatedModel apercentCalc = null;
@@ -141,10 +142,12 @@ namespace TQM
                                 picker_machinename.SelectedIndex = machineIndex - 1;
                                 picker_shift.SelectedItem = lastTest.shift;
                                 picker_process.SelectedItem = lastTest.process;
+                                entry_standardApercent.Text = formatDecimal(lastTest.standardApercent).ToString();
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
+                                entry_standardApercent.IsEnabled = false;
                                 currentTestID = lastTest.testID;
                                 entry_testcount.Text = lastTest.totaltestcount.ToString();
                                 entry_testcount.IsEnabled = false;
@@ -186,10 +189,12 @@ namespace TQM
                                 picker_machinename.SelectedIndex = machineIndex - 1;
                                 picker_shift.SelectedItem = lastTest.shift;
                                 picker_process.SelectedItem = lastTest.process;
+                                entry_standardApercent.Text = formatDecimal(lastTest.standardApercent).ToString();
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
+                                entry_standardApercent.IsEnabled = false;
                                 currentTestID = lastTest.testID;
                                 entry_testcount.Text = lastTest.totaltestcount.ToString();
                                 entry_testcount.IsEnabled = false;
@@ -214,10 +219,12 @@ namespace TQM
                                 picker_machinename.SelectedIndex = machineIndex - 1;
                                 picker_shift.SelectedItem = lastTest.shift;
                                 picker_process.SelectedItem = lastTest.process;
+                                entry_standardApercent.Text = formatDecimal(lastTest.standardApercent).ToString();
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
+                                entry_standardApercent.IsEnabled = false;
                                 currentTestID = lastTest.testID;
                                 entry_testcount.Text = lastTest.totaltestcount.ToString();
                                 entry_testcount.IsEnabled = false;
@@ -259,10 +266,12 @@ namespace TQM
                                 picker_machinename.SelectedIndex = machineIndex - 1;
                                 picker_shift.SelectedItem = lastTest.shift;
                                 picker_process.SelectedItem = lastTest.process;
+                                entry_standardApercent.Text = formatDecimal(lastTest.standardApercent).ToString();
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
+                                entry_standardApercent.IsEnabled = false;
                                 currentTestID = lastTest.testID;
                                 entry_testcount.Text = lastTest.totaltestcount.ToString();
                                 entry_testcount.IsEnabled = false;
@@ -327,6 +336,7 @@ namespace TQM
                 entry_testcount.Text = "";
                 picker_shift.SelectedIndex = 0;
                 picker_process.SelectedIndex = 0;
+                entry_standardApercent.Text = "0.0000";
                 return;
             }
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -338,6 +348,8 @@ namespace TQM
                                                             YarnCountConfigModel.machineName == mac)).FirstOrDefault();
                 if (yarncountconfigmodel != null)
                 {
+                    entry_standardApercent.Text = formatDecimal(yarncountconfigmodel.standardApercent).ToString();
+                    STD_APERCENT_CURR = formatDecimal(yarncountconfigmodel.standardApercent);
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
                     lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
                     if (mCat == "Simplex/SpeedFrame")
@@ -380,6 +392,7 @@ namespace TQM
                     entry_testcount.Text = "";
                     picker_shift.SelectedIndex = 0;
                     picker_process.SelectedIndex = 0;
+                    entry_standardApercent.Text = "0.0000";
                 }
             }
         }
@@ -711,6 +724,7 @@ namespace TQM
                             testcount = test.testcount,
                             yarnweight = test.yarnweight,
                             yccalcval = test.yccalcval,
+                            standardApercent = test.standardApercent,
                             status = true,
                             createdate = DateTime.Now
                         };
@@ -778,6 +792,7 @@ namespace TQM
                         shift = ycTestApercentModelViewlist[0].shift,
                         testType = ycTestApercentModelViewlist[0].testType,
                         totaltestcount = ycTestApercentModelViewlist[0].totaltestcount,
+                        standardApercent = ycTestApercentModelViewlist[0].standardApercent,
                         avg_weight = avg_weight,
                         testaverage = mean,
                         testsd = sd,
@@ -890,6 +905,7 @@ namespace TQM
                                             shift = nMinus1Summary.shift,
                                             testType = nMinus1Summary.testType,
                                             totaltestcount = nMinus1Summary.totaltestcount,
+                                            standardApercent = nMinus1Summary.standardApercent,
                                             avg_weight_nMinus1 = nMinus1Summary.avg_weight,
                                             testaverage_nMinus1 = nMinus1Summary.testaverage,
                                             testsd_nMinus1 = nMinus1Summary.testsd,
@@ -1031,6 +1047,8 @@ namespace TQM
                                     picker_shift.SelectedIndex = 0;
                                     picker_process.SelectedIndex = 0;
                                     picker_process.IsEnabled = true;
+                                    entry_standardApercent.Text = "0.0000";
+                                    entry_standardApercent.IsEnabled = true;
                                 }
                             }
                         }
@@ -1088,6 +1106,16 @@ namespace TQM
             if (picker_shift.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
+                return;
+            }
+            if (entry_standardApercent.Text.Trim() == "-")
+            {
+                await DisplayAlert("Attention", "Standard A% is invalid. Please check!!!", "Ok");
+                return;
+            }
+            if (entry_standardApercent.Text.Trim() == "" || decimal.Parse(entry_standardApercent.Text.Trim()) <= 0m)
+            {
+                await DisplayAlert("Attention", "Standard A% should not be blank or zero or negative!!!", "Ok");
                 return;
             }
             //if (picker_process.SelectedIndex <= 0)
@@ -1157,6 +1185,7 @@ namespace TQM
             {
                 selectedProcess = picker_process.SelectedItem.ToString();
             }
+            STD_APERCENT_CURR = decimal.Parse(entry_standardApercent.Text);
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNm1Button.IsEnabled = false;
             startTestNm1Button.BackgroundColor = Color.SlateGray;
@@ -1166,6 +1195,7 @@ namespace TQM
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
+            entry_standardApercent.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -1291,7 +1321,8 @@ namespace TQM
                             totaltestcount = selectedTestCount,
                             testcount = i + 1,
                             yarnweight = current_stable_data,
-                            yccalcval = currentCalculatedValue
+                            yccalcval = currentCalculatedValue,
+                            standardApercent = STD_APERCENT_CURR
                         };
                         ycTestApercentModelViewlist.Add(ycTestApercentModelView);
                         //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
@@ -1628,6 +1659,16 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
+            if (entry_standardApercent.Text.Trim() == "-")
+            {
+                await DisplayAlert("Attention", "Standard A% is invalid. Please check!!!", "Ok");
+                return;
+            }
+            if (entry_standardApercent.Text.Trim() == "" || decimal.Parse(entry_standardApercent.Text.Trim()) <= 0m)
+            {
+                await DisplayAlert("Attention", "Standard A% should not be blank or zero or negative!!!", "Ok");
+                return;
+            }
             //if (picker_process.SelectedIndex <= 0)
             //{
             //    await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
@@ -1685,6 +1726,7 @@ namespace TQM
             {
                 selectedProcess = picker_process.SelectedItem.ToString();
             }
+            STD_APERCENT_CURR = decimal.Parse(entry_standardApercent.Text);
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNButton.IsEnabled = false;
             startTestNButton.BackgroundColor = Color.SlateGray;
@@ -1694,6 +1736,7 @@ namespace TQM
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
+            entry_standardApercent.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -1739,6 +1782,16 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
+            if (entry_standardApercent.Text.Trim() == "-")
+            {
+                await DisplayAlert("Attention", "Standard A% is invalid. Please check!!!", "Ok");
+                return;
+            }
+            if (entry_standardApercent.Text.Trim() == "" || decimal.Parse(entry_standardApercent.Text.Trim()) <= 0m)
+            {
+                await DisplayAlert("Attention", "Standard A% should not be blank or zero or negative!!!", "Ok");
+                return;
+            }
             //if (picker_process.SelectedIndex <= 0)
             //{
             //    await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
@@ -1796,6 +1849,7 @@ namespace TQM
             {
                 selectedProcess = picker_process.SelectedItem.ToString();
             }
+            STD_APERCENT_CURR = decimal.Parse(entry_standardApercent.Text);
             ycTestApercentModelViewlist = new List<YCTestApercentModelView>();
             startTestNp1Button.IsEnabled = false;
             startTestNp1Button.BackgroundColor = Color.SlateGray;
@@ -1805,6 +1859,7 @@ namespace TQM
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
+            entry_standardApercent.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));

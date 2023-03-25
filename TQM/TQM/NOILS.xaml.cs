@@ -45,6 +45,7 @@ namespace TQM
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
+        private decimal STD_NOILS = 0.0000m;
         private int currentTestCount = 0;
         private bool isTestStarted = false;
         private NoilsTestCalculatedModel noilsCalcList_finalOut = null;
@@ -143,10 +144,12 @@ namespace TQM
                                 picker_machinename.SelectedIndex = machineIndex - 1;
                                 picker_shift.SelectedItem = lastTest.shift;
                                 picker_process.SelectedItem = lastTest.process;
+                                entry_standardNoils.Text = formatDecimal(lastTest.standardNoils).ToString();
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
+                                entry_standardNoils.IsEnabled = false;
                                 currentTestID = lastTest.testID;
                                 entry_testcount.Text = lastTest.totaltestcount.ToString();
                                 entry_testcount.IsEnabled = false;
@@ -188,10 +191,12 @@ namespace TQM
                                 picker_machinename.SelectedIndex = machineIndex - 1;
                                 picker_shift.SelectedItem = lastTest.shift;
                                 picker_process.SelectedItem = lastTest.process;
+                                entry_standardNoils.Text = formatDecimal(lastTest.standardNoils).ToString();
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
+                                entry_standardNoils.IsEnabled = false;
                                 currentTestID = lastTest.testID;
                                 entry_testcount.Text = lastTest.totaltestcount.ToString();
                                 entry_testcount.IsEnabled = false;
@@ -288,6 +293,7 @@ namespace TQM
                 entry_testcount.Text = "";
                 picker_shift.SelectedIndex = 0;
                 picker_process.SelectedIndex = 0;
+                entry_standardNoils.Text = "0.0000";
                 return;
             }
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -299,6 +305,7 @@ namespace TQM
                                                             YarnCountConfigModel.machineName == mac)).FirstOrDefault();
                 if (yarncountconfigmodel != null)
                 {
+                    entry_standardNoils.Text = formatDecimal(yarncountconfigmodel.standardNoils).ToString();
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
                     lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
                     if (mCat == "Simplex/SpeedFrame")
@@ -341,6 +348,7 @@ namespace TQM
                     entry_testcount.Text = "";
                     picker_shift.SelectedIndex = 0;
                     picker_process.SelectedIndex = 0;
+                    entry_standardNoils.Text = "0.0000";
                 }
             }
         }
@@ -630,6 +638,7 @@ namespace TQM
                             testcount = test.testcount,
                             yarnweight = test.yarnweight,
                             yccalcval = test.yccalcval,
+                            standardNoils = test.standardNoils,
                             status = true,
                             createdate = DateTime.Now
                         };
@@ -697,6 +706,7 @@ namespace TQM
                         shift = noilsTestModelViewList[0].shift,
                         testType = noilsTestModelViewList[0].testType,
                         totaltestcount = noilsTestModelViewList[0].totaltestcount,
+                        standardNoils = noilsTestModelViewList[0].standardNoils,
                         avg_weight = avg_weight,
                         testaverage = mean,
                         testsd = sd,
@@ -863,6 +873,7 @@ namespace TQM
                                             yarnlength = sliver_Summary.yarnlength,
                                             shift = sliver_Summary.shift,
                                             totaltestcount = sliver_Summary.totaltestcount,
+                                            standardNoils = sliver_Summary.standardNoils,
                                             average_wt_sliverwt = sliver_Summary.avg_weight,
                                             max_sliverwt = Max_sliver.weigth_sliver,
                                             min_sliverwt = Min_sliver.weigth_sliver,
@@ -983,6 +994,8 @@ namespace TQM
                                     picker_shift.SelectedIndex = 0;
                                     picker_process.SelectedIndex = 0;
                                     picker_process.IsEnabled = true;
+                                    entry_standardNoils.Text = "0.0000";
+                                    entry_standardNoils.IsEnabled = true;
                                 }
                             }
                         }
@@ -1040,6 +1053,16 @@ namespace TQM
             if (picker_shift.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
+                return;
+            }
+            if (entry_standardNoils.Text.Trim() == "-")
+            {
+                await DisplayAlert("Attention", "Standard Noils is invalid. Please check!!!", "Ok");
+                return;
+            }
+            if (entry_standardNoils.Text.Trim() == "" || decimal.Parse(entry_standardNoils.Text.Trim()) <= 0m)
+            {
+                await DisplayAlert("Attention", "Standard Noils should not be blank or zero or negative!!!", "Ok");
                 return;
             }
             //if (picker_process.SelectedIndex <= 0)
@@ -1110,6 +1133,7 @@ namespace TQM
             {
                 selectedProcess = picker_process.SelectedItem.ToString();
             }
+            STD_NOILS = formatDecimal(decimal.Parse(entry_standardNoils.Text));
             noilsTestModelViewList = new List<NoilsTestModelView>();
             startSliverButton.IsEnabled = false;
             startSliverButton.BackgroundColor = Color.SlateGray;
@@ -1119,6 +1143,7 @@ namespace TQM
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
+            entry_standardNoils.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -1245,6 +1270,7 @@ namespace TQM
                             testcount = i + 1,
                             yarnweight = current_stable_data,
                             yccalcval = currentCalculatedValue,
+                            standardNoils = STD_NOILS
                         };
                         noilsTestModelViewList.Add(noilsTestModelView);
                         //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
@@ -1581,6 +1607,16 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
+            if (entry_standardNoils.Text.Trim() == "-")
+            {
+                await DisplayAlert("Attention", "Standard Noils is invalid. Please check!!!", "Ok");
+                return;
+            }
+            if (entry_standardNoils.Text.Trim() == "" || decimal.Parse(entry_standardNoils.Text.Trim()) <= 0m)
+            {
+                await DisplayAlert("Attention", "Standard Noils should not be blank or zero or negative!!!", "Ok");
+                return;
+            }
             //if (picker_process.SelectedIndex <= 0)
             //{
             //    await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
@@ -1640,6 +1676,7 @@ namespace TQM
             {
                 selectedProcess = picker_process.SelectedItem.ToString();
             }
+            STD_NOILS = formatDecimal(decimal.Parse(entry_standardNoils.Text));
             noilsTestModelViewList = new List<NoilsTestModelView>();
             startNoilsButton.IsEnabled = false;
             startNoilsButton.BackgroundColor = Color.SlateGray;
@@ -1649,6 +1686,7 @@ namespace TQM
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
+            entry_standardNoils.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));

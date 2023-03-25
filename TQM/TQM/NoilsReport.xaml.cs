@@ -33,7 +33,8 @@ namespace TQM
         private RunConfiguration runConfiguration = new RunConfiguration();
         private List<NoilsTestCalculatedModel> deleteList = null;
         private bool deleteAll = false;
-
+        private DateTime reportStartDate;
+        private DateTime reportEndDate;
         public NoilsReport()
         {
             InitializeComponent();
@@ -48,6 +49,8 @@ namespace TQM
                 btn_saveToPDF.BackgroundColor = Color.Red;
                 btn_saveToPDF.TextColor = Color.White;
             }
+            reportStartDate = startDate;
+            reportEndDate = endDate;
             getReport(startDate, endDate, categoryName, machineID, shift, process, testID, deleteRequest);
         }
 
@@ -321,6 +324,18 @@ namespace TQM
                             };
                             report.Add(noilsReportModelView);
 
+                            report.average_wt_noils = noilsCalc.average_wt_noils;
+                            report.standardNoils = noilsCalc.standardNoils;
+                            if (noilsCalc.average_wt_noils > noilsCalc.standardNoils)
+                            {
+                                report.isGREEN = false;
+                                report.isRED = true;
+                            }
+                            else
+                            {
+                                report.isGREEN = true;
+                                report.isRED = false;
+                            }
 
                             report.testID = noilsCalc.testID;
                             report.userName = noilsCalc.userName;
@@ -453,7 +468,7 @@ namespace TQM
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
-                    //pdfGridInfo.Rows.Add();
+                    pdfGridInfo.Rows.Add();
 
                     if (tableNo == 1)
                     {
@@ -473,29 +488,37 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     pdfGridInfo.Rows[2].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[2].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    //pdfGridInfo.Rows[3].Cells[0].Value = "Stretch %: " + orl.stretch;
-                    //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    //pdfGridInfo.Rows[3].Cells[1].Value = "A% (N+1): " + orl.apercent_nPlus1;
-                    //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[3].Cells[0].Value = "Date: " + orl.createdate;
-                    pdfGridInfo.Rows[3].Cells[1].Value = "Tester: " + orl.userName;
-                    pdfGridInfo.Rows[3].Cells[1].ColumnSpan = 2;
-                    pdfGridInfo.Rows[3].Cells[3].Value = "Shift: " + orl.shift;
-                    pdfGridInfo.Rows[3].Cells[4].Value = "Process: " + orl.process;
 
-                    pdfGridInfo.Rows[4].Cells[0].Value = "Remark: " + orl.testRemark;
-                    pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 4;
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Std. Noils% : " + orl.standardNoils;
+                    pdfGridInfo.Rows[3].Cells[1].Value = "Noils% : " + orl.average_wt_noils;
+                    if (orl.isRED)
+                    {
+                        pdfGridInfo.Rows[3].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGridInfo.Rows[3].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGridInfo.Rows[3].Cells[1].Style.BackgroundBrush = PdfBrushes.Red;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGridInfo.Rows[3].Cells[1].Style.TextBrush = brush_con;
+                    }
+
+                    pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
+                    pdfGridInfo.Rows[4].Cells[1].Value = "Tester: " + orl.userName;
+                    pdfGridInfo.Rows[4].Cells[1].ColumnSpan = 2;
+                    pdfGridInfo.Rows[4].Cells[3].Value = "Shift: " + orl.shift;
+                    pdfGridInfo.Rows[4].Cells[4].Value = "Process: " + orl.process;
+
+                    pdfGridInfo.Rows[5].Cells[0].Value = "Remark: " + orl.testRemark;
+                    pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 4;
                     PdfBrush brush_red = new PdfSolidBrush(Syncfusion.Drawing.Color.Red);
-                    pdfGridInfo.Rows[4].Cells[0].Style.TextBrush = brush_red;
-                    pdfGridInfo.Rows[4].Cells[1].Style.TextBrush = brush_red;
-                    pdfGridInfo.Rows[4].Cells[2].Style.TextBrush = brush_red;
-                    pdfGridInfo.Rows[4].Cells[3].Style.TextBrush = brush_red;
-                    pdfGridInfo.Rows[4].Cells[4].Style.TextBrush = brush_red;
-                    pdfGridInfo.Rows[4].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
-                    pdfGridInfo.Rows[4].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
-                    pdfGridInfo.Rows[4].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
-                    pdfGridInfo.Rows[4].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
-                    pdfGridInfo.Rows[4].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                    pdfGridInfo.Rows[5].Cells[0].Style.TextBrush = brush_red;
+                    pdfGridInfo.Rows[5].Cells[1].Style.TextBrush = brush_red;
+                    pdfGridInfo.Rows[5].Cells[2].Style.TextBrush = brush_red;
+                    pdfGridInfo.Rows[5].Cells[3].Style.TextBrush = brush_red;
+                    pdfGridInfo.Rows[5].Cells[4].Style.TextBrush = brush_red;
+                    pdfGridInfo.Rows[5].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                    pdfGridInfo.Rows[5].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                    pdfGridInfo.Rows[5].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                    pdfGridInfo.Rows[5].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
+                    pdfGridInfo.Rows[5].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
 
 
                     pdfGridInfo.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
@@ -523,10 +546,11 @@ namespace TQM
                     pdfGridInfo.Rows[4].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[3].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[4].Style.Borders.All = PdfPens.Transparent;
-                    //pdfGridInfo.Rows[5].Cells[0].Style.Borders.All = PdfPens.Transparent;
-                    //pdfGridInfo.Rows[5].Cells[1].Style.Borders.All = PdfPens.Transparent;
-                    //pdfGridInfo.Rows[5].Cells[2].Style.Borders.All = PdfPens.Transparent;
-                    //pdfGridInfo.Rows[5].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[4].Style.Borders.All = PdfPens.Transparent;
 
                     int totalRow_header = 4;
                     int totalRow_header_height = totalRow_header * 18;
@@ -751,9 +775,10 @@ namespace TQM
                 header.Alignment = PdfAlignmentStyle.TopCenter;
                 header.Graphics.DrawString(companyName, font, brush, new PointF(10, 0));
                 //Title Starts
-                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Underline);
+                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
-                header.Graphics.DrawString("Noils Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                //header.Graphics.DrawString("Noils Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                header.Graphics.DrawString("Noils Report - (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
                 //Title Ends
                 pdfDocument.Template.Top = header;
                 PdfPageTemplateElement footer = new PdfPageTemplateElement(bounds);

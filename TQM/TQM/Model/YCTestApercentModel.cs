@@ -41,6 +41,7 @@ namespace TQM.Model
         public decimal yarnweight { get; set; }
 
         public decimal yccalcval { get; set; }
+        public decimal standardApercent { get; set; }
 
         public bool status { get; set; }
 

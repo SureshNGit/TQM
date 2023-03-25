@@ -34,5 +34,6 @@ namespace TQM.ModelView
         public decimal yarnweight { get; set; }
 
         public decimal yccalcval { get; set; }
+        public decimal standardStretch { get; set; }
     }
 }

@@ -45,6 +45,7 @@ namespace TQM
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
+        private decimal STD_STRETCH = 0.0000m;
         private int currentTestCount = 0;
         private bool isTestStarted = false;
         private StretchTestCalculatedModel stretchCalcList_finalOut = null;
@@ -133,10 +134,12 @@ namespace TQM
                             picker_machinename.SelectedIndex = machineIndex - 1;
                             picker_shift.SelectedItem = lastTest.shift;
                             picker_process.SelectedItem = lastTest.process;
+                            entry_standardStretch.Text = formatDecimal(lastTest.standardStretch).ToString();
                             picker_machinecategory.IsEnabled = false;
                             picker_machinename.IsEnabled = false;
                             picker_shift.IsEnabled = false;
                             picker_process.IsEnabled = false;
+                            entry_standardStretch.IsEnabled = false;
                             currentTestID = lastTest.testID;
                             entry_testcount.Text = lastTest.totaltestcount.ToString();
                             entry_testcount.IsEnabled = false;
@@ -168,10 +171,12 @@ namespace TQM
                                 picker_machinename.SelectedItem = lastTest_IB.machineName;
                                 picker_shift.SelectedItem = lastTest_IB.shift;
                                 picker_process.SelectedItem = lastTest_IB.process;
+                                entry_standardStretch.Text = formatDecimal(lastTest_IB.standardStretch).ToString();
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
+                                entry_standardStretch.IsEnabled = false;
                                 currentTestID = lastTest_IB.testID;
                                 entry_testcount.Text = lastTest.totaltestcount.ToString();
                                 entry_testcount.IsEnabled = false;
@@ -256,6 +261,7 @@ namespace TQM
                 entry_testcount.Text = "";
                 picker_shift.SelectedIndex = 0;
                 picker_process.SelectedIndex = 0;
+                entry_standardStretch.Text = "0.0000";
                 return;
             }
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -267,6 +273,7 @@ namespace TQM
                                                             YarnCountConfigModel.machineName == mac)).FirstOrDefault();
                 if (yarncountconfigmodel != null)
                 {
+                    entry_standardStretch.Text = formatDecimal(yarncountconfigmodel.standardStretch).ToString();
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
                     lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
                     if (mCat == "Simplex/SpeedFrame")
@@ -310,6 +317,7 @@ namespace TQM
                     entry_testcount.Text = "";
                     picker_shift.SelectedIndex = 0;
                     picker_process.SelectedIndex = 0;
+                    entry_standardStretch.Text = "0.0000";
                 }
             }
         }
@@ -617,6 +625,7 @@ namespace TQM
                             testcount = test.testcount,
                             yarnweight = test.yarnweight,
                             yccalcval = test.yccalcval,
+                            standardStretch = test.standardStretch,
                             status = true,
                             createdate = DateTime.Now
                         };
@@ -685,6 +694,7 @@ namespace TQM
                         shift = stretchTestModelViewList[0].shift,
                         testType = stretchTestModelViewList[0].testType,
                         totaltestcount = stretchTestModelViewList[0].totaltestcount,
+                        standardStretch = stretchTestModelViewList[0].standardStretch,
                         avg_weight = avg_weight,
                         testaverage = mean,
                         testsd = sd,
@@ -780,6 +790,7 @@ namespace TQM
                                         shift = ibSummary.shift,
                                         testType = ibSummary.testType,
                                         totaltestcount = ibSummary.totaltestcount,
+                                        standardStretch = ibSummary.standardStretch,
                                         avg_weight_IB = ibSummary.avg_weight,
                                         testaverage_IB = ibSummary.testaverage,
                                         testsd_IB = ibSummary.testsd,
@@ -894,6 +905,8 @@ namespace TQM
                                     picker_shift.SelectedIndex = 0;
                                     picker_process.SelectedIndex = 0;
                                     picker_process.IsEnabled = true;
+                                    entry_standardStretch.Text = "0.0000";
+                                    entry_standardStretch.IsEnabled = true;
                                 }
                             }
                         }
@@ -951,6 +964,16 @@ namespace TQM
             if (picker_shift.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
+                return;
+            }
+            if (entry_standardStretch.Text.Trim() == "-")
+            {
+                await DisplayAlert("Attention", "Standard Stretch is invalid. Please check!!!", "Ok");
+                return;
+            }
+            if (entry_standardStretch.Text.Trim() == "" || decimal.Parse(entry_standardStretch.Text.Trim()) <= 0m)
+            {
+                await DisplayAlert("Attention", "Standard Stretch should not be blank or zero or negative!!!", "Ok");
                 return;
             }
             //if (picker_process.SelectedIndex <= 0)
@@ -1020,6 +1043,7 @@ namespace TQM
             {
                 selectedProcess = picker_process.SelectedItem.ToString();
             }
+            STD_STRETCH = formatDecimal(decimal.Parse(entry_standardStretch.Text));
             stretchTestModelViewList = new List<StretchTestModelView>();
             startInitialBobbinButton.IsEnabled = false;
             startInitialBobbinButton.BackgroundColor = Color.SlateGray;
@@ -1029,6 +1053,7 @@ namespace TQM
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
+            entry_standardStretch.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -1154,7 +1179,8 @@ namespace TQM
                             totaltestcount = selectedTestCount,
                             testcount = i + 1,
                             yarnweight = current_stable_data,
-                            yccalcval = currentCalculatedValue
+                            yccalcval = currentCalculatedValue,
+                            standardStretch = STD_STRETCH
                         };
                         stretchTestModelViewList.Add(stretchTestModelView);
                         //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
@@ -1491,6 +1517,16 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 return;
             }
+            if (entry_standardStretch.Text.Trim() == "-")
+            {
+                await DisplayAlert("Attention", "Standard Stretch is invalid. Please check!!!", "Ok");
+                return;
+            }
+            if (entry_standardStretch.Text.Trim() == "" || decimal.Parse(entry_standardStretch.Text.Trim()) <= 0m)
+            {
+                await DisplayAlert("Attention", "Standard Stretch should not be blank or zero or negative!!!", "Ok");
+                return;
+            }
             //if (picker_process.SelectedIndex <= 0)
             //{
             //    await DisplayAlert("Attention", "Please enter process info!!!", "Ok");
@@ -1547,6 +1583,7 @@ namespace TQM
             {
                 selectedProcess = picker_process.SelectedItem.ToString();
             }
+            STD_STRETCH = formatDecimal(decimal.Parse(entry_standardStretch.Text));
             stretchTestModelViewList = new List<StretchTestModelView>();
             startFullBobbinButton.IsEnabled = false;
             startFullBobbinButton.BackgroundColor = Color.SlateGray;
@@ -1556,6 +1593,7 @@ namespace TQM
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
+            entry_standardStretch.IsEnabled = false;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));

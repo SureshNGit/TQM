@@ -33,7 +33,8 @@ namespace TQM
         private RunConfiguration runConfiguration = new RunConfiguration();
         private List<YCTestApercentCalculatedModel> deleteList = null;
         private bool deleteAll = false;
-
+        private DateTime reportStartDate;
+        private DateTime reportEndDate;
         public YCApercentReport()
         {
             InitializeComponent();
@@ -48,6 +49,8 @@ namespace TQM
                 btn_saveToPDF.BackgroundColor = Color.Red;
                 btn_saveToPDF.TextColor = Color.White;
             }
+            reportStartDate = startDate;
+            reportEndDate = endDate;
             getReport(startDate, endDate, categoryName, machineID, shift, process, testID, deleteRequest);
         }
 
@@ -359,6 +362,30 @@ namespace TQM
                             report.yarnlenunit = apercentCalc.yarnlenunit;
                             report.yarnlength = apercentCalc.yarnlength;
                             report.totaltestcount = apercentCalc.totaltestcount;
+                            report.standardApercent = apercentCalc.standardApercent;
+
+                            if (apercentCalc.apercent_nMinus1 > apercentCalc.standardApercent)
+                            {
+                                report.isGREEN_NM1 = false;
+                                report.isRED_NM1 = true;
+                            }
+                            else
+                            {
+                                report.isGREEN_NM1 = true;
+                                report.isRED_NM1 = false;
+                            }
+
+                            if (apercentCalc.apercent_nPlus1 > apercentCalc.standardApercent)
+                            {
+                                report.isGREEN_NP1 = false;
+                                report.isRED_NP1 = true;
+                            }
+                            else
+                            {
+                                report.isGREEN_NP1 = true;
+                                report.isRED_NP1 = false;
+                            }
+
                             report.testaverage_nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1);
                             report.testsd_nMinus1 = formatDecimal(apercentCalc.testsd_nMinus1);
                             report.testcv_nMinus1 = formatDecimal(apercentCalc.testcv_nMinus1);
@@ -513,14 +540,43 @@ namespace TQM
                     pdfGridInfo.Rows[1].Cells[0].ColumnSpan = 1;
                     pdfGridInfo.Rows[1].Cells[1].Value = "Machine: " + orl.machineName + "[" + orl.machineCategory + "]";
                     pdfGridInfo.Rows[1].Cells[1].ColumnSpan = 3;
+
                     pdfGridInfo.Rows[2].Cells[0].Value = "Count System: " + orl.countsysname;
                     pdfGridInfo.Rows[2].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     pdfGridInfo.Rows[2].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[2].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[3].Cells[0].Value = "A% (N-1): " + formatDecimal(orl.apercent_nMinus1).ToString();
-                    //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[3].Cells[1].Value = "A% (N+1): " + formatDecimal(orl.apercent_nPlus1).ToString();
-                    //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
+
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Standard A%: " + formatDecimal(orl.standardApercent).ToString();
+
+                    if (orl.isGREEN_NM1)
+                    {
+                        pdfGridInfo.Rows[3].Cells[1].Value = "A% (N-1): " + formatDecimal(orl.apercent_nMinus1).ToString();
+                    }
+                    else
+                    {
+                        pdfGridInfo.Rows[3].Cells[1].Value = "A% (N-1): " + formatDecimal(orl.apercent_nMinus1).ToString();
+                        pdfGridInfo.Rows[3].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGridInfo.Rows[3].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGridInfo.Rows[3].Cells[1].Style.BackgroundBrush = PdfBrushes.Red;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGridInfo.Rows[3].Cells[1].Style.TextBrush = brush_con;
+                    }
+
+                    if (orl.isGREEN_NP1)
+                    {
+                        pdfGridInfo.Rows[3].Cells[2].Value = "A% (N+1): " + formatDecimal(orl.apercent_nPlus1).ToString();
+                    }
+                    else
+                    {
+                        pdfGridInfo.Rows[3].Cells[2].Value = "A% (N+1): " + formatDecimal(orl.apercent_nPlus1).ToString();
+                        pdfGridInfo.Rows[3].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGridInfo.Rows[3].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGridInfo.Rows[3].Cells[1].Style.BackgroundBrush = PdfBrushes.Red;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGridInfo.Rows[3].Cells[1].Style.TextBrush = brush_con;
+                    }
+
+
                     pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
                     pdfGridInfo.Rows[4].Cells[1].Value = "Tester: " + orl.userName;
                     pdfGridInfo.Rows[4].Cells[1].ColumnSpan = 2;
@@ -791,9 +847,10 @@ namespace TQM
                 header.Alignment = PdfAlignmentStyle.TopCenter;
                 header.Graphics.DrawString(companyName, font, brush, new PointF(10, 0));
                 //Title Starts
-                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Underline);
+                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
-                header.Graphics.DrawString("A% Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                //header.Graphics.DrawString("A% Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                header.Graphics.DrawString("A% Report - (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
                 //Title Ends
                 pdfDocument.Template.Top = header;
                 PdfPageTemplateElement footer = new PdfPageTemplateElement(bounds);

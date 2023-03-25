@@ -36,6 +36,7 @@ namespace TQM.Model
         public string testType { get; set; }
 
         public int totaltestcount { get; set; }
+        public decimal standardApercent { get; set; }
 
         public decimal avg_weight_nMinus1 { get; set; }
 

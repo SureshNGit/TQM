@@ -41,6 +41,8 @@ namespace TQM.Model
 
         public decimal testaverage { get; set; }
 
+        public decimal standardApercent { get; set; }
+
         public decimal testsd { get; set; }
 
         public decimal testcv { get; set; }

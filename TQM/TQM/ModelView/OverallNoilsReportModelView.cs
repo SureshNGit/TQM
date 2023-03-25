@@ -16,6 +16,11 @@ namespace TQM.ModelView
         public string yarnlenunit { get; set; }
         public decimal yarnlength { get; set; }
         public int totaltestcount { get; set; }
+        public decimal standardNoils { get; set; }
+
+        public bool isGREEN { get; set; } = true;
+
+        public bool isRED { get; set; } = false;
         public decimal average_wt_sliverwt { get; set; }
 
         public decimal max_sliverwt { get; set; }

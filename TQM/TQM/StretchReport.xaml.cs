@@ -33,7 +33,8 @@ namespace TQM
         private RunConfiguration runConfiguration = new RunConfiguration();
         private List<StretchTestCalculatedModel> deleteList = null;
         private bool deleteAll = false;
-
+        private DateTime reportStartDate;
+        private DateTime reportEndDate;
         public StretchReport()
         {
             InitializeComponent();
@@ -48,6 +49,8 @@ namespace TQM
                 btn_saveToPDF.BackgroundColor = Color.Red;
                 btn_saveToPDF.TextColor = Color.White;
             }
+            reportStartDate = startDate;
+            reportEndDate = endDate;
             getReport(startDate, endDate, categoryName, machineID, shift, process, testID, deleteRequest);
         }
 
@@ -325,6 +328,21 @@ namespace TQM
                             report.yarnlenunit = stretchCalc.yarnlenunit;
                             report.yarnlength = stretchCalc.yarnlength;
                             report.totaltestcount = stretchCalc.totaltestcount;
+
+                            report.standardStretch = formatDecimal(stretchCalc.standardStretch);
+
+                            if (stretchCalc.stretch > stretchCalc.standardStretch)
+                            {
+                                report.isGREEN = false;
+                                report.isRED = true;
+                            }
+                            else
+                            {
+                                report.isGREEN = true;
+                                report.isRED = false;
+                            }
+
+
                             report.testaverage_IB = stretchCalc.testaverage_IB;
                             report.testsd_IB = stretchCalc.testsd_IB;
                             report.testcv_IB = stretchCalc.testcv_IB;
@@ -470,10 +488,22 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     pdfGridInfo.Rows[2].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[2].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[3].Cells[0].Value = "Stretch %: " + formatDecimal(orl.stretch).ToString();
-                    //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    //pdfGridInfo.Rows[3].Cells[1].Value = "A% (N+1): " + orl.apercent_nPlus1;
-                    //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
+
+
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Std. Stretch %: " + formatDecimal(orl.standardStretch).ToString();
+
+
+                    pdfGridInfo.Rows[3].Cells[1].Value = "Stretch %: " + formatDecimal(orl.stretch).ToString();
+
+                    if (orl.isRED)
+                    {
+                        pdfGridInfo.Rows[3].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGridInfo.Rows[3].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGridInfo.Rows[3].Cells[1].Style.BackgroundBrush = PdfBrushes.Red;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGridInfo.Rows[3].Cells[1].Style.TextBrush = brush_con;
+                    }
+
                     pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
                     pdfGridInfo.Rows[4].Cells[1].Value = "Tester: " + orl.userName;
                     pdfGridInfo.Rows[4].Cells[1].ColumnSpan = 2;
@@ -749,9 +779,10 @@ namespace TQM
                 header.Alignment = PdfAlignmentStyle.TopCenter;
                 header.Graphics.DrawString(companyName, font, brush, new PointF(10, 0));
                 //Title Starts
-                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Underline);
+                PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
-                header.Graphics.DrawString("Stretch Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                //header.Graphics.DrawString("Stretch Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                header.Graphics.DrawString("Stretch Report - (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
                 //Title Ends
                 pdfDocument.Template.Top = header;
                 PdfPageTemplateElement footer = new PdfPageTemplateElement(bounds);

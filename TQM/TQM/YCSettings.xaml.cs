@@ -413,22 +413,18 @@ namespace TQM
                         DisplayAlert("Attention", "Standard Count should not be blank or zero or negative!!!", "Ok");
                         return;
                     }
-                    if (entry_hankDeviationPercent.Text.Trim().Contains(".") || entry_hankDeviationPercent.Text.Trim().Contains("-"))
+                    if (entry_hankDeviationPercent.Text.Trim() == "." || entry_hankDeviationPercent.Text.Trim().Contains("-"))
                     {
                         DisplayAlert("Attention", "Deviation percent should not be a decimal or negative value!!!", "Ok");
                         return;
                     }
-                    if (entry_hankDeviationPercent.Text.Trim() == "" || int.Parse(entry_hankDeviationPercent.Text.Trim()) == 0)
+                    if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
                     {
                         DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
                         return;
                     }
 
-                    if (int.Parse(entry_hankDeviationPercent.Text.ToString()) > 100)
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not greater than 100!!!", "Ok");
-                        return;
-                    }
+
                 }
                 else if (selectedMachineCategory == "Carding" || selectedMachineCategory == "Breaker Drawing")
                 {
@@ -469,22 +465,17 @@ namespace TQM
                         DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
                         return;
                     }
-                    if (entry_hankDeviationPercent.Text.Trim().Contains(".") || entry_hankDeviationPercent.Text.Trim().Contains("-"))
+                    if (entry_hankDeviationPercent.Text.Trim() == "." || entry_hankDeviationPercent.Text.Trim().Contains("-"))
                     {
                         DisplayAlert("Attention", "Deviation percent should not be a decimal or negative value!!!", "Ok");
                         return;
                     }
-                    if (entry_hankDeviationPercent.Text.Trim() == "" || int.Parse(entry_hankDeviationPercent.Text.Trim()) == 0)
+                    if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
                     {
                         DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
                         return;
                     }
 
-                    if (int.Parse(entry_hankDeviationPercent.Text.ToString()) > 100)
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not greater than 100!!!", "Ok");
-                        return;
-                    }
                 }
                 else if (selectedMachineCategory == "Comber")
                 {
@@ -521,22 +512,18 @@ namespace TQM
                         DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
                         return;
                     }
-                    if (entry_hankDeviationPercent.Text.Trim().Contains(".") || entry_hankDeviationPercent.Text.Trim().Contains("-"))
+                    if (entry_hankDeviationPercent.Text.Trim() == "." || entry_hankDeviationPercent.Text.Trim().Contains("-"))
                     {
                         DisplayAlert("Attention", "Deviation percent should not be a decimal or negative value!!!", "Ok");
                         return;
                     }
-                    if (entry_hankDeviationPercent.Text.Trim() == "" || int.Parse(entry_hankDeviationPercent.Text.Trim()) == 0)
+                    if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
                     {
                         DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
                         return;
                     }
 
-                    if (int.Parse(entry_hankDeviationPercent.Text.ToString()) > 100)
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not greater than 100!!!", "Ok");
-                        return;
-                    }
+
                     if (entry_testcountNoils.Text.Trim().Contains(".") || entry_testcountNoils.Text.Trim().Contains("-"))
                     {
                         DisplayAlert("Attention", "Test sample (Noils) should not be a decimal or negative value!!!", "Ok");
@@ -594,22 +581,18 @@ namespace TQM
                         DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
                         return;
                     }
-                    if (entry_hankDeviationPercent.Text.Trim().Contains(".") || entry_hankDeviationPercent.Text.Trim().Contains("-"))
+                    if (entry_hankDeviationPercent.Text.Trim() == "." || entry_hankDeviationPercent.Text.Trim().Contains("-"))
                     {
                         DisplayAlert("Attention", "Deviation percent should not be a decimal or negative value!!!", "Ok");
                         return;
                     }
-                    if (entry_hankDeviationPercent.Text.Trim() == "" || int.Parse(entry_hankDeviationPercent.Text.Trim()) == 0)
+                    if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
                     {
                         DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
                         return;
                     }
 
-                    if (int.Parse(entry_hankDeviationPercent.Text.ToString()) > 100)
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not greater than 100!!!", "Ok");
-                        return;
-                    }
+
                     if (entry_testcountApercent.Text.Trim().Contains(".") || entry_testcountApercent.Text.Trim().Contains("-"))
                     {
                         DisplayAlert("Attention", "Test sample (A%) should not be a decimal or negative value!!!", "Ok");
@@ -666,22 +649,18 @@ namespace TQM
                         DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
                         return;
                     }
-                    if (entry_hankDeviationPercent.Text.Trim().Contains(".") || entry_hankDeviationPercent.Text.Trim().Contains("-"))
+                    if (entry_hankDeviationPercent.Text.Trim() == "." || entry_hankDeviationPercent.Text.Trim().Contains("-"))
                     {
                         DisplayAlert("Attention", "Deviation percent should not be a decimal or negative value!!!", "Ok");
                         return;
                     }
-                    if (entry_hankDeviationPercent.Text.Trim() == "" || int.Parse(entry_hankDeviationPercent.Text.Trim()) == 0)
+                    if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
                     {
                         DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
                         return;
                     }
 
-                    if (int.Parse(entry_hankDeviationPercent.Text.ToString()) > 100)
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not greater than 100!!!", "Ok");
-                        return;
-                    }
+
                     if (entry_testcountStretch.Text.Trim().Contains(".") || entry_testcountStretch.Text.Trim().Contains("-"))
                     {
                         DisplayAlert("Attention", "Test sample (Stretch) should not be a decimal or negative value!!!", "Ok");
@@ -849,6 +828,7 @@ namespace TQM
                     shift1time = Shift1_timePicker.Time.Hours.ToString() + ":" + Shift1_timePicker.Time.Minutes.ToString(),
                     shift2time = Shift2_timePicker.Time.Hours.ToString() + ":" + Shift2_timePicker.Time.Minutes.ToString(),
                     shift3time = Shift3_timePicker.Time.Hours.ToString() + ":" + Shift3_timePicker.Time.Minutes.ToString()
+
                 };
 
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -1115,7 +1095,9 @@ namespace TQM
                         else
                         {
                             machineSetting = ycConfigList.Where(YarnCountConfigModel =>
-                                                    (YarnCountConfigModel.machineCategory == selectedMachineCategory)).FirstOrDefault();
+                                                    (YarnCountConfigModel.machineCategory == selectedMachineCategory))
+                                                     .OrderByDescending(YarnCountConfigModel =>
+                                                    (YarnCountConfigModel.createdate)).FirstOrDefault();
                             if (machineSetting != null)
                             {
                                 populateSettingsField(machineSetting, false, true);
