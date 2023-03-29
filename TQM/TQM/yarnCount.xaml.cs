@@ -60,6 +60,72 @@ namespace TQM
                 //conn.DropTable<YCTestModel>();
                 //conn.DropTable<YCTestSummaryModel>();
 
+                ///*******************************Jaganatha Unit-3 Test Reset Issue Issue - Auto Correction**************************
+
+                conn.CreateTable<YCTestModel>();
+                int recordCount = conn.Table<YCTestModel>().Count();
+
+                if (recordCount > 0)
+                {
+                    YCTestModel zeroTest = conn.Table<YCTestModel>().Where(YCTestModel => (YCTestModel.testID == 0))
+                                            .OrderBy(YCTestModel => YCTestModel.testcount).FirstOrDefault();
+
+                    if (zeroTest != null)
+                    {
+                        DateTime startDate = zeroTest.createdate;
+                        YCTestModel beforeZeroTest = conn.Table<YCTestModel>().Where(YCTestModel => (YCTestModel.createdate < startDate))
+                                            .OrderByDescending(YCTestModel => YCTestModel.testID).FirstOrDefault();
+
+                        if (beforeZeroTest != null)
+                        {
+                            long lastProperTestID = beforeZeroTest.testID + 1;
+                            List<YCTestModel> resetTestList = conn.Table<YCTestModel>().Where(YCTestModel => (YCTestModel.createdate >= startDate))
+                                                              .OrderBy(YCTestModel => YCTestModel.testID).ToList();
+                            int failCounter = 0;
+                            if (resetTestList[0].testID == 0)
+                            {
+                                foreach (YCTestModel test in resetTestList)
+                                {
+                                    test.testID = lastProperTestID + test.testID;
+                                    int row = conn.Update(test);
+                                    if (row < 1)
+                                    {
+                                        failCounter++;
+                                    }
+                                }
+                            }
+
+                            List<YCTestSummaryModel> resetTestSummaryList = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                                    (YCTestSummaryModel.createdate >= startDate))
+                                                                    .OrderBy(YCTestSummaryModel => YCTestSummaryModel.testID).ToList();
+                            int failCounter_Summary = 0;
+                            if (resetTestSummaryList[0].testID == 0)
+                            {
+                                foreach (YCTestSummaryModel testsummary in resetTestSummaryList)
+                                {
+                                    testsummary.testID = lastProperTestID + testsummary.testID;
+                                    int row = conn.Update(testsummary);
+                                    if (row < 1)
+                                    {
+                                        failCounter_Summary++;
+                                    }
+                                }
+                            }
+
+                            if (failCounter == 0 && failCounter_Summary == 0)
+                            {
+                                DisplayAlert("Test Reset Warning!!!", "Test reset to Zero and it is corrected automatically for " + resetTestList.Count.ToString() + " records and " + resetTestSummaryList.Count.ToString() + " wrapping tests", "Okay");
+                            }
+                            else if (failCounter > 0 || failCounter_Summary > 0)
+                            {
+                                DisplayAlert("Test Reset Error!!!", "Test reset to Zero and auto-correction failed for " + failCounter.ToString() + "/" + resetTestList.Count.ToString() + " records and " + failCounter_Summary.ToString() + "/" + resetTestSummaryList.Count.ToString() + " wrapping tests", "Okay");
+                            }
+                        }
+                    }
+                }
+
+                //*************************************************************************************
+
                 conn.CreateTable<YarnCountConfigModel>();
                 YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
                 if (yarncountconfigmodel != null)
