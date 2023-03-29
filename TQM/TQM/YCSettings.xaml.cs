@@ -817,7 +817,7 @@ namespace TQM
                     rovinglength = enteredRovingLength,
                     testcount = int.Parse(entry_testcount.Text.ToString()),
                     standardHank = stdHank,
-                    deviationPercent = int.Parse(entry_hankDeviationPercent.Text.ToString()),
+                    deviationPercent = decimal.Parse(entry_hankDeviationPercent.Text.ToString()),
                     testcountApercent = int.Parse(entry_testcountApercent.Text.ToString()),
                     standardApercent = stdApercent,
                     testcountStretch = int.Parse(entry_testcountStretch.Text.ToString()),

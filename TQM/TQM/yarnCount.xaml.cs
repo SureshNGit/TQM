@@ -41,7 +41,7 @@ namespace TQM
         private int selectedTestCount = 0;
         private string selectedShift = null;
         private string selectedProcess = null;
-        private int selectedDeviationPercent = 0;
+        private decimal selectedDeviationPercent = 0m;
         private const string RED = "#FF0000";
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
@@ -92,7 +92,7 @@ namespace TQM
         {
             if (mCat == "" && mid == Guid.Empty && mac == "")
             {
-                selectedDeviationPercent = 0;
+                selectedDeviationPercent = 0m;
                 lbl_countsysname.Text = "";
                 lbl_yarncountunit.Text = "";
                 entry_yarnlen.Text = "";

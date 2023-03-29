@@ -28,7 +28,7 @@ namespace TQM.Model
 
         public decimal standardHank { get; set; }
 
-        public int deviationPercent { get; set; }
+        public decimal deviationPercent { get; set; }
 
         public int testcountApercent { get; set; }
         public decimal standardApercent { get; set; }
