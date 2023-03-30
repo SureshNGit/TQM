@@ -364,7 +364,8 @@ namespace TQM
                             report.totaltestcount = apercentCalc.totaltestcount;
                             report.standardApercent = apercentCalc.standardApercent;
 
-                            if (apercentCalc.apercent_nMinus1 > apercentCalc.standardApercent)
+                            if (apercentCalc.apercent_nMinus1 < decimal.Parse("-" + apercentCalc.standardApercent.ToString()) ||
+                                apercentCalc.apercent_nMinus1 > apercentCalc.standardApercent)
                             {
                                 report.isGREEN_NM1 = false;
                                 report.isRED_NM1 = true;
@@ -375,7 +376,8 @@ namespace TQM
                                 report.isRED_NM1 = false;
                             }
 
-                            if (apercentCalc.apercent_nPlus1 > apercentCalc.standardApercent)
+                            if (apercentCalc.apercent_nPlus1 < decimal.Parse("-" + apercentCalc.standardApercent.ToString()) ||
+                                apercentCalc.apercent_nPlus1 > apercentCalc.standardApercent)
                             {
                                 report.isGREEN_NP1 = false;
                                 report.isRED_NP1 = true;

@@ -152,6 +152,7 @@ namespace TQM
                 entry_standardStretch.Text = "";
                 entry_testcountNoils.Text = "";
                 entry_standardNoils.Text = "";
+                entry_noilsRange.Text = "";
                 picker_shiftCount.SelectedIndex = 0;
                 currentShift = 0;
                 currentShift1 = TimeSpan.Zero;
@@ -182,6 +183,7 @@ namespace TQM
                 entry_standardStretch.Text = "";
                 entry_testcountNoils.Text = "";
                 entry_standardNoils.Text = "";
+                entry_noilsRange.Text = "";
                 if (ycConfig.shiftCount > 0)
                 {
 
@@ -326,6 +328,7 @@ namespace TQM
             entry_standardStretch.Text = ycConfig.standardStretch.ToString();
             entry_testcountNoils.Text = ycConfig.testcountNoils.ToString();
             entry_standardNoils.Text = ycConfig.standardNoils.ToString();
+            entry_noilsRange.Text = ycConfig.noilsRange.ToString();
 
             if (ycConfig.shiftCount > 0)
             {
@@ -396,7 +399,7 @@ namespace TQM
                     return;
                 }
 
-                if (selectedMachineCategory == "Spinning")
+                if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                 {
                     entry_sliverlength.Text = "0";
                     entry_rovinglength.Text = "0";
@@ -406,6 +409,7 @@ namespace TQM
                     entry_standardStretch.Text = "0";
                     entry_testcountNoils.Text = "0";
                     entry_standardNoils.Text = "0";
+                    entry_noilsRange.Text = "0";
                     entry_standardApercent.Text = "0";
 
 
@@ -465,6 +469,7 @@ namespace TQM
                     entry_standardStretch.Text = "0";
                     entry_testcountNoils.Text = "0";
                     entry_standardNoils.Text = "0";
+                    entry_noilsRange.Text = "0";
                     entry_standardApercent.Text = "0";
 
 
@@ -574,6 +579,16 @@ namespace TQM
                         DisplayAlert("Attention", "Standard Noils % should not be blank or zero or negative!!!", "Ok");
                         return;
                     }
+                    if (entry_noilsRange.Text.Trim() == "." || entry_noilsRange.Text.Trim() == "-")
+                    {
+                        DisplayAlert("Attention", "Noils Range is invalid. Please check!!!", "Ok");
+                        return;
+                    }
+                    if (entry_noilsRange.Text.Trim() == "" || decimal.Parse(entry_noilsRange.Text.Trim()) <= 0m)
+                    {
+                        DisplayAlert("Attention", "Noils Range should not be blank or zero or negative!!!", "Ok");
+                        return;
+                    }
                 }
                 else if (selectedMachineCategory == "Drawing")
                 {
@@ -583,6 +598,7 @@ namespace TQM
                     entry_standardStretch.Text = "0";
                     entry_testcountNoils.Text = "0";
                     entry_standardNoils.Text = "0";
+                    entry_noilsRange.Text = "0";
 
                     if (entry_sliverlength.Text.Trim().ToString() == "")
                     {
@@ -650,6 +666,7 @@ namespace TQM
                     entry_testcountApercent.Text = "0";
                     entry_testcountNoils.Text = "0";
                     entry_standardNoils.Text = "0";
+                    entry_noilsRange.Text = "0";
                     entry_standardApercent.Text = "0";
 
                     if (entry_rovinglength.Text.Trim().ToString() == "")
@@ -806,6 +823,11 @@ namespace TQM
                 {
                     stdNoils = decimal.Parse(entry_standardNoils.Text.ToString());
                 }
+                decimal noilsRange = 0.0000m;
+                if (entry_noilsRange.Text.Trim().ToString() != "")
+                {
+                    noilsRange = decimal.Parse(entry_noilsRange.Text.ToString());
+                }
                 decimal stdApercent = 0.0000m;
                 if (entry_standardApercent.Text.Trim().ToString() != "")
                 {
@@ -819,7 +841,7 @@ namespace TQM
                 int enteredLeaLength = 0;
                 int enteredSliverLength = 0;
                 int enteredRovingLength = 0;
-                if (selectedMachineCategory == "Spinning")
+                if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                 {
                     //enteredLeaLength = 120;
                     //if (picker_leaLength.SelectedItem == "Half Lea")
@@ -874,6 +896,7 @@ namespace TQM
                     standardStretch = stdStretch,
                     testcountNoils = int.Parse(entry_testcountNoils.Text.ToString()),
                     standardNoils = stdNoils,
+                    noilsRange = noilsRange,
                     shiftCount = int.Parse(picker_shiftCount.SelectedItem.ToString()),
                     shift1time = shift1.Hours.ToString() + ":" + shift1.Minutes.ToString(),
                     shift2time = shift2.Hours.ToString() + ":" + shift2.Minutes.ToString(),
@@ -1031,7 +1054,7 @@ namespace TQM
                         List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
                         picker_machinename.ItemsSource = machineModelList;
                     }
-                    if (selectedMachineCategory == "Spinning")
+                    if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                     {
                         lbl_testCountApercent.IsVisible = false;
                         entry_testcountApercent.IsVisible = false;
@@ -1045,6 +1068,8 @@ namespace TQM
                         entry_rovinglength.IsVisible = false;
                         lbl_standardNoils.IsVisible = false;
                         entry_standardNoils.IsVisible = false;
+                        lbl_noilsRange.IsVisible = false;
+                        entry_noilsRange.IsVisible = false;
                         lbl_standardApercent.IsVisible = false;
                         entry_standardApercent.IsVisible = false;
                         lbl_standardStretch.IsVisible = false;
@@ -1054,7 +1079,7 @@ namespace TQM
                         //picker_leaLength.IsVisible = true;
                         entry_leaLength.IsVisible = true;
                         lbl_standardHank.Text = "Standard Count (Wrapping)";
-                        lbl_hankDeviation.Text = "Count Deviation %";
+                        lbl_hankDeviation.Text = "Count Deviation ±";
                     }
                     else if (selectedMachineCategory == "Carding" || selectedMachineCategory == "Breaker Drawing")
                     {
@@ -1071,6 +1096,8 @@ namespace TQM
                         entry_leaLength.IsVisible = false;
                         lbl_standardNoils.IsVisible = false;
                         entry_standardNoils.IsVisible = false;
+                        lbl_noilsRange.IsVisible = false;
+                        entry_noilsRange.IsVisible = false;
                         lbl_standardApercent.IsVisible = false;
                         entry_standardApercent.IsVisible = false;
                         lbl_standardStretch.IsVisible = false;
@@ -1080,7 +1107,7 @@ namespace TQM
                         lbl_sliverlength.IsVisible = true;
                         entry_sliverlength.IsVisible = true;
                         lbl_standardHank.Text = "Standard Hank (Wrapping)";
-                        lbl_hankDeviation.Text = "Hank Deviation %";
+                        lbl_hankDeviation.Text = "Hank Deviation ±";
                     }
                     else if (selectedMachineCategory == "Comber")
                     {
@@ -1104,10 +1131,12 @@ namespace TQM
                         entry_sliverlength.IsVisible = true;
                         lbl_standardNoils.IsVisible = true;
                         entry_standardNoils.IsVisible = true;
+                        lbl_noilsRange.IsVisible = true;
+                        entry_noilsRange.IsVisible = true;
 
 
                         lbl_standardHank.Text = "Standard Hank (Wrapping)";
-                        lbl_hankDeviation.Text = "Hank Deviation %";
+                        lbl_hankDeviation.Text = "Hank Deviation ±";
                     }
                     else if (selectedMachineCategory == "Drawing")
                     {
@@ -1121,6 +1150,8 @@ namespace TQM
                         entry_leaLength.IsVisible = false;
                         lbl_standardNoils.IsVisible = false;
                         entry_standardNoils.IsVisible = false;
+                        lbl_noilsRange.IsVisible = false;
+                        entry_noilsRange.IsVisible = false;
                         lbl_standardStretch.IsVisible = false;
                         entry_standardStretch.IsVisible = false;
 
@@ -1132,7 +1163,7 @@ namespace TQM
                         entry_standardApercent.IsVisible = true;
 
                         lbl_standardHank.Text = "Standard Hank (Wrapping)";
-                        lbl_hankDeviation.Text = "Hank Deviation %";
+                        lbl_hankDeviation.Text = "Hank Deviation ±";
                     }
                     else if (selectedMachineCategory == "Simplex/SpeedFrame")
                     {
@@ -1146,6 +1177,8 @@ namespace TQM
                         entry_leaLength.IsVisible = false;
                         lbl_standardNoils.IsVisible = false;
                         entry_standardNoils.IsVisible = false;
+                        lbl_noilsRange.IsVisible = false;
+                        entry_noilsRange.IsVisible = false;
                         lbl_standardApercent.IsVisible = false;
                         entry_standardApercent.IsVisible = false;
 
@@ -1157,7 +1190,7 @@ namespace TQM
                         lbl_standardStretch.IsVisible = true;
                         entry_standardStretch.IsVisible = true;
                         lbl_standardHank.Text = "Standard Hank (Wrapping)";
-                        lbl_hankDeviation.Text = "Hank Deviation %";
+                        lbl_hankDeviation.Text = "Hank Deviation ±";
                     }
                 }
                 populateSettingsField(null);

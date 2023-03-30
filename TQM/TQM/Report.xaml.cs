@@ -190,7 +190,7 @@ namespace TQM
                     List<MachineModel> machines = conn.Table<MachineModel>().Where(
                         MachineModel => MachineModel.machineCategory == selectedCategory).ToList();
                     picker_machinename.ItemsSource = machines;
-                    if (selectedCategory == "Spinning")
+                    if (selectedCategory == "Spinning" || selectedCategory == "Winding")
                     {
                         lbl_stadHank.Text = "Std. Count:";
                     }
@@ -365,6 +365,7 @@ namespace TQM
                     lst_macCategory.Add("Drawing");
                     lst_macCategory.Add("Simplex/SpeedFrame");
                     lst_macCategory.Add("Spinning");
+                    lst_macCategory.Add("Winding");
                     picker_machinecategory.ItemsSource = lst_macCategory;
                 }
                 else if (selectedReportName == "A%")

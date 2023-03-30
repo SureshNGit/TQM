@@ -36,7 +36,7 @@ namespace TQM.Model
         public decimal standardStretch { get; set; }
         public int testcountNoils { get; set; }
         public decimal standardNoils { get; set; }
-
+        public decimal noilsRange { get; set; }
         public int shiftCount { get; set; }
 
         public string shift1time { get; set; }

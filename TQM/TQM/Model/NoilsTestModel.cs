@@ -42,6 +42,7 @@ namespace TQM.Model
         public decimal yccalcval { get; set; }
 
         public decimal standardNoils { get; set; }
+        public decimal noilsRange { get; set; }
 
         public bool status { get; set; }
 

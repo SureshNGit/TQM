@@ -90,6 +90,7 @@ namespace TQM
 
         private void populateTestParams(string mCat, Guid mid, string mac)
         {
+            hideFrames();
             if (mCat == "" && mid == Guid.Empty && mac == "")
             {
                 selectedDeviationPercent = 0m;
@@ -118,7 +119,7 @@ namespace TQM
                     {
                         entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
                     }
-                    else if (mCat == "Spinning")
+                    else if (mCat == "Spinning" || mCat == "Winding")
                     {
                         entry_yarnlen.Text = yarncountconfigmodel.lealength.ToString();
                     }
@@ -220,13 +221,19 @@ namespace TQM
                     listview_testresult_FinalOut.ItemsSource = null;
                     listview_testresult_FinalOut.IsVisible = visibility;
                     listview_testresult_FinalOut.ItemsSource = ycTestModelViewlist;
-                    if (selectedMachineCategory == "Spinning")
+                    if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                     {
-                        lbl_testresult_Final_stadHank.Text = "Count";
+                        //lbl_testresult_Final_stadHank.Text = "Count (" + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
+                        span_head.Text = "Count";
+                        span_stdValue.Text = " (" + STD_HANK.ToString();
+                        span_deviation.Text = " \u00B1" + selectedDeviationPercent + ")";
                     }
                     else
                     {
-                        lbl_testresult_Final_stadHank.Text = "Hank";
+                        //lbl_testresult_Final_stadHank.Text = "Hank (" + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
+                        span_head.Text = "Hank";
+                        span_stdValue.Text = " (" + STD_HANK.ToString();
+                        span_deviation.Text = " \u00B1" + selectedDeviationPercent + ")";
                     }
                 }
                 else
@@ -243,13 +250,19 @@ namespace TQM
                         listview_testresult.ItemsSource = ycTestModelViewlist.OrderByDescending(YCTestModelView => YCTestModelView.testcount);
                     }
 
-                    if (selectedMachineCategory == "Spinning")
+                    if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                     {
-                        lbl_testresult_stadHank.Text = "Count";
+                        //lbl_testresult_stadHank.Text = "Count " + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
+                        span_head.Text = "Count";
+                        span_stdValue.Text = " (" + STD_HANK.ToString();
+                        span_deviation.Text = " \u00B1" + selectedDeviationPercent + ")";
                     }
                     else
                     {
-                        lbl_testresult_stadHank.Text = "Hank";
+                        //lbl_testresult_stadHank.Text = "Hank " + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
+                        span_head.Text = "Hank";
+                        span_stdValue.Text = " (" + STD_HANK.ToString();
+                        span_deviation.Text = " \u00B1" + selectedDeviationPercent + ")";
                     }
                 }
             });
@@ -265,6 +278,19 @@ namespace TQM
                     lbl_average_FinalOut.Text = mean.ToString();
                     lbl_sd_FinalOut.Text = sd.ToString();
                     lbl_cv_FinalOut.Text = cv.ToString();
+
+                    decimal maxRangeVal = STD_HANK + selectedDeviationPercent;
+                    decimal minRangeVal = STD_HANK - selectedDeviationPercent;
+
+
+                    if (mean < minRangeVal || mean > maxRangeVal)
+                    {
+                        individualTestResultFrame_FinalOut.BackgroundColor = Color.FromHex("#ffc3c0");
+                    }
+                    else
+                    {
+                        individualTestResultFrame_FinalOut.BackgroundColor = Color.White;
+                    }
                 }
                 else
                 {
@@ -412,18 +438,18 @@ namespace TQM
                 {
                     testYCButton.IsEnabled = true;
                     testYCButton.BackgroundColor = Color.Green;
-                    entry_yarnlen.IsEnabled = true;
+                    entry_yarnlen.IsEnabled = false;
                     entry_testcount.IsEnabled = true;
                     entry_testcount.Text = TESTCOUNT.ToString();
-                    entry_standardHank.IsEnabled = true;
+                    entry_standardHank.IsEnabled = false;
                     entry_standardHank.Text = STD_HANK_CURR.ToString();
                     picker_machinecategory.IsEnabled = true;
-                    picker_machinecategory.SelectedIndex = 0;
+                    //picker_machinecategory.SelectedIndex = 0;
                     picker_machinename.IsEnabled = true;
-                    picker_machinename.SelectedIndex = 0;
-                    picker_shift.IsEnabled = true;
-                    picker_shift.SelectedIndex = 0;
-                    picker_process.SelectedIndex = 0;
+                    //picker_machinename.SelectedIndex = 0;
+                    picker_shift.IsEnabled = false;
+                    //picker_shift.SelectedIndex = 0;
+                    //picker_process.SelectedIndex = 0;
                     picker_process.IsEnabled = true;
                     if (isTestStarted)
                     {
@@ -1056,7 +1082,7 @@ namespace TQM
                     //    entry_yarnlen.Text = "";
                     //}
                 }
-                if (selectedMachineCategory == "Spinning")
+                if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                 {
                     lbl_standHank.Text = "Standard Count";
                 }

@@ -33,6 +33,7 @@ namespace TQM.Model
 
         public int totaltestcount { get; set; }
         public decimal standardNoils { get; set; }
+        public decimal noilsRange { get; set; }
 
         public decimal average_wt_sliverwt { get; set; }
 

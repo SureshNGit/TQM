@@ -46,6 +46,7 @@ namespace TQM
         private const int BUFFER_WAIT_COUNT = 10;
         private int TESTCOUNT = 0;
         private decimal STD_NOILS = 0.0000m;
+        private decimal NOILS_RANGE = 0.0000m;
         private int currentTestCount = 0;
         private bool isTestStarted = false;
         private NoilsTestCalculatedModel noilsCalcList_finalOut = null;
@@ -145,6 +146,7 @@ namespace TQM
                                 picker_shift.SelectedItem = lastTest.shift;
                                 picker_process.SelectedItem = lastTest.process;
                                 entry_standardNoils.Text = formatDecimal(lastTest.standardNoils).ToString();
+                                NOILS_RANGE = formatDecimal(lastTest.noilsRange);
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
@@ -192,6 +194,7 @@ namespace TQM
                                 picker_shift.SelectedItem = lastTest.shift;
                                 picker_process.SelectedItem = lastTest.process;
                                 entry_standardNoils.Text = formatDecimal(lastTest.standardNoils).ToString();
+                                NOILS_RANGE = formatDecimal(lastTest.noilsRange);
                                 picker_machinecategory.IsEnabled = false;
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
@@ -294,6 +297,7 @@ namespace TQM
                 picker_shift.SelectedIndex = 0;
                 picker_process.SelectedIndex = 0;
                 entry_standardNoils.Text = "0.0000";
+                NOILS_RANGE = 0.0000m;
                 return;
             }
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -306,6 +310,7 @@ namespace TQM
                 if (yarncountconfigmodel != null)
                 {
                     entry_standardNoils.Text = formatDecimal(yarncountconfigmodel.standardNoils).ToString();
+                    NOILS_RANGE = formatDecimal(yarncountconfigmodel.noilsRange);
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
                     lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
                     if (mCat == "Simplex/SpeedFrame")
@@ -349,6 +354,7 @@ namespace TQM
                     picker_shift.SelectedIndex = 0;
                     picker_process.SelectedIndex = 0;
                     entry_standardNoils.Text = "0.0000";
+                    NOILS_RANGE = 0.0000m;
                 }
             }
         }
@@ -639,6 +645,7 @@ namespace TQM
                             yarnweight = test.yarnweight,
                             yccalcval = test.yccalcval,
                             standardNoils = test.standardNoils,
+                            noilsRange = test.noilsRange,
                             status = true,
                             createdate = DateTime.Now
                         };
@@ -707,6 +714,7 @@ namespace TQM
                         testType = noilsTestModelViewList[0].testType,
                         totaltestcount = noilsTestModelViewList[0].totaltestcount,
                         standardNoils = noilsTestModelViewList[0].standardNoils,
+                        noilsRange = noilsTestModelViewList[0].noilsRange,
                         avg_weight = avg_weight,
                         testaverage = mean,
                         testsd = sd,
@@ -874,6 +882,7 @@ namespace TQM
                                             shift = sliver_Summary.shift,
                                             totaltestcount = sliver_Summary.totaltestcount,
                                             standardNoils = sliver_Summary.standardNoils,
+                                            noilsRange = sliver_Summary.noilsRange,
                                             average_wt_sliverwt = sliver_Summary.avg_weight,
                                             max_sliverwt = Max_sliver.weigth_sliver,
                                             min_sliverwt = Min_sliver.weigth_sliver,
@@ -983,19 +992,20 @@ namespace TQM
                                 if (currentTestType == "Noils")
                                 {
                                     currentTestID = 0;
-                                    entry_yarnlen.IsEnabled = true;
+                                    entry_yarnlen.IsEnabled = false;
                                     entry_testcount.IsEnabled = true;
                                     entry_testcount.Text = TESTCOUNT.ToString();
                                     picker_machinecategory.IsEnabled = true;
                                     picker_machinecategory.SelectedIndex = 0;
                                     picker_machinename.IsEnabled = true;
                                     picker_machinename.SelectedIndex = 0;
-                                    picker_shift.IsEnabled = true;
+                                    picker_shift.IsEnabled = false;
                                     picker_shift.SelectedIndex = 0;
                                     picker_process.SelectedIndex = 0;
                                     picker_process.IsEnabled = true;
                                     entry_standardNoils.Text = "0.0000";
-                                    entry_standardNoils.IsEnabled = true;
+                                    entry_standardNoils.IsEnabled = false;
+                                    NOILS_RANGE = 0.0000m;
                                 }
                             }
                         }
@@ -1270,7 +1280,8 @@ namespace TQM
                             testcount = i + 1,
                             yarnweight = current_stable_data,
                             yccalcval = currentCalculatedValue,
-                            standardNoils = STD_NOILS
+                            standardNoils = STD_NOILS,
+                            noilsRange = NOILS_RANGE
                         };
                         noilsTestModelViewList.Add(noilsTestModelView);
                         //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");

@@ -1036,19 +1036,19 @@ namespace TQM
                                 if (currentTestType == "nPlus1")
                                 {
                                     currentTestID = 0;
-                                    entry_yarnlen.IsEnabled = true;
+                                    entry_yarnlen.IsEnabled = false;
                                     entry_testcount.IsEnabled = true;
                                     entry_testcount.Text = TESTCOUNT.ToString();
                                     picker_machinecategory.IsEnabled = true;
                                     picker_machinecategory.SelectedIndex = 0;
                                     picker_machinename.IsEnabled = true;
                                     picker_machinename.SelectedIndex = 0;
-                                    picker_shift.IsEnabled = true;
+                                    picker_shift.IsEnabled = false;
                                     picker_shift.SelectedIndex = 0;
                                     picker_process.SelectedIndex = 0;
                                     picker_process.IsEnabled = true;
                                     entry_standardApercent.Text = "0.0000";
-                                    entry_standardApercent.IsEnabled = true;
+                                    entry_standardApercent.IsEnabled = false;
                                 }
                             }
                         }

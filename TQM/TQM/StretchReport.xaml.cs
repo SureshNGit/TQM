@@ -331,7 +331,8 @@ namespace TQM
 
                             report.standardStretch = formatDecimal(stretchCalc.standardStretch);
 
-                            if (stretchCalc.stretch > stretchCalc.standardStretch)
+                            if (stretchCalc.stretch < decimal.Parse("-" + stretchCalc.standardStretch.ToString()) ||
+                                stretchCalc.stretch > stretchCalc.standardStretch)
                             {
                                 report.isGREEN = false;
                                 report.isRED = true;

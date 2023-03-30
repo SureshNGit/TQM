@@ -78,6 +78,7 @@
                                         <!--<x:String>RSB</x:String>-->
                                         <x:String>Simplex/SpeedFrame</x:String>
                                         <x:String>Spinning</x:String>
+                                        <x:String>Winding</x:String>
                                     </x:Array>
                                 </Picker.ItemsSource>
                             </Picker>

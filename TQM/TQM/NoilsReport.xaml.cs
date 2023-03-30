@@ -326,7 +326,9 @@ namespace TQM
 
                             report.average_wt_noils = noilsCalc.average_wt_noils;
                             report.standardNoils = noilsCalc.standardNoils;
-                            if (noilsCalc.average_wt_noils > noilsCalc.standardNoils)
+
+                            if (noilsCalc.average_wt_noils < (noilsCalc.standardNoils - noilsCalc.noilsRange) ||
+                                noilsCalc.average_wt_noils > (noilsCalc.standardNoils + noilsCalc.noilsRange))
                             {
                                 report.isGREEN = false;
                                 report.isRED = true;

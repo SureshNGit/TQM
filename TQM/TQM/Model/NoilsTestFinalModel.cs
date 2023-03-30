@@ -12,6 +12,7 @@ namespace TQM.Model
 
         public int testcount { get; set; }
         public decimal standardNoils { get; set; }
+        public decimal noilsRange { get; set; }
 
         public decimal weigth_sliver { get; set; }
 
