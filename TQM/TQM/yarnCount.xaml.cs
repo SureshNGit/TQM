@@ -136,18 +136,36 @@ namespace TQM
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
                     TimeSpan shit3time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift3time).TotalHours);
                     TimeSpan currentTime = TimeSpan.FromHours(TimeSpan.Parse(DateTime.Now.Hour.ToString() + ":" + DateTime.Now.Minute.ToString()).TotalHours);
-                    if (currentTime >= shit1time && (currentTime < shit2time || shit2time == TimeSpan.Zero))
+
+                    int duration = 0;
+
+                    if (yarncountconfigmodel.shiftCount == 1)
+                    {
+                        duration = 24;
+                    }
+                    else if (yarncountconfigmodel.shiftCount == 2)
+                    {
+                        duration = 12;
+                    }
+                    if (yarncountconfigmodel.shiftCount == 3)
+                    {
+                        duration = 8;
+                    }
+
+                    if (getTimeList(shit1time, duration).Contains(currentTime))
                     {
                         picker_shift.SelectedItem = "Shift-1";
                     }
-                    else if ((currentTime >= shit2time && shit2time != TimeSpan.Zero) && (currentTime < shit3time || shit3time == TimeSpan.Zero))
+                    else if (getTimeList(shit2time, duration).Contains(currentTime))
                     {
                         picker_shift.SelectedItem = "Shift-2";
                     }
-                    else if (shit1time != TimeSpan.Zero && shit2time != TimeSpan.Zero && shit3time != TimeSpan.Zero)
+                    else if (getTimeList(shit3time, duration).Contains(currentTime))
                     {
                         picker_shift.SelectedItem = "Shift-3";
                     }
+
+
                 }
                 else
                 {
@@ -160,6 +178,27 @@ namespace TQM
                     entry_standardHank.Text = "0.000";
                 }
             }
+        }
+
+        public List<TimeSpan> getTimeList(TimeSpan targetTime, int timeDuration)
+        {
+            List<TimeSpan> returnTimeList = new List<TimeSpan>();
+            for (int i = 0; i < timeDuration; i++)
+            {
+                int hrs = targetTime.Hours + i;
+                if (hrs >= 24)
+                {
+                    hrs = hrs - 24;
+                };
+                for (int j = 0; j < 60; j++)
+                {//minutes
+                    for (int k = 0; k < 60; k++)
+                    {//seconds
+                        returnTimeList.Add(TimeSpan.Parse(hrs.ToString() + ":" + j.ToString() + ":" + k.ToString()));
+                    }
+                }
+            }
+            return returnTimeList;
         }
 
         protected override void OnDisappearing()
@@ -253,16 +292,16 @@ namespace TQM
                     if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                     {
                         //lbl_testresult_stadHank.Text = "Count " + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
-                        span_head.Text = "Count";
-                        span_stdValue.Text = " (" + STD_HANK.ToString();
-                        span_deviation.Text = " \u00B1" + selectedDeviationPercent + ")";
+                        span_head_ind.Text = "Count";
+                        span_stdValue_ind.Text = " (" + STD_HANK.ToString();
+                        span_deviation_ind.Text = " \u00B1" + selectedDeviationPercent + ")";
                     }
                     else
                     {
                         //lbl_testresult_stadHank.Text = "Hank " + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
-                        span_head.Text = "Hank";
-                        span_stdValue.Text = " (" + STD_HANK.ToString();
-                        span_deviation.Text = " \u00B1" + selectedDeviationPercent + ")";
+                        span_head_ind.Text = "Hank";
+                        span_stdValue_ind.Text = " (" + STD_HANK.ToString();
+                        span_deviation_ind.Text = " \u00B1" + selectedDeviationPercent + ")";
                     }
                 }
             });
@@ -285,11 +324,13 @@ namespace TQM
 
                     if (mean < minRangeVal || mean > maxRangeVal)
                     {
-                        individualTestResultFrame_FinalOut.BackgroundColor = Color.FromHex("#ffc3c0");
+                        listview_testresult_FinalOut.BackgroundColor = Color.FromHex("#ffc3c0");
+                        lbl_average_FinalOut.TextColor = Color.Red;
                     }
                     else
                     {
-                        individualTestResultFrame_FinalOut.BackgroundColor = Color.White;
+                        listview_testresult_FinalOut.BackgroundColor = Color.White;
+                        lbl_average_FinalOut.TextColor = Color.DarkSlateGray;
                     }
                 }
                 else

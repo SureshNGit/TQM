@@ -328,6 +328,7 @@ namespace TQM
 
         private void populateTestParams(string mCat, Guid mid, string mac)
         {
+            hideFrames();
             if (mCat == "" && mid == Guid.Empty && mac == "")
             {
                 lbl_countsysname.Text = "";
@@ -371,18 +372,35 @@ namespace TQM
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
                     TimeSpan shit3time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift3time).TotalHours);
                     TimeSpan currentTime = TimeSpan.FromHours(TimeSpan.Parse(DateTime.Now.Hour.ToString() + ":" + DateTime.Now.Minute.ToString()).TotalHours);
-                    if (currentTime >= shit1time && (currentTime < shit2time || shit2time == TimeSpan.Zero))
+
+                    int duration = 0;
+
+                    if (yarncountconfigmodel.shiftCount == 1)
+                    {
+                        duration = 24;
+                    }
+                    else if (yarncountconfigmodel.shiftCount == 2)
+                    {
+                        duration = 12;
+                    }
+                    if (yarncountconfigmodel.shiftCount == 3)
+                    {
+                        duration = 8;
+                    }
+
+                    if (getTimeList(shit1time, duration).Contains(currentTime))
                     {
                         picker_shift.SelectedItem = "Shift-1";
                     }
-                    else if ((currentTime >= shit2time && shit2time != TimeSpan.Zero) && (currentTime < shit3time || shit3time == TimeSpan.Zero))
+                    else if (getTimeList(shit2time, duration).Contains(currentTime))
                     {
                         picker_shift.SelectedItem = "Shift-2";
                     }
-                    else if (shit1time != TimeSpan.Zero && shit2time != TimeSpan.Zero && shit3time != TimeSpan.Zero)
+                    else if (getTimeList(shit3time, duration).Contains(currentTime))
                     {
                         picker_shift.SelectedItem = "Shift-3";
                     }
+
                 }
                 else
                 {
@@ -395,6 +413,27 @@ namespace TQM
                     entry_standardApercent.Text = "0.0000";
                 }
             }
+        }
+
+        public List<TimeSpan> getTimeList(TimeSpan targetTime, int timeDuration)
+        {
+            List<TimeSpan> returnTimeList = new List<TimeSpan>();
+            for (int i = 0; i < timeDuration; i++)
+            {
+                int hrs = targetTime.Hours + i;
+                if (hrs >= 24)
+                {
+                    hrs = hrs - 24;
+                };
+                for (int j = 0; j < 60; j++)
+                {//minutes
+                    for (int k = 0; k < 60; k++)
+                    {//seconds
+                        returnTimeList.Add(TimeSpan.Parse(hrs.ToString() + ":" + j.ToString() + ":" + k.ToString()));
+                    }
+                }
+            }
+            return returnTimeList;
         }
 
         protected override void OnDisappearing()
@@ -531,6 +570,22 @@ namespace TQM
                     frame_overallTestSummary.IsVisible = visibility;
                     lbl_ApercentNminus1.Text = formatDecimal(apercentCalc.apercent_nMinus1).ToString();
                     lbl_ApercentNplus1.Text = formatDecimal(apercentCalc.apercent_nPlus1).ToString();
+
+                    span_stdValue.Text = "\u00B1" + formatDecimal(apercentCalc.standardApercent).ToString();
+
+                    if (apercentCalc.apercent_nMinus1 < decimal.Parse("-" + apercentCalc.standardApercent.ToString()) ||
+                               apercentCalc.apercent_nMinus1 > apercentCalc.standardApercent)
+                    {
+                        lbl_ApercentNminus1.TextColor = Color.Red;
+                        listview_testresult_overall.BackgroundColor = Color.FromHex("#ffc3c0");
+                    }
+
+                    if (apercentCalc.apercent_nPlus1 < decimal.Parse("-" + apercentCalc.standardApercent.ToString()) ||
+                                apercentCalc.apercent_nPlus1 > apercentCalc.standardApercent)
+                    {
+                        lbl_ApercentNplus1.TextColor = Color.Red;
+                        listview_testresult_overall.BackgroundColor = Color.FromHex("#ffc3c0");
+                    }
                 }
             });
         }
@@ -1040,14 +1095,14 @@ namespace TQM
                                     entry_testcount.IsEnabled = true;
                                     entry_testcount.Text = TESTCOUNT.ToString();
                                     picker_machinecategory.IsEnabled = true;
-                                    picker_machinecategory.SelectedIndex = 0;
+                                    //picker_machinecategory.SelectedIndex = 0;
                                     picker_machinename.IsEnabled = true;
-                                    picker_machinename.SelectedIndex = 0;
+                                    //picker_machinename.SelectedIndex = 0;
                                     picker_shift.IsEnabled = false;
-                                    picker_shift.SelectedIndex = 0;
+                                    //picker_shift.SelectedIndex = 0;
                                     picker_process.SelectedIndex = 0;
                                     picker_process.IsEnabled = true;
-                                    entry_standardApercent.Text = "0.0000";
+                                    //entry_standardApercent.Text = "0.0000";
                                     entry_standardApercent.IsEnabled = false;
                                 }
                             }

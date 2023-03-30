@@ -279,7 +279,7 @@ namespace TQM
                                 CON_CV = CON_CV + formatDecimal(testsummary.testcv);
                                 if (counter == 0)
                                 {
-                                    if (testsummary.machineCategory == "Spinning")
+                                    if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
                                     {
                                         lbl_con_Hank.Text = "Avg. COUNT : ";
                                         lbl_conStdHank.Text = "Std. Count";
@@ -340,7 +340,7 @@ namespace TQM
                             else
                             {
 
-                                if (testsummary.machineCategory == "Spinning")
+                                if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
                                 {
                                     report.isSpinning = true;
                                     report.otherThanSpinning = false;
@@ -375,6 +375,24 @@ namespace TQM
                                 //report.standardHank = formatDecimal(stdHank);
                                 report.standardHank = formatDecimal(testsummary.standardHank);
                                 report.testDuration = testsummary.testDuration;
+                                report.deviationPercent = "\u00B1" + testsummary.deviationPercent;
+
+                                decimal maxRangeVal = testsummary.standardHank + testsummary.deviationPercent;
+                                decimal minRangeVal = testsummary.standardHank - testsummary.deviationPercent;
+
+
+                                if (testsummary.testaverage < minRangeVal || testsummary.testaverage > maxRangeVal)
+                                {
+                                    report.hankColor = "Red";
+                                    report.hankColorGg = "Yellow";
+                                }
+                                else
+                                {
+                                    report.hankColor = "Green";
+                                    report.hankColorGg = "White";
+                                }
+
+
                             }
                         }
                         if (consolidatedReport)
@@ -605,11 +623,30 @@ namespace TQM
                     pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     pdfGridInfo.Rows[3].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[3].Cells[3].Value = "Total Test: " + orl.totaltestcount;
-                    pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + orl.testaverage + " [Std Hank: " + orl.standardHank + "]";
+
+                    if (orl.machineCategory == "Spinning" || orl.machineCategory == "Winding")
+                    {
+                        pdfGridInfo.Rows[4].Cells[0].Value = "Count: " + orl.testaverage + " [Std Count: " + orl.standardHank + " " + orl.deviationPercent + "]";
+                    }
+                    else
+                    {
+                        pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + orl.testaverage + " [Std Hank: " + orl.standardHank + " " + orl.deviationPercent + "]";
+                    }
+                    pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
+                    if (orl.hankColor == "Red")
+                    {
+                        pdfGridInfo.Rows[4].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGridInfo.Rows[4].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGridInfo.Rows[4].Cells[0].Style.BackgroundBrush = PdfBrushes.Red;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGridInfo.Rows[4].Cells[0].Style.TextBrush = brush_con;
+                    }
+
+
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[1].Value = "SD: " + orl.testsd;
+                    pdfGridInfo.Rows[4].Cells[2].Value = "SD: " + orl.testsd;
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[2].Value = "CV: " + orl.testcv;
+                    pdfGridInfo.Rows[4].Cells[3].Value = "CV: " + orl.testcv;
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
                     pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
@@ -715,7 +752,14 @@ namespace TQM
                     pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[1].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[2].Value = "Hank";
+                    if (orl.machineCategory == "Spinning" || orl.machineCategory == "Winding")
+                    {
+                        pdfGrid.Rows[0].Cells[2].Value = "Count";
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[0].Cells[2].Value = "Hank";
+                    }
                     pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -908,7 +952,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[4].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
 
-                        if (selectedMachineCategory == "Spinning")
+                        if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                         {
                             pdfGrid.Rows[0].Cells[5].Value = "Std. Count";
                             pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;

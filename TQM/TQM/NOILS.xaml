@@ -301,20 +301,24 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" HorizontalTextAlignment="End" 
-                                       Text="NOILS % :" FontSize="20" TextColor="#0e0273"/>
-                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_noilsPercent" HorizontalTextAlignment="Start" Margin="0,0" 
-                                       Text="+0002.2074" FontSize="22" TextColor="ForestGreen"/>
-                    <!--<Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="0,0"
-                                       Text="SD:" FontSize="20" TextColor="#0e0273"/>
-                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_sd" 
-                           HorizontalTextAlignment="Start" Margin="35,2" Text="2.135" FontSize="18" TextColor="Red"/>
-                    <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="Center" Margin="0,0"
-                                       Text="CV:" FontSize="20" TextColor="#0e0273"/>
-                    <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_cv"
-                           HorizontalTextAlignment="Start" Margin="80,2" Text="2.135" FontSize="18" TextColor="Red"/>-->
+                    <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="End" 
+                                       Text="Noils % :" FontSize="20" TextColor="#0e0273"/>
+                    <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_noilsPercent" HorizontalTextAlignment="Start" Margin="0,0" 
+                                       Text="+0002.2074" FontSize="20" TextColor="DarkSlateGray"/>
+
+                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" FontAttributes="None" 
+                           HorizontalTextAlignment="Start" Margin="0,0"   FontSize="18" 
+                           LineBreakMode="WordWrap">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span TextColor="#0e0273" FontSize="20" Text="Std. Noils%: "/>
+                                <Span TextColor="DarkSlateGray" FontSize="20" Text="± 0000.0000" x:Name="span_stdValue"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+
                     <Button Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="1" HorizontalOptions="Center" Text="+" WidthRequest="30" 
-                            Padding="2,0,0,0" FontSize="Large" HeightRequest="30" VerticalOptions="Start" Margin="0,3"
+                            Padding="2,0,0,0" FontSize="Large" HeightRequest="30" VerticalOptions="Start" Margin="0,-3,-85,30"
                         x:Name="btn_comment"  Clicked="btn_comment_Clicked" BackgroundColor="Red" TextColor="white"/>
                 </Grid>
             </Frame>
@@ -340,17 +344,17 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="150"/>
                                         <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="142"/>
+                                        <ColumnDefinition Width="152"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Label Grid.Column="0" Grid.Row="0"
-                                       Text="{Binding description}" FontSize="16"/>
+                                       Text="{Binding description}" FontSize="16"  FontAttributes="Bold"/>
                                     <Label Grid.Column="1" Grid.Row="0" 
-                                       Text="{Binding silver_wt}" FontSize="16"/>
+                                       Text="{Binding silver_wt}" FontSize="16"  FontAttributes="Bold"/>
                                     <Label Grid.Column="2" Grid.Row="0" 
-                                       Text="{Binding noils_wt}" FontSize="16"/>
+                                       Text="{Binding noils_wt}" FontSize="16"  FontAttributes="Bold"/>
                                     <Label Grid.Column="3" Grid.Row="0" 
-                                       Text="{Binding noils}" FontSize="16"/>
+                                       Text="{Binding noils}" FontSize="16"  FontAttributes="Bold"/>
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>

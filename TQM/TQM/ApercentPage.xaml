@@ -303,18 +303,28 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1"
-                                       Text="A% (N-1) :" FontSize="20" TextColor="#0e0273"/>
-                    <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_ApercentNminus1" HorizontalTextAlignment="Start" Margin="0,0"
-                                       Text="-0002.2704" FontSize="22" TextColor="ForestGreen"/>
-                    <!--<Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="0,0"
-                                       Text="SD:" FontSize="20" TextColor="#0e0273"/>
-                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_sd" 
-                           HorizontalTextAlignment="Start" Margin="35,2" Text="2.135" FontSize="18" TextColor="Red"/>-->
-                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="0,0"
-                                       Text="A% (N+1) :" FontSize="20" TextColor="#0e0273"/>
-                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" x:Name="lbl_ApercentNplus1"
-                           HorizontalTextAlignment="Start" Margin="100,0" Text="0002.0135" FontSize="22" TextColor="ForestGreen"/>
-                    <Button Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="1" HorizontalOptions="End" Text="+" Margin="50,0,40,5" 
+                                       Text="A% (N-1) :" FontSize="18" TextColor="#0e0273"/>
+                    <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="1" x:Name="lbl_ApercentNminus1" HorizontalTextAlignment="Start" Margin="0,0"
+                                       Text="-0002.2704" FontSize="18" 
+                           TextColor="DarkSlateGray" FontAttributes="None"/>
+
+                    <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" Margin="110,0"
+                                       Text="A% (N+1) :" FontSize="18" TextColor="#0e0273"/>
+                    
+                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_ApercentNplus1" FontAttributes="None" 
+                           HorizontalTextAlignment="Start" Margin="65,0" Text="-0002.0135" FontSize="18" TextColor="DarkSlateGray"/>
+                    
+                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" x:Name="lbl_standardValueWithDeviation" FontAttributes="None" 
+                           HorizontalTextAlignment="End" Margin="100,0"   FontSize="18" 
+                           LineBreakMode="WordWrap">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span TextColor="#0e0273" FontSize="18" Text="Std A%: "/>
+                                <Span TextColor="DarkSlateGray" FontSize="18" Text="± 0000.0000" x:Name="span_stdValue"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Button Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="1" HorizontalOptions="End" Text="+" Margin="80,-5,0,5" 
                             Padding="2,0,0,0" FontSize="Large"
                         x:Name="btn_comment"  Clicked="btn_comment_Clicked" BackgroundColor="Red" TextColor="white"/>
                 </Grid>
@@ -322,7 +332,7 @@
 
             <Frame Grid.Row="1" Grid.RowSpan="9" Grid.Column="2" Grid.ColumnSpan="4" Margin="10,0,0,0" Padding="20,0,2,2"
                    BackgroundColor="White" BorderColor="White" CornerRadius="0" HasShadow="False" x:Name="overallTestResultFrame" IsVisible="false">
-                <ListView x:Name="listview_testresult_overall" 
+                <ListView x:Name="listview_testresult_overall"
                       HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always"
                        IsVisible="false">
                     <ListView.Header>
@@ -345,13 +355,13 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Label Grid.Column="0" Grid.Row="0"
-                                       Text="{Binding description}" FontSize="18"/>
+                                       Text="{Binding description}" FontSize="16"  FontAttributes="Bold"/>
                                     <Label Grid.Column="1" Grid.Row="0" 
-                                       Text="{Binding nMinus1}" FontSize="18"/>
+                                       Text="{Binding nMinus1}" FontSize="16"  FontAttributes="Bold"/>
                                     <Label Grid.Column="2" Grid.Row="0" 
-                                       Text="{Binding N}" FontSize="18"/>
+                                       Text="{Binding N}" FontSize="16"  FontAttributes="Bold"/>
                                     <Label Grid.Column="3" Grid.Row="0" 
-                                       Text="{Binding nPlus1}" FontSize="18"/>
+                                       Text="{Binding nPlus1}" FontSize="16"  FontAttributes="Bold"/>
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>

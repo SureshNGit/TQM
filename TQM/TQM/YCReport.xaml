@@ -130,12 +130,14 @@
 
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" IsVisible="{Binding otherThanSpinning}"
                                     Text="Hank" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
-                                     FontSize="14" TextColor="green" IsVisible="{Binding otherThanSpinning}" FontAttributes="Bold">
+                                    <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Center" Margin="60,0,0,0"
+                                     FontSize="14" TextColor="{Binding hankColor}" IsVisible="{Binding otherThanSpinning}" 
+                                           FontAttributes="Bold" BackgroundColor="{Binding hankColorGg}">
                                         <Label.Text>
-                                            <MultiBinding StringFormat="{}{0} [Std Hank: {1}]">
+                                            <MultiBinding StringFormat="{}{0} [Std Hank: {1} {2}]">
                                                 <Binding Path="testaverage"/>
                                                 <Binding Path="standardHank"/>
+                                                <Binding Path="deviationPercent"/>
                                             </MultiBinding>
                                         </Label.Text>
                                     </Label>
@@ -144,11 +146,13 @@
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" IsVisible="{Binding isSpinning}"
                                     Text="Count" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
-                                     FontSize="14" TextColor="Green" IsVisible="{Binding isSpinning}" FontAttributes="Bold">
+                                     FontSize="14" TextColor="{Binding hankColor}" IsVisible="{Binding isSpinning}" 
+                                           FontAttributes="Bold" BackgroundColor="{Binding hankColorGg}">
                                         <Label.Text>
-                                            <MultiBinding StringFormat="{}{0} [Std Count: {1}]">
+                                            <MultiBinding StringFormat="{}{0} [Std Count: {1} {2}]">
                                                 <Binding Path="testaverage"/>
                                                 <Binding Path="standardHank"/>
+                                                <Binding Path="deviationPercent"/>
                                             </MultiBinding>
                                         </Label.Text>
                                     </Label>

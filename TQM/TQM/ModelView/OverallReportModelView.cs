@@ -26,6 +26,9 @@ namespace TQM.ModelView
         public bool isIndividualReport { get; set; } = true;
         public bool isConsolidatedReport { get; set; } = false;
         public string testDuration { get; set; }
+        public string deviationPercent { get; set; }
+        public string hankColor { get; set; } = "Green";
+        public string hankColorGg { get; set; } = "White";
         public DateTime createdate { get; set; }
         public List<YCTestModel> yctestlist => this;
     }
