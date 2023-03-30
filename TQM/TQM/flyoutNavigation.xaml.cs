@@ -169,6 +169,12 @@ namespace TQM
                         ImageSource = "",
                         TargetPage = typeof(MainPage)
                     });
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "App Version: 1.1",
+                        ImageSource = "",
+                        TargetPage = null
+                    });
                 }
                 else
                 {
@@ -226,6 +232,12 @@ namespace TQM
                         Title = "Log Out",
                         ImageSource = "",
                         TargetPage = typeof(MainPage)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
+                        Title = "App Version: 1.1",
+                        ImageSource = "",
+                        TargetPage = null
                     });
                 }
             }
