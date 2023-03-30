@@ -135,15 +135,15 @@ namespace TQM
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
                     TimeSpan shit3time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift3time).TotalHours);
                     TimeSpan currentTime = TimeSpan.FromHours(TimeSpan.Parse(DateTime.Now.Hour.ToString() + ":" + DateTime.Now.Minute.ToString()).TotalHours);
-                    if (currentTime >= shit1time && currentTime < shit2time)
+                    if (currentTime >= shit1time && (currentTime < shit2time || shit2time == TimeSpan.Zero))
                     {
                         picker_shift.SelectedItem = "Shift-1";
                     }
-                    else if (currentTime >= shit2time && currentTime < shit3time)
+                    else if ((currentTime >= shit2time && shit2time != TimeSpan.Zero) && (currentTime < shit3time || shit3time == TimeSpan.Zero))
                     {
                         picker_shift.SelectedItem = "Shift-2";
                     }
-                    else
+                    else if (shit1time != TimeSpan.Zero && shit2time != TimeSpan.Zero && shit3time != TimeSpan.Zero)
                     {
                         picker_shift.SelectedItem = "Shift-3";
                     }

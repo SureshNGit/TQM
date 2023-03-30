@@ -15,6 +15,11 @@ namespace TQM
         private string selectedMachineCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
+        private int currentShift = 0;
+        private TimeSpan currentShift1 = TimeSpan.Zero;
+        private TimeSpan currentShift2 = TimeSpan.Zero;
+        private TimeSpan currentShift3 = TimeSpan.Zero;
+
         public YCSettings()
         {
             try
@@ -113,6 +118,8 @@ namespace TQM
                     else
                     {
                         btn_save.Text = "Save";
+                        btn_save.BackgroundColor = Color.Red;
+                        btn_save.TextColor = Color.White;
                     }
                 }
             }
@@ -127,6 +134,8 @@ namespace TQM
             if (ycConfig == null)
             {
                 btn_save.Text = "Save";
+                btn_save.BackgroundColor = Color.Red;
+                btn_save.TextColor = Color.White;
                 currentID = Guid.Empty;
                 picker_countsysname.SelectedIndex = 0;
                 picker_yarnlengthunit.SelectedIndex = 0;
@@ -144,6 +153,10 @@ namespace TQM
                 entry_testcountNoils.Text = "";
                 entry_standardNoils.Text = "";
                 picker_shiftCount.SelectedIndex = 0;
+                currentShift = 0;
+                currentShift1 = TimeSpan.Zero;
+                currentShift2 = TimeSpan.Zero;
+                currentShift3 = TimeSpan.Zero;
                 toggleShift();
                 return;
             }
@@ -151,6 +164,8 @@ namespace TQM
             if (ycConfig != null && shiftAlone == true)
             {
                 btn_save.Text = "Save";
+                btn_save.BackgroundColor = Color.Red;
+                btn_save.TextColor = Color.White;
                 currentID = Guid.Empty;
                 picker_countsysname.SelectedIndex = 0;
                 picker_yarnlengthunit.SelectedIndex = 0;
@@ -184,6 +199,8 @@ namespace TQM
                         }
                     }
                     picker_shiftCount.SelectedIndex = shiftCountIndex;
+                    currentShift = ycConfig.shiftCount;
+                    currentShift1 = TimeSpan.Zero; currentShift2 = TimeSpan.Zero; currentShift3 = TimeSpan.Zero;
                     toggleShift();
                 }
 
@@ -192,15 +209,18 @@ namespace TQM
                 if (ycConfig.shift1time != null && ycConfig.shift1time != "")
                 {
                     Shift1_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift1time).TotalHours);
+                    currentShift1 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift1time).TotalHours);
                 }
 
                 if (ycConfig.shift2time != null && ycConfig.shift2time != "")
                 {
                     Shift2_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift2time).TotalHours);
+                    currentShift2 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift2time).TotalHours);
                 }
                 if (ycConfig.shift3time != null && ycConfig.shift3time != "")
                 {
                     Shift3_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
+                    currentShift3 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
                 }
 
                 return;
@@ -209,11 +229,15 @@ namespace TQM
             if (isMacDiff == false)
             {
                 btn_save.Text = "Update";
+                btn_save.BackgroundColor = Color.FromHex("#0e0273");
+                btn_save.TextColor = Color.White;
                 currentID = ycConfig.ID;
             }
             else
             {
                 btn_save.Text = "Save";
+                btn_save.BackgroundColor = Color.Red;
+                btn_save.TextColor = Color.White;
                 currentID = Guid.Empty;
             }
 
@@ -320,6 +344,8 @@ namespace TQM
                     }
                 }
                 picker_shiftCount.SelectedIndex = shiftCountIndex;
+                currentShift = ycConfig.shiftCount;
+                currentShift1 = TimeSpan.Zero; currentShift2 = TimeSpan.Zero; currentShift3 = TimeSpan.Zero;
                 toggleShift();
             }
 
@@ -328,15 +354,18 @@ namespace TQM
             if (ycConfig.shift1time != null && ycConfig.shift1time != "")
             {
                 Shift1_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift1time).TotalHours);
+                currentShift1 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift1time).TotalHours);
             }
 
             if (ycConfig.shift2time != null && ycConfig.shift2time != "")
             {
                 Shift2_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift2time).TotalHours);
+                currentShift2 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift2time).TotalHours);
             }
             if (ycConfig.shift3time != null && ycConfig.shift3time != "")
             {
                 Shift3_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
+                currentShift3 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
             }
 
         }
@@ -804,6 +833,27 @@ namespace TQM
                     enteredSliverLength = int.Parse(entry_sliverlength.Text.ToString());
                     enteredRovingLength = int.Parse(entry_rovinglength.Text.ToString());
                 }
+
+                TimeSpan shift1 = TimeSpan.Zero;
+                TimeSpan shift2 = TimeSpan.Zero;
+                TimeSpan shift3 = TimeSpan.Zero;
+                int shift = int.Parse(picker_shiftCount.SelectedItem.ToString());
+                if (shift == 1)
+                {
+                    shift1 = TimeSpan.Parse(Shift1_timePicker.Time.Hours.ToString() + ":" + Shift1_timePicker.Time.Minutes.ToString());
+                }
+                else if (shift == 2)
+                {
+                    shift1 = TimeSpan.Parse(Shift1_timePicker.Time.Hours.ToString() + ":" + Shift1_timePicker.Time.Minutes.ToString());
+                    shift2 = TimeSpan.Parse(Shift2_timePicker.Time.Hours.ToString() + ":" + Shift2_timePicker.Time.Minutes.ToString());
+                }
+                else if (shift == 3)
+                {
+                    shift1 = TimeSpan.Parse(Shift1_timePicker.Time.Hours.ToString() + ":" + Shift1_timePicker.Time.Minutes.ToString());
+                    shift2 = TimeSpan.Parse(Shift2_timePicker.Time.Hours.ToString() + ":" + Shift2_timePicker.Time.Minutes.ToString());
+                    shift3 = TimeSpan.Parse(Shift3_timePicker.Time.Hours.ToString() + ":" + Shift3_timePicker.Time.Minutes.ToString());
+                }
+
                 YarnCountConfigModel yarnCountConfigModel = new YarnCountConfigModel()
                 {
                     ID = guid,
@@ -825,9 +875,9 @@ namespace TQM
                     testcountNoils = int.Parse(entry_testcountNoils.Text.ToString()),
                     standardNoils = stdNoils,
                     shiftCount = int.Parse(picker_shiftCount.SelectedItem.ToString()),
-                    shift1time = Shift1_timePicker.Time.Hours.ToString() + ":" + Shift1_timePicker.Time.Minutes.ToString(),
-                    shift2time = Shift2_timePicker.Time.Hours.ToString() + ":" + Shift2_timePicker.Time.Minutes.ToString(),
-                    shift3time = Shift3_timePicker.Time.Hours.ToString() + ":" + Shift3_timePicker.Time.Minutes.ToString()
+                    shift1time = shift1.Hours.ToString() + ":" + shift1.Minutes.ToString(),
+                    shift2time = shift2.Hours.ToString() + ":" + shift2.Minutes.ToString(),
+                    shift3time = shift3.Hours.ToString() + ":" + shift3.Minutes.ToString()
 
                 };
 
@@ -845,8 +895,62 @@ namespace TQM
                     }
                     if (row > 0)
                     {
-                        btn_save.Text = "Update";
-                        DisplayAlert("Success", "Settings " + msg + " successfully!!!", "OK");
+                        int updatedRecCount = 0;
+                        bool isShiftChanged = false;
+                        List<YarnCountConfigModel> settingsList = conn.Table<YarnCountConfigModel>().ToList();
+                        YarnCountConfigModel dbSettings = conn.Table<YarnCountConfigModel>().Where(YarnCountConfigModel =>
+                                                            (YarnCountConfigModel.machineCategory == selectedMachineCategory &&
+                                                            YarnCountConfigModel.machineName == selectedMachineName &&
+                                                            YarnCountConfigModel.machineID == selectedMachineID)).FirstOrDefault();
+                        if (dbSettings != null)
+                        {
+                            if (dbSettings.shiftCount != currentShift) { isShiftChanged = true; }
+                            if (TimeSpan.FromHours(TimeSpan.Parse(dbSettings.shift1time).TotalHours) != currentShift1) { isShiftChanged = true; }
+                            if (TimeSpan.FromHours(TimeSpan.Parse(dbSettings.shift2time).TotalHours) != currentShift2) { isShiftChanged = true; }
+                            if (TimeSpan.FromHours(TimeSpan.Parse(dbSettings.shift3time).TotalHours) != currentShift3) { isShiftChanged = true; }
+
+                            if (isShiftChanged)
+                            {
+
+                                if (settingsList.Count > 0)
+                                {
+                                    foreach (YarnCountConfigModel setting in settingsList)
+                                    {
+                                        setting.shiftCount = int.Parse(picker_shiftCount.SelectedItem.ToString());
+                                        setting.shift1time = shift1.Hours.ToString() + ":" + shift1.Minutes.ToString();
+                                        setting.shift2time = shift2.Hours.ToString() + ":" + shift2.Minutes.ToString();
+                                        setting.shift3time = shift3.Hours.ToString() + ":" + shift3.Minutes.ToString();
+                                        int rowImp = conn.Update(setting);
+                                        if (rowImp > 0) { updatedRecCount++; }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (isShiftChanged)
+                        {
+                            if (settingsList.Count == updatedRecCount)
+                            {
+                                btn_save.Text = "Update";
+                                btn_save.BackgroundColor = Color.FromHex("#0e0273");
+                                btn_save.TextColor = Color.White;
+                                DisplayAlert("Success", "Settings " + msg + " successfully!!!", "OK");
+                            }
+                            else
+                            {
+                                btn_save.Text = "Update";
+                                btn_save.BackgroundColor = Color.FromHex("#0e0273");
+                                btn_save.TextColor = Color.White;
+                                DisplayAlert("Warning", "Settings " + msg + " successfully but failed to update shift details for all machines!!!", "OK");
+                            }
+                        }
+                        else
+                        {
+                            btn_save.Text = "Update";
+                            btn_save.BackgroundColor = Color.FromHex("#0e0273");
+                            btn_save.TextColor = Color.White;
+                            DisplayAlert("Success", "Settings " + msg + " successfully!!!", "OK");
+                        }
                     }
                     else
                     {

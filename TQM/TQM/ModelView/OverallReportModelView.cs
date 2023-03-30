@@ -25,6 +25,7 @@ namespace TQM.ModelView
         public bool otherThanSpinning { get; set; } = false;
         public bool isIndividualReport { get; set; } = true;
         public bool isConsolidatedReport { get; set; } = false;
+        public string testDuration { get; set; }
         public DateTime createdate { get; set; }
         public List<YCTestModel> yctestlist => this;
     }

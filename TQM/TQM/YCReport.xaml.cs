@@ -374,6 +374,7 @@ namespace TQM
                                 report.testcv = formatDecimal(testsummary.testcv);
                                 //report.standardHank = formatDecimal(stdHank);
                                 report.standardHank = formatDecimal(testsummary.standardHank);
+                                report.testDuration = testsummary.testDuration;
                             }
                         }
                         if (consolidatedReport)
@@ -612,7 +613,8 @@ namespace TQM
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
                     pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
-                    pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 2;
+                    pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 1;
+                    pdfGridInfo.Rows[5].Cells[1].Value = "Duration: " + orl.testDuration;
                     pdfGridInfo.Rows[5].Cells[2].Value = "Shift: " + orl.shift;
                     pdfGridInfo.Rows[5].Cells[3].Value = "Process: " + orl.process;
 

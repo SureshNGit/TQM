@@ -179,12 +179,12 @@ namespace TQM
                         ImageSource = "user.png",
                         TargetPage = null
                     });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Settings",
-                        ImageSource = "",
-                        TargetPage = typeof(YCSettings)
-                    });
+                    //flyItems.Add(new MenuItem
+                    //{
+                    //    Title = "Settings",
+                    //    ImageSource = "",
+                    //    TargetPage = typeof(YCSettings)
+                    //});
                     flyItems.Add(new MenuItem
                     {
                         Title = "Wrapping",
