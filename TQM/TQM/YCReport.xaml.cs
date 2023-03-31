@@ -300,10 +300,6 @@ namespace TQM
                                 decimal maxRangeVal = testsummary.standardHank + testsummary.deviationPercent;
                                 decimal minRangeVal = testsummary.standardHank - testsummary.deviationPercent;
 
-                                //if (testsummary.testID == 13)
-                                //{
-                                //    decimal a = 1 / 3;
-                                //}
 
                                 if (testsummary.testaverage < minRangeVal || testsummary.testaverage > maxRangeVal)
                                 {
@@ -400,7 +396,7 @@ namespace TQM
                                 else
                                 {
                                     report.hankColor = "Green";
-                                    report.hankColorGg = "White";
+                                    report.hankColorGg = "None";
                                 }
 
 
@@ -1423,4 +1419,6 @@ namespace TQM
         }
 
     }
+
+
 }
