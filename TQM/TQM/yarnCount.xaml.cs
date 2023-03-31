@@ -1162,16 +1162,20 @@ namespace TQM
             }
         }
 
-        private decimal formatDecimal(decimal inputVal)
+        private decimal formatDecimal(decimal inputVal, int afterDecimalCount = 4)
         {
-            inputVal = Math.Round(inputVal, 4);
+            if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
+            {
+                afterDecimalCount = 2;
+            }
+            inputVal = Math.Round(inputVal, afterDecimalCount);
             string inputString = inputVal.ToString();
             string[] ipStringArray = inputString.Split('.');
             if (ipStringArray.Length > 1)
             {
                 string beforeDecimal = ipStringArray[0];
                 string afterDecimal = ipStringArray[1];
-                for (int i = ipStringArray[1].Length; i < 4; i++)
+                for (int i = ipStringArray[1].Length; i < afterDecimalCount; i++)
                 {
                     afterDecimal = afterDecimal + "0";
                 }

@@ -15,5 +15,7 @@
         public string remarks { get; set; }
         public bool isWhite { get; set; } = true;
         public bool isRed { get; set; } = false;
+        public bool isSpinning { get; set; } = false;
+        public bool otherThanSpinning { get; set; } = false;
     }
 }

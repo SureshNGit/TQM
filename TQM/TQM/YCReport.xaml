@@ -1,7 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:TQM"
              x:Class="TQM.YCReport" NavigationPage.HasBackButton="False">
+
+    <ContentPage.Resources>
+        <local:AllTrueMultiConverter x:Key="AllTrueConverter" />
+    </ContentPage.Resources>
+    
     <NavigationPage.TitleView>
         <StackLayout BackgroundColor="White">
             <Grid>
@@ -145,7 +150,7 @@
                                     
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" IsVisible="{Binding isSpinning}"
                                     Text="Count" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Center" Margin="60,0,0,0"
                                      FontSize="14" TextColor="{Binding hankColor}" IsVisible="{Binding isSpinning}" 
                                            FontAttributes="Bold" BackgroundColor="{Binding hankColorGg}">
                                         <Label.Text>
@@ -252,11 +257,22 @@
                                 
                                     <Label Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            Text="{Binding testcount}" FontSize="14"/>
+                                    
+                                    
                                     <Label Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           IsVisible="{Binding otherThanSpinning}"
                                            Text="{Binding yarnweight,StringFormat='{0:N4}'}" FontSize="14"/>
                                     <Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           IsVisible="{Binding otherThanSpinning}"
                                            Text="{Binding yccalcval,StringFormat='{0:N4}'}" FontSize="14"/>
-                                
+
+                                    <Label Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           IsVisible="{Binding isSpinning}"
+                                           Text="{Binding yarnweight,StringFormat='{0:N2}'}" FontSize="14"/>
+                                    <Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           IsVisible="{Binding isSpinning}"
+                                           Text="{Binding yccalcval,StringFormat='{0:N2}'}" FontSize="14"/>
+
                                 </Grid>
 
                             </StackLayout>
@@ -380,18 +396,88 @@
                                                Text="{Binding shift}" FontSize="14"/>
                                     <Label Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                Text="{Binding standardValue,StringFormat='{0:N4}'}" FontSize="14"/>
+
+                                    <!--< Test Average >-->
+
+                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="{Binding testAverage,StringFormat='{0:N2}'}" 
+                                        FontSize="14">
+
+                                        <Label.IsVisible>
+                                            <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                                                <Binding Path="isWhite" />
+                                                <Binding Path="isSpinning" />
+                                             </MultiBinding>
+                                        </Label.IsVisible>
+
+                                    </Label>
+
+                                     <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding testAverage,StringFormat='{0:N2}'}" 
+                                           FontSize="14" BackgroundColor="Red" TextColor="White">
+
+                                        <Label.IsVisible>
+                                            <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                                                <Binding Path="isRed" />
+                                                <Binding Path="isSpinning" />
+                                            </MultiBinding>
+                                        </Label.IsVisible>
+
+                                    </Label>
+
+                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding testAverage,StringFormat='{0:N4}'}" 
+                                           FontSize="14">
+
+                                        <Label.IsVisible>
+                                            <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                                                <Binding Path="isWhite" />
+                                                <Binding Path="otherThanSpinning" />
+                                            </MultiBinding>
+                                        </Label.IsVisible>
+
+                                    </Label>
+
+                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding testAverage,StringFormat='{0:N4}'}" 
+                                           FontSize="14" BackgroundColor="Red" TextColor="White">
+
+                                        <Label.IsVisible>
+                                            <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                                                <Binding Path="isRed" />
+                                                <Binding Path="otherThanSpinning" />
+                                            </MultiBinding>
+                                        </Label.IsVisible>
+
+                                    </Label>
+
+                                    <!--< End of Test Average >-->
                                     
-                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding testAverage,StringFormat='{0:N4}'}" IsVisible="{Binding isWhite}"
-                                           FontSize="14"/>
-                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding testAverage,StringFormat='{0:N4}'}" IsVisible="{Binding isRed}"
-                                           FontSize="14" BackgroundColor="Red" TextColor="White"/>
+                                    <!--< Standard Deviation >-->
+
+
+                                    <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           IsVisible="{Binding isSpinning}"
+                                               Text="{Binding standardDeviation,StringFormat='{0:N2}'}" FontSize="14"/>
                                     
                                     <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           IsVisible="{Binding otherThanSpinning}"
                                                Text="{Binding standardDeviation,StringFormat='{0:N4}'}" FontSize="14"/>
+
+                                    <!--< End of Standard Deviation >-->
+
+                                    <!--< Co-Efficient of Variation >-->
+
                                     <Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           IsVisible="{Binding isSpinning}"
+                                               Text="{Binding CoEfficientOfVariation,StringFormat='{0:N2}'}" FontSize="14"/>
+
+                                    <Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           IsVisible="{Binding otherThanSpinning}"
                                                Text="{Binding CoEfficientOfVariation,StringFormat='{0:N4}'}" FontSize="14"/>
+
+                                    <!--< End of Co-Efficient of Variation >-->
+                                    
                                     <Label Grid.Column="9" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            Text="{Binding testDuration}" FontSize="14"/>
                                     <Label Grid.Column="10" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
