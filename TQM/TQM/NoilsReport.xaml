@@ -149,7 +149,17 @@
                                     <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1"
                                     Text="Std Noils %" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="90,0,0,0"
-                                    Text="{Binding standardNoils}" FontSize="14" TextColor="green" FontAttributes="Bold"/>
+                                    FontSize="14" TextColor="green" FontAttributes="Bold">
+
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0} ±{1}">
+                                                <Binding Path="standardNoils" />
+                                                <Binding Path="noilsRange" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                        
+                                    </Label>
+
                                     <Label Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1"
                                     Text="Noils %" FontSize="14" TextColor="#0e0273"/>
                                      

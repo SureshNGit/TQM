@@ -477,8 +477,12 @@ namespace TQM
 
                     span_stdValue.Text = "\u00B1" + formatDecimal(stretchCalcList_finalOut.standardStretch).ToString();
 
-                    if (stretchCalcList_finalOut.stretch < decimal.Parse("-" + stretchCalcList_finalOut.standardStretch.ToString()) ||
-                               stretchCalcList_finalOut.stretch > stretchCalcList_finalOut.standardStretch)
+                    decimal actual = stretchCalcList_finalOut.stretch;
+                    decimal expMin = decimal.Parse("-" + stretchCalcList_finalOut.standardStretch.ToString());
+                    decimal expMax = stretchCalcList_finalOut.standardStretch;
+
+
+                    if (actual < expMin || actual > expMax)
                     {
                         listview_testresult_overall.BackgroundColor = Color.FromHex("#ffc3c0");
                         lbl_stretchPercent.TextColor = Color.Red;

@@ -573,15 +573,22 @@ namespace TQM
 
                     span_stdValue.Text = "\u00B1" + formatDecimal(apercentCalc.standardApercent).ToString();
 
-                    if (apercentCalc.apercent_nMinus1 < decimal.Parse("-" + apercentCalc.standardApercent.ToString()) ||
-                               apercentCalc.apercent_nMinus1 > apercentCalc.standardApercent)
+                    decimal actual_Nminus1 = apercentCalc.apercent_nMinus1;
+                    decimal actual_nPlus1 = apercentCalc.apercent_nPlus1;
+
+                    decimal expMin = decimal.Parse("-" + apercentCalc.standardApercent.ToString());
+                    decimal expMax = apercentCalc.standardApercent;
+
+
+                    if (actual_Nminus1 < expMin || actual_Nminus1 > expMax)
                     {
                         lbl_ApercentNminus1.TextColor = Color.Red;
                         listview_testresult_overall.BackgroundColor = Color.FromHex("#ffc3c0");
                     }
 
-                    if (apercentCalc.apercent_nPlus1 < decimal.Parse("-" + apercentCalc.standardApercent.ToString()) ||
-                                apercentCalc.apercent_nPlus1 > apercentCalc.standardApercent)
+
+
+                    if (actual_nPlus1 < expMin || actual_nPlus1 > expMax)
                     {
                         lbl_ApercentNplus1.TextColor = Color.Red;
                         listview_testresult_overall.BackgroundColor = Color.FromHex("#ffc3c0");

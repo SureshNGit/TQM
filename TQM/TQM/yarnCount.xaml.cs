@@ -1183,7 +1183,12 @@ namespace TQM
             }
             else
             {
-                return decimal.Parse(inputString + ".0000");
+                inputString = inputString + ".";
+                for (int i = 0; i < afterDecimalCount; i++)
+                {
+                    inputString = inputString + "0";
+                }
+                return decimal.Parse(inputString);
             }
         }
 

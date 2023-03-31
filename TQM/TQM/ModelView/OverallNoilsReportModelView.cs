@@ -17,7 +17,7 @@ namespace TQM.ModelView
         public decimal yarnlength { get; set; }
         public int totaltestcount { get; set; }
         public decimal standardNoils { get; set; }
-
+        public decimal noilsRange { get; set; }
         public bool isGREEN { get; set; } = true;
 
         public bool isRED { get; set; } = false;

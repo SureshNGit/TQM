@@ -331,8 +331,12 @@ namespace TQM
 
                             report.standardStretch = formatDecimal(stretchCalc.standardStretch);
 
-                            if (stretchCalc.stretch < decimal.Parse("-" + stretchCalc.standardStretch.ToString()) ||
-                                stretchCalc.stretch > stretchCalc.standardStretch)
+                            decimal actual = stretchCalc.stretch;
+                            decimal expMin = decimal.Parse("-" + stretchCalc.standardStretch.ToString());
+                            decimal expMax = stretchCalc.standardStretch;
+
+
+                            if (actual < expMin || actual > expMax)
                             {
                                 report.isGREEN = false;
                                 report.isRED = true;

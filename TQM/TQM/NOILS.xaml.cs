@@ -511,7 +511,8 @@ namespace TQM
                     frame_overallTestSummary.IsVisible = visibility;
                     lbl_noilsPercent.Text = formatDecimal(noilsCalcList_finalOut.average_wt_noils).ToString();
 
-                    span_stdValue.Text = "\u00B1" + formatDecimal(noilsCalcList_finalOut.standardNoils).ToString();
+                    span_stdValue.Text = formatDecimal(noilsCalcList_finalOut.standardNoils).ToString() + " " + "\u00B1" +
+                                        noilsCalcList_finalOut.noilsRange.ToString();
 
                     if (noilsCalcList_finalOut.average_wt_noils < (noilsCalcList_finalOut.standardNoils - noilsCalcList_finalOut.noilsRange) ||
                                noilsCalcList_finalOut.average_wt_noils > (noilsCalcList_finalOut.standardNoils + noilsCalcList_finalOut.noilsRange))

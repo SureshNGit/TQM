@@ -427,8 +427,10 @@
                                                Text="{Binding machineName}" FontSize="14"/>
                                     <Label Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                Text="{Binding shift}" FontSize="14"/>
+                                    
+                                    
                                     <Label Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding standardValue,StringFormat='{0:N4}'}" FontSize="14"/>
+                                               Text="{Binding standardValue}" FontSize="14"/>
 
                                     <!--< Test Average >-->
 

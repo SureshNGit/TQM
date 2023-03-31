@@ -326,6 +326,7 @@ namespace TQM
 
                             report.average_wt_noils = noilsCalc.average_wt_noils;
                             report.standardNoils = noilsCalc.standardNoils;
+                            report.noilsRange = noilsCalc.noilsRange;
 
                             if (noilsCalc.average_wt_noils < (noilsCalc.standardNoils - noilsCalc.noilsRange) ||
                                 noilsCalc.average_wt_noils > (noilsCalc.standardNoils + noilsCalc.noilsRange))
@@ -491,7 +492,7 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[2].Value = "Length: " + orl.yarnlength;
                     pdfGridInfo.Rows[2].Cells[3].Value = "Total Test: " + orl.totaltestcount;
 
-                    pdfGridInfo.Rows[3].Cells[0].Value = "Std. Noils% : " + orl.standardNoils;
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Std. Noils% : " + orl.standardNoils.ToString() + " " + "\u00B1" + orl.noilsRange.ToString();
                     pdfGridInfo.Rows[3].Cells[1].Value = "Noils% : " + orl.average_wt_noils;
                     if (orl.isRED)
                     {

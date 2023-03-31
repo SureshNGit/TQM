@@ -317,7 +317,15 @@ namespace TQM
                                 consolItems.machineName = testsummary.machineName;
                                 consolItems.testDate = testsummary.createdate.Day.ToString() + "-" + testsummary.createdate.Month.ToString() + "-" + testsummary.createdate.Year.ToString();
                                 consolItems.shift = testsummary.shift;
-                                consolItems.standardValue = formatDecimal(testsummary.standardHank).ToString() + " " + "\u00B1" + testsummary.deviationPercent.ToString();
+                                if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
+                                {
+                                    consolItems.standardValue = formatDecimal(testsummary.standardHank, 2).ToString() + " " + "\u00B1" + formatDecimal(testsummary.deviationPercent, 2).ToString();
+
+                                }
+                                else
+                                {
+                                    consolItems.standardValue = formatDecimal(testsummary.standardHank, 4).ToString() + " " + "\u00B1" + formatDecimal(testsummary.deviationPercent, 4).ToString();
+                                }
                                 consolItems.testAverage = formatDecimal(testsummary.testaverage).ToString();
                                 consolItems.standardDeviation = formatDecimal(testsummary.testsd).ToString();
                                 consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
@@ -419,6 +427,8 @@ namespace TQM
                         CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
                         CON_CV = formatDecimal(CON_CV / TOT_TEST);
 
+
+
                         YCTestConsolidatedReportMV consolItems = new YCTestConsolidatedReportMV()
                         {
                             serialNo = "Average",
@@ -437,6 +447,17 @@ namespace TQM
 
 
                         };
+
+                        if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
+                        {
+                            consolItems.isSpinning = true;
+                            consolItems.otherThanSpinning = false;
+                        }
+                        else
+                        {
+                            consolItems.isSpinning = false;
+                            consolItems.otherThanSpinning = true;
+                        }
 
                         OverallConsolidatedReports.Add(consolItems);
 
@@ -633,11 +654,13 @@ namespace TQM
 
                     if (orl.machineCategory == "Spinning" || orl.machineCategory == "Winding")
                     {
-                        pdfGridInfo.Rows[4].Cells[0].Value = "Count: " + orl.testaverage + " [Std Count: " + orl.standardHank + " " + orl.deviationPercent + "]";
+                        pdfGridInfo.Rows[4].Cells[0].Value = "Count: " + formatDecimal(orl.testaverage, 2).ToString() +
+                            " [Std Count: " + formatDecimal(orl.standardHank, 2) + " " + orl.deviationPercent + "]";
                     }
                     else
                     {
-                        pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + orl.testaverage + " [Std Hank: " + orl.standardHank + " " + orl.deviationPercent + "]";
+                        pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + formatDecimal(orl.testaverage, 2).ToString() +
+                            " [Std Hank: " + formatDecimal(orl.standardHank, 2) + " " + orl.deviationPercent + "]";
                     }
                     pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
                     if (orl.hankColor == "Red")
@@ -784,8 +807,16 @@ namespace TQM
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
                         pdfGrid.Rows[rowCount].Cells[0].Value = test.testcount.ToString();
-                        pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight).ToString();
-                        pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval).ToString();
+                        if (orl.machineCategory == "Spinning" || orl.machineCategory == "Winding")
+                        {
+                            pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight, 2).ToString();
+                            pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval, 2).ToString();
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight, 4).ToString();
+                            pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval, 4).ToString();
+                        }
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -1409,7 +1440,12 @@ namespace TQM
             }
             else
             {
-                return decimal.Parse(inputString + ".0000");
+                inputString = inputString + ".";
+                for (int i = 0; i < afterDecimalCount; i++)
+                {
+                    inputString = inputString + "0";
+                }
+                return decimal.Parse(inputString);
             }
         }
 

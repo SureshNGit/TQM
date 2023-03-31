@@ -364,8 +364,14 @@ namespace TQM
                             report.totaltestcount = apercentCalc.totaltestcount;
                             report.standardApercent = apercentCalc.standardApercent;
 
-                            if (apercentCalc.apercent_nMinus1 < decimal.Parse("-" + apercentCalc.standardApercent.ToString()) ||
-                                apercentCalc.apercent_nMinus1 > apercentCalc.standardApercent)
+
+                            decimal actual_Nminus1 = apercentCalc.apercent_nMinus1;
+                            decimal actual_nPlus1 = apercentCalc.apercent_nPlus1;
+
+                            decimal expMin = decimal.Parse("-" + apercentCalc.standardApercent.ToString());
+                            decimal expMax = apercentCalc.standardApercent;
+
+                            if (actual_Nminus1 < expMin || actual_Nminus1 > expMax)
                             {
                                 report.isGREEN_NM1 = false;
                                 report.isRED_NM1 = true;
@@ -376,8 +382,7 @@ namespace TQM
                                 report.isRED_NM1 = false;
                             }
 
-                            if (apercentCalc.apercent_nPlus1 < decimal.Parse("-" + apercentCalc.standardApercent.ToString()) ||
-                                apercentCalc.apercent_nPlus1 > apercentCalc.standardApercent)
+                            if (actual_nPlus1 < expMin || actual_nPlus1 > expMax)
                             {
                                 report.isGREEN_NP1 = false;
                                 report.isRED_NP1 = true;
@@ -571,11 +576,11 @@ namespace TQM
                     else
                     {
                         pdfGridInfo.Rows[3].Cells[2].Value = "A% (N+1): " + formatDecimal(orl.apercent_nPlus1).ToString();
-                        pdfGridInfo.Rows[3].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGridInfo.Rows[3].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGridInfo.Rows[3].Cells[1].Style.BackgroundBrush = PdfBrushes.Red;
+                        pdfGridInfo.Rows[3].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGridInfo.Rows[3].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGridInfo.Rows[3].Cells[2].Style.BackgroundBrush = PdfBrushes.Red;
                         PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
-                        pdfGridInfo.Rows[3].Cells[1].Style.TextBrush = brush_con;
+                        pdfGridInfo.Rows[3].Cells[2].Style.TextBrush = brush_con;
                     }
 
 
