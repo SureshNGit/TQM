@@ -404,6 +404,7 @@ namespace TQM
                 }
                 else
                 {
+                    DisplayAlert("Settings Alert!!!", "Settings not saved for selected machine (" + mac + ")", "Okay");
                     lbl_countsysname.Text = "";
                     lbl_yarncountunit.Text = "";
                     entry_yarnlen.Text = "";
