@@ -1278,7 +1278,7 @@ namespace TQM
                     }
                     else
                     {
-                        header.Graphics.DrawString("Wrapping Report - (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                        header.Graphics.DrawString("Wrapping Report - All (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
                     }
                 }
                 //Title Ends
@@ -1334,7 +1334,14 @@ namespace TQM
                         //request.Timeout = Timeout.Infinite;
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("uploadedby", companyName);
-                        request.AddParameter("title", "TQMReportsConsolidated(Wrapping)-" + DateTime.Now.ToString());
+                        if (selectedMachineCategory != null)
+                        {
+                            request.AddParameter("title", "TQMReportsConsolidated(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                        }
+                        else
+                        {
+                            request.AddParameter("title", "TQMReportsConsolidated(Wrapping-All)-" + DateTime.Now.ToString());
+                        }
                         request.AddFile("reportpath", filePath);
                         RestResponse response = client.Execute(request);
                         if (response.IsSuccessful)
@@ -1389,7 +1396,14 @@ namespace TQM
                         //request.Timeout = Timeout.Infinite;
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("uploadedby", companyName);
-                        request.AddParameter("title", "TQMReports(Wrapping)-" + DateTime.Now.ToString());
+                        if (selectedMachineCategory != null)
+                        {
+                            request.AddParameter("title", "TQMReports(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                        }
+                        else
+                        {
+                            request.AddParameter("title", "TQMReports(Wrapping-All" + DateTime.Now.ToString());
+                        }
                         request.AddFile("reportpath", filePath);
                         RestResponse response = client.Execute(request);
                         if (response.IsSuccessful)

@@ -539,6 +539,11 @@ namespace TQM
             hideFrames();
             await refListView(false);
             await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
+            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
+            {
+                await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                return;
+            }
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
@@ -567,11 +572,6 @@ namespace TQM
             if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
             {
                 await DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
-                return;
-            }
-            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
-            {
-                await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
                 return;
             }
             if (picker_shift.SelectedIndex <= 0)

@@ -278,10 +278,28 @@ namespace TQM
                 }
                 SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
                 conn.CreateTable<UserModel>();
-                List<UserModel> usersearchlist = conn.GetAllWithChildren<UserModel>().FindAll(UserModel =>
-                                (UserModel.firstname.ToLower().Contains(entry_usersearch.Text.ToLower()) ||
-                                UserModel.lastname.ToLower().Contains(entry_usersearch.Text.ToLower()) ||
-                                UserModel.userId.ToLower().Contains(entry_usersearch.Text.ToLower())));
+                bool isSSEADMIN = false;
+                UserModel userinfo = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                if (userinfo != null)
+                {
+                    if (userinfo.userId.ToLower() == "sseadmin") { isSSEADMIN = true; }
+                }
+                List<UserModel> usersearchlist = null;
+                if (isSSEADMIN)
+                {
+                    usersearchlist = conn.GetAllWithChildren<UserModel>().FindAll(UserModel =>
+                                    (UserModel.firstname.ToLower().Contains(entry_usersearch.Text.ToLower()) ||
+                                    UserModel.lastname.ToLower().Contains(entry_usersearch.Text.ToLower()) ||
+                                    UserModel.userId.ToLower().Contains(entry_usersearch.Text.ToLower())));
+                }
+                else
+                {
+                    usersearchlist = conn.GetAllWithChildren<UserModel>().FindAll(UserModel =>
+                                    ((UserModel.firstname.ToLower().Contains(entry_usersearch.Text.ToLower()) ||
+                                    UserModel.lastname.ToLower().Contains(entry_usersearch.Text.ToLower()) ||
+                                    UserModel.userId.ToLower().Contains(entry_usersearch.Text.ToLower())) &&
+                                    UserModel.userId.ToLower() != "sseadmin"));
+                }
                 List<UserModelView> usersearchlistmodified = new List<UserModelView>();
 
                 foreach (UserModel user in usersearchlist)
@@ -336,7 +354,22 @@ namespace TQM
             {
                 SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
                 conn.CreateTable<UserModel>();
-                List<UserModel> usersearchlist = conn.GetAllWithChildren<UserModel>().FindAll(UserModel => UserModel.ID != Guid.Empty);
+                UserModel userinfo = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                bool isSSEADMIN = false;
+                if (userinfo != null)
+                {
+                    if (userinfo.userId.ToLower() == "sseadmin") { isSSEADMIN = true; }
+                }
+                List<UserModel> usersearchlist = null;
+                if (isSSEADMIN)
+                {
+                    usersearchlist = conn.GetAllWithChildren<UserModel>().FindAll(UserModel => UserModel.ID != Guid.Empty);
+                }
+                else
+                {
+                    usersearchlist = conn.GetAllWithChildren<UserModel>().FindAll(UserModel => (UserModel.ID != Guid.Empty &&
+                                                                                        UserModel.userId.ToLower() != "sseadmin"));
+                }
                 List<UserModelView> usersearchlistmodified = new List<UserModelView>();
 
                 foreach (UserModel user in usersearchlist)

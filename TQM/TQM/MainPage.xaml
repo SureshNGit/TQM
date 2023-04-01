@@ -16,6 +16,9 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -24,16 +27,20 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Label Grid.Row="1" Grid.Column="2" Text="Username" FontSize="20" TextColor="#0e0273" Margin="0,15"/>
-            <Entry Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Text = "" x:Name="entry_username" TextColor="Green" FontSize="20"/>
-            <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" Text="Password" FontSize="20" TextColor="#0e0273" Margin="0,15"/>
-            <Entry Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Text="" IsPassword="True"
+            <Label Grid.Row="1" Grid.Column="0" Text="Username" FontSize="20" TextColor="#0e0273" Margin="0,30"/>
+            <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" Text = "" x:Name="entry_username" 
+                   TextColor="Green" FontSize="20"/>
+            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Password" FontSize="20" TextColor="#0e0273" Margin="0,15"/>
+            <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" Text="" IsPassword="True"
                    x:Name="entry_password" TextColor="Green" FontSize="20"/>
-            <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Text="Activate"  Margin="0,15" HorizontalOptions="Start" IsVisible="false"
-                        x:Name="btn_newUser" Clicked="btn_newUser_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="25"/>
-            <Button Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="2" Text="Login"  Margin="0,15" HorizontalOptions="Center"
-                        x:Name="btn_login" Clicked="btn_login_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="25"/>
+            <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Text="Activate"  Margin="0,15" HorizontalOptions="Start" IsVisible="false"
+                    x:Name="btn_newUser" Clicked="btn_newUser_Clicked" BackgroundColor="DarkSlateGray" TextColor="white" CornerRadius="0"/>
+            <Button Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="4" Text="Login"  Margin="0,15" HorizontalOptions="Center" IsVisible="false"
+                    x:Name="btn_login" Clicked="btn_login_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="0"/>
+            <Label Grid.Row="6" Grid.Column="7" Grid.ColumnSpan="1" Text="Version: 1.1" FontSize="16" TextColor="#0e0273" Margin="0,15"/>
         </Grid>
     </StackLayout>
 

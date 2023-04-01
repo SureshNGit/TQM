@@ -994,6 +994,11 @@ namespace TQM
             hideFrames();
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
+            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
+            {
+                await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                return;
+            }
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
@@ -1014,11 +1019,7 @@ namespace TQM
                 await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
                 return;
             }
-            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
-            {
-                await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
-                return;
-            }
+
             if (picker_shift.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
@@ -1545,6 +1546,11 @@ namespace TQM
             UpdateUserNotification("");
             await refListView(false);
             await refOverallSummary(0m, 0m, 0m, false);
+            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
+            {
+                await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                return;
+            }
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
@@ -1565,11 +1571,7 @@ namespace TQM
                 await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
                 return;
             }
-            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
-            {
-                await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
-                return;
-            }
+
             if (picker_shift.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
