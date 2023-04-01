@@ -585,6 +585,11 @@ namespace TQM
                         lbl_ApercentNminus1.TextColor = Color.Red;
                         listview_testresult_overall.BackgroundColor = Color.FromHex("#ffc3c0");
                     }
+                    else
+                    {
+                        lbl_ApercentNminus1.TextColor = Color.DarkSlateGray;
+                        listview_testresult_overall.BackgroundColor = Color.White;
+                    }
 
 
 
@@ -592,6 +597,11 @@ namespace TQM
                     {
                         lbl_ApercentNplus1.TextColor = Color.Red;
                         listview_testresult_overall.BackgroundColor = Color.FromHex("#ffc3c0");
+                    }
+                    else
+                    {
+                        lbl_ApercentNplus1.TextColor = Color.DarkSlateGray;
+                        listview_testresult_overall.BackgroundColor = Color.White;
                     }
                 }
             });

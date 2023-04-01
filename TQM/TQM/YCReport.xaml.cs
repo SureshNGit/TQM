@@ -116,120 +116,129 @@ namespace TQM
                     conn.CreateTable<YCTestSummaryModel>();
 
                     List<YCTestSummaryModel> ycTestSummaryModels = null;
-                    if (categoryName == null || categoryName == "")
+                    if (testID != "")
                     {
-                        endDate = endDate.AddDays(1);
-
-                        if (shift != "" && process != null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                (YCTestSummaryModel.createdate >= startDate
-                                                && YCTestSummaryModel.createdate < endDate
-                                                && YCTestSummaryModel.shift == shift
-                                                && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift == "" && process != null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                (YCTestSummaryModel.createdate >= startDate
-                                                && YCTestSummaryModel.createdate < endDate
-                                                && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift != "" && process == null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                (YCTestSummaryModel.createdate >= startDate
-                                                && YCTestSummaryModel.createdate < endDate
-                                                && YCTestSummaryModel.shift == shift)).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                (YCTestSummaryModel.createdate >= startDate
-                                                && YCTestSummaryModel.createdate < endDate)).ToList();
-                        }
-
+                        long givenTestId = long.Parse(testID);
+                        ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                              YCTestSummaryModel.testID == givenTestId).ToList();
                     }
-                    else if (categoryName != null && machineID == Guid.Empty)
+                    else
                     {
-                        endDate = endDate.AddDays(1);
+                        if (categoryName == null || categoryName == "")
+                        {
+                            endDate = endDate.AddDays(1);
 
-                        if (shift != "" && process != null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                 (YCTestSummaryModel.createdate >= startDate
-                                                 && YCTestSummaryModel.createdate < endDate
-                                                 && YCTestSummaryModel.machineCategory == categoryName
-                                                 && YCTestSummaryModel.shift == shift
-                                                 && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift == "" && process != null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                 (YCTestSummaryModel.createdate >= startDate
-                                                 && YCTestSummaryModel.createdate < endDate
-                                                 && YCTestSummaryModel.machineCategory == categoryName
-                                                 && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift != "" && process == null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                 (YCTestSummaryModel.createdate >= startDate
-                                                 && YCTestSummaryModel.createdate < endDate
-                                                 && YCTestSummaryModel.machineCategory == categoryName
-                                                 && YCTestSummaryModel.shift == shift)).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                (YCTestSummaryModel.createdate >= startDate
-                                                && YCTestSummaryModel.createdate < endDate
-                                                && YCTestSummaryModel.machineCategory == categoryName)).ToList();
-                        }
-
-
-                    }
-                    else if (categoryName != null && machineID != Guid.Empty)
-                    {
-                        endDate = endDate.AddDays(1);
-
-                        if (shift != "" && process != null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                            if (shift != "" && process != null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
                                                     (YCTestSummaryModel.createdate >= startDate
                                                     && YCTestSummaryModel.createdate < endDate
-                                                    && YCTestSummaryModel.machineCategory == categoryName)
-                                                    && YCTestSummaryModel.machineID == machineID
                                                     && YCTestSummaryModel.shift == shift
-                                                    && YCTestSummaryModel.process.ToLower() == process.ToLower()).ToList();
-                        }
-                        else if (shift == "" && process != null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                    && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
                                                     (YCTestSummaryModel.createdate >= startDate
                                                     && YCTestSummaryModel.createdate < endDate
-                                                    && YCTestSummaryModel.machineCategory == categoryName)
-                                                    && YCTestSummaryModel.machineID == machineID
-                                                    && YCTestSummaryModel.process.ToLower() == process.ToLower()).ToList();
-                        }
-                        else if (shift != "" && process == null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                    && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
                                                     (YCTestSummaryModel.createdate >= startDate
                                                     && YCTestSummaryModel.createdate < endDate
-                                                    && YCTestSummaryModel.machineCategory == categoryName)
-                                                    && YCTestSummaryModel.machineID == machineID
-                                                    && YCTestSummaryModel.shift == shift).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                    && YCTestSummaryModel.shift == shift)).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
                                                     (YCTestSummaryModel.createdate >= startDate
-                                                    && YCTestSummaryModel.createdate < endDate
-                                                    && YCTestSummaryModel.machineCategory == categoryName)
-                                                    && YCTestSummaryModel.machineID == machineID).ToList();
-                        }
+                                                    && YCTestSummaryModel.createdate < endDate)).ToList();
+                            }
 
+                        }
+                        else if (categoryName != null && machineID == Guid.Empty)
+                        {
+                            endDate = endDate.AddDays(1);
+
+                            if (shift != "" && process != null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                     (YCTestSummaryModel.createdate >= startDate
+                                                     && YCTestSummaryModel.createdate < endDate
+                                                     && YCTestSummaryModel.machineCategory == categoryName
+                                                     && YCTestSummaryModel.shift == shift
+                                                     && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                     (YCTestSummaryModel.createdate >= startDate
+                                                     && YCTestSummaryModel.createdate < endDate
+                                                     && YCTestSummaryModel.machineCategory == categoryName
+                                                     && YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                     (YCTestSummaryModel.createdate >= startDate
+                                                     && YCTestSummaryModel.createdate < endDate
+                                                     && YCTestSummaryModel.machineCategory == categoryName
+                                                     && YCTestSummaryModel.shift == shift)).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                    (YCTestSummaryModel.createdate >= startDate
+                                                    && YCTestSummaryModel.createdate < endDate
+                                                    && YCTestSummaryModel.machineCategory == categoryName)).ToList();
+                            }
+
+
+                        }
+                        else if (categoryName != null && machineID != Guid.Empty)
+                        {
+                            endDate = endDate.AddDays(1);
+
+                            if (shift != "" && process != null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                        (YCTestSummaryModel.createdate >= startDate
+                                                        && YCTestSummaryModel.createdate < endDate
+                                                        && YCTestSummaryModel.machineCategory == categoryName)
+                                                        && YCTestSummaryModel.machineID == machineID
+                                                        && YCTestSummaryModel.shift == shift
+                                                        && YCTestSummaryModel.process.ToLower() == process.ToLower()).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                        (YCTestSummaryModel.createdate >= startDate
+                                                        && YCTestSummaryModel.createdate < endDate
+                                                        && YCTestSummaryModel.machineCategory == categoryName)
+                                                        && YCTestSummaryModel.machineID == machineID
+                                                        && YCTestSummaryModel.process.ToLower() == process.ToLower()).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                        (YCTestSummaryModel.createdate >= startDate
+                                                        && YCTestSummaryModel.createdate < endDate
+                                                        && YCTestSummaryModel.machineCategory == categoryName)
+                                                        && YCTestSummaryModel.machineID == machineID
+                                                        && YCTestSummaryModel.shift == shift).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                        (YCTestSummaryModel.createdate >= startDate
+                                                        && YCTestSummaryModel.createdate < endDate
+                                                        && YCTestSummaryModel.machineCategory == categoryName)
+                                                        && YCTestSummaryModel.machineID == machineID).ToList();
+                            }
+
+                        }
                     }
 
                     if (ycTestSummaryModels.Count == 0)
@@ -239,10 +248,10 @@ namespace TQM
                     }
                     else
                     {
-                        if (testID != "")
-                        {
-                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.testID == long.Parse(testID)).ToList();
-                        }
+                        //if (testID != "")
+                        //{
+                        //    ycTestSummaryModels = ycTestSummaryModels.Where(t => t.testID == long.Parse(testID)).ToList();
+                        //}
                         if (standHank != "")
                         {
                             ycTestSummaryModels = ycTestSummaryModels.Where(t => t.standardHank == Decimal.Parse(standHank)).ToList();

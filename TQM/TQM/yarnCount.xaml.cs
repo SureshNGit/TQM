@@ -100,7 +100,7 @@ namespace TQM
                 entry_testcount.Text = "";
                 picker_shift.SelectedIndex = 0;
                 picker_process.SelectedIndex = 0;
-                entry_standardHank.Text = "0.000";
+                entry_standardHank.Text = "0.0000";
                 return;
             }
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -131,6 +131,7 @@ namespace TQM
                     TESTCOUNT = yarncountconfigmodel.testcount;
                     entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
                     STD_HANK = formatDecimal(yarncountconfigmodel.standardHank);
+                    STD_HANK_CURR = formatDecimal(yarncountconfigmodel.standardHank);
 
                     TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
@@ -169,13 +170,14 @@ namespace TQM
                 }
                 else
                 {
+                    DisplayAlert("Settings Alert!!!", "Settings not found for selected machine (" + mac + ")", "Okay");
                     lbl_countsysname.Text = "";
                     lbl_yarncountunit.Text = "";
                     entry_yarnlen.Text = "";
                     entry_testcount.Text = "";
                     picker_shift.SelectedIndex = 0;
                     picker_process.SelectedIndex = 0;
-                    entry_standardHank.Text = "0.000";
+                    entry_standardHank.Text = "0.0000";
                 }
             }
         }

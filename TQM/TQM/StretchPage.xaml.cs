@@ -487,6 +487,11 @@ namespace TQM
                         listview_testresult_overall.BackgroundColor = Color.FromHex("#ffc3c0");
                         lbl_stretchPercent.TextColor = Color.Red;
                     }
+                    else
+                    {
+                        listview_testresult_overall.BackgroundColor = Color.White;
+                        lbl_stretchPercent.TextColor = Color.DarkSlateGray;
+                    }
                 }
             });
         }
