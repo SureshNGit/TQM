@@ -326,8 +326,8 @@ namespace TQM
                     {
                         entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
                     }
-                    entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
-                    TESTCOUNT = yarncountconfigmodel.testcount;
+                    entry_testcount.Text = yarncountconfigmodel.testcountNoils.ToString();
+                    TESTCOUNT = yarncountconfigmodel.testcountNoils;
 
                     TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
