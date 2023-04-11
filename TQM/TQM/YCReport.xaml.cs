@@ -338,7 +338,8 @@ namespace TQM
                                 consolItems.testAverage = formatDecimal(testsummary.testaverage).ToString();
                                 consolItems.standardDeviation = formatDecimal(testsummary.testsd).ToString();
                                 consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
-                                consolItems.testDuration = testsummary.testDuration;
+                                //consolItems.testDuration = testsummary.testDuration;
+                                consolItems.testDuration = formatTime(testsummary.createdate);
                                 consolItems.remarks = testsummary.testRemark;
 
                                 if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
@@ -668,8 +669,8 @@ namespace TQM
                     }
                     else
                     {
-                        pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + formatDecimal(orl.testaverage, 2).ToString() +
-                            " [Std Hank: " + formatDecimal(orl.standardHank, 2) + " " + orl.deviationPercent + "]";
+                        pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + formatDecimal(orl.testaverage, 4).ToString() +
+                            " [Std Hank: " + formatDecimal(orl.standardHank, 4) + " " + orl.deviationPercent + "]";
                     }
                     pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
                     if (orl.hankColor == "Red")
@@ -1036,7 +1037,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        pdfGrid.Rows[0].Cells[9].Value = "Duration";
+                        pdfGrid.Rows[0].Cells[9].Value = "Test Time";
                         pdfGrid.Rows[0].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[9].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -1477,7 +1478,27 @@ namespace TQM
             Navigation.PushAsync(new Report());
         }
 
-    }
+        private string formatTime(DateTime startDateTime)
+        {
+            string hrs = startDateTime.Hour.ToString();
+            if (hrs.Length < 2)
+            {
+                hrs = "0" + hrs;
+            }
+            string mins = startDateTime.Minute.ToString();
+            if (mins.Length < 2)
+            {
+                mins = "0" + mins;
+            }
+            string sec = startDateTime.Second.ToString();
+            if (sec.Length < 2)
+            {
+                sec = "0" + sec;
+            }
+            //return hrs + "h:" + mins + "m:" + sec + "s";
+            return hrs + ":" + mins + ":" + sec;
+        }
 
+    }
 
 }
