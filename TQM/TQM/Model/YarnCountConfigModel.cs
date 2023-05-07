@@ -45,6 +45,22 @@ namespace TQM.Model
 
         public string shift3time { get; set; }
 
+        public string uf_name_1 { get; set; }
+
+        public string uf_value_1 { get; set; }
+
+        public string uf_name_2 { get; set; }
+
+        public string uf_value_2 { get; set; }
+
+        public string uf_name_3 { get; set; }
+
+        public string uf_value_3 { get; set; }
+
+        public string uf_name_4 { get; set; }
+
+        public string uf_value_4 { get; set; }
+
         public DateTime createdate { get; set; } = DateTime.Now;
         public bool dataSyncStatus { get; set; } = false;
 

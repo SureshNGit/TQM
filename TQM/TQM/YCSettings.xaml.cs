@@ -159,6 +159,22 @@ namespace TQM
                 currentShift2 = TimeSpan.Zero;
                 currentShift3 = TimeSpan.Zero;
                 toggleShift();
+                lbl_userfield1.IsVisible = false;
+                lbl_userfield1.Text = "";
+                entry_userfield1.IsVisible = false;
+                entry_userfield1.Text = "";
+                lbl_userfield2.IsVisible = false;
+                lbl_userfield2.Text = "";
+                entry_userfield2.IsVisible = false;
+                entry_userfield2.Text = "";
+                lbl_userfield3.IsVisible = false;
+                lbl_userfield3.Text = "";
+                entry_userfield3.IsVisible = false;
+                entry_userfield3.Text = "";
+                lbl_userfield4.IsVisible = false;
+                lbl_userfield4.Text = "";
+                entry_userfield4.IsVisible = false;
+                entry_userfield4.Text = "";
                 return;
             }
 
@@ -224,6 +240,23 @@ namespace TQM
                     Shift3_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
                     currentShift3 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
                 }
+
+                lbl_userfield1.IsVisible = false;
+                lbl_userfield1.Text = "";
+                entry_userfield1.IsVisible = false;
+                entry_userfield1.Text = "";
+                lbl_userfield2.IsVisible = false;
+                lbl_userfield2.Text = "";
+                entry_userfield2.IsVisible = false;
+                entry_userfield2.Text = "";
+                lbl_userfield3.IsVisible = false;
+                lbl_userfield3.Text = "";
+                entry_userfield3.IsVisible = false;
+                entry_userfield3.Text = "";
+                lbl_userfield4.IsVisible = false;
+                lbl_userfield4.Text = "";
+                entry_userfield4.IsVisible = false;
+                entry_userfield4.Text = "";
 
                 return;
             }
@@ -369,6 +402,55 @@ namespace TQM
             {
                 Shift3_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
                 currentShift3 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
+            }
+
+            lbl_userfield1.IsVisible = false;
+            lbl_userfield1.Text = "";
+            entry_userfield1.IsVisible = false;
+            entry_userfield1.Text = "";
+            lbl_userfield2.IsVisible = false;
+            lbl_userfield2.Text = "";
+            entry_userfield2.IsVisible = false;
+            entry_userfield2.Text = "";
+            lbl_userfield3.IsVisible = false;
+            lbl_userfield3.Text = "";
+            entry_userfield3.IsVisible = false;
+            entry_userfield3.Text = "";
+            lbl_userfield4.IsVisible = false;
+            lbl_userfield4.Text = "";
+            entry_userfield4.IsVisible = false;
+            entry_userfield4.Text = "";
+
+            if (ycConfig.uf_name_1 != null)
+            {
+                lbl_userfield1.IsVisible = true;
+                lbl_userfield1.Text = ycConfig.uf_name_1;
+                entry_userfield1.IsVisible = true;
+                entry_userfield1.Text = ycConfig.uf_value_1;
+            }
+
+            if (ycConfig.uf_name_2 != null)
+            {
+                lbl_userfield2.IsVisible = true;
+                lbl_userfield2.Text = ycConfig.uf_name_2;
+                entry_userfield2.IsVisible = true;
+                entry_userfield2.Text = ycConfig.uf_value_2;
+            }
+
+            if (ycConfig.uf_name_3 != null)
+            {
+                lbl_userfield3.IsVisible = true;
+                lbl_userfield3.Text = ycConfig.uf_name_3;
+                entry_userfield3.IsVisible = true;
+                entry_userfield3.Text = ycConfig.uf_value_3;
+            }
+
+            if (ycConfig.uf_name_4 != null)
+            {
+                lbl_userfield4.IsVisible = true;
+                lbl_userfield4.Text = ycConfig.uf_name_4;
+                entry_userfield4.IsVisible = true;
+                entry_userfield4.Text = ycConfig.uf_value_4;
             }
 
         }
@@ -876,6 +958,39 @@ namespace TQM
                     shift3 = TimeSpan.Parse(Shift3_timePicker.Time.Hours.ToString() + ":" + Shift3_timePicker.Time.Minutes.ToString());
                 }
 
+                string uf_name_1 = null;
+                string uf_value_1 = null;
+                string uf_name_2 = null;
+                string uf_value_2 = null;
+                string uf_name_3 = null;
+                string uf_value_3 = null;
+                string uf_name_4 = null;
+                string uf_value_4 = null;
+
+                if (lbl_userfield1.IsVisible)
+                {
+                    uf_name_1 = lbl_userfield1.Text;
+                    uf_value_1 = entry_userfield1.Text;
+                }
+
+                if (lbl_userfield2.IsVisible)
+                {
+                    uf_name_2 = lbl_userfield2.Text;
+                    uf_value_2 = entry_userfield2.Text;
+                }
+
+                if (lbl_userfield3.IsVisible)
+                {
+                    uf_name_3 = lbl_userfield3.Text;
+                    uf_value_3 = entry_userfield3.Text;
+                }
+
+                if (lbl_userfield4.IsVisible)
+                {
+                    uf_name_4 = lbl_userfield4.Text;
+                    uf_value_4 = entry_userfield4.Text;
+                }
+
                 YarnCountConfigModel yarnCountConfigModel = new YarnCountConfigModel()
                 {
                     ID = guid,
@@ -900,8 +1015,15 @@ namespace TQM
                     shiftCount = int.Parse(picker_shiftCount.SelectedItem.ToString()),
                     shift1time = shift1.Hours.ToString() + ":" + shift1.Minutes.ToString(),
                     shift2time = shift2.Hours.ToString() + ":" + shift2.Minutes.ToString(),
-                    shift3time = shift3.Hours.ToString() + ":" + shift3.Minutes.ToString()
-
+                    shift3time = shift3.Hours.ToString() + ":" + shift3.Minutes.ToString(),
+                    uf_name_1 = uf_name_1,
+                    uf_value_1 = uf_value_1,
+                    uf_name_2 = uf_name_2,
+                    uf_value_2 = uf_value_2,
+                    uf_name_3 = uf_name_3,
+                    uf_value_3 = uf_value_3,
+                    uf_name_4 = uf_name_4,
+                    uf_value_4 = uf_value_4
                 };
 
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -1263,5 +1385,87 @@ namespace TQM
             }
         }
 
+        private async void btn_addUserField_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                if (lbl_userfield1.IsVisible == true &&
+                    lbl_userfield2.IsVisible == true &&
+                    lbl_userfield3.IsVisible == true &&
+                    lbl_userfield4.IsVisible == true)
+                {
+                    await DisplayAlert("Attention", "Only 4 user fields can be added!!!", "OK");
+                    return;
+                }
+                var userconfirmation = await DisplayAlert("New Field", "Do you want to add new field ?", "Yes", "No");
+                if (userconfirmation)
+                {
+                    string fieldName = await DisplayPromptAsync("Field Name", "Enter the field name to proceed");
+                    if (fieldName != null)
+                    {
+                        if (hasSpecialChar(fieldName))
+                        {
+                            await DisplayAlert("Attention", "Field Name should be in combinations of letters, spaces and numbers!!!", "OK");
+                            return;
+                        }
+                        fieldName = firstCharToUpper(fieldName);
+                        if (lbl_userfield1.IsVisible == false)
+                        {
+                            lbl_userfield1.Text = fieldName;
+                            lbl_userfield1.IsVisible = true;
+                            entry_userfield1.IsVisible = true;
+                        }
+                        else if (lbl_userfield2.IsVisible == false)
+                        {
+                            lbl_userfield2.Text = fieldName;
+                            lbl_userfield2.IsVisible = true;
+                            entry_userfield2.IsVisible = true;
+                        }
+                        else if (lbl_userfield3.IsVisible == false)
+                        {
+                            lbl_userfield3.Text = fieldName;
+                            lbl_userfield3.IsVisible = true;
+                            entry_userfield3.IsVisible = true;
+                        }
+                        else if (lbl_userfield4.IsVisible == false)
+                        {
+                            lbl_userfield4.Text = fieldName;
+                            lbl_userfield4.IsVisible = true;
+                            entry_userfield4.IsVisible = true;
+                        }
+                        else
+                        {
+                            await DisplayAlert("Attention", "Only 4 user fields can be added!!!", "OK");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+            }
+
+        }
+
+        public static bool hasSpecialChar(string input)
+        {
+            string specialChar = @"\|!#$%&/()=?»«@£§€{}.-;'<>_,";
+            foreach (var item in specialChar)
+            {
+                if (input.Contains(item)) return true;
+            }
+
+            return false;
+        }
+
+        public static string firstCharToUpper(string input)
+        {
+            switch (input)
+            {
+                case null: throw new ArgumentNullException(nameof(input));
+                case "": throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input));
+                default: return input[0].ToString().ToUpper() + input.Substring(1);
+            }
+        }
     }
 }
