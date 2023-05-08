@@ -177,7 +177,7 @@ namespace TQM
                 entry_userfield4.Text = "";
                 return;
             }
-
+            YarnCountConfigModel ycConfig_uf = null;
             if (ycConfig != null && shiftAlone == true)
             {
                 btn_save.Text = "Save";
@@ -241,23 +241,65 @@ namespace TQM
                     currentShift3 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
                 }
 
-                lbl_userfield1.IsVisible = false;
-                lbl_userfield1.Text = "";
-                entry_userfield1.IsVisible = false;
-                entry_userfield1.Text = "";
-                lbl_userfield2.IsVisible = false;
-                lbl_userfield2.Text = "";
-                entry_userfield2.IsVisible = false;
-                entry_userfield2.Text = "";
-                lbl_userfield3.IsVisible = false;
-                lbl_userfield3.Text = "";
-                entry_userfield3.IsVisible = false;
-                entry_userfield3.Text = "";
-                lbl_userfield4.IsVisible = false;
-                lbl_userfield4.Text = "";
-                entry_userfield4.IsVisible = false;
-                entry_userfield4.Text = "";
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
+                                YarnCountConfigModel.uf_name_1 != "")).FirstOrDefault();
+                }
+                if (ycConfig_uf == null)
+                {
+                    lbl_userfield1.IsVisible = false;
+                    lbl_userfield1.Text = "";
+                    entry_userfield1.IsVisible = false;
+                    entry_userfield1.Text = "";
+                    lbl_userfield2.IsVisible = false;
+                    lbl_userfield2.Text = "";
+                    entry_userfield2.IsVisible = false;
+                    entry_userfield2.Text = "";
+                    lbl_userfield3.IsVisible = false;
+                    lbl_userfield3.Text = "";
+                    entry_userfield3.IsVisible = false;
+                    entry_userfield3.Text = "";
+                    lbl_userfield4.IsVisible = false;
+                    lbl_userfield4.Text = "";
+                    entry_userfield4.IsVisible = false;
+                    entry_userfield4.Text = "";
+                }
+                else
+                {
+                    if (ycConfig_uf.uf_name_1 != null)
+                    {
+                        lbl_userfield1.IsVisible = true;
+                        lbl_userfield1.Text = ycConfig.uf_name_1;
+                        entry_userfield1.IsVisible = true;
+                        entry_userfield1.Text = ycConfig.uf_value_1;
+                    }
 
+                    if (ycConfig_uf.uf_name_2 != null)
+                    {
+                        lbl_userfield2.IsVisible = true;
+                        lbl_userfield2.Text = ycConfig.uf_name_2;
+                        entry_userfield2.IsVisible = true;
+                        entry_userfield2.Text = ycConfig.uf_value_2;
+                    }
+
+                    if (ycConfig_uf.uf_name_3 != null)
+                    {
+                        lbl_userfield3.IsVisible = true;
+                        lbl_userfield3.Text = ycConfig.uf_name_3;
+                        entry_userfield3.IsVisible = true;
+                        entry_userfield3.Text = ycConfig.uf_value_3;
+                    }
+
+                    if (ycConfig_uf.uf_name_4 != null)
+                    {
+                        lbl_userfield4.IsVisible = true;
+                        lbl_userfield4.Text = ycConfig.uf_name_4;
+                        entry_userfield4.IsVisible = true;
+                        entry_userfield4.Text = ycConfig.uf_value_4;
+                    }
+                }
                 return;
             }
 
@@ -421,12 +463,57 @@ namespace TQM
             entry_userfield4.IsVisible = false;
             entry_userfield4.Text = "";
 
+            ycConfig_uf = null;
             if (ycConfig.uf_name_1 != null)
             {
                 lbl_userfield1.IsVisible = true;
                 lbl_userfield1.Text = ycConfig.uf_name_1;
                 entry_userfield1.IsVisible = true;
                 entry_userfield1.Text = ycConfig.uf_value_1;
+            }
+            else
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
+                                YarnCountConfigModel.uf_name_1 != "")).FirstOrDefault();
+                }
+                if (ycConfig_uf != null)
+                {
+                    if (ycConfig_uf.uf_name_1 != null)
+                    {
+                        lbl_userfield1.IsVisible = true;
+                        lbl_userfield1.Text = ycConfig.uf_name_1;
+                        entry_userfield1.IsVisible = true;
+                        entry_userfield1.Text = ycConfig.uf_value_1;
+                    }
+
+                    if (ycConfig_uf.uf_name_2 != null)
+                    {
+                        lbl_userfield2.IsVisible = true;
+                        lbl_userfield2.Text = ycConfig.uf_name_2;
+                        entry_userfield2.IsVisible = true;
+                        entry_userfield2.Text = ycConfig.uf_value_2;
+                    }
+
+                    if (ycConfig_uf.uf_name_3 != null)
+                    {
+                        lbl_userfield3.IsVisible = true;
+                        lbl_userfield3.Text = ycConfig.uf_name_3;
+                        entry_userfield3.IsVisible = true;
+                        entry_userfield3.Text = ycConfig.uf_value_3;
+                    }
+
+                    if (ycConfig_uf.uf_name_4 != null)
+                    {
+                        lbl_userfield4.IsVisible = true;
+                        lbl_userfield4.Text = ycConfig.uf_name_4;
+                        entry_userfield4.IsVisible = true;
+                        entry_userfield4.Text = ycConfig.uf_value_4;
+                    }
+                    return;
+                }
             }
 
             if (ycConfig.uf_name_2 != null)
@@ -1442,7 +1529,7 @@ namespace TQM
             }
             catch (Exception ex)
             {
-                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+                await DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
             }
 
         }
@@ -1454,7 +1541,6 @@ namespace TQM
             {
                 if (input.Contains(item)) return true;
             }
-
             return false;
         }
 
