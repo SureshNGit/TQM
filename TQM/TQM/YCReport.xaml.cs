@@ -51,7 +51,7 @@ namespace TQM
             InitializeComponent();
         }
 
-        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string standHank, bool deleteRequest, bool isConsolidated)
+        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string standHank, bool deleteRequest, bool isConsolidated, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             InitializeComponent();
             consolidatedReport = isConsolidated;
@@ -89,10 +89,10 @@ namespace TQM
             }
             reportStartDate = startDate;
             reportEndDate = endDate;
-            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, standHank, deleteRequest);
+            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, standHank, deleteRequest, UFVAL2, UFVAL2, UFVAL3, UFVAL4);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string standHank, bool deleteRequest)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string standHank, bool deleteRequest, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             try
             {
@@ -261,6 +261,43 @@ namespace TQM
                             DisplayAlert("Notice", "No records to display!!!", "OK");
                             return;
                         }
+                        if (UFVAL1 != "" && UFVAL1 != null)
+                        {
+                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_1.ToLower() == UFVAL1.ToLower()).ToList();
+                        }
+                        if (ycTestSummaryModels.Count == 0)
+                        {
+                            DisplayAlert("Notice", "No records to display!!!", "OK");
+                            return;
+                        }
+                        if (UFVAL2 != "" && UFVAL2 != null)
+                        {
+                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_2.ToLower() == UFVAL2.ToLower()).ToList();
+                        }
+                        if (ycTestSummaryModels.Count == 0)
+                        {
+                            DisplayAlert("Notice", "No records to display!!!", "OK");
+                            return;
+                        }
+                        if (UFVAL3 != "" && UFVAL3 != null)
+                        {
+                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_3.ToLower() == UFVAL3.ToLower()).ToList();
+                        }
+                        if (ycTestSummaryModels.Count == 0)
+                        {
+                            DisplayAlert("Notice", "No records to display!!!", "OK");
+                            return;
+                        }
+                        if (UFVAL4 != "" && UFVAL4 != null)
+                        {
+                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_4.ToLower() == UFVAL4.ToLower()).ToList();
+                        }
+                        if (ycTestSummaryModels.Count == 0)
+                        {
+                            DisplayAlert("Notice", "No records to display!!!", "OK");
+                            return;
+                        }
+
                         if (deleteRequest)
                         {
                             deleteAll = true;

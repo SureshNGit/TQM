@@ -162,6 +162,38 @@ namespace TQM
                 {
                     reportType = picker_reportType.SelectedItem.ToString();
                 }
+                string UFVAL1 = null;
+                string UFVAL2 = null;
+                string UFVAL3 = null;
+                string UFVAL4 = null;
+                if (lbl_userfield1.IsVisible)
+                {
+                    if (entry_userfield1.Text.Trim() != "")
+                    {
+                        UFVAL1 = entry_userfield1.Text.Trim();
+                    }
+                }
+                if (lbl_userfield2.IsVisible)
+                {
+                    if (entry_userfield2.Text.Trim() != "")
+                    {
+                        UFVAL2 = entry_userfield2.Text.Trim();
+                    }
+                }
+                if (lbl_userfield3.IsVisible)
+                {
+                    if (entry_userfield3.Text.Trim() != "")
+                    {
+                        UFVAL3 = entry_userfield3.Text.Trim();
+                    }
+                }
+                if (lbl_userfield4.IsVisible)
+                {
+                    if (entry_userfield4.Text.Trim() != "")
+                    {
+                        UFVAL4 = entry_userfield4.Text.Trim();
+                    }
+                }
                 bool is_consolidated = false;
                 if (reportType == "Consolidated") { is_consolidated = true; }
                 if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
@@ -177,7 +209,7 @@ namespace TQM
                         }
                     }
                     Navigation.PushAsync(new YCReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, standHank, false, is_consolidated));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, standHank, false, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
