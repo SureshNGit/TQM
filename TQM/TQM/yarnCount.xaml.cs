@@ -42,6 +42,10 @@ namespace TQM
         private string selectedShift = null;
         private string selectedProcess = null;
         private decimal selectedDeviationPercent = 0m;
+        private string UFVAL1 = null;
+        private string UFVAL2 = null;
+        private string UFVAL3 = null;
+        private string UFVAL4 = null;
         private const string RED = "#FF0000";
         private const string GREEN = "#145A32";
         private const int BUFFER_WAIT_COUNT = 10;
@@ -56,6 +60,7 @@ namespace TQM
         public yarnCount()
         {
             InitializeComponent();
+            getUserfieldConfig();
             lbl_TestID.Text = "";
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
@@ -125,6 +130,24 @@ namespace TQM
 
                 //*************************************************************************************
 
+            }
+        }
+
+        private void getUserfieldConfig()
+        {
+            YarnCountConfigModel ycConfig_uf = null;
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                            Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
+                            YarnCountConfigModel.uf_name_1 != "")).FirstOrDefault();
+            }
+            if (ycConfig_uf != null)
+            {
+                UFVAL1 = ycConfig_uf.uf_value_1;
+                UFVAL2 = ycConfig_uf.uf_value_2;
+                UFVAL3 = ycConfig_uf.uf_value_3;
+                UFVAL4 = ycConfig_uf.uf_value_4;
             }
         }
 
@@ -491,6 +514,10 @@ namespace TQM
                         standardHank = STD_HANK_CURR,
                         deviationPercent = selectedDeviationPercent,
                         testDuration = testDuration,
+                        uf_value_1 = UFVAL1,
+                        uf_value_2 = UFVAL2,
+                        uf_value_3 = UFVAL3,
+                        uf_value_4 = UFVAL4,
                         createdate = DateTime.Now
                     };
                     conn.CreateTable<YCTestSummaryModel>();

@@ -15,6 +15,45 @@ namespace TQM
         public Report()
         {
             InitializeComponent();
+            getUserfieldConfig();
+        }
+
+        private void getUserfieldConfig()
+        {
+            YarnCountConfigModel ycConfig_uf = null;
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                            Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
+                            YarnCountConfigModel.uf_name_1 != "")).FirstOrDefault();
+            }
+            if (ycConfig_uf != null)
+            {
+                if (ycConfig_uf.uf_name_1 != null)
+                {
+                    lbl_userfield1.IsVisible = true;
+                    lbl_userfield1.Text = ycConfig_uf.uf_name_1;
+                    entry_userfield1.IsVisible = true;
+                }
+                if (ycConfig_uf.uf_name_2 != null)
+                {
+                    lbl_userfield2.IsVisible = true;
+                    lbl_userfield2.Text = ycConfig_uf.uf_name_2;
+                    entry_userfield2.IsVisible = true;
+                }
+                if (ycConfig_uf.uf_name_3 != null)
+                {
+                    lbl_userfield3.IsVisible = true;
+                    lbl_userfield3.Text = ycConfig_uf.uf_name_3;
+                    entry_userfield3.IsVisible = true;
+                }
+                if (ycConfig_uf.uf_name_4 != null)
+                {
+                    lbl_userfield4.IsVisible = true;
+                    lbl_userfield4.Text = ycConfig_uf.uf_name_4;
+                    entry_userfield4.IsVisible = true;
+                }
+            }
         }
 
         protected override void OnAppearing()

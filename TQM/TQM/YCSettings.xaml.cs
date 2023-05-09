@@ -82,6 +82,51 @@ namespace TQM
             }
         }
 
+        private void toggleUserField()
+        {
+            YarnCountConfigModel ycConfig_uf = null;
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                            Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
+                            YarnCountConfigModel.uf_name_1 != "")).FirstOrDefault();
+            }
+            if (ycConfig_uf != null)
+            {
+                if (ycConfig_uf.uf_name_1 != null)
+                {
+                    lbl_userfield1.IsVisible = true;
+                    lbl_userfield1.Text = ycConfig_uf.uf_name_1;
+                    entry_userfield1.IsVisible = true;
+                    entry_userfield1.Text = "";
+                }
+
+                if (ycConfig_uf.uf_name_2 != null)
+                {
+                    lbl_userfield2.IsVisible = true;
+                    lbl_userfield2.Text = ycConfig_uf.uf_name_2;
+                    entry_userfield2.IsVisible = true;
+                    entry_userfield2.Text = "";
+                }
+
+                if (ycConfig_uf.uf_name_3 != null)
+                {
+                    lbl_userfield3.IsVisible = true;
+                    lbl_userfield3.Text = ycConfig_uf.uf_name_3;
+                    entry_userfield3.IsVisible = true;
+                    entry_userfield3.Text = "";
+                }
+
+                if (ycConfig_uf.uf_name_4 != null)
+                {
+                    lbl_userfield4.IsVisible = true;
+                    lbl_userfield4.Text = ycConfig_uf.uf_name_4;
+                    entry_userfield4.IsVisible = true;
+                    entry_userfield4.Text = "";
+                }
+            }
+        }
+
         private void fetchConfig()
         {
             try
@@ -122,6 +167,7 @@ namespace TQM
                         btn_save.TextColor = Color.White;
                     }
                 }
+                toggleUserField();
             }
             catch (Exception ex)
             {
@@ -131,6 +177,7 @@ namespace TQM
 
         private void populateSettingsField(YarnCountConfigModel ycConfig, bool shiftAlone = false, bool isMacDiff = false)
         {
+            toggleUserField();
             if (ycConfig == null)
             {
                 btn_save.Text = "Save";
@@ -159,25 +206,9 @@ namespace TQM
                 currentShift2 = TimeSpan.Zero;
                 currentShift3 = TimeSpan.Zero;
                 toggleShift();
-                lbl_userfield1.IsVisible = false;
-                lbl_userfield1.Text = "";
-                entry_userfield1.IsVisible = false;
-                entry_userfield1.Text = "";
-                lbl_userfield2.IsVisible = false;
-                lbl_userfield2.Text = "";
-                entry_userfield2.IsVisible = false;
-                entry_userfield2.Text = "";
-                lbl_userfield3.IsVisible = false;
-                lbl_userfield3.Text = "";
-                entry_userfield3.IsVisible = false;
-                entry_userfield3.Text = "";
-                lbl_userfield4.IsVisible = false;
-                lbl_userfield4.Text = "";
-                entry_userfield4.IsVisible = false;
-                entry_userfield4.Text = "";
                 return;
             }
-            YarnCountConfigModel ycConfig_uf = null;
+
             if (ycConfig != null && shiftAlone == true)
             {
                 btn_save.Text = "Save";
@@ -222,8 +253,6 @@ namespace TQM
                     toggleShift();
                 }
 
-
-
                 if (ycConfig.shift1time != null && ycConfig.shift1time != "")
                 {
                     Shift1_timePicker.Time = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift1time).TotalHours);
@@ -241,65 +270,22 @@ namespace TQM
                     currentShift3 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
                 }
 
-                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-                {
-                    ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                                Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
-                                YarnCountConfigModel.uf_name_1 != "")).FirstOrDefault();
-                }
-                if (ycConfig_uf == null)
-                {
-                    lbl_userfield1.IsVisible = false;
-                    lbl_userfield1.Text = "";
-                    entry_userfield1.IsVisible = false;
-                    entry_userfield1.Text = "";
-                    lbl_userfield2.IsVisible = false;
-                    lbl_userfield2.Text = "";
-                    entry_userfield2.IsVisible = false;
-                    entry_userfield2.Text = "";
-                    lbl_userfield3.IsVisible = false;
-                    lbl_userfield3.Text = "";
-                    entry_userfield3.IsVisible = false;
-                    entry_userfield3.Text = "";
-                    lbl_userfield4.IsVisible = false;
-                    lbl_userfield4.Text = "";
-                    entry_userfield4.IsVisible = false;
-                    entry_userfield4.Text = "";
-                }
-                else
-                {
-                    if (ycConfig_uf.uf_name_1 != null)
-                    {
-                        lbl_userfield1.IsVisible = true;
-                        lbl_userfield1.Text = ycConfig.uf_name_1;
-                        entry_userfield1.IsVisible = true;
-                        entry_userfield1.Text = ycConfig.uf_value_1;
-                    }
-
-                    if (ycConfig_uf.uf_name_2 != null)
-                    {
-                        lbl_userfield2.IsVisible = true;
-                        lbl_userfield2.Text = ycConfig.uf_name_2;
-                        entry_userfield2.IsVisible = true;
-                        entry_userfield2.Text = ycConfig.uf_value_2;
-                    }
-
-                    if (ycConfig_uf.uf_name_3 != null)
-                    {
-                        lbl_userfield3.IsVisible = true;
-                        lbl_userfield3.Text = ycConfig.uf_name_3;
-                        entry_userfield3.IsVisible = true;
-                        entry_userfield3.Text = ycConfig.uf_value_3;
-                    }
-
-                    if (ycConfig_uf.uf_name_4 != null)
-                    {
-                        lbl_userfield4.IsVisible = true;
-                        lbl_userfield4.Text = ycConfig.uf_name_4;
-                        entry_userfield4.IsVisible = true;
-                        entry_userfield4.Text = ycConfig.uf_value_4;
-                    }
-                }
+                lbl_userfield1.IsVisible = false;
+                lbl_userfield1.Text = "";
+                entry_userfield1.IsVisible = false;
+                entry_userfield1.Text = "";
+                lbl_userfield2.IsVisible = false;
+                lbl_userfield2.Text = "";
+                entry_userfield2.IsVisible = false;
+                entry_userfield2.Text = "";
+                lbl_userfield3.IsVisible = false;
+                lbl_userfield3.Text = "";
+                entry_userfield3.IsVisible = false;
+                entry_userfield3.Text = "";
+                lbl_userfield4.IsVisible = false;
+                lbl_userfield4.Text = "";
+                entry_userfield4.IsVisible = false;
+                entry_userfield4.Text = "";
                 return;
             }
 
@@ -446,74 +432,13 @@ namespace TQM
                 currentShift3 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
             }
 
-            lbl_userfield1.IsVisible = false;
-            lbl_userfield1.Text = "";
-            entry_userfield1.IsVisible = false;
-            entry_userfield1.Text = "";
-            lbl_userfield2.IsVisible = false;
-            lbl_userfield2.Text = "";
-            entry_userfield2.IsVisible = false;
-            entry_userfield2.Text = "";
-            lbl_userfield3.IsVisible = false;
-            lbl_userfield3.Text = "";
-            entry_userfield3.IsVisible = false;
-            entry_userfield3.Text = "";
-            lbl_userfield4.IsVisible = false;
-            lbl_userfield4.Text = "";
-            entry_userfield4.IsVisible = false;
-            entry_userfield4.Text = "";
 
-            ycConfig_uf = null;
             if (ycConfig.uf_name_1 != null)
             {
                 lbl_userfield1.IsVisible = true;
                 lbl_userfield1.Text = ycConfig.uf_name_1;
                 entry_userfield1.IsVisible = true;
                 entry_userfield1.Text = ycConfig.uf_value_1;
-            }
-            else
-            {
-                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-                {
-                    ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                                Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
-                                YarnCountConfigModel.uf_name_1 != "")).FirstOrDefault();
-                }
-                if (ycConfig_uf != null)
-                {
-                    if (ycConfig_uf.uf_name_1 != null)
-                    {
-                        lbl_userfield1.IsVisible = true;
-                        lbl_userfield1.Text = ycConfig.uf_name_1;
-                        entry_userfield1.IsVisible = true;
-                        entry_userfield1.Text = ycConfig.uf_value_1;
-                    }
-
-                    if (ycConfig_uf.uf_name_2 != null)
-                    {
-                        lbl_userfield2.IsVisible = true;
-                        lbl_userfield2.Text = ycConfig.uf_name_2;
-                        entry_userfield2.IsVisible = true;
-                        entry_userfield2.Text = ycConfig.uf_value_2;
-                    }
-
-                    if (ycConfig_uf.uf_name_3 != null)
-                    {
-                        lbl_userfield3.IsVisible = true;
-                        lbl_userfield3.Text = ycConfig.uf_name_3;
-                        entry_userfield3.IsVisible = true;
-                        entry_userfield3.Text = ycConfig.uf_value_3;
-                    }
-
-                    if (ycConfig_uf.uf_name_4 != null)
-                    {
-                        lbl_userfield4.IsVisible = true;
-                        lbl_userfield4.Text = ycConfig.uf_name_4;
-                        entry_userfield4.IsVisible = true;
-                        entry_userfield4.Text = ycConfig.uf_value_4;
-                    }
-                    return;
-                }
             }
 
             if (ycConfig.uf_name_2 != null)

@@ -47,6 +47,10 @@ namespace TQM.Model
         public string testRemark { get; set; }
 
         public string testDuration { get; set; }
+        public string uf_value_1 { get; set; }
+        public string uf_value_2 { get; set; }
+        public string uf_value_3 { get; set; }
+        public string uf_value_4 { get; set; }
 
         public DateTime createdate { get; set; }
 
