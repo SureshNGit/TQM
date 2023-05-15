@@ -1413,7 +1413,8 @@ namespace TQM
                 if (userconfirmation)
                 {
                     string fieldName = await DisplayPromptAsync("Field Name", "Enter the field name to proceed");
-                    if (fieldName != null)
+                    fieldName = fieldName.Trim();
+                    if (fieldName != null && fieldName != "")
                     {
                         if (hasSpecialChar(fieldName))
                         {
@@ -1475,7 +1476,23 @@ namespace TQM
             {
                 case null: throw new ArgumentNullException(nameof(input));
                 case "": throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input));
-                default: return input[0].ToString().ToUpper() + input.Substring(1);
+                default:
+                    string[] inputSplit = input.Split(' ');
+                    string finalOut = null;
+                    int counter = 1;
+                    foreach (var split in inputSplit)
+                    {
+                        if (counter == 1)
+                        {
+                            finalOut = split[0].ToString().ToUpper() + split.Substring(1);
+                        }
+                        else
+                        {
+                            finalOut = finalOut + " " + split[0].ToString().ToUpper() + split.Substring(1);
+                        }
+                        counter++;
+                    }
+                    return finalOut;
             }
         }
     }

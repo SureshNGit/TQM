@@ -29,6 +29,21 @@ namespace TQM.ModelView
         public string deviationPercent { get; set; }
         public string hankColor { get; set; } = "Green";
         public string hankColorGg { get; set; } = "White";
+        public bool DispUF_1 { get; set; } = false;
+        public bool DispUF_2 { get; set; } = false;
+        public bool DispUF_3 { get; set; } = false;
+        public bool DispUF_4 { get; set; } = false;
+        public string uf_name_1 { get; set; } = null;
+        public string uf_name_2 { get; set; } = null;
+        public string uf_name_3 { get; set; } = null;
+        public string uf_name_4 { get; set; } = null;
+        public string uf_value_1 { get; set; } = null;
+        public string uf_value_2 { get; set; } = null;
+        public string uf_value_3 { get; set; } = null;
+        public string uf_value_4 { get; set; } = null;
+        public bool remark_1 { get; set; } = false;
+        public bool remark_2 { get; set; } = false;
+        public bool remark_3 { get; set; } = false;
         public DateTime createdate { get; set; }
         public List<YCTestModel> yctestlist => this;
     }

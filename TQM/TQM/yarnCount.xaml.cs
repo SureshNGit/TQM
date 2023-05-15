@@ -60,7 +60,6 @@ namespace TQM
         public yarnCount()
         {
             InitializeComponent();
-            getUserfieldConfig();
             lbl_TestID.Text = "";
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
@@ -133,21 +132,32 @@ namespace TQM
             }
         }
 
-        private void getUserfieldConfig()
+        private void getUserfieldConfig(string mCat, Guid mid, string mac)
         {
-            YarnCountConfigModel ycConfig_uf = null;
-            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            if (mCat == "" && mid == Guid.Empty && mac == "")
             {
-                ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                            Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
-                            YarnCountConfigModel.uf_name_1 != "")).FirstOrDefault();
+                UFVAL1 = null;
+                UFVAL2 = null;
+                UFVAL3 = null;
+                UFVAL4 = null;
             }
-            if (ycConfig_uf != null)
+            else
             {
-                UFVAL1 = ycConfig_uf.uf_value_1;
-                UFVAL2 = ycConfig_uf.uf_value_2;
-                UFVAL3 = ycConfig_uf.uf_value_3;
-                UFVAL4 = ycConfig_uf.uf_value_4;
+                YarnCountConfigModel ycConfig_uf = null;
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
+                                YarnCountConfigModel.uf_name_1 != "") && YarnCountConfigModel.machineCategory == mCat
+                                && YarnCountConfigModel.machineID == mid && YarnCountConfigModel.machineName == mac).FirstOrDefault();
+                }
+                if (ycConfig_uf != null)
+                {
+                    UFVAL1 = ycConfig_uf.uf_value_1;
+                    UFVAL2 = ycConfig_uf.uf_value_2;
+                    UFVAL3 = ycConfig_uf.uf_value_3;
+                    UFVAL4 = ycConfig_uf.uf_value_4;
+                }
             }
         }
 
@@ -1201,6 +1211,7 @@ namespace TQM
                     lbl_standHank.Text = "Standard Hank";
                 }
                 populateTestParams("", Guid.Empty, "");
+                getUserfieldConfig("", Guid.Empty, "");
             }
             catch (Exception ex)
             {
@@ -1224,6 +1235,7 @@ namespace TQM
                 MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
                 selectedMachineName = selectedMachine.machineName;
                 populateTestParams(selectedMachineCategory, selectedMachineID, selectedMachineName);
+                getUserfieldConfig(selectedMachineCategory, selectedMachineID, selectedMachineName);
             }
             catch (Exception ex)
             {

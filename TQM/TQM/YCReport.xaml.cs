@@ -89,7 +89,7 @@ namespace TQM
             }
             reportStartDate = startDate;
             reportEndDate = endDate;
-            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, standHank, deleteRequest, UFVAL2, UFVAL2, UFVAL3, UFVAL4);
+            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, standHank, deleteRequest, UFVAL1, UFVAL2, UFVAL3, UFVAL4);
         }
 
         private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string standHank, bool deleteRequest, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
@@ -439,6 +439,126 @@ namespace TQM
                                 report.testDuration = testsummary.testDuration;
                                 report.deviationPercent = "\u00B1" + testsummary.deviationPercent;
 
+                                if (testsummary.uf_value_1 != null && testsummary.uf_value_1 != "")
+                                {
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                        Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
+                                                                                        YarnCountConfigModel.uf_name_1 != "")
+                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        report.uf_name_1 = ycConfig_uf.uf_name_1;
+                                        report.DispUF_1 = true;
+                                        report.uf_value_1 = testsummary.uf_value_1;
+                                        report.remark_1 = false;
+                                    }
+                                    else
+                                    {
+                                        report.DispUF_1 = false;
+                                        report.uf_value_1 = null;
+                                        report.uf_name_1 = null;
+                                        report.remark_1 = true;
+                                    }
+                                }
+                                else
+                                {
+                                    report.DispUF_1 = false;
+                                    report.uf_value_1 = null;
+                                    report.uf_name_1 = null;
+                                    report.remark_1 = true;
+                                }
+                                if (testsummary.uf_value_2 != null && testsummary.uf_value_2 != "")
+                                {
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                        Where(YarnCountConfigModel =>
+                                                                                        (YarnCountConfigModel.uf_name_2 != null ||
+                                                                                        YarnCountConfigModel.uf_name_2 != "")
+                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        report.uf_name_2 = ycConfig_uf.uf_name_2;
+                                        report.DispUF_2 = true;
+                                        report.uf_value_2 = testsummary.uf_value_2;
+                                    }
+                                    else
+                                    {
+                                        report.DispUF_2 = false;
+                                        report.uf_value_2 = null;
+                                        report.uf_name_2 = null;
+                                    }
+                                }
+                                else
+                                {
+                                    report.DispUF_2 = false;
+                                    report.uf_value_2 = null;
+                                    report.uf_name_2 = null;
+                                }
+                                if (testsummary.uf_value_3 != null && testsummary.uf_value_3 != "")
+                                {
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                       Where(YarnCountConfigModel =>
+                                                                                       (YarnCountConfigModel.uf_name_3 != null ||
+                                                                                       YarnCountConfigModel.uf_name_3 != "")
+                                                                                       && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                       && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                       && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        report.uf_name_3 = ycConfig_uf.uf_name_3;
+                                        report.DispUF_3 = true;
+                                        report.uf_value_3 = testsummary.uf_value_3;
+                                        report.remark_2 = false;
+                                    }
+                                    else
+                                    {
+                                        report.DispUF_3 = false;
+                                        report.uf_value_3 = null;
+                                        report.uf_name_3 = null;
+                                        report.remark_2 = true;
+                                    }
+                                }
+                                else
+                                {
+                                    report.DispUF_3 = false;
+                                    report.uf_value_3 = null;
+                                    report.uf_name_3 = null;
+                                    report.remark_2 = true;
+                                }
+                                if (testsummary.uf_value_4 != null && testsummary.uf_value_4 != "")
+                                {
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                       Where(YarnCountConfigModel =>
+                                                                                       (YarnCountConfigModel.uf_name_4 != null ||
+                                                                                       YarnCountConfigModel.uf_name_4 != "")
+                                                                                       && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                       && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                       && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        report.uf_name_4 = ycConfig_uf.uf_name_4;
+                                        report.DispUF_4 = true;
+                                        report.uf_value_4 = testsummary.uf_value_4;
+                                    }
+                                    else
+                                    {
+                                        report.DispUF_4 = false;
+                                        report.uf_value_4 = null;
+                                        report.uf_name_4 = null;
+                                    }
+                                }
+                                else
+                                {
+                                    report.DispUF_4 = false;
+                                    report.uf_value_4 = null;
+                                    report.uf_name_4 = null;
+                                }
+
+                                if (report.remark_1 == false && report.remark_2 == false) { report.remark_3 = true; }
+
                                 decimal maxRangeVal = testsummary.standardHank + testsummary.deviationPercent;
                                 decimal minRangeVal = testsummary.standardHank - testsummary.deviationPercent;
 
@@ -732,8 +852,50 @@ namespace TQM
                     pdfGridInfo.Rows[5].Cells[2].Value = "Shift: " + orl.shift;
                     pdfGridInfo.Rows[5].Cells[3].Value = "Process: " + orl.process;
 
-                    pdfGridInfo.Rows[6].Cells[0].Value = "Remark: " + orl.testRemark;
-                    pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 4;
+                    if (orl.remark_1)
+                    {
+                        pdfGridInfo.Rows[6].Cells[0].Value = "Remark: " + orl.testRemark;
+                        pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 4;
+                    }
+                    else if (orl.remark_1 == false && orl.DispUF_1)
+                    {
+                        pdfGridInfo.Rows[6].Cells[0].Value = orl.uf_name_1 + ": " + orl.uf_value_1;
+                        pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 2;
+
+                        if (orl.DispUF_2)
+                        {
+                            pdfGridInfo.Rows[6].Cells[2].Value = orl.uf_name_2 + ": " + orl.uf_value_2;
+                            pdfGridInfo.Rows[6].Cells[2].ColumnSpan = 2;
+                        }
+
+                    }
+
+                    if (orl.remark_2)
+                    {
+                        pdfGridInfo.Rows.Add();
+                        pdfGridInfo.Rows[7].Cells[0].Value = "Remark: " + orl.testRemark;
+                        pdfGridInfo.Rows[7].Cells[0].ColumnSpan = 4;
+                    }
+                    else if (orl.remark_2 == false && orl.DispUF_3)
+                    {
+                        pdfGridInfo.Rows.Add();
+                        pdfGridInfo.Rows[7].Cells[0].Value = orl.uf_name_3 + ": " + orl.uf_value_3;
+                        pdfGridInfo.Rows[7].Cells[0].ColumnSpan = 2;
+
+                        if (orl.DispUF_4)
+                        {
+                            pdfGridInfo.Rows[7].Cells[2].Value = orl.uf_name_4 + ": " + orl.uf_value_4;
+                            pdfGridInfo.Rows[7].Cells[2].ColumnSpan = 2;
+                        }
+
+                    }
+
+                    if (orl.remark_1 == false && orl.remark_2 == false)
+                    {
+                        pdfGridInfo.Rows.Add();
+                        pdfGridInfo.Rows[8].Cells[0].Value = "Remark: " + orl.testRemark;
+                        pdfGridInfo.Rows[8].Cells[0].ColumnSpan = 4;
+                    }
 
 
                     pdfGridInfo.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
@@ -764,6 +926,21 @@ namespace TQM
                     pdfGridInfo.Rows[6].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[6].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[6].Cells[3].Style.Borders.All = PdfPens.Transparent;
+
+                    if (orl.remark_1 == false && orl.DispUF_1)
+                    {
+                        pdfGridInfo.Rows[7].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[7].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[7].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[7].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    }
+                    if (orl.remark_2 == false && orl.DispUF_3)
+                    {
+                        pdfGridInfo.Rows[8].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[8].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[8].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[8].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    }
 
                     int totalRow_header = 7;
                     int totalRow_header_height = totalRow_header * 18;
