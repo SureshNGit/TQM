@@ -202,20 +202,24 @@
 
                                     <Label Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_1}"
                                     Text="{Binding uf_name_1}" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="0" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    <Label Grid.Column="1" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-55,0,0,0"
                                     Text="{Binding uf_value_1}" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_1}"/>
+                                    <!--<Label Grid.Column="1" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-55,0,0,0"
+                                    Text="kajsdkjaskj dkjasdjkjaskdjkajsdkjdkasjdkjas kdjkasjkdjaskdqwqw" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_1}"/>-->
                                     <Label Grid.Column="3" Grid.Row="5" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_2}"
                                     Text="{Binding uf_name_2}" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="3" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    <Label Grid.Column="4" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-100,0,0,0"
                                     Text="{Binding uf_value_2}" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_2}"/>
+                                    <!--<Label Grid.Column="4" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-100,0,0,0"
+                                    Text="kajsdkjaskj dkjasdjkjaskdjkajsdkjdkasjdkjas kdjkasjkdjaskdqwqw" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_2}"/>-->
 
                                     <Label Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_3}"
                                     Text="{Binding uf_name_3}" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="0" Grid.Row="6"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    <Label Grid.Column="1" Grid.Row="6"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-55,0,0,0"
                                     Text="{Binding uf_value_3}" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_3}"/>
                                     <Label Grid.Column="3" Grid.Row="6" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_4}"
                                     Text="{Binding uf_name_4}" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="3" Grid.Row="6"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    <Label Grid.Column="4" Grid.Row="6"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-100,0,0,0"
                                     Text="{Binding uf_value_4}" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_5}"/>
 
                                     <Label Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1" IsVisible="{Binding remark_1}"
