@@ -453,6 +453,7 @@ namespace TQM
                                         report.DispUF_1 = true;
                                         report.uf_value_1 = testsummary.uf_value_1;
                                         report.remark_1 = false;
+                                        report.DispUF_2_Col1 = false;
                                     }
                                     else
                                     {
@@ -480,9 +481,22 @@ namespace TQM
                                                                                         && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
                                     if (ycConfig_uf != null)
                                     {
-                                        report.uf_name_2 = ycConfig_uf.uf_name_2;
-                                        report.DispUF_2 = true;
-                                        report.uf_value_2 = testsummary.uf_value_2;
+                                        if (!report.DispUF_1)
+                                        {
+                                            report.remark_1 = false;
+                                            report.uf_name_2 = ycConfig_uf.uf_name_2;
+                                            report.DispUF_2_Col1 = true;
+                                            report.DispUF_2 = false;
+                                            report.uf_value_2 = testsummary.uf_value_2;
+                                        }
+                                        else
+                                        {
+                                            report.remark_1 = false;
+                                            report.uf_name_2 = ycConfig_uf.uf_name_2;
+                                            report.DispUF_2 = true;
+                                            report.DispUF_2_Col1 = false;
+                                            report.uf_value_2 = testsummary.uf_value_2;
+                                        }
                                     }
                                     else
                                     {
@@ -512,6 +526,7 @@ namespace TQM
                                         report.DispUF_3 = true;
                                         report.uf_value_3 = testsummary.uf_value_3;
                                         report.remark_2 = false;
+                                        report.DispUF_4_Col1 = false;
                                     }
                                     else
                                     {
@@ -539,9 +554,22 @@ namespace TQM
                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
                                     if (ycConfig_uf != null)
                                     {
-                                        report.uf_name_4 = ycConfig_uf.uf_name_4;
-                                        report.DispUF_4 = true;
-                                        report.uf_value_4 = testsummary.uf_value_4;
+                                        if (!report.DispUF_3)
+                                        {
+                                            report.remark_2 = false;
+                                            report.uf_name_4 = ycConfig_uf.uf_name_4;
+                                            report.DispUF_4_Col1 = true;
+                                            report.DispUF_4 = false;
+                                            report.uf_value_4 = testsummary.uf_value_4;
+                                        }
+                                        else
+                                        {
+                                            report.remark_2 = false;
+                                            report.uf_name_4 = ycConfig_uf.uf_name_4;
+                                            report.DispUF_4 = true;
+                                            report.DispUF_4_Col1 = false;
+                                            report.uf_value_4 = testsummary.uf_value_4;
+                                        }
                                     }
                                     else
                                     {
@@ -869,6 +897,11 @@ namespace TQM
                         }
 
                     }
+                    else if (orl.remark_1 == false && orl.DispUF_1 == false && orl.DispUF_2_Col1 == true)
+                    {
+                        pdfGridInfo.Rows[6].Cells[0].Value = orl.uf_name_2 + ": " + orl.uf_value_2;
+                        pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 2;
+                    }
 
                     if (orl.remark_2)
                     {
@@ -888,6 +921,12 @@ namespace TQM
                             pdfGridInfo.Rows[7].Cells[2].ColumnSpan = 2;
                         }
 
+                    }
+                    else if (orl.remark_2 == false && orl.DispUF_3 == false && orl.DispUF_4_Col1 == true)
+                    {
+                        pdfGridInfo.Rows.Add();
+                        pdfGridInfo.Rows[7].Cells[0].Value = orl.uf_name_4 + ": " + orl.uf_value_4;
+                        pdfGridInfo.Rows[7].Cells[0].ColumnSpan = 2;
                     }
 
                     if (orl.remark_1 == false && orl.remark_2 == false)
@@ -927,14 +966,14 @@ namespace TQM
                     pdfGridInfo.Rows[6].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[6].Cells[3].Style.Borders.All = PdfPens.Transparent;
 
-                    if (orl.remark_1 == false && orl.DispUF_1)
+                    if ((orl.remark_1 == false && orl.DispUF_1) || (orl.remark_1 == false && orl.DispUF_1 == false && orl.DispUF_2_Col1))
                     {
                         pdfGridInfo.Rows[7].Cells[0].Style.Borders.All = PdfPens.Transparent;
                         pdfGridInfo.Rows[7].Cells[1].Style.Borders.All = PdfPens.Transparent;
                         pdfGridInfo.Rows[7].Cells[2].Style.Borders.All = PdfPens.Transparent;
                         pdfGridInfo.Rows[7].Cells[3].Style.Borders.All = PdfPens.Transparent;
                     }
-                    if (orl.remark_2 == false && orl.DispUF_3)
+                    if ((orl.remark_2 == false && orl.DispUF_3) || (orl.remark_2 == false && orl.DispUF_3 == false && orl.DispUF_4_Col1))
                     {
                         pdfGridInfo.Rows[8].Cells[0].Style.Borders.All = PdfPens.Transparent;
                         pdfGridInfo.Rows[8].Cells[1].Style.Borders.All = PdfPens.Transparent;

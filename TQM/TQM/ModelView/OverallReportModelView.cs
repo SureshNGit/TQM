@@ -31,8 +31,10 @@ namespace TQM.ModelView
         public string hankColorGg { get; set; } = "White";
         public bool DispUF_1 { get; set; } = false;
         public bool DispUF_2 { get; set; } = false;
+        public bool DispUF_2_Col1 { get; set; } = false;
         public bool DispUF_3 { get; set; } = false;
         public bool DispUF_4 { get; set; } = false;
+        public bool DispUF_4_Col1 { get; set; } = false;
         public string uf_name_1 { get; set; } = null;
         public string uf_name_2 { get; set; } = null;
         public string uf_name_3 { get; set; } = null;
