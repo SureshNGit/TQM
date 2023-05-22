@@ -24,57 +24,12 @@ namespace TQM
         {
             try
             {
-                InitializeComponent();
-                fetchConfig();
                 //using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 //{
-                //    conn.CreateTable<YarnCountConfigModel>();
-                //    List<YarnCountConfigModel> ycConfigList = conn.Table<YarnCountConfigModel>().ToList();
-                //    if (ycConfigList.Count > 0)
-                //    {
-                //        btn_save.Text = "Update";
-                //        currentID = ycConfigList[0].ID;
-                //        IList<string> countsystemlist = picker_countsysname.Items;
-                //        int countsysindex = 0;
-                //        foreach (string countsystem in countsystemlist)
-                //        {
-                //            if (countsystem != ycConfigList[0].countsysname.ToString())
-                //            {
-                //                countsysindex++;
-                //            }
-                //            else
-                //            {
-                //                break;
-                //            }
-                //        }
-                //        picker_countsysname.SelectedIndex = countsysindex;
-                //        IList<string> yarncountlenunitlist = picker_yarnlengthunit.Items;
-                //        int yarncountlenindex = 0;
-                //        foreach (string yclenunit in yarncountlenunitlist)
-                //        {
-                //            if (yclenunit != ycConfigList[0].yarnlenunit.ToString())
-                //            {
-                //                yarncountlenindex++;
-                //            }
-                //            else
-                //            {
-                //                break;
-                //            }
-                //        }
-                //        picker_yarnlengthunit.SelectedIndex = yarncountlenindex;
-                //        entry_sliverlength.Text = ycConfigList[0].sliverlength.ToString();
-                //        entry_rovinglength.Text = ycConfigList[0].rovinglength.ToString();
-                //        entry_testcount.Text = ycConfigList[0].testcount.ToString();
-                //        entry_standardHank.Text = ycConfigList[0].standardHank.ToString();
-                //        entry_testcountApercent.Text = ycConfigList[0].testcountApercent.ToString();
-                //        entry_testcountStretch.Text = ycConfigList[0].testcountStretch.ToString();
-                //        entry_testcountNoils.Text = ycConfigList[0].testcountNoils.ToString();
-                //    }
-                //    else
-                //    {
-                //        btn_save.Text = "Save";
-                //    }
+                //    conn.DropTable<YarnCountConfigModel>();
                 //}
+                InitializeComponent();
+                fetchConfig();
             }
             catch (Exception ex)
             {
@@ -87,6 +42,7 @@ namespace TQM
             YarnCountConfigModel ycConfig_uf = null;
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
+                conn.CreateTable<YarnCountConfigModel>();
                 ycConfig_uf = conn.Table<YarnCountConfigModel>().
                             Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
                             YarnCountConfigModel.uf_name_1 != "")).FirstOrDefault();
@@ -270,22 +226,22 @@ namespace TQM
                     currentShift3 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
                 }
 
-                lbl_userfield1.IsVisible = false;
-                lbl_userfield1.Text = "";
-                entry_userfield1.IsVisible = false;
-                entry_userfield1.Text = "";
-                lbl_userfield2.IsVisible = false;
-                lbl_userfield2.Text = "";
-                entry_userfield2.IsVisible = false;
-                entry_userfield2.Text = "";
-                lbl_userfield3.IsVisible = false;
-                lbl_userfield3.Text = "";
-                entry_userfield3.IsVisible = false;
-                entry_userfield3.Text = "";
-                lbl_userfield4.IsVisible = false;
-                lbl_userfield4.Text = "";
-                entry_userfield4.IsVisible = false;
-                entry_userfield4.Text = "";
+                //lbl_userfield1.IsVisible = false;
+                //lbl_userfield1.Text = "";
+                //entry_userfield1.IsVisible = false;
+                //entry_userfield1.Text = "";
+                //lbl_userfield2.IsVisible = false;
+                //lbl_userfield2.Text = "";
+                //entry_userfield2.IsVisible = false;
+                //entry_userfield2.Text = "";
+                //lbl_userfield3.IsVisible = false;
+                //lbl_userfield3.Text = "";
+                //entry_userfield3.IsVisible = false;
+                //entry_userfield3.Text = "";
+                //lbl_userfield4.IsVisible = false;
+                //lbl_userfield4.Text = "";
+                //entry_userfield4.IsVisible = false;
+                //entry_userfield4.Text = "";
                 return;
             }
 
@@ -1416,6 +1372,11 @@ namespace TQM
                     fieldName = fieldName.Trim();
                     if (fieldName != null && fieldName != "")
                     {
+                        if (fieldName.Length > 10)
+                        {
+                            await DisplayAlert("Attention", "Field name can be of 10 characters maximum", "OK");
+                            return;
+                        }
                         if (hasSpecialChar(fieldName))
                         {
                             await DisplayAlert("Attention", "Field Name should be in combinations of letters, spaces and numbers!!!", "OK");

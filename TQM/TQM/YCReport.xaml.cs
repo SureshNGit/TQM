@@ -541,7 +541,10 @@ namespace TQM
                                     report.DispUF_3 = false;
                                     report.uf_value_3 = null;
                                     report.uf_name_3 = null;
-                                    report.remark_2 = true;
+                                    if (report.remark_1 == false)
+                                    {
+                                        report.remark_2 = true;
+                                    }
                                 }
                                 if (testsummary.uf_value_4 != null && testsummary.uf_value_4 != "")
                                 {
