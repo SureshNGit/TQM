@@ -6,8 +6,11 @@
     
     <NavigationPage.TitleView>
         <StackLayout BackgroundColor="White">
-            <Grid>
+            <Grid HeightRequest="100">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -19,16 +22,19 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
-                <Label Grid.Row="0" Grid.Column="2" Text="Stretch %" FontSize="25" 
+                <Label Grid.Row="0" Grid.Column="2" Text="Stretch %" FontSize="18" 
                        TextColor="ForestGreen" VerticalTextAlignment="Center" HorizontalOptions="Start" />
                 <Label Grid.Row="0" Grid.Column="3" Text="Test ID :" FontSize="18" TextColor="#0e0273" 
                        VerticalTextAlignment="Center" HorizontalOptions="Start" />
                 <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Text="" FontSize="16" TextColor="ForestGreen" Margin="65,0"
                        VerticalTextAlignment="Center" HorizontalOptions="Start" x:Name="lbl_TestID" />
-                <Button Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Initial Bobbin" IsVisible="false"
+                <Button Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Initial Bobbin" IsVisible="false" Margin="0,2" HeightRequest="12"
                         x:Name="startInitialBobbinButton"  Clicked="startInitialBobbinButton_Clicked" BackgroundColor="Green" TextColor="white" CornerRadius="25"/>
-                <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Full Bobbin" IsVisible="false"
+                <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Full Bobbin" IsVisible="false" Margin="0,2" HeightRequest="12"
                         x:Name="startFullBobbinButton"  Clicked="startFullBobbinButton_Clicked" BackgroundColor="Green" TextColor="white" CornerRadius="25"/>
+                <Label Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="4" Text="" 
+                       FontSize="16" TextColor="ForestGreen" x:Name="lbl_un" Margin="0,-12,0,0"
+                       HorizontalOptions="Center" VerticalTextAlignment="Center" />
             </Grid>
         </StackLayout>
     </NavigationPage.TitleView>

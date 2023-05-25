@@ -61,8 +61,28 @@ namespace TQM
         {
             InitializeComponent();
             lbl_TestID.Text = "";
+            //lbl_TestID.Text = "999999999";
+
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
+                UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                if (loggedInUser == null)
+                {
+                    DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                    return;
+                }
+                else
+                {
+                    currentloggedInUser = loggedInUser;
+                    if (loggedInUser.lastname.Trim() != "")
+                    {
+                        lbl_un.Text = "Logged in user: " + loggedInUser.firstname + ", " + loggedInUser.lastname + " [" + loggedInUser.userId + "]";
+                    }
+                    else
+                    {
+                        lbl_un.Text = "Logged in user: " + loggedInUser.firstname + " [" + loggedInUser.userId + "]";
+                    }
+                }
                 ///*******************************Jaganatha Unit-3, bhagirath Test Reset Issue Issue - Auto Correction**************************
 
                 conn.CreateTable<YCTestModel>();

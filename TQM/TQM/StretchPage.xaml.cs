@@ -81,6 +81,25 @@ namespace TQM
                 //    picker_process.SelectedIndex = 0;
                 //}
 
+                UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                if (loggedInUser == null)
+                {
+                    DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                    return;
+                }
+                else
+                {
+                    currentloggedInUser = loggedInUser;
+                    if (loggedInUser.lastname.Trim() != "")
+                    {
+                        lbl_un.Text = "Logged in user: " + loggedInUser.firstname + ", " + loggedInUser.lastname + " [" + loggedInUser.userId + "]";
+                    }
+                    else
+                    {
+                        lbl_un.Text = "Logged in user: " + loggedInUser.firstname + " [" + loggedInUser.userId + "]";
+                    }
+                }
+
                 conn.CreateTable<StretchTestModel>();
                 conn.CreateTable<StretchTestSummaryModel>();
                 conn.CreateTable<StretchTestCalculatedModel>();

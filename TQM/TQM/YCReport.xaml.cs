@@ -657,7 +657,7 @@ namespace TQM
                             consolItems.otherThanSpinning = true;
                         }
 
-                        OverallConsolidatedReports.Add(consolItems);
+                        //OverallConsolidatedReports.Add(consolItems);
 
                         ListOfConsolidatedReports = OverallConsolidatedReports;
                     }
@@ -1420,6 +1420,8 @@ namespace TQM
                     pdfGrid.Rows[pageRecordCount].Cells[10].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[pageRecordCount].Cells[10].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
 
+                    /**************************** Overall total ****************************
+                     
                     if (rowCount == overallReportList.Count)
                     {
                         pdfGrid.Rows[pageRecordCount].Cells[0].Style.Borders.All = PdfPens.Transparent;
@@ -1446,6 +1448,9 @@ namespace TQM
                         pdfGrid.Rows[pageRecordCount].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
                         pdfGrid.Rows[pageRecordCount].Cells[10].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
                     }
+                    
+                    **************************** End of Overall total *****************************/
+
                     rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
                     if (rowHeights <= 700 && rowCount == overallReportList.Count)
                     {

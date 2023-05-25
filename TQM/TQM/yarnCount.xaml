@@ -3,11 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TQM.yarnCount" BackgroundColor="white" 
              xmlns:effects="clr-namespace:TQM.Effects" NavigationPage.HasBackButton="False">
-    
+
     <NavigationPage.TitleView>
         <StackLayout BackgroundColor="White">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -16,23 +19,30 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
-                <Label Grid.Row="0" Grid.Column="2" Text="Wrapping" FontSize="25" TextColor="ForestGreen" 
+                <Label Grid.Row="0" Grid.Column="2" Text="Wrapping" FontSize="18" TextColor="ForestGreen" Margin="10,0,0,0"
                        VerticalTextAlignment="Center" HorizontalOptions="Start" />
                 <Label Grid.Row="0" Grid.Column="3" Text="Test ID :" FontSize="18" TextColor="#0e0273" 
                        VerticalTextAlignment="Center" HorizontalOptions="Start" />
-                <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Text="" FontSize="16" TextColor="ForestGreen" Margin="65,0"
+                <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Text="9999999" FontSize="16" TextColor="ForestGreen" Margin="65,0"
                        VerticalTextAlignment="Center" HorizontalOptions="Start" x:Name="lbl_TestID" />
-                <Button Grid.Row="0" Grid.RowSpan="3" Grid.Column="4" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Start" 
+                <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="4" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Start" 
+                        Padding="2,5,2,5" Margin="0,10,0,20"
                         x:Name="testYCButton"  Clicked="testYCButton_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="25"/>
+                <Label Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="4" Text="" 
+                       FontSize="16" TextColor="ForestGreen" x:Name="lbl_un" Margin="0,-25,0,0"
+                       HorizontalOptions="Center" VerticalTextAlignment="Center" />
             </Grid>
         </StackLayout>
+        
     </NavigationPage.TitleView>
 
 
     <StackLayout>
+       
         <!--<Label Text="Yarn Count Calulator"
                 HorizontalOptions="Center"
                Margin="0,30"
@@ -379,5 +389,6 @@
         </Grid>
 
     </StackLayout>
+    
 
 </ContentPage>
