@@ -937,26 +937,26 @@ namespace TQM
 
                 if (lbl_userfield1.IsVisible)
                 {
-                    uf_name_1 = lbl_userfield1.Text;
-                    uf_value_1 = entry_userfield1.Text;
+                    uf_name_1 = lbl_userfield1.Text.Trim();
+                    uf_value_1 = entry_userfield1.Text.Trim();
                 }
 
                 if (lbl_userfield2.IsVisible)
                 {
-                    uf_name_2 = lbl_userfield2.Text;
-                    uf_value_2 = entry_userfield2.Text;
+                    uf_name_2 = lbl_userfield2.Text.Trim();
+                    uf_value_2 = entry_userfield2.Text.Trim();
                 }
 
                 if (lbl_userfield3.IsVisible)
                 {
-                    uf_name_3 = lbl_userfield3.Text;
-                    uf_value_3 = entry_userfield3.Text;
+                    uf_name_3 = lbl_userfield3.Text.Trim();
+                    uf_value_3 = entry_userfield3.Text.Trim();
                 }
 
                 if (lbl_userfield4.IsVisible)
                 {
-                    uf_name_4 = lbl_userfield4.Text;
-                    uf_value_4 = entry_userfield4.Text;
+                    uf_name_4 = lbl_userfield4.Text.Trim();
+                    uf_value_4 = entry_userfield4.Text.Trim();
                 }
 
                 YarnCountConfigModel yarnCountConfigModel = new YarnCountConfigModel()
