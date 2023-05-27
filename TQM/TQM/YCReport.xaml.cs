@@ -45,6 +45,14 @@ namespace TQM
         private bool consolidatedReport = false;
         private DateTime reportStartDate;
         private DateTime reportEndDate;
+        private string CON_UF_NAME_1 = null;
+        private string CON_UF_NAME_2 = null;
+        private string CON_UF_NAME_3 = null;
+        private string CON_UF_NAME_4 = null;
+        private string CON_UF_VAL_1 = null;
+        private string CON_UF_VAL_2 = null;
+        private string CON_UF_VAL_3 = null;
+        private string CON_UF_VAL_4 = null;
 
         public YCReport()
         {
@@ -263,6 +271,7 @@ namespace TQM
                         }
                         if (UFVAL1 != "" && UFVAL1 != null)
                         {
+                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_1 != null).ToList();
                             ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_1.ToLower() == UFVAL1.ToLower()).ToList();
                         }
                         if (ycTestSummaryModels.Count == 0)
@@ -272,6 +281,7 @@ namespace TQM
                         }
                         if (UFVAL2 != "" && UFVAL2 != null)
                         {
+                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_2 != null).ToList();
                             ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_2.ToLower() == UFVAL2.ToLower()).ToList();
                         }
                         if (ycTestSummaryModels.Count == 0)
@@ -281,6 +291,7 @@ namespace TQM
                         }
                         if (UFVAL3 != "" && UFVAL3 != null)
                         {
+                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_3 != null).ToList();
                             ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_3.ToLower() == UFVAL3.ToLower()).ToList();
                         }
                         if (ycTestSummaryModels.Count == 0)
@@ -290,6 +301,7 @@ namespace TQM
                         }
                         if (UFVAL4 != "" && UFVAL4 != null)
                         {
+                            ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_4 != null).ToList();
                             ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_4.ToLower() == UFVAL4.ToLower()).ToList();
                         }
                         if (ycTestSummaryModels.Count == 0)
@@ -327,15 +339,92 @@ namespace TQM
                                 {
                                     if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
                                     {
-                                        lbl_con_Hank.Text = "Avg. COUNT : ";
+                                        //lbl_con_Hank.Text = "Avg. COUNT : ";
                                         lbl_conStdHank.Text = "Std. Count";
                                         lbl_conAvgHank.Text = "Avg. Count";
                                     }
                                     else
                                     {
-                                        lbl_con_Hank.Text = "Avg. HANK : ";
+                                        //lbl_con_Hank.Text = "Avg. HANK : ";
                                         lbl_conStdHank.Text = "Std. Hank";
                                         lbl_conAvgHank.Text = "Avg. Hank";
+                                    }
+
+                                    if (UFVAL1 != "" && UFVAL1 != null)
+                                    {
+                                        YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                        Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
+                                                                                        YarnCountConfigModel.uf_name_1 != "")
+                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                        if (ycConfig_uf != null)
+                                        {
+                                            CON_UF_NAME_1 = ycConfig_uf.uf_name_1;
+                                            CON_UF_VAL_1 = UFVAL1;
+                                        }
+                                        else
+                                        {
+                                            CON_UF_NAME_1 = null;
+                                            CON_UF_VAL_1 = null;
+                                        }
+                                    }
+                                    if (UFVAL2 != "" && UFVAL2 != null)
+                                    {
+                                        YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                        Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_2 != null ||
+                                                                                        YarnCountConfigModel.uf_name_2 != "")
+                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                        if (ycConfig_uf != null)
+                                        {
+                                            CON_UF_NAME_2 = ycConfig_uf.uf_name_2;
+                                            CON_UF_VAL_2 = UFVAL2;
+                                        }
+                                        else
+                                        {
+                                            CON_UF_NAME_2 = null;
+                                            CON_UF_VAL_2 = null;
+                                        }
+                                    }
+                                    if (UFVAL3 != "" && UFVAL3 != null)
+                                    {
+                                        YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                        Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_3 != null ||
+                                                                                        YarnCountConfigModel.uf_name_3 != "")
+                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                        if (ycConfig_uf != null)
+                                        {
+                                            CON_UF_NAME_3 = ycConfig_uf.uf_name_3;
+                                            CON_UF_VAL_3 = UFVAL3;
+                                        }
+                                        else
+                                        {
+                                            CON_UF_NAME_3 = null;
+                                            CON_UF_VAL_3 = null;
+                                        }
+                                    }
+                                    if (UFVAL4 != "" && UFVAL4 != null)
+                                    {
+                                        YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                        Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_4 != null ||
+                                                                                        YarnCountConfigModel.uf_name_4 != "")
+                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                        if (ycConfig_uf != null)
+                                        {
+                                            CON_UF_NAME_4 = ycConfig_uf.uf_name_4;
+                                            CON_UF_VAL_4 = UFVAL4;
+                                        }
+                                        else
+                                        {
+                                            CON_UF_NAME_4 = null;
+                                            CON_UF_VAL_4 = null;
+                                        }
                                     }
                                 }
 
@@ -674,11 +763,121 @@ namespace TQM
                 listview_tcConsolidatedReport.ItemsSource = null;
                 if (consolidatedReport)
                 {
-                    lbl_totalTest.Text = TOT_TEST.ToString();
-                    lbl_AvgHank.Text = CON_HANK.ToString();
-                    lbl_AvgSD.Text = CON_STD_DEV.ToString();
-                    lbl_AvgCV.Text = CON_CV.ToString();
-                    //grid_consolidated.IsVisible = true;
+                    //lbl_totalTest.Text = TOT_TEST.ToString();
+                    //lbl_AvgHank.Text = CON_HANK.ToString();
+                    //lbl_AvgSD.Text = CON_STD_DEV.ToString();
+                    //lbl_AvgCV.Text = CON_CV.ToString();
+
+                    if (((CON_UF_NAME_1 != null && CON_UF_NAME_1 != "") && (CON_UF_VAL_1 != null && CON_UF_VAL_1 != "")) ||
+                        ((CON_UF_NAME_2 != null && CON_UF_NAME_2 != "") && (CON_UF_VAL_2 != null && CON_UF_VAL_2 != "")) ||
+                        ((CON_UF_NAME_3 != null && CON_UF_NAME_3 != "") && (CON_UF_VAL_3 != null && CON_UF_VAL_3 != "")) ||
+                        ((CON_UF_NAME_4 != null && CON_UF_NAME_4 != "") && (CON_UF_VAL_4 != null && CON_UF_VAL_4 != "")))
+                    {
+                        grid_consolidated.IsVisible = true;
+                    }
+
+                    if (CON_UF_VAL_1 != null)
+                    {
+                        lbl_uf_name_1.IsVisible = true;
+                        lbl_uf_value_1.IsVisible = true;
+                        lbl_uf_name_1.Text = CON_UF_NAME_1;
+                        lbl_uf_value_1.Text = CON_UF_VAL_1;
+                    }
+                    if (CON_UF_VAL_1 == null)
+                    {
+                        lbl_uf_name_1.IsVisible = false;
+                        lbl_uf_value_1.IsVisible = false;
+                        if (CON_UF_VAL_2 != null)
+                        {
+                            lbl_uf_name_2_col1.IsVisible = true;
+                            lbl_uf_value_2_col1.IsVisible = true;
+                            lbl_uf_name_2_col1.Text = CON_UF_NAME_2;
+                            lbl_uf_value_2_col1.Text = CON_UF_VAL_2;
+                            lbl_uf_name_2_col2.IsVisible = false;
+                            lbl_uf_value_2_col2.IsVisible = false;
+                        }
+                    }
+                    else
+                    {
+                        if (CON_UF_VAL_2 != null)
+                        {
+                            lbl_uf_name_2_col2.IsVisible = true;
+                            lbl_uf_value_2_col2.IsVisible = true;
+                            lbl_uf_name_2_col2.Text = CON_UF_NAME_2;
+                            lbl_uf_value_2_col2.Text = CON_UF_VAL_2;
+                            lbl_uf_name_2_col1.IsVisible = false;
+                            lbl_uf_value_2_col1.IsVisible = false;
+                        }
+                        else
+                        {
+                            lbl_uf_name_2_col2.IsVisible = false;
+                            lbl_uf_value_2_col2.IsVisible = false;
+                            lbl_uf_name_2_col1.IsVisible = false;
+                            lbl_uf_value_2_col1.IsVisible = false;
+                        }
+                    }
+
+                    if (CON_UF_VAL_1 == null && CON_UF_VAL_2 == null)
+                    {
+                        if (CON_UF_VAL_3 != null)
+                        {
+                            lbl_uf_name_3_row1.IsVisible = true;
+                            lbl_uf_value_3_row1.IsVisible = true;
+                            lbl_uf_name_3_row1.Text = CON_UF_NAME_3;
+                            lbl_uf_value_3_row1.Text = CON_UF_VAL_3;
+                            lbl_uf_name_3_row2.IsVisible = false;
+                            lbl_uf_value_3_row2.IsVisible = false;
+                            if (CON_UF_VAL_4 != null)
+                            {
+                                lbl_uf_name_4_row1_col2.IsVisible = true;
+                                lbl_uf_value_4_row1_col2.IsVisible = true;
+                                lbl_uf_name_4_row1_col2.Text = CON_UF_NAME_3;
+                                lbl_uf_value_4_row1_col2.Text = CON_UF_VAL_3;
+                                lbl_uf_name_4_row2_col2.IsVisible = false;
+                                lbl_uf_value_4_row2_col2.IsVisible = false;
+                            }
+                            else
+                            {
+                                lbl_uf_name_4_row1_col2.IsVisible = false;
+                                lbl_uf_value_4_row1_col2.IsVisible = false;
+                                lbl_uf_name_4_row2_col2.IsVisible = false;
+                                lbl_uf_value_4_row2_col2.IsVisible = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (CON_UF_VAL_3 != null)
+                        {
+                            lbl_uf_name_3_row2.IsVisible = true;
+                            lbl_uf_value_3_row2.IsVisible = true;
+                            lbl_uf_name_3_row2.Text = CON_UF_NAME_3;
+                            lbl_uf_value_3_row2.Text = CON_UF_VAL_3;
+                            lbl_uf_name_3_row1.IsVisible = false;
+                            lbl_uf_value_3_row1.IsVisible = false;
+                            if (CON_UF_VAL_4 != null)
+                            {
+                                lbl_uf_name_4_row2_col2.IsVisible = true;
+                                lbl_uf_value_4_row2_col2.IsVisible = true;
+                                lbl_uf_name_4_row2_col2.Text = CON_UF_NAME_3;
+                                lbl_uf_value_4_row2_col2.Text = CON_UF_VAL_3;
+                                lbl_uf_name_4_row1_col2.IsVisible = false;
+                                lbl_uf_value_4_row1_col2.IsVisible = false;
+                            }
+                            else
+                            {
+                                lbl_uf_name_4_row2_col2.IsVisible = false;
+                                lbl_uf_value_4_row2_col2.IsVisible = false;
+                                lbl_uf_name_4_row1_col2.IsVisible = false;
+                                lbl_uf_value_4_row1_col2.IsVisible = false;
+                            }
+                        }
+                        else
+                        {
+                            lbl_uf_name_3_row2.IsVisible = false;
+                            lbl_uf_value_3_row2.IsVisible = false;
+                        }
+                    }
 
                     listview_tcreport.IsVisible = false;
                     listview_tcConsolidatedReport.IsVisible = true;
@@ -1454,11 +1653,11 @@ namespace TQM
                     rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
                     if (rowHeights <= 700 && rowCount == overallReportList.Count)
                     {
-                        result = pdfGrid.Draw(pdfPage, new PointF(10, 55), layoutFormat);
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, 75), layoutFormat);
                     }
                     else if ((rowHeights >= 670 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
                     {
-                        result = pdfGrid.Draw(pdfPage, new PointF(10, 55), layoutFormat);
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, 75), layoutFormat);
                         pdfPage = pdfDocument.Pages.Add();
                         pageRecordCount = 0;
                         rowHeights = 0;
@@ -1515,7 +1714,7 @@ namespace TQM
 
             for (int i = 0; i < pdfDocument.PageCount; i++)
             {
-                RectangleF bounds = new RectangleF(0, 0, pdfDocument.Pages[i].GetClientSize().Width, 50);
+                RectangleF bounds = new RectangleF(0, 0, pdfDocument.Pages[i].GetClientSize().Width, 70);
                 PdfPageTemplateElement header = new PdfPageTemplateElement(bounds);
                 //Stream imageStream = App.Current.GetType().Assembly.GetManifestResourceStream("TQM.Assets.SasthaLogo.jpg");
                 //PdfImage image = new PdfBitmap(imageStream);
@@ -1526,11 +1725,59 @@ namespace TQM
                 header.Graphics.DrawString(companyName, font, brush, new PointF(10, 0));
                 //Title Starts
                 PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
+                PdfFont font_rn_uf = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Regular);
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
                 if (consolidatedReport)
                 {
                     header.Graphics.DrawString("Con. Wrappping Report - " + selectedMachineCategory + " (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(135, 20));
                     header.Graphics.DrawString("Date: " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(200, 36));
+                    if (CON_UF_NAME_1 != null && CON_UF_NAME_1 != "")
+                    {
+                        //header.Graphics.DrawString("Lot Number" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(10, 48));
+                        //header.Graphics.DrawString("Material" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(285, 48));
+                        //header.Graphics.DrawString("Lot Number" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(10, 58));
+                        //header.Graphics.DrawString("Material" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(285, 58));
+
+                        header.Graphics.DrawString(CON_UF_NAME_1 + ": " + CON_UF_VAL_1, font_rn, brush_rn, new PointF(10, 48));
+                        if (CON_UF_NAME_2 != null && CON_UF_NAME_2 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_2 + ": " + CON_UF_VAL_2, font_rn, brush_rn, new PointF(285, 48));
+                        }
+                    }
+                    if ((CON_UF_NAME_1 == null || CON_UF_NAME_1 == "") && CON_UF_NAME_2 != null && CON_UF_NAME_2 != "")
+                    {
+                        header.Graphics.DrawString(CON_UF_NAME_2 + ": " + CON_UF_VAL_2, font_rn, brush_rn, new PointF(10, 48));
+                    }
+                    if ((CON_UF_NAME_1 != null && CON_UF_NAME_1 != "") || (CON_UF_NAME_2 != null && CON_UF_NAME_2 != ""))
+                    {
+                        if (CON_UF_NAME_3 != null && CON_UF_NAME_3 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_3 + ": " + CON_UF_VAL_3, font_rn, brush_rn, new PointF(10, 58));
+                            if (CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                            {
+                                header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(285, 58));
+                            }
+                        }
+                        if ((CON_UF_NAME_3 == null || CON_UF_NAME_3 == "") && CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(10, 58));
+                        }
+                    }
+                    else
+                    {
+                        if (CON_UF_NAME_3 != null && CON_UF_NAME_3 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_3 + ": " + CON_UF_VAL_3, font_rn, brush_rn, new PointF(10, 48));
+                            if (CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                            {
+                                header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(285, 48));
+                            }
+                        }
+                        if ((CON_UF_NAME_3 == null || CON_UF_NAME_3 == "") && CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(10, 48));
+                        }
+                    }
                 }
                 else
                 {
