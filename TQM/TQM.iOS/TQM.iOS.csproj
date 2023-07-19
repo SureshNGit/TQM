@@ -129,13 +129,13 @@
     <PackageReference Include="sqlite-net-pcl">
       <Version>1.8.116</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2196" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.7.0" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2578" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.7.7" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\TQM\TQM.csproj">
-      <Project>{C432CAE4-E998-48E6-8BEF-7190BC2ADDC9}</Project>
+      <Project>{7D77E224-9A6F-4ADD-B07F-5D53A0ABF6E6}</Project>
       <Name>TQM</Name>
     </ProjectReference>
   </ItemGroup>

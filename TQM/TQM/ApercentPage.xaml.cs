@@ -166,7 +166,7 @@ namespace TQM
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
-                                entry_standardApercent.IsEnabled = false;
+                                entry_standardApercent.IsEnabled = true;
                                 currentTestID = lastTest.testID;
                                 entry_testcount.Text = lastTest.totaltestcount.ToString();
                                 entry_testcount.IsEnabled = false;
@@ -213,7 +213,7 @@ namespace TQM
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
-                                entry_standardApercent.IsEnabled = false;
+                                entry_standardApercent.IsEnabled = true;
                                 currentTestID = lastTest.testID;
                                 entry_testcount.Text = lastTest.totaltestcount.ToString();
                                 entry_testcount.IsEnabled = false;
@@ -243,7 +243,7 @@ namespace TQM
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
-                                entry_standardApercent.IsEnabled = false;
+                                entry_standardApercent.IsEnabled = true;
                                 currentTestID = lastTest.testID;
                                 entry_testcount.Text = lastTest.totaltestcount.ToString();
                                 entry_testcount.IsEnabled = false;
@@ -290,7 +290,7 @@ namespace TQM
                                 picker_machinename.IsEnabled = false;
                                 picker_shift.IsEnabled = false;
                                 picker_process.IsEnabled = false;
-                                entry_standardApercent.IsEnabled = false;
+                                entry_standardApercent.IsEnabled = true;
                                 currentTestID = lastTest.testID;
                                 entry_testcount.Text = lastTest.totaltestcount.ToString();
                                 entry_testcount.IsEnabled = false;
@@ -351,7 +351,7 @@ namespace TQM
             if (mCat == "" && mid == Guid.Empty && mac == "")
             {
                 lbl_countsysname.Text = "";
-                lbl_yarncountunit.Text = "";
+                picker_yarncountunit.SelectedIndex = 0;
                 entry_yarnlen.Text = "";
                 entry_testcount.Text = "";
                 picker_shift.SelectedIndex = 0;
@@ -371,7 +371,7 @@ namespace TQM
                     entry_standardApercent.Text = formatDecimal(yarncountconfigmodel.standardApercent).ToString();
                     STD_APERCENT_CURR = formatDecimal(yarncountconfigmodel.standardApercent);
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
-                    lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
+                    picker_yarncountunit.SelectedItem = yarncountconfigmodel.yarnlenunit.ToString();
                     if (mCat == "Simplex/SpeedFrame")
                     {
                         entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
@@ -425,7 +425,7 @@ namespace TQM
                 {
                     DisplayAlert("Settings Alert!!!", "Settings not saved for selected machine (" + mac + ")", "Okay");
                     lbl_countsysname.Text = "";
-                    lbl_yarncountunit.Text = "";
+                    picker_yarncountunit.SelectedIndex = 0;
                     entry_yarnlen.Text = "";
                     entry_testcount.Text = "";
                     picker_shift.SelectedIndex = 0;
@@ -1154,7 +1154,7 @@ namespace TQM
                                     picker_process.SelectedIndex = 0;
                                     picker_process.IsEnabled = true;
                                     //entry_standardApercent.Text = "0.0000";
-                                    entry_standardApercent.IsEnabled = false;
+                                    entry_standardApercent.IsEnabled = true;
                                 }
                             }
                         }
@@ -1187,6 +1187,11 @@ namespace TQM
             if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
             {
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                return;
+            }
+            if (picker_yarncountunit.SelectedIndex <= 0)
+            {
+                await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
                 return;
             }
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
@@ -1283,7 +1288,7 @@ namespace TQM
                 }
             }
             selectedSysName = lbl_countsysname.Text;
-            selectedCountUnit = lbl_yarncountunit.Text;
+            selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
@@ -1302,7 +1307,7 @@ namespace TQM
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
-            entry_standardApercent.IsEnabled = false;
+            entry_standardApercent.IsEnabled = true;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -1741,6 +1746,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
                 return;
             }
+            if (picker_yarncountunit.SelectedIndex <= 0)
+            {
+                await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
+                return;
+            }
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
@@ -1825,7 +1835,7 @@ namespace TQM
                 }
             }
             selectedSysName = lbl_countsysname.Text;
-            selectedCountUnit = lbl_yarncountunit.Text;
+            selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
@@ -1844,7 +1854,7 @@ namespace TQM
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
-            entry_standardApercent.IsEnabled = false;
+            entry_standardApercent.IsEnabled = true;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -1865,6 +1875,11 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
                 return;
             }
+            if (picker_yarncountunit.SelectedIndex <= 0)
+            {
+                await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
+                return;
+            }
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
@@ -1949,7 +1964,7 @@ namespace TQM
                 }
             }
             selectedSysName = lbl_countsysname.Text;
-            selectedCountUnit = lbl_yarncountunit.Text;
+            selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
@@ -1968,7 +1983,7 @@ namespace TQM
             picker_machinename.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
-            entry_standardApercent.IsEnabled = false;
+            entry_standardApercent.IsEnabled = true;
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));

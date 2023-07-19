@@ -188,7 +188,7 @@ namespace TQM
             {
                 selectedDeviationPercent = 0m;
                 lbl_countsysname.Text = "";
-                lbl_yarncountunit.Text = "";
+                picker_yarncountunit.SelectedIndex = 0;
                 entry_yarnlen.Text = "";
                 entry_testcount.Text = "";
                 picker_shift.SelectedIndex = 0;
@@ -207,7 +207,7 @@ namespace TQM
                 {
                     selectedDeviationPercent = yarncountconfigmodel.deviationPercent;
                     lbl_countsysname.Text = yarncountconfigmodel.countsysname;
-                    lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
+                    picker_yarncountunit.SelectedItem = yarncountconfigmodel.yarnlenunit.ToString();
                     if (mCat == "Simplex/SpeedFrame")
                     {
                         entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
@@ -265,7 +265,7 @@ namespace TQM
                 {
                     DisplayAlert("Settings Alert!!!", "Settings not saved for selected machine (" + mac + ")", "Okay");
                     lbl_countsysname.Text = "";
-                    lbl_yarncountunit.Text = "";
+                    picker_yarncountunit.SelectedIndex = 0;
                     entry_yarnlen.Text = "";
                     entry_testcount.Text = "";
                     picker_shift.SelectedIndex = 0;
@@ -581,7 +581,7 @@ namespace TQM
                     entry_yarnlen.IsEnabled = false;
                     entry_testcount.IsEnabled = true;
                     entry_testcount.Text = TESTCOUNT.ToString();
-                    entry_standardHank.IsEnabled = false;
+                    entry_standardHank.IsEnabled = true;
                     entry_standardHank.Text = STD_HANK_CURR.ToString();
                     picker_machinecategory.IsEnabled = true;
                     //picker_machinecategory.SelectedIndex = 0;
@@ -639,6 +639,11 @@ namespace TQM
             if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
             {
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                return;
+            }
+            if (picker_yarncountunit.SelectedIndex <= 0)
+            {
+                await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
                 return;
             }
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
@@ -744,7 +749,7 @@ namespace TQM
                 }
             }
             selectedSysName = lbl_countsysname.Text;
-            selectedCountUnit = lbl_yarncountunit.Text;
+            selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             STD_HANK_CURR = decimal.Parse(entry_standardHank.Text);
@@ -759,7 +764,7 @@ namespace TQM
             testYCButton.BackgroundColor = Color.SlateGray;
             entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
-            entry_standardHank.IsEnabled = false;
+            entry_standardHank.IsEnabled = true;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;

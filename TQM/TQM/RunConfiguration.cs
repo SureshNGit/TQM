@@ -4,8 +4,8 @@
     {
         //Demo balance serail no: G85219651634
         //Test balance serail no: DS85222849198
-        private string balanceSerialNo = "G85223867542";
-        private string tqmAppUserID = "veebeeyarnntexunit2";
+        private string balanceSerialNo = "DS85222849198";
+        private string tqmAppUserID = "tqmuser";
 
         public string getBalanceSerialNo()
         {

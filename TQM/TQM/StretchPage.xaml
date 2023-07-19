@@ -133,8 +133,21 @@
 
             <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_countsysname" Text="" FontSize="16" IsEnabled="False"
                    TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
-            <Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarncountunit" Text="" FontSize="16" IsEnabled="False"
-                   TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
+            <!--<Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarncountunit" Text="" FontSize="16" IsEnabled="False"
+                   TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>-->
+            <Picker Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1"
+                    x:Name="picker_yarncountunit" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String></x:String>
+                        <x:String>Yard</x:String>
+                        <x:String>Meter</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+                <Picker.Effects>
+                    <effects:PlainEntry/>
+                </Picker.Effects>
+            </Picker>
             <!--<Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarnlen" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50" />-->
             <Entry Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_yarnlen" TextColor="Green" FontSize="16" Keyboard="Numeric"
                  HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="False">
@@ -216,7 +229,7 @@
             </Picker>
 
             <Entry Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_standardStretch" TextColor="Green" FontSize="16" Keyboard="Numeric"
-                 HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="False">
+                 HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
