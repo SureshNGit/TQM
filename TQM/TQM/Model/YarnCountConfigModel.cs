@@ -34,6 +34,7 @@ namespace TQM.Model
         public decimal standardApercent { get; set; }
         public int testcountStretch { get; set; }
         public decimal standardStretch { get; set; }
+        public decimal stretchDeviation { get; set; }
         public int testcountNoils { get; set; }
         public decimal standardNoils { get; set; }
         public decimal noilsRange { get; set; }

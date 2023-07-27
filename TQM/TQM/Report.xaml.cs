@@ -123,14 +123,58 @@ namespace TQM
                 string testID = "";
                 if (entry_testID.Text.Trim() != "")
                 {
+                    //if (entry_testID.Text.Contains("."))
+                    //{
+                    //    DisplayAlert("Attention", "Test ID should not be decimal", "OK");
+                    //    return;
+                    //}
+                    //else
+                    //{
+                        testID = entry_testID.Text.Trim();
+                    //}
                     if (entry_testID.Text.Contains("."))
                     {
-                        DisplayAlert("Attention", "Test ID should not be decimal", "OK");
+                        long startTestID = long.Parse(testID.Split('.')[0]);
+                        long endTestID = long.Parse(testID.Split('.')[1]);
+                        if (startTestID > endTestID)
+                        {
+                            DisplayAlert("Notice", "Invalid. Start Test ID should be less than End Test ID!!!", "OK");
+                            return;
+                        }
+                    }
+                }
+                string matType = "";
+                if (picker_matType.SelectedItem != null)
+                {
+                    matType = picker_matType.SelectedItem.ToString();
+                }
+                string materialLength = "";
+                if (entry_materialLength.Text.Trim() != "")
+                {
+                    if (entry_materialLength.Text.Contains("."))
+                    {
+                        DisplayAlert("Attention", "Unit length should not be decimal", "OK");
                         return;
                     }
                     else
                     {
-                        testID = entry_testID.Text.Trim();
+                        materialLength = entry_materialLength.Text.Trim();
+                    }
+                }
+                if (matType != "")
+                {
+                    if (materialLength == "")
+                    {
+                        DisplayAlert("Attention", "Unit length should not be blank if Unit is selected", "OK");
+                        return;
+                    }
+                }
+                if (materialLength != "")
+                {
+                    if (matType == "")
+                    {
+                        DisplayAlert("Attention", "Unit should not be blank if Unit length is entered", "OK");
+                        return;
                     }
                 }
                 string standHank = "";
@@ -209,7 +253,7 @@ namespace TQM
                         }
                     }
                     Navigation.PushAsync(new YCReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, standHank, false, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, standHank, false, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
@@ -309,6 +353,40 @@ namespace TQM
                         testID = entry_testID.Text.Trim();
                     }
                 }
+                string matType = "";
+                if (picker_matType.SelectedItem != null)
+                {
+                    matType = picker_matType.SelectedItem.ToString();
+                }
+                string materialLength = "";
+                if (entry_materialLength.Text.Trim() != "")
+                {
+                    if (entry_materialLength.Text.Contains("."))
+                    {
+                        DisplayAlert("Attention", "Unit length should not be decimal", "OK");
+                        return;
+                    }
+                    else
+                    {
+                        materialLength = entry_materialLength.Text.Trim();
+                    }
+                }
+                if(matType != "")
+                {
+                    if (materialLength == "")
+                    {
+                        DisplayAlert("Attention", "Unit length should not be blank if Unit is selected", "OK");
+                        return;
+                    }
+                }
+                if (materialLength != "")
+                {
+                    if (matType == "")
+                    {
+                        DisplayAlert("Attention", "Unit should not be blank if Unit length is entered", "OK");
+                        return;
+                    }
+                }
                 string standHank = "";
                 if (entry_standHank.Text.Trim() != "")
                 {
@@ -385,7 +463,7 @@ namespace TQM
                         }
                     }
                     Navigation.PushAsync(new YCReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, standHank, true, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, standHank, true, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {

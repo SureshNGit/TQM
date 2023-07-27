@@ -38,6 +38,7 @@ namespace TQM.Model
         public int totaltestcount { get; set; }
 
         public decimal standardStretch { get; set; }
+        public decimal stretchDeviation { get; set; }
 
         public decimal avg_weight_IB { get; set; }
 
