@@ -1,5 +1,4 @@
-﻿using Android.Widget;
-using Plugin.Connectivity;
+﻿using Plugin.Connectivity;
 using RestSharp;
 using SQLite;
 using System;
@@ -72,7 +71,7 @@ namespace TQM
             {
                 if (title.ToLower().Contains("fail"))
                 {
-                    Toast.MakeText(Android.App.Application.Context, msg, ToastLength.Short).Show();
+                    //Toast.MakeText(Android.App.Application.Context, msg, ToastLength.Short).Show();
                 }
             });
         }
@@ -81,7 +80,7 @@ namespace TQM
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                Toast.MakeText(Android.App.Application.Context, msg, ToastLength.Short).Show();
+                //Toast.MakeText(Android.App.Application.Context, msg, ToastLength.Short).Show();
             });
         }
 

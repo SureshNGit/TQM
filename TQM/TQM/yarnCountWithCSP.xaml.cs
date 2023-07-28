@@ -1,4 +1,6 @@
 ﻿using Android.Bluetooth;
+using Android.Text;
+using Android.Widget;
 using Java.IO;
 //using Java.Lang;
 using Java.Util;
@@ -1213,9 +1215,27 @@ namespace TQM
             }
         }
 
+        private async Task showToast(string msg)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                Toast.MakeText(Android.App.Application.Context,
+                     Html.FromHtml("<font color='#4AFD02'><b>" + msg + "</b></font>"),
+                     ToastLength.Long).Show();
+            });
+        }
+
         [Obsolete]
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
+
+            //showToast
+            CancellationTokenSource src_t = new CancellationTokenSource();
+            CancellationToken ct_t = src_t.Token;
+            ct_t.Register(() => Debug.WriteLine("Initializing Test"));
+            await Task.Run(async () => await Task.FromResult(showToast("Initializing the test please wait......")), ct_t);
+            src_t.Cancel();
+            //showToast End
 
             ImageNotification("null");
             UpdateUserNotification("");
@@ -1295,6 +1315,15 @@ namespace TQM
                 return;
             }
             disposeble();
+
+            //showToast
+            src_t = new CancellationTokenSource();
+            ct_t = src_t.Token;
+            ct_t.Register(() => Debug.WriteLine("Initializing Test"));
+            await Task.Run(async () => await Task.FromResult(showToast("Initializing the test please wait......")), ct_t);
+            src_t.Cancel();
+            //showToast End
+
             if (!initializeBluetooth(runConfiguration.getLoadCellSerailNo()))
             {
                 ImageNotification("red.png");
@@ -1331,6 +1360,15 @@ namespace TQM
                 UpdateUserNotification("Balance - COMMUNICATION ERROR!!!");
                 return;
             }
+
+            //showToast
+            src_t = new CancellationTokenSource();
+            ct_t = src_t.Token;
+            ct_t.Register(() => Debug.WriteLine("Initializing Test"));
+            await Task.Run(async () => await Task.FromResult(showToast("Initializing the test please wait......")), ct_t);
+            src_t.Cancel();
+            //showToast End
+
             //currentTarget = "YCB";
             string testCount_str = entry_testcount.Text;
             int testCount = int.Parse(testCount_str);
@@ -1381,6 +1419,14 @@ namespace TQM
                     }
                 }
             }
+
+            //showToast
+            src_t = new CancellationTokenSource();
+            ct_t = src_t.Token;
+            ct_t.Register(() => Debug.WriteLine("Initializing Test"));
+            await Task.Run(async () => await Task.FromResult(showToast("Initializing the test please wait......")), ct_t);
+            src_t.Cancel();
+            //showToast End
 
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = lbl_yarncountunit.Text.ToString().Split('/')[0].Trim();
