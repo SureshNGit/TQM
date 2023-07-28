@@ -1215,13 +1215,23 @@ namespace TQM
             }
         }
 
+        [Obsolete]
         private async Task showToast(string msg)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
                 Toast.MakeText(Android.App.Application.Context,
                      Html.FromHtml("<font color='#4AFD02'><b>" + msg + "</b></font>"),
-                     ToastLength.Long).Show();
+                     ToastLength.Short).Show();
+            });
+        }
+
+        private async Task showProgress(bool visibility = false)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                act_id.IsVisible = visibility;
+                act_id.IsRunning = visibility;
             });
         }
 
@@ -1229,16 +1239,24 @@ namespace TQM
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
 
+            ImageNotification("null");
+            UpdateUserNotification("");
+
+            //showProgress
+            CancellationTokenSource src_p = new CancellationTokenSource();
+            CancellationToken ct_p = src_p.Token;
+            ct_p.Register(() => Debug.WriteLine("Show progress"));
+            await Task.Run(async () => await Task.FromResult(showProgress(true)), ct_p);
+            src_p.Cancel();
+            //showProgress End
+
             //showToast
             CancellationTokenSource src_t = new CancellationTokenSource();
             CancellationToken ct_t = src_t.Token;
             ct_t.Register(() => Debug.WriteLine("Initializing Test"));
-            await Task.Run(async () => await Task.FromResult(showToast("Initializing the test please wait......")), ct_t);
+            await Task.Run(async () => await Task.FromResult(showToast("Initializing. Please wait......Do not press START again")), ct_t);
             src_t.Cancel();
             //showToast End
-
-            ImageNotification("null");
-            UpdateUserNotification("");
 
 
             isTestStarted = true;
@@ -1260,58 +1278,69 @@ namespace TQM
             if (lbl_countsysname.Text.Trim() != "Nec")
             {
                 await DisplayAlert("Attention", "Count system name/method should be 'NEC'. Please change it in Settings!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
 
             if (!lbl_yarncountunit.Text.Trim().Contains("Yard"))
             {
                 await DisplayAlert("Attention", "Lea measuring unit should be 'Yard'. Please change it in Settings !!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
 
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
             {
                 await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (int.Parse(entry_yarnlen.Text.Trim()) != 120 && int.Parse(entry_yarnlen.Text.Trim()) != 60)
             {
                 await DisplayAlert("Attention", "Yarn Length should be either 120 or 60 yards!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
             {
                 await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
             {
                 await DisplayAlert("Attention", "Standard Count is invalid. Please check!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
             {
                 await DisplayAlert("Attention", "Standard Count should not be blank or zero or negative!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
             {
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (picker_shift.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             disposeble();
@@ -1320,7 +1349,7 @@ namespace TQM
             src_t = new CancellationTokenSource();
             ct_t = src_t.Token;
             ct_t.Register(() => Debug.WriteLine("Initializing Test"));
-            await Task.Run(async () => await Task.FromResult(showToast("Initializing the test please wait......")), ct_t);
+            await Task.Run(async () => await Task.FromResult(showToast("Checking CSP communication. Please wait......Do not press START again")), ct_t);
             src_t.Cancel();
             //showToast End
 
@@ -1328,6 +1357,7 @@ namespace TQM
             {
                 ImageNotification("red.png");
                 UpdateUserNotification("CSP - COMMUNICATION ERROR!!!");
+                _ = showProgress(false);
                 return;
             }
             //READ INITIAL LOAD CELL VALUE
@@ -1343,6 +1373,7 @@ namespace TQM
                     ImageNotification("red.png");
                     UpdateUserNotification("COMMUNICATION ERROR!!!");
                     Debug.WriteLine("Read data failed");
+                    _ = showProgress(false);
                     return;
                 }
                 else
@@ -1354,20 +1385,23 @@ namespace TQM
 
             //END OF READ
             disposeble();
-            if (!initializeBluetooth(runConfiguration.getBalanceSerialNo()))
-            {
-                ImageNotification("red.png");
-                UpdateUserNotification("Balance - COMMUNICATION ERROR!!!");
-                return;
-            }
 
             //showToast
             src_t = new CancellationTokenSource();
             ct_t = src_t.Token;
             ct_t.Register(() => Debug.WriteLine("Initializing Test"));
-            await Task.Run(async () => await Task.FromResult(showToast("Initializing the test please wait......")), ct_t);
+            await Task.Run(async () => await Task.FromResult(showToast("Checking balance communication. Please wait......Do not press START again")), ct_t);
             src_t.Cancel();
             //showToast End
+
+            if (!initializeBluetooth(runConfiguration.getBalanceSerialNo()))
+            {
+                ImageNotification("red.png");
+                UpdateUserNotification("Balance - COMMUNICATION ERROR!!!");
+                _ = showProgress(false);
+                return;
+            }
+
 
             //currentTarget = "YCB";
             string testCount_str = entry_testcount.Text;
@@ -1411,6 +1445,7 @@ namespace TQM
                     if (loggedInUser == null)
                     {
                         await DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                        _ = showProgress(false);
                         return;
                     }
                     else
@@ -1419,14 +1454,6 @@ namespace TQM
                     }
                 }
             }
-
-            //showToast
-            src_t = new CancellationTokenSource();
-            ct_t = src_t.Token;
-            ct_t.Register(() => Debug.WriteLine("Initializing Test"));
-            await Task.Run(async () => await Task.FromResult(showToast("Initializing the test please wait......")), ct_t);
-            src_t.Cancel();
-            //showToast End
 
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = lbl_yarncountunit.Text.ToString().Split('/')[0].Trim();
@@ -1455,6 +1482,16 @@ namespace TQM
                 picker_machinename.IsEnabled = false;
             }
 
+            //showToast
+            src_t = new CancellationTokenSource();
+            ct_t = src_t.Token;
+            ct_t.Register(() => Debug.WriteLine("Initializing Test"));
+            await Task.Run(async () => await Task.FromResult(showToast("Reading data......Do not press START again")), ct_t);
+            src_t.Cancel();
+            //showToast End
+
+            _ = showProgress(false);
+
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -1462,11 +1499,12 @@ namespace TQM
             src.Cancel();
         }
 
+        [Obsolete]
         private async Task HandleTest(int testCount)
         {
             try
             {
-                ImageNotification("loading.gif");
+                //ImageNotification("loading.gif");
                 bool runResult = false;
                 int passCount = 0;
                 int startLoopCount = 0;
