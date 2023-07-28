@@ -1,4 +1,9 @@
 ﻿using Android.Bluetooth;
+using Android.Content;
+using Android.Graphics;
+using Android.Text;
+using Android.Views;
+using Android.Widget;
 using Java.IO;
 using Java.Util;
 using SQLite;
@@ -13,7 +18,10 @@ using System.Threading.Tasks;
 using TQM.Model;
 using TQM.ModelView;
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
+using static Android.Icu.Text.IDNA;
+using Color = Xamarin.Forms.Color;
 
 namespace TQM
 {
@@ -56,6 +64,7 @@ namespace TQM
         private bool isTestStarted = false;
         private dynamic currentTestStartTime = null;
         private RunConfiguration runConfiguration = new RunConfiguration();
+        private bool toastInitialize = false;
 
         public yarnCount()
         {
@@ -576,6 +585,7 @@ namespace TQM
                 if (dispose) { disposeble(); }
                 Device.BeginInvokeOnMainThread(() =>
                 {
+
                     testYCButton.IsEnabled = true;
                     testYCButton.BackgroundColor = Color.Green;
                     entry_yarnlen.IsEnabled = false;
@@ -625,86 +635,148 @@ namespace TQM
         }
 
         [Obsolete]
+        private async Task showToast(string msg)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+               Toast.MakeText(Android.App.Application.Context,
+                    Html.FromHtml("<font color='#4AFD02'><b>" + msg + "</b></font>"),
+                    ToastLength.Short).Show();
+            });
+        }
+
+        private async Task showProgress(bool visibility=false)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                act_id.IsVisible = visibility;
+                act_id.IsRunning = visibility;
+            });
+        }
+
+        [Obsolete]
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
+            ImageNotification("null");
+            UpdateUserNotification("");
+            hideFrames();
+
+            //showProgress
+            CancellationTokenSource src_p = new CancellationTokenSource();
+            CancellationToken ct_p = src_p.Token;
+            ct_p.Register(() => Debug.WriteLine("Show progress"));
+            await Task.Run(async () => await Task.FromResult(showProgress(true)), ct_p);
+            src_p.Cancel();
+            //showProgress End
+
+            //showToast
+            CancellationTokenSource src_t = new CancellationTokenSource();
+            CancellationToken ct_t = src_t.Token;
+            ct_t.Register(() => Debug.WriteLine("Initializing Test"));
+            await Task.Run(async () => await Task.FromResult(showToast("Initializing. Please wait......Do not press START again")), ct_t);
+            src_t.Cancel();
+            //showToast End
+
             currentTestStartTime = null;
             currentTestStartTime = DateTime.Now;
             lbl_TestID.Text = "";
             isTestStarted = true;
-            ImageNotification("null");
-            UpdateUserNotification("");
-            hideFrames();
+
+            
+
             await refListView(false);
             await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
+
+            
             if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
             {
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (picker_yarncountunit.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
             {
                 await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
             {
                 await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
             {
                 await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
             {
                 await DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
             {
                 await DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
             if (picker_shift.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
+                _ = showProgress(false);
                 return;
             }
-            //if (entry_standardHank.Text.Trim() == "" || int.Parse(entry_standardHank.Text.Trim()) == 0)
-            //{
-            //    await DisplayAlert("Attention", "Standard Hank should not be blank or zero!!!", "Ok");
-            //    return;
-            //}
+
+            if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) == 0.0m)
+            {
+                await DisplayAlert("Attention", "Standard Hank should not be blank or zero!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+
             //if (picker_process.SelectedIndex <= 0)
             //{
             //    await DisplayAlert("Attention", "Please select process info!!!", "Ok");
             //    return;
             //}
+
+            //showToast
+            src_t = new CancellationTokenSource();
+            ct_t = src_t.Token;
+            ct_t.Register(() => Debug.WriteLine("Initializing Test"));
+            await Task.Run(async () => await Task.FromResult(showToast("Checking communication. Please wait......Do not press START again")), ct_t);
+            src_t.Cancel();
+            //showToast End
+
             if (!initializeBluetooth())
             {
                 ImageNotification("red.png");
                 UpdateUserNotification("COMMUNICATION ERROR!!!");
+                _ = showProgress(false);
                 return;
             }
+
+           
+
             string testCount_str = entry_testcount.Text;
             int testCount = int.Parse(testCount_str);
-            //if (testCount_str == null || testCount_str == "")
-            //{
-            //    ImageNotification("red.png");
-            //    UpdateUserNotification("Test count cannot be zero!!!");
-            //    return;
-            //}
+
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 YCTestModel lastTestRecord = null;
@@ -741,6 +813,7 @@ namespace TQM
                 if (loggedInUser == null)
                 {
                     await DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                    _ = showProgress(false);
                     return;
                 }
                 else
@@ -748,6 +821,8 @@ namespace TQM
                     currentloggedInUser = loggedInUser;
                 }
             }
+            
+
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
             selectedYarnLen = int.Parse(entry_yarnlen.Text);
@@ -769,6 +844,17 @@ namespace TQM
             picker_process.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
+
+            //showToast
+            src_t = new CancellationTokenSource();
+            ct_t = src_t.Token;
+            ct_t.Register(() => Debug.WriteLine("Initializing Test"));
+            await Task.Run(async () => await Task.FromResult(showToast("Reading data......Do not press START again")), ct_t);
+            src_t.Cancel();
+            //showToast End
+
+            _ = showProgress(false);
+
             CancellationTokenSource src = new CancellationTokenSource();
             CancellationToken ct = src.Token;
             ct.Register(() => Debug.WriteLine("ConnectBluetoothToken"));
@@ -776,11 +862,12 @@ namespace TQM
             src.Cancel();
         }
 
+        [Obsolete]
         private async Task HandleTest(int testCount)
         {
             try
             {
-                ImageNotification("loading.gif");
+                //ImageNotification("loading.gif");
                 bool runResult = false;
                 int passCount = 0;
                 for (int i = 0; i < testCount; i++)

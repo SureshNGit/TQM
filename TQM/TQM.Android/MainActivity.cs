@@ -21,7 +21,8 @@ namespace TQM.Droid
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
 
-            if (!(CheckPermissionGranted(Manifest.Permission.WriteExternalStorage) &&
+            if (!(CheckPermissionGranted(Manifest.Permission.ManageExternalStorage) &&
+                CheckPermissionGranted(Manifest.Permission.WriteExternalStorage) &&
                     CheckPermissionGranted(Manifest.Permission.ReadExternalStorage) &&
                     CheckPermissionGranted(Manifest.Permission.AccessFineLocation) &&
                     CheckPermissionGranted(Manifest.Permission.AccessCoarseLocation) &&
@@ -39,8 +40,20 @@ namespace TQM.Droid
             string folderPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             string fullPath = Path.Combine(folderPath, dbName);
 
-            LoadApplication(new App(fullPath));
+            //string downloadsFolder = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+            //if (File.Exists(fullPath))
+            //{
+            //    File.Copy(fullPath, downloadsFolder);
+            //}
+            //else
+            //{
+            //    if(File.Exists(Path.Combine(downloadsFolder, dbName)))
+            //    {
+            //        File.Copy(Path.Combine(downloadsFolder, dbName), folderPath);
+            //    }
+            //}
 
+            LoadApplication(new App(fullPath));
 
         }
 
@@ -67,7 +80,8 @@ namespace TQM.Droid
 
         private void RequestAllPermission()
         {
-            if (ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.WriteExternalStorage) ||
+            if (ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.ManageExternalStorage) ||
+                ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.WriteExternalStorage) ||
                 ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.ReadExternalStorage) ||
                 ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.AccessFineLocation) ||
                 ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.AccessCoarseLocation) ||
@@ -79,6 +93,7 @@ namespace TQM.Droid
                 ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.Internet))
             {
                 ActivityCompat.RequestPermissions(this, new String[] {
+                    Manifest.Permission.ManageExternalStorage,
                     Manifest.Permission.WriteExternalStorage,
                     Manifest.Permission.ReadExternalStorage,
                     Manifest.Permission.AccessFineLocation,
@@ -94,6 +109,7 @@ namespace TQM.Droid
             else
             {
                 ActivityCompat.RequestPermissions(this, new String[] {
+                    Manifest.Permission.ManageExternalStorage,
                     Manifest.Permission.WriteExternalStorage,
                     Manifest.Permission.ReadExternalStorage,
                     Manifest.Permission.AccessFineLocation,
