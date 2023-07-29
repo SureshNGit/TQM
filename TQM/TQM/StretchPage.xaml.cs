@@ -495,7 +495,7 @@ namespace TQM
                     frame_overallTestSummary.IsVisible = visibility;
                     lbl_stretchPercent.Text = formatDecimal(stretchCalcList_finalOut.stretch).ToString();
 
-                    span_stdValue.Text = "\u00B1" + formatDecimal(stretchCalcList_finalOut.standardStretch).ToString();
+                    span_stdValue.Text = formatDecimal(stretchCalcList_finalOut.standardStretch).ToString() + " " + "\u00B1" + stretchCalcList_finalOut.stretchDeviation.ToString();
 
                     decimal actual = stretchCalcList_finalOut.stretch;
                     decimal expMin = decimal.Parse("-" + stretchCalcList_finalOut.standardStretch.ToString());
@@ -755,6 +755,11 @@ namespace TQM
                         cv = (sd / avg_weight) * 100; //Coefficient of Variation
                         cv = formatDecimal(cv);
                     }
+                    decimal stretchDeviation = 0.0m;
+                    YarnCountConfigModel config = conn.Table<YarnCountConfigModel>().Where(
+                                    YarnCountConfigModel => (YarnCountConfigModel.machineID == selectedMachineID
+                                    && YarnCountConfigModel.machineCategory == selectedMachineCategory)).FirstOrDefault();
+                    if (config != null) { stretchDeviation = config.stretchDeviation; }
                     StretchTestSummaryModel stretchTestSummaryModel = new StretchTestSummaryModel()
                     {
                         ID = Guid.NewGuid(),
@@ -772,6 +777,7 @@ namespace TQM
                         testType = stretchTestModelViewList[0].testType,
                         totaltestcount = stretchTestModelViewList[0].totaltestcount,
                         standardStretch = stretchTestModelViewList[0].standardStretch,
+                        stretchDeviation = stretchDeviation,
                         avg_weight = avg_weight,
                         testaverage = mean,
                         testsd = sd,
@@ -868,6 +874,7 @@ namespace TQM
                                         testType = ibSummary.testType,
                                         totaltestcount = ibSummary.totaltestcount,
                                         standardStretch = ibSummary.standardStretch,
+                                        stretchDeviation = ibSummary.stretchDeviation,
                                         avg_weight_IB = ibSummary.avg_weight,
                                         testaverage_IB = ibSummary.testaverage,
                                         testsd_IB = ibSummary.testsd,
@@ -971,7 +978,7 @@ namespace TQM
                                 if (currentTestType == "FB")
                                 {
                                     currentTestID = 0;
-                                    entry_yarnlen.IsEnabled = false;
+                                    entry_yarnlen.IsEnabled = true;
                                     entry_testcount.IsEnabled = true;
                                     entry_testcount.Text = TESTCOUNT.ToString();
                                     picker_machinecategory.IsEnabled = true;
@@ -1023,12 +1030,12 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
                 return;
             }
-            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            if (entry_yarnlen.Text.Trim().Contains("-"))
             {
-                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                await DisplayAlert("Attention", "Yarn Length should not be a negative value!!!", "Ok");
                 return;
             }
-            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            if (entry_yarnlen.Text.Trim() == "" || decimal.Parse(entry_yarnlen.Text.Trim()) == 0)
             {
                 await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
                 return;
@@ -1118,7 +1125,7 @@ namespace TQM
             }
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
-            selectedYarnLen = int.Parse(entry_yarnlen.Text);
+            selectedYarnLen = decimal.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
             selectedProcess = "";
@@ -1580,12 +1587,12 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
                 return;
             }
-            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            if (entry_yarnlen.Text.Trim().Contains("-"))
             {
-                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                await DisplayAlert("Attention", "Yarn Length should not be a negative value!!!", "Ok");
                 return;
             }
-            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            if (entry_yarnlen.Text.Trim() == "" || decimal.Parse(entry_yarnlen.Text.Trim()) == 0)
             {
                 await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
                 return;
@@ -1664,7 +1671,7 @@ namespace TQM
             }
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
-            selectedYarnLen = int.Parse(entry_yarnlen.Text);
+            selectedYarnLen = decimal.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
             selectedProcess = "";

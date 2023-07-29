@@ -208,13 +208,16 @@ namespace TQM
                                                                                          (YCTestSummaryModel.shift == "Shift-1"))
                                                                                         .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate)
                                                                                         .FirstOrDefault();
-                            List<YCTestSummaryModel> lastShiftOfPreviousDay_in_ActualStartDateRecs =
-                                                                    parentList.Where(YCTestSummaryModel =>
-                                                                    (YCTestSummaryModel.shift == parentList[0].shift
-                                                                    && YCTestSummaryModel.createdate < actualStartDate_Shift1_Recs.createdate))
-                                                                    .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate)
-                                                                    .ToList();
-                            parentList.RemoveAll(i => lastShiftOfPreviousDay_in_ActualStartDateRecs.Contains(i));
+                            if (actualStartDate_Shift1_Recs != null)
+                            {
+                                List<YCTestSummaryModel> lastShiftOfPreviousDay_in_ActualStartDateRecs =
+                                                                        parentList.Where(YCTestSummaryModel =>
+                                                                        (YCTestSummaryModel.shift == parentList[0].shift
+                                                                        && YCTestSummaryModel.createdate < actualStartDate_Shift1_Recs.createdate))
+                                                                        .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate)
+                                                                        .ToList();
+                                parentList.RemoveAll(i => lastShiftOfPreviousDay_in_ActualStartDateRecs.Contains(i));
+                            }
                         }
                         //End of logic to ignore the previous date last shift record from the given actual start date
 

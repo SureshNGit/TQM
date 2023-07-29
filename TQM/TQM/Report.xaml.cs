@@ -151,9 +151,9 @@ namespace TQM
                 string materialLength = "";
                 if (entry_materialLength.Text.Trim() != "")
                 {
-                    if (entry_materialLength.Text.Contains("."))
+                    if (entry_materialLength.Text.Contains("-"))
                     {
-                        DisplayAlert("Attention", "Unit length should not be decimal", "OK");
+                        DisplayAlert("Attention", "Unit length should not be a negative value", "OK");
                         return;
                     }
                     else

@@ -588,7 +588,7 @@ namespace TQM
 
                     testYCButton.IsEnabled = true;
                     testYCButton.BackgroundColor = Color.Green;
-                    entry_yarnlen.IsEnabled = false;
+                    entry_yarnlen.IsEnabled = true;
                     entry_testcount.IsEnabled = true;
                     entry_testcount.Text = TESTCOUNT.ToString();
                     entry_standardHank.IsEnabled = true;
@@ -700,13 +700,13 @@ namespace TQM
                 _ = showProgress(false);
                 return;
             }
-            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            if (entry_yarnlen.Text.Trim().Contains("-"))
             {
-                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                await DisplayAlert("Attention", "Yarn Length should not be a negative value!!!", "Ok");
                 _ = showProgress(false);
                 return;
             }
-            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            if (entry_yarnlen.Text.Trim() == "" || decimal.Parse(entry_yarnlen.Text.Trim()) == 0)
             {
                 await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
                 _ = showProgress(false);
@@ -825,7 +825,7 @@ namespace TQM
 
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
-            selectedYarnLen = int.Parse(entry_yarnlen.Text);
+            selectedYarnLen = decimal.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             STD_HANK_CURR = decimal.Parse(entry_standardHank.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
@@ -839,7 +839,7 @@ namespace TQM
             testYCButton.BackgroundColor = Color.SlateGray;
             entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
-            entry_standardHank.IsEnabled = true;
+            entry_standardHank.IsEnabled = false;
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;

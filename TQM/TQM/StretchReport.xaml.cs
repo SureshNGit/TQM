@@ -66,123 +66,203 @@ namespace TQM
                     conn.CreateTable<StretchTestCalculatedModel>();
 
                     List<StretchTestCalculatedModel> stretchCalcList = null;
-                    if (categoryName == null || categoryName == "")
+
+                    if (testID != "")
                     {
-                        endDate = endDate.AddDays(1);
-
-
-                        if (shift != "" && process != null)
+                        if (!testID.Contains("."))
                         {
+                            long givenTestId = long.Parse(testID);
                             stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                            (StretchTestCalculatedModel.createdate >= startDate
-                                            && StretchTestCalculatedModel.createdate < endDate
-                                             && StretchTestCalculatedModel.shift == shift
-                                            && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                                                 StretchTestCalculatedModel.testID == givenTestId).ToList();
                         }
-                        else if (shift == "" && process != null)
+                        else
                         {
-                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                            (StretchTestCalculatedModel.createdate >= startDate
-                                            && StretchTestCalculatedModel.createdate < endDate
-                                            && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift != "" && process == null)
-                        {
-                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                            (StretchTestCalculatedModel.createdate >= startDate
-                                            && StretchTestCalculatedModel.createdate < endDate
-                                            && StretchTestCalculatedModel.shift == shift)).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                            (StretchTestCalculatedModel.createdate >= startDate
-                                            && StretchTestCalculatedModel.createdate < endDate)).ToList();
-                        }
+                            long startTestID = long.Parse(testID.Split('.')[0]);
+                            long endTestID = long.Parse(testID.Split('.')[1]);
 
-
+                            if (startTestID == endTestID)
+                            {
+                                stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                                 StretchTestCalculatedModel.testID == startTestID).ToList();
+                            }
+                            else
+                            {
+                                for (long i = startTestID; i <= endTestID; i++)
+                                {
+                                    if (stretchCalcList == null)
+                                    {
+                                        stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                                 StretchTestCalculatedModel.testID == i).ToList();
+                                    }
+                                    else
+                                    {
+                                        List<StretchTestCalculatedModel> tempList =  conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                                 StretchTestCalculatedModel.testID == i).ToList();
+                                        //stretchCalcList.Concat(tempList).ToList();
+                                        stretchCalcList.AddRange(tempList);
+                                    }
+                                }
+                            }
+                        }
                     }
-                    else if (categoryName != null && machineID == Guid.Empty)
+                    else
                     {
-                        endDate = endDate.AddDays(1);
 
-                        if (shift != "" && process != null)
+                        DateTime actualEndDate = endDate;
+
+                        endDate = actualEndDate.AddDays(1);
+                        DateTime endDatePlusOne = endDate.AddDays(1);
+                        //Parent List
+                        List<StretchTestCalculatedModel> parentList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
+                                                (StretchTestCalculatedModel.createdate >= startDate
+                                                && StretchTestCalculatedModel.createdate < endDate))
+                                                .OrderBy(StretchTestCalculatedModel => StretchTestCalculatedModel.createdate).ToList();
+                        if (parentList.Count == 0)
                         {
-                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                          (StretchTestCalculatedModel.createdate >= startDate
-                                          && StretchTestCalculatedModel.createdate < endDate
-                                          && StretchTestCalculatedModel.machineCategory == categoryName
-                                          && StretchTestCalculatedModel.shift == shift
-                                          && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift == "" && process != null)
-                        {
-                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                          (StretchTestCalculatedModel.createdate >= startDate
-                                          && StretchTestCalculatedModel.createdate < endDate
-                                          && StretchTestCalculatedModel.machineCategory == categoryName
-                                          && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift != "" && process == null)
-                        {
-                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                          (StretchTestCalculatedModel.createdate >= startDate
-                                          && StretchTestCalculatedModel.createdate < endDate
-                                          && StretchTestCalculatedModel.machineCategory == categoryName
-                                          && StretchTestCalculatedModel.shift == shift)).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                          (StretchTestCalculatedModel.createdate >= startDate
-                                          && StretchTestCalculatedModel.createdate < endDate
-                                          && StretchTestCalculatedModel.machineCategory == categoryName)).ToList();
+                            DisplayAlert("Notice", "No records to display!!!", "OK");
+                            return;
                         }
 
-
-                    }
-                    else if (categoryName != null && machineID != Guid.Empty)
-                    {
-                        endDate = endDate.AddDays(1);
-
-                        if (shift != "" && process != null)
+                        //Start of Logic to check last shift for the given end date is logged in end date + 1 day date
+                        //Get first record of actual end date + 1 day
+                        List<StretchTestCalculatedModel> recs_actualEndDatePlusOne = conn.Table<StretchTestCalculatedModel>()
+                                                                        .Where(StretchTestCalculatedModel =>
+                                                                        (StretchTestCalculatedModel.createdate >= endDate
+                                                                        && StretchTestCalculatedModel.createdate < endDatePlusOne))
+                                                                        .OrderBy(StretchTestCalculatedModel => StretchTestCalculatedModel.createdate).ToList();
+                        if (recs_actualEndDatePlusOne.Count > 0)
                         {
-                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                           (StretchTestCalculatedModel.createdate >= startDate
-                                           && StretchTestCalculatedModel.createdate < endDate
-                                           && StretchTestCalculatedModel.machineCategory == categoryName
-                                           && StretchTestCalculatedModel.machineID == machineID
-                                           && StretchTestCalculatedModel.shift == shift
-                                           && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            //Check if the 1st record of actual end date + 1 day is not Shift-1
+                            if (recs_actualEndDatePlusOne[0].shift != "Shift-1")
+                            {
+                                StretchTestCalculatedModel actualEndDatePlusOne_Shift1_Recs = recs_actualEndDatePlusOne.Where(StretchTestCalculatedModel =>
+                                                                                             (StretchTestCalculatedModel.shift == "Shift-1"))
+                                                                                            .OrderBy(StretchTestCalculatedModel => StretchTestCalculatedModel.createdate)
+                                                                                            .FirstOrDefault();
+                                //Merge last shift record of actual end date from (actual end date + 1day) with parent list
+                                parentList.Concat(recs_actualEndDatePlusOne.Where(StretchTestCalculatedModel =>
+                                                                            (StretchTestCalculatedModel.createdate >= endDate
+                                                                            && StretchTestCalculatedModel.createdate < actualEndDatePlusOne_Shift1_Recs.createdate
+                                                                            && StretchTestCalculatedModel.shift == recs_actualEndDatePlusOne[0].shift))
+                                                                            .OrderBy(StretchTestCalculatedModel => StretchTestCalculatedModel.createdate).ToList());
+                            }
                         }
-                        else if (shift == "" && process != null)
+                        //End of Logic to check last shift for the given end date is logged in end date + 1 day date
+
+                        //Start of logic to ignore the previous date last shift record from the given actual start date
+                        if (parentList[0].shift != "Shift-1")
                         {
-                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                           (StretchTestCalculatedModel.createdate >= startDate
-                                           && StretchTestCalculatedModel.createdate < endDate
-                                           && StretchTestCalculatedModel.machineCategory == categoryName
-                                           && StretchTestCalculatedModel.machineID == machineID
-                                           && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            StretchTestCalculatedModel actualStartDate_Shift1_Recs = parentList.Where(StretchTestCalculatedModel =>
+                                                                                         (StretchTestCalculatedModel.shift == "Shift-1"))
+                                                                                        .OrderBy(StretchTestCalculatedModel => StretchTestCalculatedModel.createdate)
+                                                                                        .FirstOrDefault();
+                            if (actualStartDate_Shift1_Recs != null)
+                            {
+                                List<StretchTestCalculatedModel> lastShiftOfPreviousDay_in_ActualStartDateRecs =
+                                                                        parentList.Where(StretchTestCalculatedModel =>
+                                                                        (StretchTestCalculatedModel.shift == parentList[0].shift
+                                                                        && StretchTestCalculatedModel.createdate < actualStartDate_Shift1_Recs.createdate))
+                                                                        .OrderBy(StretchTestCalculatedModel => StretchTestCalculatedModel.createdate)
+                                                                        .ToList();
+                                parentList.RemoveAll(i => lastShiftOfPreviousDay_in_ActualStartDateRecs.Contains(i));
+                            }
                         }
-                        else if (shift != "" && process == null)
+                        //End of logic to ignore the previous date last shift record from the given actual start date
+
+                        if (categoryName == null || categoryName == "")
                         {
-                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                           (StretchTestCalculatedModel.createdate >= startDate
-                                           && StretchTestCalculatedModel.createdate < endDate
-                                           && StretchTestCalculatedModel.machineCategory == categoryName
-                                           && StretchTestCalculatedModel.machineID == machineID
-                                           && StretchTestCalculatedModel.shift == shift)).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(StretchTestCalculatedModel =>
-                                           (StretchTestCalculatedModel.createdate >= startDate
-                                           && StretchTestCalculatedModel.createdate < endDate
-                                           && StretchTestCalculatedModel.machineCategory == categoryName
-                                           && StretchTestCalculatedModel.machineID == machineID)).ToList();
-                        }
+                            endDate = endDate.AddDays(1);
 
 
+                            if (shift != "" && process != null)
+                            {
+                                stretchCalcList = parentList.Where(StretchTestCalculatedModel =>
+                                                (StretchTestCalculatedModel.shift == shift
+                                                && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                stretchCalcList = parentList.Where(StretchTestCalculatedModel =>
+                                                (StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                stretchCalcList = parentList.Where(StretchTestCalculatedModel =>
+                                                (StretchTestCalculatedModel.shift == shift)).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                stretchCalcList = parentList;
+                            }
+
+
+                        }
+                        else if (categoryName != null && machineID == Guid.Empty)
+                        {
+                            endDate = endDate.AddDays(1);
+
+                            if (shift != "" && process != null)
+                            {
+                                stretchCalcList = parentList.Where(StretchTestCalculatedModel =>
+                                              (StretchTestCalculatedModel.machineCategory == categoryName
+                                              && StretchTestCalculatedModel.shift == shift
+                                              && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                stretchCalcList = parentList.Where(StretchTestCalculatedModel =>
+                                              (StretchTestCalculatedModel.machineCategory == categoryName
+                                              && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                stretchCalcList = parentList.Where(StretchTestCalculatedModel =>
+                                              (StretchTestCalculatedModel.machineCategory == categoryName
+                                              && StretchTestCalculatedModel.shift == shift)).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                stretchCalcList = parentList.Where(StretchTestCalculatedModel =>
+                                              (StretchTestCalculatedModel.machineCategory == categoryName)).ToList();
+                            }
+
+
+                        }
+                        else if (categoryName != null && machineID != Guid.Empty)
+                        {
+                            endDate = endDate.AddDays(1);
+
+                            if (shift != "" && process != null)
+                            {
+                                stretchCalcList = parentList.Where(StretchTestCalculatedModel =>
+                                               (StretchTestCalculatedModel.machineCategory == categoryName
+                                               && StretchTestCalculatedModel.machineID == machineID
+                                               && StretchTestCalculatedModel.shift == shift
+                                               && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                stretchCalcList = parentList.Where(StretchTestCalculatedModel =>
+                                               (StretchTestCalculatedModel.machineCategory == categoryName
+                                               && StretchTestCalculatedModel.machineID == machineID
+                                               && StretchTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                stretchCalcList = parentList.Where(StretchTestCalculatedModel =>
+                                               (StretchTestCalculatedModel.machineCategory == categoryName
+                                               && StretchTestCalculatedModel.machineID == machineID
+                                               && StretchTestCalculatedModel.shift == shift)).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                stretchCalcList = parentList.Where(StretchTestCalculatedModel =>
+                                               (StretchTestCalculatedModel.machineCategory == categoryName
+                                               && StretchTestCalculatedModel.machineID == machineID)).ToList();
+                            }
+
+
+                        }
                     }
 
                     //List<StretchTestCalculatedModel> stretchCalcList = null;
@@ -198,10 +278,7 @@ namespace TQM
                     }
                     else
                     {
-                        if (testID != "")
-                        {
-                            stretchCalcList = stretchCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
-                        }
+                       
                         if (deleteRequest)
                         {
                             deleteAll = true;
@@ -330,6 +407,7 @@ namespace TQM
                             report.totaltestcount = stretchCalc.totaltestcount;
 
                             report.standardStretch = formatDecimal(stretchCalc.standardStretch);
+                            report.stretchDeviation = stretchCalc.stretchDeviation;
 
                             decimal actual = stretchCalc.stretch;
                             decimal expMin = decimal.Parse("-" + (stretchCalc.standardStretch-stretchCalc.stretchDeviation).ToString());
@@ -495,7 +573,8 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[3].Value = "Total Test: " + orl.totaltestcount;
 
 
-                    pdfGridInfo.Rows[3].Cells[0].Value = "Std. Stretch %: " + formatDecimal(orl.standardStretch).ToString();
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Std. Stretch %: " + formatDecimal(orl.standardStretch).ToString() + " " + "\u00B1"
+                                                            +orl.stretchDeviation;
 
 
                     pdfGridInfo.Rows[3].Cells[1].Value = "Stretch %: " + formatDecimal(orl.stretch).ToString();

@@ -24,6 +24,7 @@ namespace TQM.ModelView
 
         public int totaltestcount { get; set; }
         public decimal standardStretch { get; set; }
+        public decimal stretchDeviation { get; set; }
 
         public bool isGREEN { get; set; } = true;
 

@@ -150,7 +150,7 @@
             </Picker>
             <!--<Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarnlen" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50" />-->
             <Entry Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_yarnlen" TextColor="Green" FontSize="16" Keyboard="Numeric"
-                 HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="False">
+                 HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
@@ -324,7 +324,7 @@
                                        Text="-0002.2740" FontSize="20" TextColor="DarkSlateGray"/>
 
                     <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" FontAttributes="None" 
-                           HorizontalTextAlignment="Start" Margin="0,-5"   FontSize="18" 
+                           HorizontalTextAlignment="Start" Margin="-20,-5"   FontSize="18" 
                            LineBreakMode="WordWrap">
                         <Label.FormattedText>
                             <FormattedString>

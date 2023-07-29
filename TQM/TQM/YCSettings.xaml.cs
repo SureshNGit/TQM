@@ -910,9 +910,9 @@ namespace TQM
                 {
                     stretchDeviation = decimal.Parse(entry_stretchDeviation.Text.ToString());
                 }
-                int enteredLeaLength = 0;
-                int enteredSliverLength = 0;
-                int enteredRovingLength = 0;
+                decimal enteredLeaLength = 0;
+                decimal enteredSliverLength = 0;
+                decimal enteredRovingLength = 0;
                 if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                 {
                     //enteredLeaLength = 120;
@@ -920,12 +920,12 @@ namespace TQM
                     //{
                     //    enteredLeaLength = 60;
                     //}
-                    enteredLeaLength = int.Parse(entry_leaLength.Text.ToString());
+                    enteredLeaLength = decimal.Parse(entry_leaLength.Text.ToString());
                 }
                 else
                 {
-                    enteredSliverLength = int.Parse(entry_sliverlength.Text.ToString());
-                    enteredRovingLength = int.Parse(entry_rovinglength.Text.ToString());
+                    enteredSliverLength = decimal.Parse(entry_sliverlength.Text.ToString());
+                    enteredRovingLength = decimal.Parse(entry_rovinglength.Text.ToString());
                 }
 
                 TimeSpan shift1 = TimeSpan.Zero;

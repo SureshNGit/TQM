@@ -1065,7 +1065,7 @@ namespace TQM
                                 if (currentTestType == "Noils")
                                 {
                                     currentTestID = 0;
-                                    entry_yarnlen.IsEnabled = false;
+                                    entry_yarnlen.IsEnabled = true;
                                     entry_testcount.IsEnabled = true;
                                     entry_testcount.Text = TESTCOUNT.ToString();
                                     picker_machinecategory.IsEnabled = true;
@@ -1118,12 +1118,12 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
                 return;
             }
-            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            if (entry_yarnlen.Text.Trim().Contains("-"))
             {
-                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                await DisplayAlert("Attention", "Yarn Length should not be a negative value!!!", "Ok");
                 return;
             }
-            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            if (entry_yarnlen.Text.Trim() == "" || decimal.Parse(entry_yarnlen.Text.Trim()) == 0)
             {
                 await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
                 return;
@@ -1214,7 +1214,7 @@ namespace TQM
             }
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
-            selectedYarnLen = int.Parse(entry_yarnlen.Text);
+            selectedYarnLen = decimal.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
             selectedProcess = "";
@@ -1677,12 +1677,12 @@ namespace TQM
                 await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
                 return;
             }
-            if (entry_yarnlen.Text.Trim().Contains(".") || entry_yarnlen.Text.Trim().Contains("-"))
+            if (entry_yarnlen.Text.Trim().Contains("-"))
             {
-                await DisplayAlert("Attention", "Yarn Length should not be a decimal or negative value!!!", "Ok");
+                await DisplayAlert("Attention", "Yarn Length should not be a negative value!!!", "Ok");
                 return;
             }
-            if (entry_yarnlen.Text.Trim() == "" || int.Parse(entry_yarnlen.Text.Trim()) == 0)
+            if (entry_yarnlen.Text.Trim() == "" || decimal.Parse(entry_yarnlen.Text.Trim()) == 0)
             {
                 await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
                 return;
@@ -1764,7 +1764,7 @@ namespace TQM
             }
             selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
-            selectedYarnLen = int.Parse(entry_yarnlen.Text);
+            selectedYarnLen = decimal.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
             selectedProcess = "";
