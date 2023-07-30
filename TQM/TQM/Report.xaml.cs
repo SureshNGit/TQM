@@ -258,17 +258,17 @@ namespace TQM
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
                     Navigation.PushAsync(new YCApercentReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, false));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "Stretch")
                 {
                     Navigation.PushAsync(new StretchReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, false));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "Noils")
                 {
                     Navigation.PushAsync(new NoilsReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, false));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, false));
                 }
             }
             catch (Exception ex)
@@ -468,17 +468,17 @@ namespace TQM
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
                     Navigation.PushAsync(new YCApercentReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, true));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "Stretch")
                 {
                     Navigation.PushAsync(new StretchReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, true));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "Noils")
                 {
                     Navigation.PushAsync(new NoilsReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, true));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, true));
                 }
             }
             catch (Exception ex)

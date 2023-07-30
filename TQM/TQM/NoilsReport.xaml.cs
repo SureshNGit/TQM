@@ -40,7 +40,7 @@ namespace TQM
             InitializeComponent();
         }
 
-        public NoilsReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
+        public NoilsReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest)
         {
             InitializeComponent();
             if (deleteRequest)
@@ -51,10 +51,10 @@ namespace TQM
             }
             reportStartDate = startDate;
             reportEndDate = endDate;
-            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, deleteRequest);
+            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, matType, materialLength, deleteRequest);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest)
         {
             try
             {
@@ -66,140 +66,200 @@ namespace TQM
                     conn.CreateTable<NoilsTestCalculatedModel>();
 
                     List<NoilsTestCalculatedModel> noilsCalcList = null;
-                    if (categoryName == null || categoryName == "")
+                    if (testID != "")
                     {
-                        endDate = endDate.AddDays(1);
-
-
-                        if (shift != "" && process != null)
+                        if (!testID.Contains("."))
                         {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        && NoilsTestCalculatedModel.shift == shift
-                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            long givenTestId = long.Parse(testID);
+                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(t => t.testID == givenTestId).ToList();
                         }
-                        else if (shift == "" && process != null)
+                        else
                         {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift != "" && process == null)
-                        {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        && NoilsTestCalculatedModel.shift == shift)).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        )).ToList();
-                        }
+                            long startTestID = long.Parse(testID.Split('.')[0]);
+                            long endTestID = long.Parse(testID.Split('.')[1]);
 
-
-
+                            if (startTestID == endTestID)
+                            {
+                                noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                                 NoilsTestCalculatedModel.testID == startTestID).ToList();
+                            }
+                            else
+                            {
+                                for (long i = startTestID; i <= endTestID; i++)
+                                {
+                                    if (noilsCalcList == null)
+                                    {
+                                        noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                                 NoilsTestCalculatedModel.testID == i).ToList();
+                                    }
+                                    else
+                                    {
+                                        List<NoilsTestCalculatedModel> tempList = conn.Table<NoilsTestCalculatedModel>()
+                                                .Where(NoilsTestCalculatedModel =>
+                                                 NoilsTestCalculatedModel.testID == i).ToList();
+                                        noilsCalcList.AddRange(tempList);
+                                    }
+                                }
+                            }
+                        }
                     }
-                    else if (categoryName != null && machineID == Guid.Empty)
+                    else
                     {
-                        endDate = endDate.AddDays(1);
+                        DateTime actualEndDate = endDate;
 
-                        if (shift != "" && process != null)
+                        endDate = actualEndDate.AddDays(1);
+                        DateTime endDatePlusOne = endDate.AddDays(1);
+                        //Parent List
+                        List<NoilsTestCalculatedModel> parentList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
+                                                (NoilsTestCalculatedModel.createdate >= startDate
+                                                && NoilsTestCalculatedModel.createdate < endDate))
+                                                .OrderBy(NoilsTestCalculatedModel => NoilsTestCalculatedModel.createdate).ToList();
+                        if (parentList.Count == 0)
                         {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        && NoilsTestCalculatedModel.shift == shift
-                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift == "" && process != null)
-                        {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift != "" && process == null)
-                        {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        && NoilsTestCalculatedModel.shift == shift)).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        )).ToList();
+                            DisplayAlert("Notice", "No records to display!!!", "OK");
+                            return;
                         }
 
-
-                    }
-                    else if (categoryName != null && machineID != Guid.Empty)
-                    {
-                        endDate = endDate.AddDays(1);
-
-                        if (shift != "" && process != null)
+                        //Start of Logic to check last shift for the given end date is logged in end date + 1 day date
+                        //Get first record of actual end date + 1 day
+                        List<NoilsTestCalculatedModel> recs_actualEndDatePlusOne = conn.Table<NoilsTestCalculatedModel>()
+                                                                        .Where(NoilsTestCalculatedModel =>
+                                                                        (NoilsTestCalculatedModel.createdate >= endDate
+                                                                        && NoilsTestCalculatedModel.createdate < endDatePlusOne))
+                                                                        .OrderBy(NoilsTestCalculatedModel => NoilsTestCalculatedModel.createdate).ToList();
+                        if (recs_actualEndDatePlusOne.Count > 0)
                         {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        && NoilsTestCalculatedModel.machineID == machineID
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        && NoilsTestCalculatedModel.shift == shift
-                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            //Check if the 1st record of actual end date + 1 day is not Shift-1
+                            if (recs_actualEndDatePlusOne[0].shift != "Shift-1")
+                            {
+                                NoilsTestCalculatedModel actualEndDatePlusOne_Shift1_Recs = recs_actualEndDatePlusOne
+                                                                                            .Where(NoilsTestCalculatedModel =>
+                                                                                             (NoilsTestCalculatedModel.shift == "Shift-1"))
+                                                                                            .OrderBy(NoilsTestCalculatedModel =>
+                                                                                            NoilsTestCalculatedModel.createdate)
+                                                                                            .FirstOrDefault();
+                                //Merge last shift record of actual end date from (actual end date + 1day) with parent list
+                                parentList.Concat(recs_actualEndDatePlusOne.Where(NoilsTestCalculatedModel =>
+                                                                            (NoilsTestCalculatedModel.createdate >= endDate
+                                                                            && NoilsTestCalculatedModel.createdate < actualEndDatePlusOne_Shift1_Recs.createdate
+                                                                            && NoilsTestCalculatedModel.shift == recs_actualEndDatePlusOne[0].shift))
+                                                                            .OrderBy(NoilsTestCalculatedModel => NoilsTestCalculatedModel.createdate).ToList());
+                            }
                         }
-                        else if (shift == "" && process != null)
+                        //End of Logic to check last shift for the given end date is logged in end date + 1 day date
+
+                        //Start of logic to ignore the previous date last shift record from the given actual start date
+                        if (parentList[0].shift != "Shift-1")
                         {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        && NoilsTestCalculatedModel.machineID == machineID
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            NoilsTestCalculatedModel actualStartDate_Shift1_Recs = parentList.Where(NoilsTestCalculatedModel =>
+                                                                                         (NoilsTestCalculatedModel.shift == "Shift-1"))
+                                                                                        .OrderBy(NoilsTestCalculatedModel => NoilsTestCalculatedModel.createdate)
+                                                                                        .FirstOrDefault();
+                            if (actualStartDate_Shift1_Recs != null)
+                            {
+                                List<NoilsTestCalculatedModel> lastShiftOfPreviousDay_in_ActualStartDateRecs =
+                                                                        parentList.Where(NoilsTestCalculatedModel =>
+                                                                        (NoilsTestCalculatedModel.shift == parentList[0].shift
+                                                                        && NoilsTestCalculatedModel.createdate < actualStartDate_Shift1_Recs.createdate))
+                                                                        .OrderBy(NoilsTestCalculatedModel => NoilsTestCalculatedModel.createdate)
+                                                                        .ToList();
+                                parentList.RemoveAll(i => lastShiftOfPreviousDay_in_ActualStartDateRecs.Contains(i));
+                            }
                         }
-                        else if (shift != "" && process == null)
+                        //End of logic to ignore the previous date last shift record from the given actual start date
+                        if (categoryName == null || categoryName == "")
                         {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        && NoilsTestCalculatedModel.machineID == machineID
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        && NoilsTestCalculatedModel.shift == shift)).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(NoilsTestCalculatedModel =>
-                                        (NoilsTestCalculatedModel.createdate >= startDate
-                                        && NoilsTestCalculatedModel.createdate < endDate
-                                        && NoilsTestCalculatedModel.machineCategory == categoryName
-                                        && NoilsTestCalculatedModel.machineID == machineID
-                                        //&& NoilsTestCalculatedModel.status == true
-                                        )).ToList();
-                        }
+                            //endDate = endDate.AddDays(1);
+
+
+                            if (shift != "" && process != null)
+                            {
+                                noilsCalcList = parentList.Where(NoilsTestCalculatedModel =>
+                                            (NoilsTestCalculatedModel.shift == shift
+                                            && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                noilsCalcList = parentList.Where(NoilsTestCalculatedModel =>
+                                            (NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                noilsCalcList = parentList.Where(NoilsTestCalculatedModel =>
+                                            (NoilsTestCalculatedModel.shift == shift)).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                noilsCalcList = parentList;
+                            }
 
 
 
+                        }
+                        else if (categoryName != null && machineID == Guid.Empty)
+                        {
+                            //endDate = endDate.AddDays(1);
+
+                            if (shift != "" && process != null)
+                            {
+                                noilsCalcList = parentList.Where(NoilsTestCalculatedModel =>
+                                            (NoilsTestCalculatedModel.machineCategory == categoryName
+                                            && NoilsTestCalculatedModel.shift == shift
+                                            && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                noilsCalcList = parentList.Where(NoilsTestCalculatedModel =>
+                                            (NoilsTestCalculatedModel.machineCategory == categoryName
+                                            && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                noilsCalcList = parentList.Where(NoilsTestCalculatedModel =>
+                                            (NoilsTestCalculatedModel.machineCategory == categoryName
+                                            && NoilsTestCalculatedModel.shift == shift)).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                noilsCalcList = parentList.Where(NoilsTestCalculatedModel =>
+                                            (NoilsTestCalculatedModel.machineCategory == categoryName)).ToList();
+                            }
+
+
+                        }
+                        else if (categoryName != null && machineID != Guid.Empty)
+                        {
+                            //endDate = endDate.AddDays(1);
+
+                            if (shift != "" && process != null)
+                            {
+                                noilsCalcList = parentList.Where(NoilsTestCalculatedModel =>
+                                            (NoilsTestCalculatedModel.machineCategory == categoryName
+                                            && NoilsTestCalculatedModel.machineID == machineID
+                                            && NoilsTestCalculatedModel.shift == shift
+                                            && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                noilsCalcList = parentList.Where(NoilsTestCalculatedModel =>
+                                            (NoilsTestCalculatedModel.machineCategory == categoryName
+                                            && NoilsTestCalculatedModel.machineID == machineID
+                                            && NoilsTestCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                noilsCalcList = parentList.Where(NoilsTestCalculatedModel =>
+                                            (NoilsTestCalculatedModel.machineCategory == categoryName
+                                            && NoilsTestCalculatedModel.machineID == machineID
+                                            && NoilsTestCalculatedModel.shift == shift)).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                noilsCalcList = parentList.Where(NoilsTestCalculatedModel =>
+                                            (NoilsTestCalculatedModel.machineCategory == categoryName
+                                            && NoilsTestCalculatedModel.machineID == machineID)).ToList();
+                            }
+                        }
                     }
 
                     //List<StretchTestCalculatedModel> stretchCalcList = null;
@@ -208,6 +268,22 @@ namespace TQM
                     //      StretchTestCalculatedModel =>
                     //      (StretchTestCalculatedModel.status == true)).ToList();
 
+                    if (matType != "" && materialLength != "")
+                    {
+                        decimal yarnLength = 0.00m;
+                        try
+                        {
+                            yarnLength = decimal.Parse(materialLength);
+                        }
+                        catch (Exception)
+                        {
+                            DisplayAlert("Attention", "Invalid unit length!!!", "OK");
+                            return;
+                        }
+                        noilsCalcList = noilsCalcList.Where(NoilsTestCalculatedModel => (NoilsTestCalculatedModel.yarnlength == yarnLength
+                                                && NoilsTestCalculatedModel.yarnlenunit == matType)).ToList();
+                    }
+
                     if (noilsCalcList.Count == 0)
                     {
                         DisplayAlert("Notice", "No records to display!!!", "OK");
@@ -215,10 +291,6 @@ namespace TQM
                     }
                     else
                     {
-                        if (testID != "")
-                        {
-                            noilsCalcList = noilsCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
-                        }
                         if (deleteRequest)
                         {
                             deleteAll = true;

@@ -28,6 +28,9 @@
                        VerticalTextAlignment="Center" HorizontalOptions="Start" />
                 <Label Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Text="" FontSize="16" TextColor="ForestGreen" Margin="65,0"
                        VerticalTextAlignment="Center" HorizontalOptions="Start" x:Name="lbl_TestID" />
+                <ActivityIndicator x:Name="act_id" IsVisible="False" IsRunning="False" Color="Red"
+                                   Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" Grid.ColumnSpan="2" HorizontalOptions="Center" 
+                         Margin="0,0,0,20"/> 
                 <Button Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Initial Bobbin" IsVisible="false" Margin="0,2" HeightRequest="12"
                         x:Name="startInitialBobbinButton"  Clicked="startInitialBobbinButton_Clicked" BackgroundColor="Green" TextColor="white" CornerRadius="25"/>
                 <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Full Bobbin" IsVisible="false" Margin="0,2" HeightRequest="12"

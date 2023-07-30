@@ -40,7 +40,7 @@ namespace TQM
             InitializeComponent();
         }
 
-        public StretchReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
+        public StretchReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest)
         {
             InitializeComponent();
             if (deleteRequest)
@@ -51,10 +51,10 @@ namespace TQM
             }
             reportStartDate = startDate;
             reportEndDate = endDate;
-            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, deleteRequest);
+            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, matType, materialLength, deleteRequest);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest)
         {
             try
             {
@@ -171,7 +171,7 @@ namespace TQM
 
                         if (categoryName == null || categoryName == "")
                         {
-                            endDate = endDate.AddDays(1);
+                            //endDate = endDate.AddDays(1);
 
 
                             if (shift != "" && process != null)
@@ -199,7 +199,7 @@ namespace TQM
                         }
                         else if (categoryName != null && machineID == Guid.Empty)
                         {
-                            endDate = endDate.AddDays(1);
+                            //endDate = endDate.AddDays(1);
 
                             if (shift != "" && process != null)
                             {
@@ -230,7 +230,7 @@ namespace TQM
                         }
                         else if (categoryName != null && machineID != Guid.Empty)
                         {
-                            endDate = endDate.AddDays(1);
+                            //endDate = endDate.AddDays(1);
 
                             if (shift != "" && process != null)
                             {
@@ -270,6 +270,23 @@ namespace TQM
                     //stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(
                     //      StretchTestCalculatedModel =>
                     //      (StretchTestCalculatedModel.status == true)).ToList();
+
+
+                    if (matType != "" && materialLength != "")
+                    {
+                        decimal yarnLength = 0.00m;
+                        try
+                        {
+                            yarnLength = decimal.Parse(materialLength);
+                        }
+                        catch (Exception)
+                        {
+                            DisplayAlert("Attention", "Invalid unit length!!!", "OK");
+                            return;
+                        }
+                        stretchCalcList = stretchCalcList.Where(StretchTestCalculatedModel => (StretchTestCalculatedModel.yarnlength == yarnLength
+                                                && StretchTestCalculatedModel.yarnlenunit == matType)).ToList();
+                    }
 
                     if (stretchCalcList.Count == 0)
                     {

@@ -40,7 +40,7 @@ namespace TQM
             InitializeComponent();
         }
 
-        public YCApercentReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
+        public YCApercentReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest)
         {
             InitializeComponent();
             if (deleteRequest)
@@ -51,10 +51,10 @@ namespace TQM
             }
             reportStartDate = startDate;
             reportEndDate = endDate;
-            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, deleteRequest);
+            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, matType, materialLength, deleteRequest);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, bool deleteRequest)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest)
         {
             try
             {
@@ -68,138 +68,201 @@ namespace TQM
 
 
                     List<YCTestApercentCalculatedModel> apercentCalcList = null;
-                    if (categoryName == null || categoryName == "")
+                    if (testID != "")
                     {
-                        endDate = endDate.AddDays(1);
-
-                        if (shift != "" && process != null)
+                        if (!testID.Contains("."))
                         {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                 (YCTestApercentCalculatedModel.createdate >= startDate
-                                                 && YCTestApercentCalculatedModel.createdate < endDate
-                                                 //&& YCTestApercentCalculatedModel.status == true
-                                                 && YCTestApercentCalculatedModel.shift == shift
-                                                 && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            long givenTestId = long.Parse(testID);
+                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(t => t.testID == givenTestId).ToList();
                         }
-                        else if (shift == "" && process != null)
+                        else
                         {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                 (YCTestApercentCalculatedModel.createdate >= startDate
-                                                 && YCTestApercentCalculatedModel.createdate < endDate
-                                                 //&& YCTestApercentCalculatedModel.status == true
-                                                 && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift != "" && process == null)
-                        {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                (YCTestApercentCalculatedModel.createdate >= startDate
-                                                && YCTestApercentCalculatedModel.createdate < endDate
-                                                //&& YCTestApercentCalculatedModel.status == true
-                                                && YCTestApercentCalculatedModel.shift == shift)).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                (YCTestApercentCalculatedModel.createdate >= startDate
-                                                && YCTestApercentCalculatedModel.createdate < endDate
-                                                //&& YCTestApercentCalculatedModel.status == true
-                                                )).ToList();
-                        }
+                            long startTestID = long.Parse(testID.Split('.')[0]);
+                            long endTestID = long.Parse(testID.Split('.')[1]);
 
-
-
+                            if (startTestID == endTestID)
+                            {
+                                apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
+                                                 YCTestApercentCalculatedModel.testID == startTestID).ToList();
+                            }
+                            else
+                            {
+                                for (long i = startTestID; i <= endTestID; i++)
+                                {
+                                    if (apercentCalcList == null)
+                                    {
+                                        apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
+                                                 YCTestApercentCalculatedModel.testID == i).ToList();
+                                    }
+                                    else
+                                    {
+                                        List<YCTestApercentCalculatedModel> tempList = conn.Table<YCTestApercentCalculatedModel>()
+                                                                    .Where(YCTestApercentCalculatedModel =>
+                                                                            YCTestApercentCalculatedModel.testID == i).ToList();
+                                        //stretchCalcList.Concat(tempList).ToList();
+                                        apercentCalcList.AddRange(tempList);
+                                    }
+                                }
+                            }
+                        }
                     }
-                    else if (categoryName != null && machineID == Guid.Empty)
+                    else
                     {
-                        endDate = endDate.AddDays(1);
+                        DateTime actualEndDate = endDate;
 
-                        if (shift != "" && process != null)
-                        {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
+                        endDate = actualEndDate.AddDays(1);
+                        DateTime endDatePlusOne = endDate.AddDays(1);
+                        //Parent List
+                        List<YCTestApercentCalculatedModel> parentList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
                                                 (YCTestApercentCalculatedModel.createdate >= startDate
-                                                && YCTestApercentCalculatedModel.createdate < endDate
-                                                && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                //&& YCTestApercentCalculatedModel.status == true
-                                                && YCTestApercentCalculatedModel.shift == shift
-                                                && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift == "" && process != null)
+                                                && YCTestApercentCalculatedModel.createdate < endDate))
+                                                .OrderBy(YCTestApercentCalculatedModel => YCTestApercentCalculatedModel.createdate).ToList();
+                        if (parentList.Count == 0)
                         {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                (YCTestApercentCalculatedModel.createdate >= startDate
-                                                && YCTestApercentCalculatedModel.createdate < endDate
-                                                && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                //&& YCTestApercentCalculatedModel.status == true
-                                                && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
-                        }
-                        else if (shift != "" && process == null)
-                        {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                (YCTestApercentCalculatedModel.createdate >= startDate
-                                                && YCTestApercentCalculatedModel.createdate < endDate
-                                                && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                //&& YCTestApercentCalculatedModel.status == true
-                                                && YCTestApercentCalculatedModel.shift == shift)).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                (YCTestApercentCalculatedModel.createdate >= startDate
-                                                && YCTestApercentCalculatedModel.createdate < endDate
-                                                && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                //&& YCTestApercentCalculatedModel.status == true
-                                                )).ToList();
+                            DisplayAlert("Notice", "No records to display!!!", "OK");
+                            return;
                         }
 
-
-                    }
-                    else if (categoryName != null && machineID != Guid.Empty)
-                    {
-                        endDate = endDate.AddDays(1);
-
-                        if (shift != "" && process != null)
+                        //Start of Logic to check last shift for the given end date is logged in end date + 1 day date
+                        //Get first record of actual end date + 1 day
+                        List<YCTestApercentCalculatedModel> recs_actualEndDatePlusOne = conn.Table<YCTestApercentCalculatedModel>()
+                                                                        .Where(YCTestApercentCalculatedModel =>
+                                                                        (YCTestApercentCalculatedModel.createdate >= endDate
+                                                                        && YCTestApercentCalculatedModel.createdate < endDatePlusOne))
+                                                                        .OrderBy(YCTestApercentCalculatedModel => YCTestApercentCalculatedModel.createdate).ToList();
+                        if (recs_actualEndDatePlusOne.Count > 0)
                         {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                 (YCTestApercentCalculatedModel.createdate >= startDate
-                                                 && YCTestApercentCalculatedModel.createdate < endDate
-                                                 && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                 && YCTestApercentCalculatedModel.machineID == machineID
-                                                 //&& YCTestApercentCalculatedModel.status == true
-                                                 && YCTestApercentCalculatedModel.shift == shift
-                                                 && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            //Check if the 1st record of actual end date + 1 day is not Shift-1
+                            if (recs_actualEndDatePlusOne[0].shift != "Shift-1")
+                            {
+                                YCTestApercentCalculatedModel actualEndDatePlusOne_Shift1_Recs = recs_actualEndDatePlusOne.Where(YCTestApercentCalculatedModel =>
+                                                                                             (YCTestApercentCalculatedModel.shift == "Shift-1"))
+                                                                                            .OrderBy(YCTestApercentCalculatedModel => YCTestApercentCalculatedModel.createdate)
+                                                                                            .FirstOrDefault();
+                                //Merge last shift record of actual end date from (actual end date + 1day) with parent list
+                                parentList.Concat(recs_actualEndDatePlusOne.Where(YCTestApercentCalculatedModel =>
+                                                                            (YCTestApercentCalculatedModel.createdate >= endDate
+                                                                            && YCTestApercentCalculatedModel.createdate < actualEndDatePlusOne_Shift1_Recs.createdate
+                                                                            && YCTestApercentCalculatedModel.shift == recs_actualEndDatePlusOne[0].shift))
+                                                                            .OrderBy(YCTestApercentCalculatedModel => YCTestApercentCalculatedModel.createdate).ToList());
+                            }
                         }
-                        else if (shift == "" && process != null)
+                        //End of Logic to check last shift for the given end date is logged in end date + 1 day date
+
+                        //Start of logic to ignore the previous date last shift record from the given actual start date
+                        if (parentList[0].shift != "Shift-1")
                         {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                (YCTestApercentCalculatedModel.createdate >= startDate
-                                                && YCTestApercentCalculatedModel.createdate < endDate
-                                                && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                && YCTestApercentCalculatedModel.machineID == machineID
-                                                //&& YCTestApercentCalculatedModel.status == true
-                                                && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            YCTestApercentCalculatedModel actualStartDate_Shift1_Recs = parentList.Where(YCTestApercentCalculatedModel =>
+                                                                                         (YCTestApercentCalculatedModel.shift == "Shift-1"))
+                                                                                        .OrderBy(YCTestApercentCalculatedModel => YCTestApercentCalculatedModel.createdate)
+                                                                                        .FirstOrDefault();
+                            if (actualStartDate_Shift1_Recs != null)
+                            {
+                                List<YCTestApercentCalculatedModel> lastShiftOfPreviousDay_in_ActualStartDateRecs =
+                                                                        parentList.Where(YCTestApercentCalculatedModel =>
+                                                                        (YCTestApercentCalculatedModel.shift == parentList[0].shift
+                                                                        && YCTestApercentCalculatedModel.createdate < actualStartDate_Shift1_Recs.createdate))
+                                                                        .OrderBy(YCTestApercentCalculatedModel => YCTestApercentCalculatedModel.createdate)
+                                                                        .ToList();
+                                parentList.RemoveAll(i => lastShiftOfPreviousDay_in_ActualStartDateRecs.Contains(i));
+                            }
                         }
-                        else if (shift != "" && process == null)
+                        //End of logic to ignore the previous date last shift record from the given actual start date
+
+                        if (categoryName == null || categoryName == "")
                         {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                (YCTestApercentCalculatedModel.createdate >= startDate
-                                                && YCTestApercentCalculatedModel.createdate < endDate
-                                                && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                && YCTestApercentCalculatedModel.machineID == machineID
-                                                //&& YCTestApercentCalculatedModel.status == true
-                                                && YCTestApercentCalculatedModel.shift == shift)).ToList();
-                        }
-                        else if (shift == "" && process == null)
-                        {
-                            apercentCalcList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                (YCTestApercentCalculatedModel.createdate >= startDate
-                                                && YCTestApercentCalculatedModel.createdate < endDate
-                                                && YCTestApercentCalculatedModel.machineCategory == categoryName
-                                                && YCTestApercentCalculatedModel.machineID == machineID
-                                                //&& YCTestApercentCalculatedModel.status == true
-                                                )).ToList();
-                        }
+                            //endDate = endDate.AddDays(1);
+
+                            if (shift != "" && process != null)
+                            {
+                                apercentCalcList = parentList.Where(YCTestApercentCalculatedModel =>
+                                                     (YCTestApercentCalculatedModel.shift == shift
+                                                     && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                apercentCalcList = parentList.Where(YCTestApercentCalculatedModel =>
+                                                     (YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                apercentCalcList = parentList.Where(YCTestApercentCalculatedModel =>
+                                                    (YCTestApercentCalculatedModel.shift == shift)).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                apercentCalcList = parentList;
+                            }
 
 
+
+                        }
+                        else if (categoryName != null && machineID == Guid.Empty)
+                        {
+                            //endDate = endDate.AddDays(1);
+
+                            if (shift != "" && process != null)
+                            {
+                                apercentCalcList = parentList.Where(YCTestApercentCalculatedModel =>
+                                                    (YCTestApercentCalculatedModel.machineCategory == categoryName
+                                                    && YCTestApercentCalculatedModel.shift == shift
+                                                    && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                apercentCalcList = parentList.Where(YCTestApercentCalculatedModel =>
+                                                    (YCTestApercentCalculatedModel.machineCategory == categoryName
+                                                    && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                apercentCalcList = parentList.Where(YCTestApercentCalculatedModel =>
+                                                    (YCTestApercentCalculatedModel.machineCategory == categoryName
+                                                    && YCTestApercentCalculatedModel.shift == shift)).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                apercentCalcList = parentList.Where(YCTestApercentCalculatedModel =>
+                                                    (YCTestApercentCalculatedModel.machineCategory == categoryName)).ToList();
+                            }
+
+
+                        }
+                        else if (categoryName != null && machineID != Guid.Empty)
+                        {
+                            //endDate = endDate.AddDays(1);
+
+                            if (shift != "" && process != null)
+                            {
+                                apercentCalcList = parentList.Where(YCTestApercentCalculatedModel =>
+                                                     (YCTestApercentCalculatedModel.machineCategory == categoryName
+                                                     && YCTestApercentCalculatedModel.machineID == machineID
+                                                     && YCTestApercentCalculatedModel.shift == shift
+                                                     && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift == "" && process != null)
+                            {
+                                apercentCalcList = parentList.Where(YCTestApercentCalculatedModel =>
+                                                    (YCTestApercentCalculatedModel.machineCategory == categoryName
+                                                    && YCTestApercentCalculatedModel.machineID == machineID
+                                                    && YCTestApercentCalculatedModel.process.ToLower() == process.ToLower())).ToList();
+                            }
+                            else if (shift != "" && process == null)
+                            {
+                                apercentCalcList = parentList.Where(YCTestApercentCalculatedModel =>
+                                                    (YCTestApercentCalculatedModel.machineCategory == categoryName
+                                                    && YCTestApercentCalculatedModel.machineID == machineID
+                                                    && YCTestApercentCalculatedModel.shift == shift)).ToList();
+                            }
+                            else if (shift == "" && process == null)
+                            {
+                                apercentCalcList = parentList.Where(YCTestApercentCalculatedModel =>
+                                                    (YCTestApercentCalculatedModel.machineCategory == categoryName
+                                                    && YCTestApercentCalculatedModel.machineID == machineID)).ToList();
+                            }
+
+
+                        }
                     }
 
                     //List<YCTestApercentCalculatedModel> apercentCalcList = null;
@@ -209,7 +272,21 @@ namespace TQM
                     //      (YCTestApercentCalculatedModel.status == true)).ToList();
 
 
-
+                    if (matType != "" && materialLength != "")
+                    {
+                        decimal yarnLength = 0.00m;
+                        try
+                        {
+                            yarnLength = decimal.Parse(materialLength);
+                        }
+                        catch (Exception)
+                        {
+                            DisplayAlert("Attention", "Invalid unit length!!!", "OK");
+                            return;
+                        }
+                        apercentCalcList = apercentCalcList.Where(YCTestApercentCalculatedModel => (YCTestApercentCalculatedModel.yarnlength == yarnLength
+                                                && YCTestApercentCalculatedModel.yarnlenunit == matType)).ToList();
+                    }
 
 
                     if (apercentCalcList.Count == 0)
@@ -219,10 +296,6 @@ namespace TQM
                     }
                     else
                     {
-                        if (testID != "")
-                        {
-                            apercentCalcList = apercentCalcList.Where(t => t.testID == long.Parse(testID)).ToList();
-                        }
                         if (deleteRequest)
                         {
                             deleteAll = true;
@@ -375,6 +448,17 @@ namespace TQM
                             {
                                 report.isGREEN_NM1 = false;
                                 report.isRED_NM1 = true;
+                                if(actual_Nminus1 < expMin)
+                                {
+                                    report.correctionRemark_NM1 = "Under Correction";
+                                }else if (actual_Nminus1 > expMax)
+                                {
+                                    report.correctionRemark_NM1 = "Over Correction";
+                                }
+                                else
+                                {
+                                    report.correctionRemark_NM1 = "";
+                                }
                             }
                             else
                             {
@@ -386,6 +470,19 @@ namespace TQM
                             {
                                 report.isGREEN_NP1 = false;
                                 report.isRED_NP1 = true;
+
+                                if (actual_nPlus1 < expMin)
+                                {
+                                    report.correctionRemark_NP1 = "Under Correction";
+                                }
+                                else if (actual_nPlus1 > expMax)
+                                {
+                                    report.correctionRemark_NP1 = "Over Correction";
+                                }
+                                else
+                                {
+                                    report.correctionRemark_NP1 = "";
+                                }
                             }
                             else
                             {
@@ -561,12 +658,15 @@ namespace TQM
                     }
                     else
                     {
-                        pdfGridInfo.Rows[3].Cells[1].Value = "A% (N-1): " + formatDecimal(orl.apercent_nMinus1).ToString();
+                        pdfGridInfo.Rows[3].Cells[1].Value = "A% (N-1): " + formatDecimal(orl.apercent_nMinus1).ToString()
+                                                                + " " + orl.correctionRemark_NM1;
                         pdfGridInfo.Rows[3].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGridInfo.Rows[3].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGridInfo.Rows[3].Cells[1].Style.BackgroundBrush = PdfBrushes.Red;
                         PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGridInfo.Rows[3].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12, PdfFontStyle.Bold);
                         pdfGridInfo.Rows[3].Cells[1].Style.TextBrush = brush_con;
+                        pdfGridInfo.Rows[3].Cells[1].ColumnSpan = 2;
                     }
 
                     if (orl.isGREEN_NP1)
@@ -575,12 +675,15 @@ namespace TQM
                     }
                     else
                     {
-                        pdfGridInfo.Rows[3].Cells[2].Value = "A% (N+1): " + formatDecimal(orl.apercent_nPlus1).ToString();
-                        pdfGridInfo.Rows[3].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGridInfo.Rows[3].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGridInfo.Rows[3].Cells[2].Style.BackgroundBrush = PdfBrushes.Red;
+                        pdfGridInfo.Rows[3].Cells[3].Value = "A% (N+1): " + formatDecimal(orl.apercent_nPlus1).ToString()
+                                                                + " " + orl.correctionRemark_NP1;
+                        pdfGridInfo.Rows[3].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGridInfo.Rows[3].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGridInfo.Rows[3].Cells[3].Style.BackgroundBrush = PdfBrushes.Red;
                         PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
-                        pdfGridInfo.Rows[3].Cells[2].Style.TextBrush = brush_con;
+                        pdfGridInfo.Rows[3].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12, PdfFontStyle.Bold);
+                        pdfGridInfo.Rows[3].Cells[3].Style.TextBrush = brush_con;
+                        pdfGridInfo.Rows[3].Cells[3].ColumnSpan = 2;
                     }
 
 

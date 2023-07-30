@@ -660,6 +660,8 @@ namespace TQM
             ImageNotification("null");
             UpdateUserNotification("");
             hideFrames();
+            await refListView(false);
+            await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
 
             //showProgress
             CancellationTokenSource src_p = new CancellationTokenSource();
@@ -682,12 +684,6 @@ namespace TQM
             lbl_TestID.Text = "";
             isTestStarted = true;
 
-            
-
-            await refListView(false);
-            await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
-
-            
             if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
             {
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");

@@ -30,9 +30,13 @@ namespace TQM.ModelView
 
         public bool isGREEN_NM1 { get; set; } = true;
 
+        public string correctionRemark_NM1 { get; set; }
+
         public bool isRED_NP1 { get; set; } = false;
 
         public bool isGREEN_NP1 { get; set; } = true;
+
+        public string correctionRemark_NP1 { get; set; }
 
         public decimal testaverage_nMinus1 { get; set; }
 
