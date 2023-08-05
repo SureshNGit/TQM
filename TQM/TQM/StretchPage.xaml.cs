@@ -1154,6 +1154,12 @@ namespace TQM
                 else
                 {
                     DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+                    if (DateTime.Now <= maxDate)
+                    {
+                        await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
+                        _ = showProgress(false);
+                        return;
+                    }
                     lastTestRecord = conn.Table<StretchTestModel>()
                         .Where(StretchTestModel => StretchTestModel.createdate == maxDate).FirstOrDefault();
                     if (lastTestRecord != null)
@@ -1752,6 +1758,12 @@ namespace TQM
             {
                 conn.CreateTable<StretchTestModel>();
                 DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+                if (DateTime.Now <= maxDate)
+                {
+                    await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
+                    _ = showProgress(false);
+                    return;
+                }
                 StretchTestModel lastTestRecord = conn.Table<StretchTestModel>().Where(StretchTestModel => StretchTestModel.createdate == maxDate).FirstOrDefault();
                 //StretchTestModel lastTestRecord = conn.Table<StretchTestModel>().OrderByDescending(StretchTestModel => StretchTestModel.testID).FirstOrDefault();
                 if (lastTestRecord != null)

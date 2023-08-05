@@ -1318,6 +1318,12 @@ namespace TQM
                 else
                 {
                     DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+                    if (DateTime.Now <= maxDate)
+                    {
+                        await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
+                        _ = showProgress(false);
+                        return;
+                    }
                     lastTestRecord = conn.Table<YCTestApercentModel>()
                         .Where(YCTestApercentModel => YCTestApercentModel.createdate == maxDate).FirstOrDefault();
                     if (lastTestRecord != null)
@@ -1916,6 +1922,12 @@ namespace TQM
             {
                 conn.CreateTable<YCTestApercentModel>();
                 DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+                if (DateTime.Now <= maxDate)
+                {
+                    await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
+                    _ = showProgress(false);
+                    return;
+                }
                 YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>()
                     .Where(YCTestApercentModel => YCTestApercentModel.createdate == maxDate).FirstOrDefault();
                 //YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();
@@ -2096,6 +2108,12 @@ namespace TQM
             {
                 conn.CreateTable<YCTestApercentModel>();
                 DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+                if (DateTime.Now <= maxDate)
+                {
+                    await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
+                    _ = showProgress(false);
+                    return;
+                }
                 YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>()
                     .Where(YCTestApercentModel => YCTestApercentModel.createdate == maxDate).FirstOrDefault();
                 //YCTestApercentModel lastTestRecord = conn.Table<YCTestApercentModel>().OrderByDescending(YCTestApercentModel => YCTestApercentModel.testID).FirstOrDefault();

@@ -786,6 +786,12 @@ namespace TQM
                 else
                 {
                     DateTime maxDate = conn.Table<YCTestModel>().Max(YCTestModel => YCTestModel.createdate);
+                    if (DateTime.Now <= maxDate)
+                    {
+                        await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
+                        _ = showProgress(false);
+                        return;
+                    }
                     lastTestRecord = conn.Table<YCTestModel>()
                         .Where(YCTestModel => YCTestModel.createdate == maxDate).FirstOrDefault();
                     if (lastTestRecord != null)

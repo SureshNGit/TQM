@@ -1241,6 +1241,12 @@ namespace TQM
                 else
                 {
                     DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+                    if (DateTime.Now <= maxDate)
+                    {
+                        await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
+                        _ = showProgress(false);
+                        return;
+                    }
                     lastTestRecord = conn.Table<NoilsTestModel>()
                         .Where(NoilsTestModel => NoilsTestModel.createdate == maxDate).FirstOrDefault();
                     if (lastTestRecord != null)
@@ -1841,6 +1847,12 @@ namespace TQM
                 List<NoilsTestModel> allRecords = conn.Table<NoilsTestModel>().ToList();
                 conn.CreateTable<NoilsTestModel>();
                 DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+                if (DateTime.Now <= maxDate)
+                {
+                    await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
+                    _ = showProgress(false);
+                    return;
+                }
                 NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>()
                     .Where(NoilsTestModel => NoilsTestModel.createdate == maxDate).FirstOrDefault();
                 //NoilsTestModel lastTestRecord = conn.Table<NoilsTestModel>().OrderByDescending(NoilsTestModel => NoilsTestModel.testID).FirstOrDefault();
