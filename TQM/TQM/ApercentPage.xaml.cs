@@ -347,6 +347,353 @@ namespace TQM
             }
         }
 
+        private void autoCorrection()
+        {
+            ///*******************************Dharanidara Test to 1 Reset Issue - Auto Correction**************************
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                conn.CreateTable<YCTestApercentModel>();
+                conn.CreateTable<YCTestApercentSummaryModel>();
+                conn.CreateTable<YCTestApercentCalculatedModel>();
+
+                int recordCount = conn.Table<YCTestApercentModel>().Count();
+                int failCount = 0;
+                YCTestApercentModel lastSuccessfulTest = null;
+
+                if (recordCount > 0)
+                {
+
+                    long minTestID = conn.Table<YCTestApercentModel>().Min(YCTestApercentModel => YCTestApercentModel.testID);
+                    List<YCTestApercentModel> vulnerableTestList = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
+                                                              (YCTestApercentModel.testID == minTestID
+                                                              && YCTestApercentModel.testcount == 1))
+                                                                .OrderByDescending(YCTestApercentModel => YCTestApercentModel.createdate).ToList();
+                    if (vulnerableTestList.Count > 1)
+                    {
+                        YCTestApercentModel vulnerableTest = vulnerableTestList[0];
+                        List<YCTestApercentModel> allSuccessfulTestList = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
+                                                              (YCTestApercentModel.createdate < vulnerableTest.createdate))
+                                                                .OrderByDescending(YCTestApercentModel => YCTestApercentModel.createdate).ToList();
+                        if (allSuccessfulTestList.Count > 0)
+                        {
+                            lastSuccessfulTest = allSuccessfulTestList[0];
+                            if (vulnerableTest.testType == "nMinus1")
+                            {
+                                List<YCTestApercentModel> allImpactedTestList = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
+                                                              (YCTestApercentModel.createdate >= vulnerableTest.createdate))
+                                                                .OrderByDescending(YCTestApercentModel => YCTestApercentModel.createdate).ToList();
+                                if (allImpactedTestList.Count > 0)
+                                {
+                                    foreach (YCTestApercentModel impactedTest in allImpactedTestList)
+                                    {
+                                        impactedTest.testID = impactedTest.testID + lastSuccessfulTest.testID;
+                                        int row = conn.Update(impactedTest);
+                                        if (row < 1)
+                                        {
+                                            failCount += 1;
+                                        }
+                                    }
+                                }
+                             }
+                            else
+                            {
+                                List<YCTestApercentModel> allVulnerableTestList = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
+                                                              (YCTestApercentModel.testID == vulnerableTest.testID
+                                                              && YCTestApercentModel.createdate >= vulnerableTest.createdate)).ToList();
+                                if (allVulnerableTestList.Count > 0)
+                                {
+                                    foreach(YCTestApercentModel vTest in allVulnerableTestList)
+                                    {
+                                        vTest.testID = lastSuccessfulTest.testID;
+                                        int row = conn.Update(vTest);
+                                        if (row < 1)
+                                        {
+                                            failCount += 1;
+                                        }
+                                    }
+                                }
+                                List<YCTestApercentModel> allOtherImpactedTestList = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
+                                                              (YCTestApercentModel.testID != vulnerableTest.testID
+                                                              && YCTestApercentModel.createdate >= vulnerableTest.createdate))
+                                                                .OrderByDescending(YCTestApercentModel => YCTestApercentModel.createdate).ToList();
+                                if (allOtherImpactedTestList.Count > 0)
+                                {
+                                    foreach(YCTestApercentModel impactedTest in allOtherImpactedTestList)
+                                    {
+                                        impactedTest.testID = impactedTest.testID + lastSuccessfulTest.testID;
+                                        int row = conn.Update(impactedTest);
+                                        if (row < 1)
+                                        {
+                                            failCount += 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //Not possible but yet to decide
+                        }
+                    }
+                }
+
+
+                if (failCount > 0)
+                {
+                    DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction is not successful", "Okay");
+                    return;
+                }
+
+                int recordCount_summary = conn.Table<YCTestApercentSummaryModel>().Count();
+                int failCount_summary = 0;
+                YCTestApercentSummaryModel lastSuccessfulTest_summary = null;
+                if (recordCount_summary > 0)
+                {
+                    long minTestID = conn.Table<YCTestApercentSummaryModel>().Min(YCTestApercentSummaryModel => YCTestApercentSummaryModel.testID);
+                    List<YCTestApercentSummaryModel> vulnerableTestList = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
+                                                              (YCTestApercentSummaryModel.testID == minTestID))
+                                                                .OrderByDescending(YCTestApercentSummaryModel => YCTestApercentSummaryModel.createdate).ToList();
+                    if (vulnerableTestList.Count > 1)
+                    {
+                        YCTestApercentSummaryModel vulnerableTest = vulnerableTestList[0];
+                        List<YCTestApercentSummaryModel> allSuccessfulTestList = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
+                                                              (YCTestApercentSummaryModel.createdate < vulnerableTest.createdate))
+                                                                .OrderByDescending(YCTestApercentSummaryModel => YCTestApercentSummaryModel.createdate).ToList();
+                        if (allSuccessfulTestList.Count > 0)
+                        {
+                            lastSuccessfulTest_summary = allSuccessfulTestList[0];
+                            if (vulnerableTest.testType == "nMinus1")
+                            {
+                                List<YCTestApercentSummaryModel> allImpactedTestList = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
+                                                              (YCTestApercentSummaryModel.createdate >= vulnerableTest.createdate))
+                                                                .OrderByDescending(YCTestApercentSummaryModel => YCTestApercentSummaryModel.createdate).ToList();
+                                if (allImpactedTestList.Count > 0)
+                                {
+                                    foreach (YCTestApercentSummaryModel impactedTest in allImpactedTestList)
+                                    {
+                                        impactedTest.testID = impactedTest.testID + lastSuccessfulTest_summary.testID;
+                                        int row = conn.Update(impactedTest);
+                                        if (row < 1)
+                                        {
+                                            failCount_summary += 1;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                List<YCTestApercentSummaryModel> allVulnerableTestList = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
+                                                              (YCTestApercentSummaryModel.testID == vulnerableTest.testID
+                                                              && YCTestApercentSummaryModel.createdate >= vulnerableTest.createdate)).ToList();
+                                if (allVulnerableTestList.Count > 0)
+                                {
+                                    foreach (YCTestApercentSummaryModel vTest in allVulnerableTestList)
+                                    {
+                                        vTest.testID = lastSuccessfulTest_summary.testID;
+                                        int row = conn.Update(vTest);
+                                        if (row < 1)
+                                        {
+                                            failCount_summary += 1;
+                                        }
+                                    }
+                                }
+                                List<YCTestApercentSummaryModel> allOtherImpactedTestList = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
+                                                              (YCTestApercentSummaryModel.testID != YCTestApercentSummaryModel.testID
+                                                              && YCTestApercentSummaryModel.createdate >= vulnerableTest.createdate))
+                                                                .OrderByDescending(YCTestApercentSummaryModel => YCTestApercentSummaryModel.createdate).ToList();
+                                if (allOtherImpactedTestList.Count > 0)
+                                {
+                                    foreach (YCTestApercentSummaryModel impactedTest in allOtherImpactedTestList)
+                                    {
+                                        impactedTest.testID = impactedTest.testID + lastSuccessfulTest_summary.testID;
+                                        int row = conn.Update(impactedTest);
+                                        if (row < 1)
+                                        {
+                                            failCount_summary += 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //Not possible but yet to decide
+                        }
+                    }
+                }
+
+                if (failCount_summary > 0)
+                {
+                    DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction is not successful", "Okay");
+                    return;
+                }
+
+                int recordCount_calculated = conn.Table<YCTestApercentCalculatedModel>().Count();
+                int failCount_calculated = 0;
+                if (recordCount_calculated > 0)
+                {
+                    YCTestApercentCalculatedModel lastSuccessfulTest_calc_check = conn.Table<YCTestApercentCalculatedModel>().Where(
+                                                                        YCTestApercentCalculatedModel =>
+                                                                        (YCTestApercentCalculatedModel.testID == lastSuccessfulTest_summary.testID))
+                                                                        .FirstOrDefault();
+                    if(lastSuccessfulTest_calc_check == null)
+                    {
+                        YCTestApercentSummaryModel nMinus1Summary = conn.Table<YCTestApercentSummaryModel>().Where(
+                                                           YCTestApercentSummaryModel => (
+                                                           YCTestApercentSummaryModel.testType == "nMinus1"
+                                                           && YCTestApercentSummaryModel.testID == lastSuccessfulTest_summary.testID)
+                                                           ).FirstOrDefault();
+                        if (nMinus1Summary == null) { failCount_calculated += 1; }
+                        else
+                        {
+                            YCTestApercentSummaryModel NSummary = conn.Table<YCTestApercentSummaryModel>().Where(
+                                                                YCTestApercentSummaryModel => (
+                                                                YCTestApercentSummaryModel.testType == "N"
+                                                                && YCTestApercentSummaryModel.testID == lastSuccessfulTest_summary.testID)
+                                                                ).FirstOrDefault();
+                            if (NSummary == null) { failCount_calculated += 1; } else
+                            {
+                                YCTestApercentSummaryModel nPlus1Summary = conn.Table<YCTestApercentSummaryModel>().Where(
+                                                                YCTestApercentSummaryModel => (
+                                                                YCTestApercentSummaryModel.testType == "nPlus1"
+                                                                && YCTestApercentSummaryModel.testID == lastSuccessfulTest_summary.testID)
+                                                                ).FirstOrDefault();
+                                if (nPlus1Summary == null) { failCount_calculated += 1; }
+                                else
+                                {
+                                    decimal apercent_nMinus1 = ((nMinus1Summary.avg_weight - NSummary.avg_weight) / nMinus1Summary.avg_weight) * 100m;
+                                    apercent_nMinus1 = formatDecimal(apercent_nMinus1);
+                                    decimal apercent_nPlus1 = ((nPlus1Summary.avg_weight - NSummary.avg_weight) / nPlus1Summary.avg_weight) * 100m;
+                                    apercent_nPlus1 = formatDecimal(apercent_nPlus1);
+                                    YCTestApercentModel Max_nMinus1 = conn.Table<YCTestApercentModel>().Where(
+                                        YCTestApercentModel =>
+                                        (YCTestApercentModel.testID == lastSuccessfulTest_summary.testID &&
+                                        YCTestApercentModel.testType == "nMinus1")).OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                    YCTestApercentModel Min_nMinus1 = conn.Table<YCTestApercentModel>().Where(
+                                        YCTestApercentModel =>
+                                        (YCTestApercentModel.testID == lastSuccessfulTest_summary.testID &&
+                                        YCTestApercentModel.testType == "nMinus1")).OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                    YCTestApercentModel Max_N = conn.Table<YCTestApercentModel>().Where(
+                                        YCTestApercentModel =>
+                                        (YCTestApercentModel.testID == lastSuccessfulTest_summary.testID &&
+                                        YCTestApercentModel.testType == "N")).OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                    YCTestApercentModel Min_N = conn.Table<YCTestApercentModel>().Where(
+                                        YCTestApercentModel =>
+                                        (YCTestApercentModel.testID == lastSuccessfulTest_summary.testID &&
+                                        YCTestApercentModel.testType == "N")).OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                    YCTestApercentModel Max_nPlus1 = conn.Table<YCTestApercentModel>().Where(
+                                       YCTestApercentModel =>
+                                       (YCTestApercentModel.testID == lastSuccessfulTest_summary.testID &&
+                                       YCTestApercentModel.testType == "nPlus1")).OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                    YCTestApercentModel Min_nPlus1 = conn.Table<YCTestApercentModel>().Where(
+                                        YCTestApercentModel =>
+                                        (YCTestApercentModel.testID == lastSuccessfulTest_summary.testID &&
+                                        YCTestApercentModel.testType == "nPlus1")).OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                    decimal range_nMinus1 = Max_nMinus1.yarnweight - Min_nMinus1.yarnweight;
+                                    decimal range_N = Max_N.yarnweight - Min_N.yarnweight;
+                                    decimal range_nPlus1 = Max_nPlus1.yarnweight - Min_nPlus1.yarnweight;
+
+                                    YCTestApercentCalculatedModel yCTestApercentCalculatedModel = new YCTestApercentCalculatedModel()
+                                    {
+                                        ID = Guid.NewGuid(),
+                                        testID = nMinus1Summary.testID,
+                                        userID = nMinus1Summary.userID,
+                                        userName = nMinus1Summary.userName,
+                                        machineID = nMinus1Summary.machineID,
+                                        machineCategory = nMinus1Summary.machineCategory,
+                                        machineName = nMinus1Summary.machineName,
+                                        process = nMinus1Summary.process,
+                                        countsysname = nMinus1Summary.countsysname,
+                                        yarnlenunit = nMinus1Summary.yarnlenunit,
+                                        yarnlength = nMinus1Summary.yarnlength,
+                                        shift = nMinus1Summary.shift,
+                                        testType = nMinus1Summary.testType,
+                                        totaltestcount = nMinus1Summary.totaltestcount,
+                                        standardApercent = nMinus1Summary.standardApercent,
+                                        avg_weight_nMinus1 = nMinus1Summary.avg_weight,
+                                        testaverage_nMinus1 = nMinus1Summary.testaverage,
+                                        testsd_nMinus1 = nMinus1Summary.testsd,
+                                        testcv_nMinus1 = nMinus1Summary.testcv,
+                                        max_nMinus1 = Max_nMinus1.yarnweight,
+                                        min_nMinus1 = Min_nMinus1.yarnweight,
+                                        range_nMinus1 = range_nMinus1,
+                                        apercent_nMinus1 = apercent_nMinus1,
+                                        avg_weight_N = NSummary.avg_weight,
+                                        testaverage_N = NSummary.testaverage,
+                                        testsd_N = NSummary.testsd,
+                                        testcv_N = NSummary.testcv,
+                                        max_N = Max_N.yarnweight,
+                                        min_N = Min_N.yarnweight,
+                                        range_N = range_N,
+                                        avg_weight_nPlus1 = nPlus1Summary.avg_weight,
+                                        testaverage_nPlus1 = nPlus1Summary.testaverage,
+                                        testsd_nPlus1 = nPlus1Summary.testsd,
+                                        testcv_nPlus1 = nPlus1Summary.testcv,
+                                        max_nPlus1 = Max_nPlus1.yarnweight,
+                                        min_nPlus1 = Min_nPlus1.yarnweight,
+                                        range_nPlus1 = range_nPlus1,
+                                        apercent_nPlus1 = apercent_nPlus1,
+                                        status = true,
+                                        createdate = lastSuccessfulTest_summary.createdate
+                                    };
+                                    int row = conn.Insert(yCTestApercentCalculatedModel);
+                                    if (row > 0)
+                                    {
+                                        List<YCTestApercentCalculatedModel> allOtherImpactedTestList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
+                                                              (YCTestApercentCalculatedModel.createdate >= lastSuccessfulTest_summary.createdate))
+                                                                .OrderByDescending(YCTestApercentCalculatedModel => YCTestApercentCalculatedModel.createdate).ToList();
+                                        if (allOtherImpactedTestList.Count > 0)
+                                        {
+                                            foreach (YCTestApercentCalculatedModel impactedTest in allOtherImpactedTestList)
+                                            {
+                                                impactedTest.testID = impactedTest.testID + lastSuccessfulTest_summary.testID;
+                                                int row_allOtherImpactedTest = conn.Update(impactedTest);
+                                                if (row_allOtherImpactedTest < 1)
+                                                {
+                                                    failCount_calculated += 1;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        failCount_calculated += 1;
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        List<YCTestApercentCalculatedModel> allImpactedTestList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
+                                                              (YCTestApercentCalculatedModel.createdate >= lastSuccessfulTest_summary.createdate))
+                                                                .OrderByDescending(YCTestApercentCalculatedModel => YCTestApercentCalculatedModel.createdate).ToList();
+                        if (allImpactedTestList.Count > 0)
+                        {
+                            foreach (YCTestApercentCalculatedModel impactedTest in allImpactedTestList)
+                            {
+                                impactedTest.testID = impactedTest.testID + lastSuccessfulTest_summary.testID;
+                                int row_allOtherImpactedTest = conn.Update(impactedTest);
+                                if (row_allOtherImpactedTest < 1)
+                                {
+                                    failCount_calculated += 1;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (failCount_calculated > 0)
+                {
+                    DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction is not successful", "Okay");
+                    return;
+                }
+            }
+            //*************************************************************************************
+        }
+
+
         private void populateTestParams(string mCat, Guid mid, string mac)
         {
             hideFrames();
