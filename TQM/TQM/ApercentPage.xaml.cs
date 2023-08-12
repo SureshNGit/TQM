@@ -91,6 +91,7 @@ namespace TQM
                 }
                 else
                 {
+                    autoCorrection();
                     currentloggedInUser = loggedInUser;
                     if (loggedInUser.lastname.Trim() != "")
                     {
@@ -366,8 +367,27 @@ namespace TQM
                     long minTestID = conn.Table<YCTestApercentModel>().Min(YCTestApercentModel => YCTestApercentModel.testID);
                     List<YCTestApercentModel> vulnerableTestList = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
                                                               (YCTestApercentModel.testID == minTestID
-                                                              && YCTestApercentModel.testcount == 1))
+                                                              && YCTestApercentModel.testcount == 1
+                                                              && YCTestApercentModel.testType== "nMinus1"))
                                                                 .OrderByDescending(YCTestApercentModel => YCTestApercentModel.createdate).ToList();
+                    if (vulnerableTestList.Count == 0)
+                    {
+                        vulnerableTestList = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
+                                                              (YCTestApercentModel.testID == minTestID
+                                                              && YCTestApercentModel.testcount == 1
+                                                              && YCTestApercentModel.testType == "N"))
+                                                                .OrderByDescending(YCTestApercentModel => YCTestApercentModel.createdate).ToList();
+                    }
+
+                    if (vulnerableTestList.Count ==0)
+                    {
+                        vulnerableTestList = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
+                                                              (YCTestApercentModel.testID == minTestID
+                                                              && YCTestApercentModel.testcount == 1
+                                                              && YCTestApercentModel.testType == "nPlus1"))
+                                                                .OrderByDescending(YCTestApercentModel => YCTestApercentModel.createdate).ToList();
+                    }
+
                     if (vulnerableTestList.Count > 1)
                     {
                         YCTestApercentModel vulnerableTest = vulnerableTestList[0];
@@ -451,8 +471,24 @@ namespace TQM
                 {
                     long minTestID = conn.Table<YCTestApercentSummaryModel>().Min(YCTestApercentSummaryModel => YCTestApercentSummaryModel.testID);
                     List<YCTestApercentSummaryModel> vulnerableTestList = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
-                                                              (YCTestApercentSummaryModel.testID == minTestID))
+                                                              (YCTestApercentSummaryModel.testID == minTestID
+                                                              && YCTestApercentSummaryModel.testType == "nMinus1"))
                                                                 .OrderByDescending(YCTestApercentSummaryModel => YCTestApercentSummaryModel.createdate).ToList();
+                    if (vulnerableTestList.Count == 0)
+                    {
+                        vulnerableTestList = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
+                                                              (YCTestApercentSummaryModel.testID == minTestID
+                                                              && YCTestApercentSummaryModel.testType == "N"))
+                                                                .OrderByDescending(YCTestApercentSummaryModel => YCTestApercentSummaryModel.createdate).ToList();
+                    }
+                    if (vulnerableTestList.Count == 0)
+                    {
+                        vulnerableTestList = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
+                                                              (YCTestApercentSummaryModel.testID == minTestID
+                                                              && YCTestApercentSummaryModel.testType == "nPlus1"))
+                                                                .OrderByDescending(YCTestApercentSummaryModel => YCTestApercentSummaryModel.createdate).ToList();
+                    }
+
                     if (vulnerableTestList.Count > 1)
                     {
                         YCTestApercentSummaryModel vulnerableTest = vulnerableTestList[0];
@@ -530,7 +566,7 @@ namespace TQM
 
                 int recordCount_calculated = conn.Table<YCTestApercentCalculatedModel>().Count();
                 int failCount_calculated = 0;
-                if (recordCount_calculated > 0)
+                if (recordCount_calculated > 0 && lastSuccessfulTest_summary!=null)
                 {
                     YCTestApercentCalculatedModel lastSuccessfulTest_calc_check = conn.Table<YCTestApercentCalculatedModel>().Where(
                                                                         YCTestApercentCalculatedModel =>
