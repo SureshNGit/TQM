@@ -49,10 +49,11 @@ namespace TQM.Droid
             //***********End********
 
             //***********To read database file from other than default folder********
+            //string testDbName = "tqm_db_test.sqlite";
             //string dataFiles = Android.App.Application.Context.GetExternalFilesDir("").AbsolutePath;
-            //if (File.Exists(Path.Combine(dataFiles, dbName)))
+            //if (File.Exists(Path.Combine(dataFiles, testDbName)))
             //{
-            //    fullPath = Path.Combine(dataFiles, dbName);
+            //    fullPath = Path.Combine(dataFiles, testDbName);
             //}
             //***********End********
 
