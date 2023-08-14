@@ -40,21 +40,23 @@ namespace TQM.Droid
             string folderPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             string fullPath = Path.Combine(folderPath, dbName);
 
+            //***********To copy database file from default folder to downloads folder********
             //string downloadsFolder = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
             //if (File.Exists(fullPath))
             //{
             //    File.Copy(fullPath, downloadsFolder);
             //}
-            //else
+            //***********End********
+
+            //***********To read database file from other than default folder********
+            //string dataFiles = Android.App.Application.Context.GetExternalFilesDir("").AbsolutePath;
+            //if (File.Exists(Path.Combine(dataFiles, dbName)))
             //{
-            //    if(File.Exists(Path.Combine(downloadsFolder, dbName)))
-            //    {
-            //        File.Copy(Path.Combine(downloadsFolder, dbName), folderPath);
-            //    }
+            //    fullPath = Path.Combine(dataFiles, dbName);
             //}
+            //***********End********
 
             LoadApplication(new App(fullPath));
-
         }
 
         public bool CheckPermissionGranted(string Permissions)

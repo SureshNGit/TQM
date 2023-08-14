@@ -153,8 +153,8 @@ namespace TQM
                                     }
                                     else
                                     {
-                                        ycTestSummaryModels.Concat(conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                        YCTestSummaryModel.testID == i).ToList()).ToList();
+                                        ycTestSummaryModels.AddRange(conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
+                                                        YCTestSummaryModel.testID == i).ToList());
                                     }
                                 }
                             }
@@ -188,15 +188,20 @@ namespace TQM
                             if (recs_actualEndDatePlusOne[0].shift != "Shift-1")
                             {
                                 YCTestSummaryModel actualEndDatePlusOne_Shift1_Recs = recs_actualEndDatePlusOne.Where(YCTestSummaryModel =>
-                                                                                             (YCTestSummaryModel.shift == "Shift-1"))
+                                                                                             (YCTestSummaryModel.shift != recs_actualEndDatePlusOne[0].shift))
                                                                                             .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate)
                                                                                             .FirstOrDefault();
+
                                 //Merge last shift record of actual end date from (actual end date + 1day) with parent list
-                                parentList.Concat(recs_actualEndDatePlusOne.Where(YCTestSummaryModel =>
-                                                                            (YCTestSummaryModel.createdate >= endDate
-                                                                            && YCTestSummaryModel.createdate < actualEndDatePlusOne_Shift1_Recs.createdate
-                                                                            && YCTestSummaryModel.shift == recs_actualEndDatePlusOne[0].shift))
-                                                                            .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate).ToList());
+                                if (actualEndDatePlusOne_Shift1_Recs != null)
+                                {
+                                    List<YCTestSummaryModel> tempSummaryList = recs_actualEndDatePlusOne.Where(YCTestSummaryModel =>
+                                                                                (YCTestSummaryModel.createdate >= endDate
+                                                                                && YCTestSummaryModel.createdate < actualEndDatePlusOne_Shift1_Recs.createdate
+                                                                                && YCTestSummaryModel.shift == recs_actualEndDatePlusOne[0].shift))
+                                                                                .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate).ToList();
+                                    parentList.Concat(tempSummaryList);
+                                }
                             }
                         }
                         //End of Logic to check last shift for the given end date is logged in end date + 1 day date

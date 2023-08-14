@@ -91,7 +91,7 @@ namespace TQM
                 }
                 else
                 {
-                    autoCorrection();
+                    //autoCorrection();
                     currentloggedInUser = loggedInUser;
                     if (loggedInUser.lastname.Trim() != "")
                     {
