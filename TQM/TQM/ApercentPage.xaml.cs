@@ -433,14 +433,14 @@ namespace TQM
                                     }
                                 }
                                 List<YCTestApercentModel> allOtherImpactedTestList = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
-                                                              (YCTestApercentModel.testID != vulnerableTest.testID
-                                                              && YCTestApercentModel.createdate >= vulnerableTest.createdate))
+                                                              (YCTestApercentModel.testID != lastSuccessfulTest.testID
+                                                              && YCTestApercentModel.createdate > vulnerableTest.createdate))
                                                                 .OrderByDescending(YCTestApercentModel => YCTestApercentModel.createdate).ToList();
                                 if (allOtherImpactedTestList.Count > 0)
                                 {
                                     foreach(YCTestApercentModel impactedTest in allOtherImpactedTestList)
                                     {
-                                        impactedTest.testID = impactedTest.testID + lastSuccessfulTest.testID;
+                                        impactedTest.testID = impactedTest.testID + (lastSuccessfulTest.testID-1);
                                         int row = conn.Update(impactedTest);
                                         if (row < 1)
                                         {
@@ -534,14 +534,14 @@ namespace TQM
                                     }
                                 }
                                 List<YCTestApercentSummaryModel> allOtherImpactedTestList = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
-                                                              (YCTestApercentSummaryModel.testID != vulnerableTest.testID
-                                                              && YCTestApercentSummaryModel.createdate >= vulnerableTest.createdate))
+                                                              (YCTestApercentSummaryModel.testID != lastSuccessfulTest_summary.testID
+                                                              && YCTestApercentSummaryModel.createdate > vulnerableTest.createdate))
                                                                 .OrderByDescending(YCTestApercentSummaryModel => YCTestApercentSummaryModel.createdate).ToList();
                                 if (allOtherImpactedTestList.Count > 0)
                                 {
                                     foreach (YCTestApercentSummaryModel impactedTest in allOtherImpactedTestList)
                                     {
-                                        impactedTest.testID = impactedTest.testID + lastSuccessfulTest_summary.testID;
+                                        impactedTest.testID = impactedTest.testID + (lastSuccessfulTest_summary.testID-1);
                                         int row = conn.Update(impactedTest);
                                         if (row < 1)
                                         {
@@ -676,13 +676,13 @@ namespace TQM
                                     if (row > 0)
                                     {
                                         List<YCTestApercentCalculatedModel> allOtherImpactedTestList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                              (YCTestApercentCalculatedModel.createdate >= lastSuccessfulTest_summary.createdate))
+                                                              (YCTestApercentCalculatedModel.createdate > lastSuccessfulTest_summary.createdate))
                                                                 .OrderByDescending(YCTestApercentCalculatedModel => YCTestApercentCalculatedModel.createdate).ToList();
                                         if (allOtherImpactedTestList.Count > 0)
                                         {
                                             foreach (YCTestApercentCalculatedModel impactedTest in allOtherImpactedTestList)
                                             {
-                                                impactedTest.testID = impactedTest.testID + lastSuccessfulTest_summary.testID;
+                                                impactedTest.testID = impactedTest.testID + (lastSuccessfulTest_summary.testID-1);
                                                 int row_allOtherImpactedTest = conn.Update(impactedTest);
                                                 if (row_allOtherImpactedTest < 1)
                                                 {
@@ -703,7 +703,7 @@ namespace TQM
                     else
                     {
                         List<YCTestApercentCalculatedModel> allImpactedTestList = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
-                                                              (YCTestApercentCalculatedModel.createdate >= lastSuccessfulTest_summary.createdate))
+                                                              (YCTestApercentCalculatedModel.createdate > lastSuccessfulTest_summary.createdate))
                                                                 .OrderByDescending(YCTestApercentCalculatedModel => YCTestApercentCalculatedModel.createdate).ToList();
                         if (allImpactedTestList.Count > 0)
                         {
