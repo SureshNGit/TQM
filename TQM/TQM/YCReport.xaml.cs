@@ -1,4 +1,7 @@
-﻿using RestSharp;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using Java.Util;
+using RestSharp;
 using SQLite;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
@@ -7,6 +10,7 @@ using Syncfusion.Pdf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -1474,6 +1478,97 @@ namespace TQM
             }
         }
 
+        [Obsolete]
+        private bool generateCSVConsolidatedReport()
+        {
+            try
+            {
+                string downloadsFolder = Path.Combine(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads),"TQMDownloads");
+                using (var textWriter = new StreamWriter(Path.Combine(downloadsFolder, "TQM_Report_Consolidated(Wrapping).csv")))
+                {
+                   
+                    var writer = new CsvWriter(textWriter, CultureInfo.InvariantCulture);
+                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        Delimiter=",",
+                        HasHeaderRecord=false
+                    };
+                    //Header
+                    writer.WriteField("S.No");
+                    writer.WriteField("Date");
+                    writer.WriteField("ID");
+                    writer.WriteField("Mac Name");
+                    writer.WriteField("Shift");
+                    if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
+                    {
+                        writer.WriteField("Std. Count");
+                        writer.WriteField("Avg. Count");
+                    }
+                    else { 
+                        writer.WriteField("Std. Hank");
+                        writer.WriteField("Avg. Hank");
+                    }
+                    writer.WriteField("SD");
+                    writer.WriteField("CV");
+                    writer.WriteField("Test Time");
+                    writer.WriteField("Remark");
+                    //Actual Data
+                    writer.NextRecord();
+                    List<YCTestConsolidatedReportMV> overallReportList = (List<YCTestConsolidatedReportMV>)listview_tcConsolidatedReport.ItemsSource;
+                    foreach (YCTestConsolidatedReportMV orl in overallReportList)
+                    {
+                        writer.WriteField(orl.serialNo);
+                        writer.WriteField(orl.testDate);
+                        writer.WriteField(orl.testID);
+                        writer.WriteField(orl.machineName);
+                        writer.WriteField(orl.shift);
+                        writer.WriteField(orl.standardValue);
+
+
+                        if (orl.testAverage != null && orl.testAverage != "")
+                        {
+                            writer.WriteField(formatDecimal(Decimal.Parse(orl.testAverage)).ToString());
+                        }
+                        else
+                        {
+                            writer.WriteField(orl.testAverage);
+                        }
+
+                        if (orl.standardDeviation != null && orl.standardDeviation != "")
+                        {
+                            writer.WriteField(formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString());
+                        }
+                        else
+                        {
+                            writer.WriteField(orl.standardDeviation);
+                        }
+
+                        if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
+                        {
+                            writer.WriteField(formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString());
+                        }
+                        else
+                        {
+                            writer.WriteField(orl.CoEfficientOfVariation);
+                        }
+
+                        writer.WriteField(orl.testDuration);
+                        writer.WriteField(orl.remarks);
+                        writer.NextRecord();
+                    }
+                        writer.Flush();
+                  
+            
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                return false;
+            }
+        }
+
 
         private bool generatePDFConsolidatedReport()
         {
@@ -1912,6 +2007,7 @@ namespace TQM
                     if (!generatePDFConsolidatedReport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
                     else
                     {
+                        if (!generateCSVConsolidatedReport()) { showAlert("Error occurred in CSV report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
                         String companyName = null;
                         try
                         {
@@ -1951,14 +2047,41 @@ namespace TQM
                         RestResponse response = client.Execute(request);
                         if (response.IsSuccessful)
                         {
-                            if (deleteAll)
+                            fileName = "TQM_Report_Consolidated(Wrapping).csv";
+                            root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                            myDir = new Java.IO.File(root + "/TQMDownloads");
+                            file = new Java.IO.File(myDir, fileName);
+                            filePath = file.Path;
+                            client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                            request = new RestRequest();
+                            request.Method = Method.Post;
+                            //request.Timeout = Timeout.Infinite;
+                            request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                            request.AddParameter("uploadedby", companyName);
+                            if (selectedMachineCategory != null)
                             {
-                                deleteRecords(deleteList);
-                                showAlert("Report uploaded and deleted sucessfully!!!");
+                                request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
                             }
                             else
                             {
-                                showAlert("Report upload is sucessful!!!");
+                                request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-All)-" + DateTime.Now.ToString());
+                            }
+                            request.AddFile("reportpath", filePath);
+                            response = client.Execute(request);
+                            if (response.IsSuccessful)
+                            {
+                                if (deleteAll)
+                                {
+                                    deleteRecords(deleteList);
+                                    showAlert("Report uploaded and deleted sucessfully!!!");
+                                }
+                                else
+                                {
+                                    showAlert("Report upload is sucessful!!!");
+                                }
+                            }else
+                            {
+                                showAlert("Upload Failed. Please try again!!!", "Error");
                             }
                         }
                         else
