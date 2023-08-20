@@ -2007,7 +2007,6 @@ namespace TQM
                     if (!generatePDFConsolidatedReport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
                     else
                     {
-                        if (!generateCSVConsolidatedReport()) { showAlert("Error occurred in CSV report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
                         String companyName = null;
                         try
                         {
@@ -2047,28 +2046,48 @@ namespace TQM
                         RestResponse response = client.Execute(request);
                         if (response.IsSuccessful)
                         {
-                            fileName = "TQM_Report_Consolidated(Wrapping).csv";
-                            root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                            myDir = new Java.IO.File(root + "/TQMDownloads");
-                            file = new Java.IO.File(myDir, fileName);
-                            filePath = file.Path;
-                            client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
-                            request = new RestRequest();
-                            request.Method = Method.Post;
-                            //request.Timeout = Timeout.Infinite;
-                            request.AddParameter("userName", runConfiguration.getTQMAppUserID());
-                            request.AddParameter("uploadedby", companyName);
-                            if (selectedMachineCategory != null)
+                            if (runConfiguration.getCSVReportStatus())
                             {
-                                request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                                if (!generateCSVConsolidatedReport()) { showAlert("Error occurred in CSV report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+                                fileName = "TQM_Report_Consolidated(Wrapping).csv";
+                                root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                                myDir = new Java.IO.File(root + "/TQMDownloads");
+                                file = new Java.IO.File(myDir, fileName);
+                                filePath = file.Path;
+                                client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                                request = new RestRequest();
+                                request.Method = Method.Post;
+                                //request.Timeout = Timeout.Infinite;
+                                request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                                request.AddParameter("uploadedby", companyName);
+                                if (selectedMachineCategory != null)
+                                {
+                                    request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                                }
+                                else
+                                {
+                                    request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-All)-" + DateTime.Now.ToString());
+                                }
+                                request.AddFile("reportpath", filePath);
+                                response = client.Execute(request);
+                                if (response.IsSuccessful)
+                                {
+                                    if (deleteAll)
+                                    {
+                                        deleteRecords(deleteList);
+                                        showAlert("Report uploaded and deleted sucessfully!!!");
+                                    }
+                                    else
+                                    {
+                                        showAlert("Report upload is sucessful!!!");
+                                    }
+                                }
+                                else
+                                {
+                                    showAlert("Upload Failed. Please try again!!!", "Error");
+                                }
                             }
                             else
-                            {
-                                request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-All)-" + DateTime.Now.ToString());
-                            }
-                            request.AddFile("reportpath", filePath);
-                            response = client.Execute(request);
-                            if (response.IsSuccessful)
                             {
                                 if (deleteAll)
                                 {
@@ -2079,12 +2098,8 @@ namespace TQM
                                 {
                                     showAlert("Report upload is sucessful!!!");
                                 }
-                            }else
-                            {
-                                showAlert("Upload Failed. Please try again!!!", "Error");
                             }
-                        }
-                        else
+                        }else
                         {
                             showAlert("Upload Failed. Please try again!!!", "Error");
                         }
