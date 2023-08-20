@@ -786,21 +786,24 @@ namespace TQM
                             if (newPageAdded_Header)
                             {
                                 newPageAdded_Header = false;
-                                result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 25), layoutFormat);
+                                result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
                                 //changed from 10 to 25
                             }
                             else
                             {
-                                if ((overallHeight + totalRow_body_height) > 730)
-                                {
-                                    pdfPage = pdfDocument.Pages.Add();
-                                    result = pdfGrid.Draw(pdfPage, new PointF(10, 30), layoutFormat);
-                                }
-                                else
-                                {
-                                    result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight + 25)));
+                                //commented below code--->When test more than 30 samples, the overall table is moving to next page keeping 1st
+                                //page as blank
+
+                                //if ((overallHeight + totalRow_body_height) > 730)
+                                //{
+                                //    pdfPage = pdfDocument.Pages.Add();
+                                //    result = pdfGrid.Draw(pdfPage, new PointF(10, 30), layoutFormat);
+                                //}
+                                //else
+                                //{
+                                    result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight + 10)));
                                     //changed from 10 to 25
-                                }
+                                //}
                             }
 
 

@@ -790,7 +790,7 @@ namespace TQM
                         DisplayAlert("Attention", "Stretch Deviation is invalid. Please check!!!", "Ok");
                         return;
                     }
-                    if (entry_stretchDeviation.Text.Trim() == "" || decimal.Parse(entry_stretchDeviation.Text.Trim()) <= 0m)
+                    if (entry_stretchDeviation.Text.Trim() == "" || decimal.Parse(entry_stretchDeviation.Text.Trim()) < 0m)
                     {
                         DisplayAlert("Attention", "Stretch Deviation should not be blank or zero or negative!!!", "Ok");
                         return;
