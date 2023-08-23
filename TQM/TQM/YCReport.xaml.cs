@@ -57,6 +57,7 @@ namespace TQM
         private string CON_UF_VAL_2 = null;
         private string CON_UF_VAL_3 = null;
         private string CON_UF_VAL_4 = null;
+        private bool isFinalAvgRowPresent = false;
 
         public YCReport()
         {
@@ -66,6 +67,7 @@ namespace TQM
         public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType,string materialLength, string standHank, bool deleteRequest, bool isConsolidated, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             InitializeComponent();
+            isFinalAvgRowPresent = false;
             consolidatedReport = isConsolidated;
             if (consolidatedReport)
             {
@@ -846,7 +848,11 @@ namespace TQM
                             consolItems.otherThanSpinning = true;
                         }
 
-                        //OverallConsolidatedReports.Add(consolItems);
+                        if (machineID != Guid.Empty)
+                        {
+                            isFinalAvgRowPresent = true;
+                            OverallConsolidatedReports.Add(consolItems);
+                        }
 
                         ListOfConsolidatedReports = OverallConsolidatedReports;
                     }
@@ -1020,6 +1026,7 @@ namespace TQM
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                isFinalAvgRowPresent = false;
                 deleteAll = false;
                 img_notification.IsVisible = false;
                 btn_saveToPDF.Text = "Send Report";
@@ -1810,9 +1817,9 @@ namespace TQM
                     pdfGrid.Rows[pageRecordCount].Cells[10].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[pageRecordCount].Cells[10].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
 
-                    /**************************** Overall total ****************************
+                    //**************************** Overall total ****************************
                      
-                    if (rowCount == overallReportList.Count)
+                    if (rowCount == overallReportList.Count && isFinalAvgRowPresent)
                     {
                         pdfGrid.Rows[pageRecordCount].Cells[0].Style.Borders.All = PdfPens.Transparent;
                         pdfGrid.Rows[pageRecordCount].Cells[1].Style.Borders.All = PdfPens.Transparent;
@@ -1839,7 +1846,7 @@ namespace TQM
                         pdfGrid.Rows[pageRecordCount].Cells[10].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
                     }
                     
-                    **************************** End of Overall total *****************************/
+                    //**************************** End of Overall total *****************************
 
                     rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
                     if (rowHeights <= 700 && rowCount == overallReportList.Count)
