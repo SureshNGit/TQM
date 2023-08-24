@@ -129,28 +129,28 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Wrapping",
+                        Title = "RST",
                         ImageSource = "",
                         TargetPage = typeof(yarnCount)
                     });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "A %",
-                        ImageSource = "",
-                        TargetPage = typeof(ApercentPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Stretch",
-                        ImageSource = "",
-                        TargetPage = typeof(StretchPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Noils",
-                        ImageSource = "",
-                        TargetPage = typeof(NOILS)
-                    });
+                    //flyItems.Add(new MenuItem
+                    //{
+                    //    Title = "A %",
+                    //    ImageSource = "",
+                    //    TargetPage = typeof(ApercentPage)
+                    //});
+                    //flyItems.Add(new MenuItem
+                    //{
+                    //    Title = "Stretch",
+                    //    ImageSource = "",
+                    //    TargetPage = typeof(StretchPage)
+                    //});
+                    //flyItems.Add(new MenuItem
+                    //{
+                    //    Title = "Noils",
+                    //    ImageSource = "",
+                    //    TargetPage = typeof(NOILS)
+                    //});
                     flyItems.Add(new MenuItem
                     {
                         Title = "Reports",
@@ -171,7 +171,7 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Version: 1.2.2.1",
+                        Title = "Version: 1.0",
                         ImageSource = "",
                         TargetPage = null
                     });
@@ -193,28 +193,28 @@ namespace TQM
                     //});
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Wrapping",
+                        Title = "RST",
                         ImageSource = "",
                         TargetPage = typeof(yarnCount)
                     });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "A %",
-                        ImageSource = "",
-                        TargetPage = typeof(ApercentPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Stretch",
-                        ImageSource = "",
-                        TargetPage = typeof(StretchPage)
-                    });
-                    flyItems.Add(new MenuItem
-                    {
-                        Title = "Noils",
-                        ImageSource = "",
-                        TargetPage = typeof(NOILS)
-                    });
+                    //flyItems.Add(new MenuItem
+                    //{
+                    //    Title = "A %",
+                    //    ImageSource = "",
+                    //    TargetPage = typeof(ApercentPage)
+                    //});
+                    //flyItems.Add(new MenuItem
+                    //{
+                    //    Title = "Stretch",
+                    //    ImageSource = "",
+                    //    TargetPage = typeof(StretchPage)
+                    //});
+                    //flyItems.Add(new MenuItem
+                    //{
+                    //    Title = "Noils",
+                    //    ImageSource = "",
+                    //    TargetPage = typeof(NOILS)
+                    //});
                     flyItems.Add(new MenuItem
                     {
                         Title = "Reports",
@@ -235,7 +235,7 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
-                        Title = "Version: 1.2.2.1",
+                        Title = "Version: 1.0",
                         ImageSource = "",
                         TargetPage = null
                     });

@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
-                <Label Grid.Row="0" Grid.Column="2" Text="Wrapping" FontSize="18" TextColor="ForestGreen" Margin="10,0,0,0"
+                <Label Grid.Row="0" Grid.Column="2" Text="RST" FontSize="18" TextColor="ForestGreen" Margin="10,0,0,0"
                        VerticalTextAlignment="Center" HorizontalOptions="Start" />
                 <Label Grid.Row="0" Grid.Column="3" Text="Test ID :" FontSize="18" TextColor="#0e0273" 
                        VerticalTextAlignment="Center" HorizontalOptions="Start" />

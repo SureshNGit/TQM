@@ -131,15 +131,15 @@
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\mipmap-xhdpi\SasthaLogoVMT.png">
-      <SubType></SubType>
-      <Generator></Generator>
-    </AndroidResource>
     <AndroidResource Include="Resources\mipmap-xxhdpi\SasthaLogoVMT.png">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\mipmap-xxxhdpi\SasthaLogoVMT.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\mipmap-xhdpi\SasthaLogoVMT.png">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>

@@ -10,7 +10,7 @@ using System.IO;
 namespace TQM.Droid
 {
     //[Activity(Label = "TQM", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
-    [Activity(Label = "TQM-YCB", Icon = "@mipmap/SasthaLogoVMT", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize, ScreenOrientation = ScreenOrientation.Landscape)]
+    [Activity(Label = "TQM-VMT", Icon = "@mipmap/SasthaLogoVMT", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize, ScreenOrientation = ScreenOrientation.Landscape)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -36,7 +36,7 @@ namespace TQM.Droid
                 RequestAllPermission();
             }
 
-            string dbName = "tqm_db.sqlite";
+            string dbName = "tqm_db_vmt.sqlite";
             string folderPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             string fullPath = Path.Combine(folderPath, dbName);
 
@@ -49,12 +49,12 @@ namespace TQM.Droid
             //***********End********
 
             //***********To read database file from other than default folder********
-            string testDbName = "tqm_db_test.sqlite";
-            string dataFiles = Android.App.Application.Context.GetExternalFilesDir("").AbsolutePath;
-            if (File.Exists(Path.Combine(dataFiles, testDbName)))
-            {
-                fullPath = Path.Combine(dataFiles, testDbName);
-            }
+            //string testDbName = "tqm_db_vmt_test.sqlite";
+            //string dataFiles = Android.App.Application.Context.GetExternalFilesDir("").AbsolutePath;
+            //if (File.Exists(Path.Combine(dataFiles, testDbName)))
+            //{
+            //    fullPath = Path.Combine(dataFiles, testDbName);
+            //}
             //***********End********
 
             LoadApplication(new App(fullPath));
