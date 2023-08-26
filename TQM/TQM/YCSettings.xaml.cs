@@ -140,23 +140,6 @@ namespace TQM
                 btn_save.BackgroundColor = Color.Red;
                 btn_save.TextColor = Color.White;
                 currentID = Guid.Empty;
-                picker_countsysname.SelectedIndex = 0;
-                picker_yarnlengthunit.SelectedIndex = 0;
-                //picker_leaLength.SelectedIndex = 0;
-                entry_leaLength.Text = "";
-                entry_sliverlength.Text = "";
-                entry_rovinglength.Text = "";
-                entry_testcount.Text = "";
-                entry_standardHank.Text = "";
-                entry_hankDeviationPercent.Text = "";
-                entry_testcountApercent.Text = "";
-                entry_standardApercent.Text = "";
-                entry_testcountStretch.Text = "";
-                entry_standardStretch.Text = "";
-                entry_stretchDeviation.Text = "";
-                entry_testcountNoils.Text = "";
-                entry_standardNoils.Text = "";
-                entry_noilsRange.Text = "";
                 picker_shiftCount.SelectedIndex = 0;
                 currentShift = 0;
                 currentShift1 = TimeSpan.Zero;
@@ -172,23 +155,6 @@ namespace TQM
                 btn_save.BackgroundColor = Color.Red;
                 btn_save.TextColor = Color.White;
                 currentID = Guid.Empty;
-                picker_countsysname.SelectedIndex = 0;
-                picker_yarnlengthunit.SelectedIndex = 0;
-                //picker_leaLength.SelectedIndex = 0;
-                entry_leaLength.Text = "";
-                entry_sliverlength.Text = "";
-                entry_rovinglength.Text = "";
-                entry_testcount.Text = "";
-                entry_standardHank.Text = "";
-                entry_hankDeviationPercent.Text = "";
-                entry_testcountApercent.Text = "";
-                entry_standardApercent.Text = "";
-                entry_testcountStretch.Text = "";
-                entry_standardStretch.Text = "";
-                entry_stretchDeviation.Text = "";
-                entry_testcountNoils.Text = "";
-                entry_standardNoils.Text = "";
-                entry_noilsRange.Text = "";
                 if (ycConfig.shiftCount > 0)
                 {
 
@@ -228,22 +194,6 @@ namespace TQM
                     currentShift3 = TimeSpan.FromHours(TimeSpan.Parse(ycConfig.shift3time).TotalHours);
                 }
 
-                //lbl_userfield1.IsVisible = false;
-                //lbl_userfield1.Text = "";
-                //entry_userfield1.IsVisible = false;
-                //entry_userfield1.Text = "";
-                //lbl_userfield2.IsVisible = false;
-                //lbl_userfield2.Text = "";
-                //entry_userfield2.IsVisible = false;
-                //entry_userfield2.Text = "";
-                //lbl_userfield3.IsVisible = false;
-                //lbl_userfield3.Text = "";
-                //entry_userfield3.IsVisible = false;
-                //entry_userfield3.Text = "";
-                //lbl_userfield4.IsVisible = false;
-                //lbl_userfield4.Text = "";
-                //entry_userfield4.IsVisible = false;
-                //entry_userfield4.Text = "";
                 return;
             }
 
@@ -299,56 +249,7 @@ namespace TQM
                 picker_machinename.SelectedIndex = machineindex;
             }
 
-            IList<string> countsystemlist = picker_countsysname.Items;
-            int countsysindex = 0;
-            foreach (string countsystem in countsystemlist)
-            {
-                if (countsystem != ycConfig.countsysname.ToString())
-                {
-                    countsysindex++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            picker_countsysname.SelectedIndex = countsysindex;
-            IList<string> yarncountlenunitlist = picker_yarnlengthunit.Items;
-            int yarncountlenindex = 0;
-            foreach (string yclenunit in yarncountlenunitlist)
-            {
-                if (yclenunit != ycConfig.yarnlenunit.ToString())
-                {
-                    yarncountlenindex++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            picker_yarnlengthunit.SelectedIndex = yarncountlenindex;
-            //if (ycConfig.lealength == 60)
-            //{
-            //    picker_leaLength.SelectedIndex = 1;
-            //}
-            //else
-            //{
-            //    picker_leaLength.SelectedIndex = 2;
-            //}
-            entry_leaLength.Text = ycConfig.lealength.ToString();
-            entry_sliverlength.Text = ycConfig.sliverlength.ToString();
-            entry_rovinglength.Text = ycConfig.rovinglength.ToString();
-            entry_testcount.Text = ycConfig.testcount.ToString();
-            entry_standardHank.Text = ycConfig.standardHank.ToString();
-            entry_hankDeviationPercent.Text = ycConfig.deviationPercent.ToString();
-            entry_testcountApercent.Text = ycConfig.testcountApercent.ToString();
-            entry_standardApercent.Text = ycConfig.standardApercent.ToString();
-            entry_testcountStretch.Text = ycConfig.testcountStretch.ToString();
-            entry_standardStretch.Text = ycConfig.standardStretch.ToString();
-            entry_stretchDeviation.Text = ycConfig.stretchDeviation.ToString();
-            entry_testcountNoils.Text = ycConfig.testcountNoils.ToString();
-            entry_standardNoils.Text = ycConfig.standardNoils.ToString();
-            entry_noilsRange.Text = ycConfig.noilsRange.ToString();
+           
 
             if (ycConfig.shiftCount > 0)
             {
@@ -444,359 +345,6 @@ namespace TQM
                     return;
                 }
 
-                if (picker_countsysname.SelectedItem.ToString() == "" ||
-                    picker_yarnlengthunit.SelectedItem.ToString() == "" ||
-                    entry_testcount.Text.Trim().ToString() == "")
-                {
-                    DisplayAlert("Attention", "Please fill all fields with valid data to proceed!!!", "OK");
-                    return;
-                }
-
-                if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-                {
-                    entry_sliverlength.Text = "0";
-                    entry_rovinglength.Text = "0";
-                    entry_testcountApercent.Text = "0";
-                    entry_standardApercent.Text = "0";
-                    entry_testcountStretch.Text = "0";
-                    entry_standardStretch.Text = "0";
-                    entry_stretchDeviation.Text = "0";
-                    entry_testcountNoils.Text = "0";
-                    entry_standardNoils.Text = "0";
-                    entry_noilsRange.Text = "0";
-                    entry_standardApercent.Text = "0";
-
-
-                    if (entry_leaLength.Text.Trim().Contains(".") || entry_leaLength.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Lea length should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-
-                    if (entry_leaLength.Text.Trim() == "" || int.Parse(entry_leaLength.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Lea length should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-
-                    if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Test sample (Wrapping) should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-
-                    if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Test sample (Wrapping) should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Standard Count is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Standard Count should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                    if (entry_hankDeviationPercent.Text.Trim() == "." || entry_hankDeviationPercent.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-                    if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-
-
-                }
-                else if (selectedMachineCategory == "Carding" || selectedMachineCategory == "Breaker Drawing")
-                {
-                    entry_rovinglength.Text = "0";
-                    entry_leaLength.Text = "0";
-                    entry_testcountApercent.Text = "0";
-                    entry_standardApercent.Text = "0";
-                    entry_testcountStretch.Text = "0";
-                    entry_standardStretch.Text = "0";
-                    entry_stretchDeviation.Text = "0";
-                    entry_testcountNoils.Text = "0";
-                    entry_standardNoils.Text = "0";
-                    entry_noilsRange.Text = "0";
-                    entry_standardApercent.Text = "0";
-
-
-                    if (entry_sliverlength.Text.Trim().ToString() == "")
-                    {
-                        DisplayAlert("Attention", "Sliver length should not be blank!!!", "Ok");
-                        return;
-                    }
-                    if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Test sample (Wrapping) should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-
-                    if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Test sample (Wrapping) should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                    if (entry_hankDeviationPercent.Text.Trim() == "." || entry_hankDeviationPercent.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-                    if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-
-                }
-                else if (selectedMachineCategory == "Comber")
-                {
-                    entry_rovinglength.Text = "0";
-                    entry_leaLength.Text = "0";
-                    entry_testcountApercent.Text = "0";
-                    entry_standardApercent.Text = "0";
-                    entry_testcountStretch.Text = "0";
-                    entry_standardStretch.Text = "0";
-                    entry_stretchDeviation.Text = "0";
-
-                    if (entry_sliverlength.Text.Trim().ToString() == "")
-                    {
-                        DisplayAlert("Attention", "Sliver length should not be blank!!!", "Ok");
-                        return;
-                    }
-                    if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Test sample (Wrapping) should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-
-                    if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Test sample (Wrapping) should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                    if (entry_hankDeviationPercent.Text.Trim() == "." || entry_hankDeviationPercent.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-                    if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-
-
-                    if (entry_testcountNoils.Text.Trim().Contains(".") || entry_testcountNoils.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Test sample (Noils) should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-
-                    if (entry_testcountNoils.Text.Trim() == "" || int.Parse(entry_testcountNoils.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Test sample (Noils) should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardNoils.Text.Trim() == "." || entry_standardNoils.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Standard Noils % is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardNoils.Text.Trim() == "" || decimal.Parse(entry_standardNoils.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Standard Noils % should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                    if (entry_noilsRange.Text.Trim() == "." || entry_noilsRange.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Noils Range is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_noilsRange.Text.Trim() == "" || decimal.Parse(entry_noilsRange.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Noils Range should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                }
-                else if (selectedMachineCategory == "Drawing")
-                {
-                    entry_rovinglength.Text = "0";
-                    entry_leaLength.Text = "0";
-                    entry_testcountStretch.Text = "0";
-                    entry_standardStretch.Text = "0";
-                    entry_stretchDeviation.Text = "0";
-                    entry_testcountNoils.Text = "0";
-                    entry_standardNoils.Text = "0";
-                    entry_noilsRange.Text = "0";
-
-                    if (entry_sliverlength.Text.Trim().ToString() == "")
-                    {
-                        DisplayAlert("Attention", "Sliver length should not be blank!!!", "Ok");
-                        return;
-                    }
-                    if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Test sample (Wrapping) should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-
-                    if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Test sample (Wrapping) should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                    if (entry_hankDeviationPercent.Text.Trim() == "." || entry_hankDeviationPercent.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-                    if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-
-
-                    if (entry_testcountApercent.Text.Trim().Contains(".") || entry_testcountApercent.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Test sample (A%) should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-                    if (entry_testcountApercent.Text.Trim() == "" || int.Parse(entry_testcountApercent.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Test sample (A%) should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardApercent.Text.Trim() == "." || entry_standardApercent.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Standard A % is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardApercent.Text.Trim() == "" || decimal.Parse(entry_standardApercent.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Standard A % should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                }
-                else if (selectedMachineCategory == "Simplex/SpeedFrame")
-                {
-                    entry_sliverlength.Text = "0";
-                    entry_leaLength.Text = "0";
-                    entry_testcountApercent.Text = "0";
-                    entry_testcountNoils.Text = "0";
-                    entry_standardNoils.Text = "0";
-                    entry_noilsRange.Text = "0";
-                    entry_standardApercent.Text = "0";
-
-                    if (entry_rovinglength.Text.Trim().ToString() == "")
-                    {
-                        DisplayAlert("Attention", "Roving length should not be blank!!!", "Ok");
-                        return;
-                    }
-                    if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Test sample (Wrapping) should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-
-                    if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Test sample (Wrapping) should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                    if (entry_hankDeviationPercent.Text.Trim() == "." || entry_hankDeviationPercent.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-                    if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
-                    {
-                        DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-
-
-                    if (entry_testcountStretch.Text.Trim().Contains(".") || entry_testcountStretch.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Test sample (Stretch) should not be a decimal or negative value!!!", "Ok");
-                        return;
-                    }
-
-                    if (entry_testcountStretch.Text.Trim() == "" || int.Parse(entry_testcountStretch.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Test sample (Stretch) should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardStretch.Text.Trim() == "." || entry_standardStretch.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Standard Stretch is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_standardStretch.Text.Trim() == "" || decimal.Parse(entry_standardStretch.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Standard Stretch should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                    if (entry_stretchDeviation.Text.Trim() == "." || entry_stretchDeviation.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Stretch Deviation is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_stretchDeviation.Text.Trim() == "" || decimal.Parse(entry_stretchDeviation.Text.Trim()) < 0m)
-                    {
-                        DisplayAlert("Attention", "Stretch Deviation should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                }
-
                 if (picker_shiftCount.SelectedIndex == -1 || picker_shiftCount.SelectedItem.ToString() == "")
                 {
                     DisplayAlert("Attention", "Please select valid shift count to proceed!!!", "OK");
@@ -880,53 +428,7 @@ namespace TQM
                 if (currentID != Guid.Empty) { guid = currentID; }
                 int row = 0;
                 string msg = "saved";
-                decimal stdHank = 0.0000m;
-                if (entry_standardHank.Text.Trim().ToString() != "")
-                {
-                    stdHank = decimal.Parse(entry_standardHank.Text.ToString());
-                }
-                decimal stdNoils = 0.0000m;
-                if (entry_standardNoils.Text.Trim().ToString() != "")
-                {
-                    stdNoils = decimal.Parse(entry_standardNoils.Text.ToString());
-                }
-                decimal noilsRange = 0.0000m;
-                if (entry_noilsRange.Text.Trim().ToString() != "")
-                {
-                    noilsRange = decimal.Parse(entry_noilsRange.Text.ToString());
-                }
-                decimal stdApercent = 0.0000m;
-                if (entry_standardApercent.Text.Trim().ToString() != "")
-                {
-                    stdApercent = decimal.Parse(entry_standardApercent.Text.ToString());
-                }
-                decimal stdStretch = 0.0000m;
-                if (entry_standardStretch.Text.Trim().ToString() != "")
-                {
-                    stdStretch = decimal.Parse(entry_standardStretch.Text.ToString());
-                }
-                decimal stretchDeviation = 0.0000m;
-                if (entry_stretchDeviation.Text.Trim().ToString() != "")
-                {
-                    stretchDeviation = decimal.Parse(entry_stretchDeviation.Text.ToString());
-                }
-                decimal enteredLeaLength = 0;
-                decimal enteredSliverLength = 0;
-                decimal enteredRovingLength = 0;
-                if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-                {
-                    //enteredLeaLength = 120;
-                    //if (picker_leaLength.SelectedItem == "Half Lea")
-                    //{
-                    //    enteredLeaLength = 60;
-                    //}
-                    enteredLeaLength = decimal.Parse(entry_leaLength.Text.ToString());
-                }
-                else
-                {
-                    enteredSliverLength = decimal.Parse(entry_sliverlength.Text.ToString());
-                    enteredRovingLength = decimal.Parse(entry_rovinglength.Text.ToString());
-                }
+                
 
                 TimeSpan shift1 = TimeSpan.Zero;
                 TimeSpan shift2 = TimeSpan.Zero;
@@ -987,22 +489,6 @@ namespace TQM
                     machineCategory = selectedMachineCategory,
                     machineID = selectedMachineID,
                     machineName = selectedMachineName,
-                    countsysname = picker_countsysname.SelectedItem.ToString(),
-                    yarnlenunit = picker_yarnlengthunit.SelectedItem.ToString(),
-                    lealength = enteredLeaLength,
-                    sliverlength = enteredSliverLength,
-                    rovinglength = enteredRovingLength,
-                    testcount = int.Parse(entry_testcount.Text.ToString()),
-                    standardHank = stdHank,
-                    deviationPercent = decimal.Parse(entry_hankDeviationPercent.Text.ToString()),
-                    testcountApercent = int.Parse(entry_testcountApercent.Text.ToString()),
-                    standardApercent = stdApercent,
-                    testcountStretch = int.Parse(entry_testcountStretch.Text.ToString()),
-                    standardStretch = stdStretch,
-                    stretchDeviation = stretchDeviation,
-                    testcountNoils = int.Parse(entry_testcountNoils.Text.ToString()),
-                    standardNoils = stdNoils,
-                    noilsRange = noilsRange,
                     shiftCount = int.Parse(picker_shiftCount.SelectedItem.ToString()),
                     shift1time = shift1.Hours.ToString() + ":" + shift1.Minutes.ToString(),
                     shift2time = shift2.Hours.ToString() + ":" + shift2.Minutes.ToString(),
@@ -1166,154 +652,6 @@ namespace TQM
                         conn.CreateTable<MachineModel>();
                         List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
                         picker_machinename.ItemsSource = machineModelList;
-                    }
-                    if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-                    {
-                        lbl_testCountApercent.IsVisible = false;
-                        entry_testcountApercent.IsVisible = false;
-                        lbl_testCountStretch.IsVisible = false;
-                        entry_testcountStretch.IsVisible = false;
-                        lbl_testCountNoils.IsVisible = false;
-                        entry_testcountNoils.IsVisible = false;
-                        lbl_sliverlength.IsVisible = false;
-                        entry_sliverlength.IsVisible = false;
-                        lbl_rovinglength.IsVisible = false;
-                        entry_rovinglength.IsVisible = false;
-                        lbl_standardNoils.IsVisible = false;
-                        entry_standardNoils.IsVisible = false;
-                        lbl_noilsRange.IsVisible = false;
-                        entry_noilsRange.IsVisible = false;
-                        lbl_standardApercent.IsVisible = false;
-                        entry_standardApercent.IsVisible = false;
-                        lbl_standardStretch.IsVisible = false;
-                        entry_standardStretch.IsVisible = false;
-                        lbl_stretchDeviation.IsVisible = false;
-                        entry_stretchDeviation.IsVisible = false;
-
-                        lbl_lealength.IsVisible = true;
-                        //picker_leaLength.IsVisible = true;
-                        entry_leaLength.IsVisible = true;
-                        lbl_standardHank.Text = "Standard Count (Wrapping)";
-                        lbl_hankDeviation.Text = "Count Deviation ±";
-                    }
-                    else if (selectedMachineCategory == "Carding" || selectedMachineCategory == "Breaker Drawing")
-                    {
-                        lbl_rovinglength.IsVisible = false;
-                        entry_rovinglength.IsVisible = false;
-                        lbl_testCountApercent.IsVisible = false;
-                        entry_testcountApercent.IsVisible = false;
-                        lbl_testCountStretch.IsVisible = false;
-                        entry_testcountStretch.IsVisible = false;
-                        lbl_testCountNoils.IsVisible = false;
-                        entry_testcountNoils.IsVisible = false;
-                        lbl_lealength.IsVisible = false;
-                        //picker_leaLength.IsVisible = false;
-                        entry_leaLength.IsVisible = false;
-                        lbl_standardNoils.IsVisible = false;
-                        entry_standardNoils.IsVisible = false;
-                        lbl_noilsRange.IsVisible = false;
-                        entry_noilsRange.IsVisible = false;
-                        lbl_standardApercent.IsVisible = false;
-                        entry_standardApercent.IsVisible = false;
-                        lbl_standardStretch.IsVisible = false;
-                        entry_standardStretch.IsVisible = false;
-                        lbl_stretchDeviation.IsVisible = false;
-                        entry_stretchDeviation.IsVisible = false;
-
-
-                        lbl_sliverlength.IsVisible = true;
-                        entry_sliverlength.IsVisible = true;
-                        lbl_standardHank.Text = "Standard Hank (Wrapping)";
-                        lbl_hankDeviation.Text = "Hank Deviation ±";
-                    }
-                    else if (selectedMachineCategory == "Comber")
-                    {
-                        lbl_rovinglength.IsVisible = false;
-                        entry_rovinglength.IsVisible = false;
-                        lbl_testCountApercent.IsVisible = false;
-                        entry_testcountApercent.IsVisible = false;
-                        lbl_testCountStretch.IsVisible = false;
-                        entry_testcountStretch.IsVisible = false;
-                        lbl_lealength.IsVisible = false;
-                        //picker_leaLength.IsVisible = false;
-                        entry_leaLength.IsVisible = false;
-                        lbl_standardApercent.IsVisible = false;
-                        entry_standardApercent.IsVisible = false;
-                        lbl_standardStretch.IsVisible = false;
-                        entry_standardStretch.IsVisible = false;
-                        lbl_stretchDeviation.IsVisible = false;
-                        entry_stretchDeviation.IsVisible = false;
-
-                        lbl_testCountNoils.IsVisible = true;
-                        entry_testcountNoils.IsVisible = true;
-                        lbl_sliverlength.IsVisible = true;
-                        entry_sliverlength.IsVisible = true;
-                        lbl_standardNoils.IsVisible = true;
-                        entry_standardNoils.IsVisible = true;
-                        lbl_noilsRange.IsVisible = true;
-                        entry_noilsRange.IsVisible = true;
-
-
-                        lbl_standardHank.Text = "Standard Hank (Wrapping)";
-                        lbl_hankDeviation.Text = "Hank Deviation ±";
-                    }
-                    else if (selectedMachineCategory == "Drawing")
-                    {
-                        lbl_rovinglength.IsVisible = false;
-                        entry_rovinglength.IsVisible = false;
-                        lbl_testCountStretch.IsVisible = false;
-                        entry_testcountStretch.IsVisible = false;
-                        lbl_testCountNoils.IsVisible = false;
-                        entry_testcountNoils.IsVisible = false;
-                        lbl_lealength.IsVisible = false;
-                        entry_leaLength.IsVisible = false;
-                        lbl_standardNoils.IsVisible = false;
-                        entry_standardNoils.IsVisible = false;
-                        lbl_noilsRange.IsVisible = false;
-                        entry_noilsRange.IsVisible = false;
-                        lbl_standardStretch.IsVisible = false;
-                        entry_standardStretch.IsVisible = false;
-                        lbl_stretchDeviation.IsVisible = false;
-                        entry_stretchDeviation.IsVisible = false;
-
-                        lbl_testCountApercent.IsVisible = true;
-                        entry_testcountApercent.IsVisible = true;
-                        lbl_sliverlength.IsVisible = true;
-                        entry_sliverlength.IsVisible = true;
-                        lbl_standardApercent.IsVisible = true;
-                        entry_standardApercent.IsVisible = true;
-
-                        lbl_standardHank.Text = "Standard Hank (Wrapping)";
-                        lbl_hankDeviation.Text = "Hank Deviation ±";
-                    }
-                    else if (selectedMachineCategory == "Simplex/SpeedFrame")
-                    {
-                        lbl_sliverlength.IsVisible = false;
-                        entry_sliverlength.IsVisible = false;
-                        lbl_testCountApercent.IsVisible = false;
-                        entry_testcountApercent.IsVisible = false;
-                        lbl_testCountNoils.IsVisible = false;
-                        entry_testcountNoils.IsVisible = false;
-                        lbl_lealength.IsVisible = false;
-                        entry_leaLength.IsVisible = false;
-                        lbl_standardNoils.IsVisible = false;
-                        entry_standardNoils.IsVisible = false;
-                        lbl_noilsRange.IsVisible = false;
-                        entry_noilsRange.IsVisible = false;
-                        lbl_standardApercent.IsVisible = false;
-                        entry_standardApercent.IsVisible = false;
-
-
-                        lbl_testCountStretch.IsVisible = true;
-                        entry_testcountStretch.IsVisible = true;
-                        lbl_rovinglength.IsVisible = true;
-                        entry_rovinglength.IsVisible = true;
-                        lbl_standardStretch.IsVisible = true;
-                        entry_standardStretch.IsVisible = true;
-                        lbl_stretchDeviation.IsVisible = true;
-                        entry_stretchDeviation.IsVisible = true;
-                        lbl_standardHank.Text = "Standard Hank (Wrapping)";
-                        lbl_hankDeviation.Text = "Hank Deviation ±";
                     }
                 }
                 populateSettingsField(null);
@@ -1487,6 +825,89 @@ namespace TQM
                         counter++;
                     }
                     return finalOut;
+            }
+        }
+        private void btn_section1_Clicked(object sender, EventArgs e)
+        {
+            if (!frame_sec1.IsVisible)
+            {
+                frame_sec1.IsVisible = true;
+                btn_section1.BackgroundColor = Color.Red;
+            }
+            else
+            {
+                frame_sec1.IsVisible = false;
+                btn_section1.BackgroundColor = Color.FromHex("#0e0273");
+            }
+        }
+
+        private void btn_section2_Clicked(object sender, EventArgs e)
+        {
+            if (!frame_sec2.IsVisible)
+            {
+                frame_sec2.IsVisible = true;
+                btn_section2.BackgroundColor = Color.Red;
+            }
+            else
+            {
+                frame_sec2.IsVisible = false;
+                btn_section2.BackgroundColor = Color.FromHex("#0e0273");
+            }
+        }
+        private void btn_section3_Clicked(object sender, EventArgs e)
+        {
+            if (!frame_sec3.IsVisible)
+            {
+                frame_sec3.IsVisible = true;
+                btn_section3.BackgroundColor = Color.Red;
+            }
+            else
+            {
+                frame_sec3.IsVisible = false;
+                btn_section3.BackgroundColor = Color.FromHex("#0e0273");
+            }
+        }
+
+        private void picker_sectionCount_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (picker_sectionCount.SelectedIndex > 0)
+            {
+                if (picker_sectionCount.SelectedItem.ToString() == "1")
+                {
+                    btn_section1.IsVisible = true;
+                    btn_section2.IsVisible = false;
+                    btn_section3.IsVisible = false;
+                    btn_section2.BackgroundColor = Color.FromHex("#0e0273");
+                    btn_section3.BackgroundColor = Color.FromHex("#0e0273");
+                    frame_sec2.IsVisible = false;
+                    frame_sec3.IsVisible = false;
+                }
+                if (picker_sectionCount.SelectedItem.ToString() == "2")
+                {
+                    btn_section1.IsVisible = true;
+                    btn_section2.IsVisible = true;
+                    btn_section3.IsVisible = false;
+                    btn_section3.BackgroundColor = Color.FromHex("#0e0273");
+                    frame_sec3.IsVisible = false;
+                }
+                if (picker_sectionCount.SelectedItem.ToString() == "3")
+                {
+                    btn_section1.IsVisible = true;
+                    btn_section2.IsVisible = true;
+                    btn_section3.IsVisible = true;
+                }
+            }
+            else
+            {
+                btn_section1.IsVisible = false;
+                btn_section2.IsVisible = false;
+                btn_section3.IsVisible = false;
+                btn_section1.BackgroundColor = Color.FromHex("#0e0273");
+                btn_section2.BackgroundColor = Color.FromHex("#0e0273");
+                btn_section3.BackgroundColor = Color.FromHex("#0e0273");
+                frame_sec1.IsVisible = false;
+                frame_sec2.IsVisible = false;
+                frame_sec3.IsVisible = false;
             }
         }
     }
