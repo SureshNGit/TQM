@@ -910,5 +910,16 @@ namespace TQM
                 frame_sec3.IsVisible = false;
             }
         }
+
+        private void date_scheduledDayLimitDate_Sec3_DateSelected(object sender, DateChangedEventArgs e)
+        {
+            DateTime today = DateTime.Today;
+            DateTime selectedDate = date_scheduledDayLimitDate_Sec3.Date;
+            int dayDiff = DateTime.Compare(today, selectedDate);
+            if (dayDiff == 0)
+            {
+                entry_scheduledDayLimit_Sec3.Text = "1";
+            }
+        }
     }
 }

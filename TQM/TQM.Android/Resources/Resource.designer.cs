@@ -19062,7 +19062,7 @@ namespace TQM.Droid
 			public const int SasthaLogoCSP = 2131492867;
 			
 			// aapt resource value: 0x7F0C0004
-			public const int SasthaLogoVMT = 2131492868;
+			public const int SasthaLogoSVYA = 2131492868;
 			
 			// aapt resource value: 0x7F0C0005
 			public const int SasthaLogoYCB = 2131492869;

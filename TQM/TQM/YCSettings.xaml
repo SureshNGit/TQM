@@ -164,6 +164,10 @@
                                 Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="150,0,120,0"
                                 VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
 
+                                <DatePicker Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="1" MinimumDate="01/06/2022"
+                                HorizontalOptions="Center" Margin="35,0,0,0" FontSize="18"
+                                x:Name="date_scheduledDayLimitDate_Sec1" TextColor="green"/>
+
                             </Grid>
                        </StackLayout>
                     </Frame>
@@ -250,6 +254,10 @@
                                 Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="150,0,120,0"
                                 VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
 
+                                <DatePicker Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="1" MinimumDate="01/06/2022"
+                                HorizontalOptions="Center" Margin="35,0,0,0" FontSize="18"
+                                x:Name="date_scheduledDayLimitDate_Sec2" TextColor="green"/>
+
                             </Grid>
                        </StackLayout>
                     </Frame>
@@ -335,6 +343,10 @@
                                 <Entry Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Text = "" x:Name="entry_scheduledDayLimit_Sec3" 
                                 Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="150,0,120,0"
                                 VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+
+                                <DatePicker Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="1" MinimumDate="01/06/2022"
+                                HorizontalOptions="Center" Margin="35,0,0,0" FontSize="18" DateSelected="date_scheduledDayLimitDate_Sec3_DateSelected"
+                                x:Name="date_scheduledDayLimitDate_Sec3" TextColor="green"/>
 
                             </Grid>
                        </StackLayout>

@@ -11,6 +11,9 @@
     </NavigationPage.TitleView>
 
     <StackLayout Margin="15" VerticalOptions="Center">
+        <Label Text="Smart Vortex Yarn Analyser" HorizontalOptions="Center" VerticalOptions="Center"
+               FontAttributes="Bold" 
+               TextColor="#0e0273" FontSize="25" Margin="0,0,0,0"/>
         <Grid Margin="35">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

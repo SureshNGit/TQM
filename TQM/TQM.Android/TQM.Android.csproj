@@ -123,23 +123,23 @@
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\mipmap-hdpi\SasthaLogoVMT.png">
+    <AndroidResource Include="Resources\mipmap-hdpi\SasthaLogoSVYA.png">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\mipmap-mdpi\SasthaLogoVMT.png">
+    <AndroidResource Include="Resources\mipmap-mdpi\SasthaLogoSVYA.png">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\mipmap-xxhdpi\SasthaLogoVMT.png">
+    <AndroidResource Include="Resources\mipmap-xhdpi\SasthaLogoSVYA.png">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\mipmap-xxxhdpi\SasthaLogoVMT.png">
+    <AndroidResource Include="Resources\mipmap-xxhdpi\SasthaLogoSVYA.png">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\mipmap-xhdpi\SasthaLogoVMT.png">
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\SasthaLogoSVYA.png">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
