@@ -872,11 +872,11 @@ namespace TQM
                     DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction is failed", "Okay");
                     return;
                 }
-                else
-                {
-                    DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction is successful", "Okay");
-                    return;
-                }
+                //else
+                //{
+                //    DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction is successful", "Okay");
+                //    return;
+                //}
             }
             //*************************************************************************************
         }
