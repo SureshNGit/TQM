@@ -872,13 +872,296 @@ namespace TQM
                     DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction is failed", "Okay");
                     return;
                 }
-                //else
-                //{
-                //    DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction is successful", "Okay");
-                //    return;
-                //}
+                else
+                {
+                    //DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction is successful", "Okay");
+                    //return;
+                    fixMissingRecords();
+                }
             }
             //*************************************************************************************
+        }
+
+        private void fixMissingRecords()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                conn.CreateTable<YCTestApercentModel>();
+                conn.CreateTable<YCTestApercentSummaryModel>();
+                conn.CreateTable<YCTestApercentCalculatedModel>();
+                List<long> allTestIds = conn.Table<YCTestApercentModel>().Select(YCTestApercentModel => YCTestApercentModel.testID).Distinct().ToList();
+                //check all tests having nMinus1, N and nPlus1 records
+                bool missingTestType = false;
+                foreach(long testID in allTestIds)
+                {
+                    List<string> testTypes = conn.Table<YCTestApercentModel>().Select(YCTestApercentModel => YCTestApercentModel.testType).Distinct().ToList();
+                    if (testTypes.Count != 3) { missingTestType = true;break; }
+                }
+                if (missingTestType)
+                {
+                    DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction for missing records is failed", "Okay");
+                    return;
+                }
+                //Inserting missing summary records
+                foreach (long testID in allTestIds)
+                {
+                    YCTestApercentSummaryModel nMinus1Test = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
+                                                            (YCTestApercentSummaryModel.testID == testID
+                                                            && YCTestApercentSummaryModel.testType == "nMinus1")).FirstOrDefault();
+                    if (nMinus1Test == null)
+                    {
+                        List<YCTestApercentModel> allnMinus1Records = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
+                                                                                    (YCTestApercentModel.testID == testID
+                                                                                    && YCTestApercentModel.testType == "nMinus1"))
+                                                                                    .OrderBy(YCTestApercentModel => YCTestApercentModel.testcount)
+                                                                                    .ToList();
+                        if (!insertMissingSummaryRecord(allnMinus1Records))
+                        {
+                            DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction for missing records is failed", "Okay");
+                            return;
+                        }
+                    }
+
+                    YCTestApercentSummaryModel N_Test = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
+                                                            (YCTestApercentSummaryModel.testID == testID
+                                                            && YCTestApercentSummaryModel.testType == "N")).FirstOrDefault();
+                    if (N_Test == null)
+                    {
+                        List<YCTestApercentModel> allNRecords = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
+                                                                                    (YCTestApercentModel.testID == testID
+                                                                                    && YCTestApercentModel.testType == "N"))
+                                                                                    .OrderBy(YCTestApercentModel => YCTestApercentModel.testcount)
+                                                                                    .ToList();
+                        if (!insertMissingSummaryRecord(allNRecords))
+                        {
+                            DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction for missing records is failed", "Okay");
+                            return;
+                        }
+                    }
+
+                    YCTestApercentSummaryModel nPlus1Test = conn.Table<YCTestApercentSummaryModel>().Where(YCTestApercentSummaryModel =>
+                                                            (YCTestApercentSummaryModel.testID == testID
+                                                            && YCTestApercentSummaryModel.testType == "nPlus1")).FirstOrDefault();
+                    if (nPlus1Test == null)
+                    {
+                        List<YCTestApercentModel> allnPlus1ecords = conn.Table<YCTestApercentModel>().Where(YCTestApercentModel =>
+                                                                                    (YCTestApercentModel.testID == testID
+                                                                                    && YCTestApercentModel.testType == "nPlus1"))
+                                                                                    .OrderBy(YCTestApercentModel => YCTestApercentModel.testcount)
+                                                                                    .ToList();
+                        if (!insertMissingSummaryRecord(allnPlus1ecords))
+                        {
+                            DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction for missing records is failed", "Okay");
+                            return;
+                        }
+                    }
+                }
+                //Inserting missing calculated records
+                foreach (long testID in allTestIds)
+                {
+                    YCTestApercentCalculatedModel calcTest = conn.Table<YCTestApercentCalculatedModel>().Where(YCTestApercentCalculatedModel =>
+                                                            (YCTestApercentCalculatedModel.testID == testID)).FirstOrDefault();
+                    if (calcTest == null)
+                    {
+                        if (!insertMissingCalculatedRecords(testID))
+                        {
+                            DisplayAlert("Auto-Correction Alert!!!", "Auto-Correction for missing records is failed", "Okay");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private bool insertMissingSummaryRecord(List<YCTestApercentModel> allTestRecordsList)
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    decimal totalWeight = 0.0m;
+                    decimal totalCalcCountVal = 0.0m;
+                    foreach (YCTestApercentModel test in allTestRecordsList)
+                    {
+                        totalWeight = totalWeight + test.yarnweight;
+                        totalCalcCountVal = totalCalcCountVal + test.yccalcval;
+                    }
+                    decimal avg_weight = 0.0m;
+                    decimal mean = 0.0m;
+                    decimal sd = 0.0m;
+                    decimal cv = 0.0m;
+                    avg_weight = totalWeight / allTestRecordsList[0].totaltestcount;
+                    avg_weight = formatDecimal(avg_weight);
+                    mean = totalCalcCountVal / allTestRecordsList[0].totaltestcount;
+                    mean = formatDecimal(mean);
+                    decimal IndividualCalValminusMean = 0m;
+                    foreach (YCTestApercentModel test in allTestRecordsList)
+                    {
+                        IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
+                    }
+                    sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(allTestRecordsList[0].totaltestcount - 1));//Standard Deviation
+                    sd = formatDecimal(sd);
+                    cv = (sd / avg_weight) * 100m; //Coefficient of Variation
+                    cv = formatDecimal(cv);
+
+                    YCTestApercentSummaryModel ycTestApercentSummaryModel = new YCTestApercentSummaryModel()
+                    {
+                        ID = Guid.NewGuid(),
+                        testID = allTestRecordsList[0].testID,
+                        userID = allTestRecordsList[0].userID,
+                        userName = allTestRecordsList[0].userName,
+                        machineID = allTestRecordsList[0].machineID,
+                        machineCategory = allTestRecordsList[0].machineCategory,
+                        machineName = allTestRecordsList[0].machineName,
+                        process = allTestRecordsList[0].process,
+                        countsysname = allTestRecordsList[0].countsysname,
+                        yarnlenunit = allTestRecordsList[0].yarnlenunit,
+                        yarnlength = allTestRecordsList[0].yarnlength,
+                        shift = allTestRecordsList[0].shift,
+                        testType = allTestRecordsList[0].testType,
+                        totaltestcount = allTestRecordsList[0].totaltestcount,
+                        standardApercent = allTestRecordsList[0].standardApercent,
+                        avg_weight = avg_weight,
+                        testaverage = mean,
+                        testsd = sd,
+                        testcv = cv,
+                        status = true,
+                        createdate = allTestRecordsList[allTestRecordsList.Count - 1].createdate,
+                    };
+                    conn.CreateTable<YCTestApercentSummaryModel>();
+                    int row = conn.Insert(ycTestApercentSummaryModel);
+                    if (row > 0) { return true; } else { return false; }
+                }
+            }catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private bool insertMissingCalculatedRecords(long impacted_src_id)
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    YCTestApercentSummaryModel nMinus1Summary = conn.Table<YCTestApercentSummaryModel>().Where(
+                                                           YCTestApercentSummaryModel => (
+                                                           YCTestApercentSummaryModel.testType == "nMinus1"
+                                                           && YCTestApercentSummaryModel.testID == impacted_src_id)
+                                                           ).FirstOrDefault();
+                    if (nMinus1Summary == null) { return false; }
+                    else
+                    {
+                        YCTestApercentSummaryModel NSummary = conn.Table<YCTestApercentSummaryModel>().Where(
+                                                            YCTestApercentSummaryModel => (
+                                                            YCTestApercentSummaryModel.testType == "N"
+                                                            && YCTestApercentSummaryModel.testID == impacted_src_id)
+                                                            ).FirstOrDefault();
+                        if (NSummary == null) { return false; }
+                        else
+                        {
+                            YCTestApercentSummaryModel nPlus1Summary = conn.Table<YCTestApercentSummaryModel>().Where(
+                                                            YCTestApercentSummaryModel => (
+                                                            YCTestApercentSummaryModel.testType == "nPlus1"
+                                                            && YCTestApercentSummaryModel.testID == impacted_src_id)
+                                                            ).FirstOrDefault();
+                            if (nPlus1Summary == null) { return false; }
+                            else
+                            {
+                                decimal apercent_nMinus1 = ((nMinus1Summary.avg_weight - NSummary.avg_weight) / nMinus1Summary.avg_weight) * 100m;
+                                apercent_nMinus1 = formatDecimal(apercent_nMinus1);
+                                decimal apercent_nPlus1 = ((nPlus1Summary.avg_weight - NSummary.avg_weight) / nPlus1Summary.avg_weight) * 100m;
+                                apercent_nPlus1 = formatDecimal(apercent_nPlus1);
+                                YCTestApercentModel Max_nMinus1 = conn.Table<YCTestApercentModel>().Where(
+                                    YCTestApercentModel =>
+                                    YCTestApercentModel.testID == impacted_src_id &&
+                                    YCTestApercentModel.testType == "nMinus1").OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                YCTestApercentModel Min_nMinus1 = conn.Table<YCTestApercentModel>().Where(
+                                    YCTestApercentModel =>
+                                    YCTestApercentModel.testID == impacted_src_id &&
+                                    YCTestApercentModel.testType == "nMinus1").OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                YCTestApercentModel Max_N = conn.Table<YCTestApercentModel>().Where(
+                                    YCTestApercentModel =>
+                                    (YCTestApercentModel.testID == impacted_src_id &&
+                                    YCTestApercentModel.testType == "N")).OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                YCTestApercentModel Min_N = conn.Table<YCTestApercentModel>().Where(
+                                    YCTestApercentModel =>
+                                    (YCTestApercentModel.testID == impacted_src_id &&
+                                    YCTestApercentModel.testType == "N")).OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                YCTestApercentModel Max_nPlus1 = conn.Table<YCTestApercentModel>().Where(
+                                   YCTestApercentModel =>
+                                   (YCTestApercentModel.testID == impacted_src_id &&
+                                   YCTestApercentModel.testType == "nPlus1")).OrderByDescending(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                YCTestApercentModel Min_nPlus1 = conn.Table<YCTestApercentModel>().Where(
+                                    YCTestApercentModel =>
+                                    (YCTestApercentModel.testID == impacted_src_id &&
+                                    YCTestApercentModel.testType == "nPlus1")).OrderBy(YCTestApercentModel => YCTestApercentModel.yarnweight).First();
+                                decimal range_nMinus1 = Max_nMinus1.yarnweight - Min_nMinus1.yarnweight;
+                                decimal range_N = Max_N.yarnweight - Min_N.yarnweight;
+                                decimal range_nPlus1 = Max_nPlus1.yarnweight - Min_nPlus1.yarnweight;
+
+                                YCTestApercentCalculatedModel yCTestApercentCalculatedModel = new YCTestApercentCalculatedModel()
+                                {
+                                    ID = Guid.NewGuid(),
+                                    testID = nMinus1Summary.testID,
+                                    userID = nMinus1Summary.userID,
+                                    userName = nMinus1Summary.userName,
+                                    machineID = nMinus1Summary.machineID,
+                                    machineCategory = nMinus1Summary.machineCategory,
+                                    machineName = nMinus1Summary.machineName,
+                                    process = nMinus1Summary.process,
+                                    countsysname = nMinus1Summary.countsysname,
+                                    yarnlenunit = nMinus1Summary.yarnlenunit,
+                                    yarnlength = nMinus1Summary.yarnlength,
+                                    shift = nMinus1Summary.shift,
+                                    testType = nMinus1Summary.testType,
+                                    totaltestcount = nMinus1Summary.totaltestcount,
+                                    standardApercent = nMinus1Summary.standardApercent,
+                                    avg_weight_nMinus1 = nMinus1Summary.avg_weight,
+                                    testaverage_nMinus1 = nMinus1Summary.testaverage,
+                                    testsd_nMinus1 = nMinus1Summary.testsd,
+                                    testcv_nMinus1 = nMinus1Summary.testcv,
+                                    max_nMinus1 = Max_nMinus1.yarnweight,
+                                    min_nMinus1 = Min_nMinus1.yarnweight,
+                                    range_nMinus1 = range_nMinus1,
+                                    apercent_nMinus1 = apercent_nMinus1,
+                                    avg_weight_N = NSummary.avg_weight,
+                                    testaverage_N = NSummary.testaverage,
+                                    testsd_N = NSummary.testsd,
+                                    testcv_N = NSummary.testcv,
+                                    max_N = Max_N.yarnweight,
+                                    min_N = Min_N.yarnweight,
+                                    range_N = range_N,
+                                    avg_weight_nPlus1 = nPlus1Summary.avg_weight,
+                                    testaverage_nPlus1 = nPlus1Summary.testaverage,
+                                    testsd_nPlus1 = nPlus1Summary.testsd,
+                                    testcv_nPlus1 = nPlus1Summary.testcv,
+                                    max_nPlus1 = Max_nPlus1.yarnweight,
+                                    min_nPlus1 = Min_nPlus1.yarnweight,
+                                    range_nPlus1 = range_nPlus1,
+                                    apercent_nPlus1 = apercent_nPlus1,
+                                    status = true,
+                                    createdate = nPlus1Summary.createdate
+                                };
+                                int row = conn.Insert(yCTestApercentCalculatedModel);
+                                if (row > 0)
+                                {
+                                    return true;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
 
