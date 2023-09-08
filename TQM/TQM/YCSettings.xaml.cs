@@ -872,6 +872,14 @@ namespace TQM
         {
             if (picker_sectionCount.SelectedIndex > 0)
             {
+                int totalDrumCount;
+                int.TryParse(entry_drumCount.Text,out totalDrumCount);
+                if (totalDrumCount == 0)
+                {
+                    DisplayAlert("Attention", "Total drum count should not be Zero!!!", "OK");
+                    picker_sectionCount.SelectedIndex = 0;
+                    return;
+                }
                 if (picker_sectionCount.SelectedItem.ToString() == "1")
                 {
                     btn_section1.IsVisible = true;
@@ -881,6 +889,8 @@ namespace TQM
                     btn_section3.BackgroundColor = Color.FromHex("#0e0273");
                     frame_sec2.IsVisible = false;
                     frame_sec3.IsVisible = false;
+                    entry_section1Drums_Sec1.Text = "1."+totalDrumCount.ToString();
+                    entry_section1Drums_Sec1.IsEnabled = false;
                 }
                 if (picker_sectionCount.SelectedItem.ToString() == "2")
                 {
@@ -889,12 +899,28 @@ namespace TQM
                     btn_section3.IsVisible = false;
                     btn_section3.BackgroundColor = Color.FromHex("#0e0273");
                     frame_sec3.IsVisible = false;
+
+                    int reminder = totalDrumCount % 2;
+                    int equalPortion = (totalDrumCount - reminder) / 2;
+
+                    entry_section1Drums_Sec1.Text = "1."+equalPortion.ToString();
+                    entry_section1Drums_Sec1.IsEnabled = true;
+                    entry_section1Drums_Sec2.Text = (equalPortion + 1).ToString() + "." + totalDrumCount;
+
                 }
                 if (picker_sectionCount.SelectedItem.ToString() == "3")
                 {
                     btn_section1.IsVisible = true;
                     btn_section2.IsVisible = true;
                     btn_section3.IsVisible = true;
+
+                    int reminder = totalDrumCount % 3;
+                    int equalPortion = (totalDrumCount - reminder) / 3;
+
+                    entry_section1Drums_Sec1.Text = "1." + equalPortion.ToString();
+                    entry_section1Drums_Sec1.IsEnabled = true;
+                    entry_section1Drums_Sec2.Text = (equalPortion + 1).ToString() + "." + (equalPortion*2);
+                    entry_section1Drums_Sec3.Text = ((equalPortion*2) + 1).ToString() + "." + totalDrumCount;
                 }
             }
             else
@@ -908,6 +934,11 @@ namespace TQM
                 frame_sec1.IsVisible = false;
                 frame_sec2.IsVisible = false;
                 frame_sec3.IsVisible = false;
+
+                entry_section1Drums_Sec1.Text = "0";
+                entry_section1Drums_Sec1.IsEnabled = true;
+                entry_section1Drums_Sec2.Text = "0";
+                entry_section1Drums_Sec3.Text = "0";
             }
         }
 
