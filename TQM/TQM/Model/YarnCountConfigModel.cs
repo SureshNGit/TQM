@@ -15,29 +15,58 @@ namespace TQM.Model
         public string machineCategory { get; set; }
         public string machineName { get; set; }
 
-        public string countsysname { get; set; }
+        public int totalDrumCount { get; set; }
 
-        public string yarnlenunit { get; set; }
+        public int totalSections { get; set; }
 
-        public decimal lealength { get; set; }
-        public decimal sliverlength { get; set; }
+        public decimal stdRollingStrength_s1 { get; set; }
 
-        public decimal rovinglength { get; set; }
+        public decimal strengthDeviation_s1 { get; set; }
 
-        public int testcount { get; set; }
+        public int belowLimit_s1 { get; set; }
 
-        public decimal standardHank { get; set; }
+        public int totalSamples_s1 { get; set; }
 
-        public decimal deviationPercent { get; set; }
+        public string drumNumbers_s1 { get; set; }
 
-        public int testcountApercent { get; set; }
-        public decimal standardApercent { get; set; }
-        public int testcountStretch { get; set; }
-        public decimal standardStretch { get; set; }
-        public decimal stretchDeviation { get; set; }
-        public int testcountNoils { get; set; }
-        public decimal standardNoils { get; set; }
-        public decimal noilsRange { get; set; }
+        public string drumSelectionMethod_s1 { get; set; }
+
+        public int scheduledDayLimit_s1 { get; set; }
+
+        public DateTime scheduledDayLimitDate_s1 { get; set; }
+
+        public decimal stdRollingStrength_s2 { get; set; }
+
+        public decimal strengthDeviation_s2 { get; set; }
+
+        public int belowLimit_s2 { get; set; }
+
+        public int totalSamples_s2 { get; set; }
+
+        public string drumNumbers_s2 { get; set; }
+
+        public string drumSelectionMethod_s2 { get; set; }
+
+        public int scheduledDayLimit_s2 { get; set; }
+
+        public DateTime scheduledDayLimitDate_s2 { get; set; }
+
+        public decimal stdRollingStrength_s3 { get; set; }
+
+        public decimal strengthDeviation_s3 { get; set; }
+
+        public int belowLimit_s3 { get; set; }
+
+        public int totalSamples_s3 { get; set; }
+
+        public string drumNumbers_s3 { get; set; }
+
+        public string drumSelectionMethod_s3 { get; set; }
+
+        public int scheduledDayLimit_s3 { get; set; }
+
+        public DateTime scheduledDayLimitDate_s3 { get; set; }
+
         public int shiftCount { get; set; }
 
         public string shift1time { get; set; }
