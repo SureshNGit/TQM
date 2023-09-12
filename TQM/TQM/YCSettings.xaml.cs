@@ -331,8 +331,6 @@ namespace TQM
         {
             try
             {
-
-
                 if (selectedMachineCategory == null || selectedMachineCategory == "")
                 {
                     DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
