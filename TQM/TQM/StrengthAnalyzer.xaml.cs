@@ -6,6 +6,7 @@ using Android.Views;
 using Android.Widget;
 using Java.IO;
 using Java.Util;
+using Javax.Crypto;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -195,14 +196,14 @@ namespace TQM
             hideFrames();
             if (mCat == "" && mid == Guid.Empty && mac == "")
             {
-                selectedDeviationPercent = 0m;
-                //lbl_countsysname.Text = "";
-                picker_yarncountunit.SelectedIndex = 0;
-                entry_yarnlen.Text = "";
-                entry_testcount.Text = "";
+                //selectedDeviationPercent = 0m;
+                picker_drumNumber.ItemsSource = null;
+                entry_stdStrength.Text = "";
+                entry_strengthDeviation.Text = "";
+                entry_belowLimit.Text = "";
+                entry_numberOfTest.Text = "";
                 picker_shift.SelectedIndex = 0;
-                //picker_process.SelectedIndex = 0;
-                //entry_standardHank.Text = "0.0000";
+                picker_drumSelection.SelectedIndex = 0;
                 return;
             }
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -234,6 +235,17 @@ namespace TQM
                     //entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
                     //STD_HANK = formatDecimal(yarncountconfigmodel.standardHank);
                     //STD_HANK_CURR = formatDecimal(yarncountconfigmodel.standardHank);
+
+                    List<string> drums = new List<string>();
+                    int totalDrums = yarncountconfigmodel.totalDrumCount;
+                    for(int d = 0; d < totalDrums; d++)
+                    {
+                        //drums.Add((d + 1).ToString());
+                        picker_drumNumber.Items.Add((d + 1).ToString());
+                    }
+                    //picker_drumNumber.ItemsSource = drums;
+
+
 
                     TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
@@ -273,13 +285,13 @@ namespace TQM
                 else
                 {
                     DisplayAlert("Settings Alert!!!", "Settings not saved for selected machine (" + mac + ")", "Okay");
-                    //lbl_countsysname.Text = "";
-                    picker_yarncountunit.SelectedIndex = 0;
-                    entry_yarnlen.Text = "";
-                    entry_testcount.Text = "";
+                    picker_drumNumber.ItemsSource = null;
+                    entry_stdStrength.Text = "";
+                    entry_strengthDeviation.Text = "";
+                    entry_belowLimit.Text = "";
+                    entry_numberOfTest.Text = "";
                     picker_shift.SelectedIndex = 0;
-                    //picker_process.SelectedIndex = 0;
-                    //entry_standardHank.Text = "0.0000";
+                    picker_drumSelection.SelectedIndex = 0;
                 }
             }
         }
@@ -588,9 +600,9 @@ namespace TQM
 
                     testYCButton.IsEnabled = true;
                     testYCButton.BackgroundColor = Color.Green;
-                    entry_yarnlen.IsEnabled = true;
-                    entry_testcount.IsEnabled = true;
-                    entry_testcount.Text = TESTCOUNT.ToString();
+                    //entry_yarnlen.IsEnabled = true;
+                    //entry_testcount.IsEnabled = true;
+                    //entry_testcount.Text = TESTCOUNT.ToString();
                     //entry_standardHank.IsEnabled = true;
                     //entry_standardHank.Text = STD_HANK_CURR.ToString();
                     picker_machinecategory.IsEnabled = true;
@@ -690,36 +702,36 @@ namespace TQM
                 _ = showProgress(false);
                 return;
             }
-            if (picker_yarncountunit.SelectedIndex <= 0)
-            {
-                await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
-                _ = showProgress(false);
-                return;
-            }
-            if (entry_yarnlen.Text.Trim().Contains("-"))
-            {
-                await DisplayAlert("Attention", "Yarn Length should not be a negative value!!!", "Ok");
-                _ = showProgress(false);
-                return;
-            }
-            if (entry_yarnlen.Text.Trim() == "" || decimal.Parse(entry_yarnlen.Text.Trim()) == 0)
-            {
-                await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
-                _ = showProgress(false);
-                return;
-            }
-            if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
-            {
-                await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
-                _ = showProgress(false);
-                return;
-            }
-            if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
-            {
-                await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
-                _ = showProgress(false);
-                return;
-            }
+            //if (picker_yarncountunit.SelectedIndex <= 0)
+            //{
+            //    await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
+            //    _ = showProgress(false);
+            //    return;
+            //}
+            //if (entry_yarnlen.Text.Trim().Contains("-"))
+            //{
+            //    await DisplayAlert("Attention", "Yarn Length should not be a negative value!!!", "Ok");
+            //    _ = showProgress(false);
+            //    return;
+            //}
+            //if (entry_yarnlen.Text.Trim() == "" || decimal.Parse(entry_yarnlen.Text.Trim()) == 0)
+            //{
+            //    await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
+            //    _ = showProgress(false);
+            //    return;
+            //}
+            //if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
+            //{
+            //    await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
+            //    _ = showProgress(false);
+            //    return;
+            //}
+            //if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
+            //{
+            //    await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
+            //    _ = showProgress(false);
+            //    return;
+            //}
             //if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
             //{
             //    await DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
@@ -768,9 +780,9 @@ namespace TQM
                 return;
             }
 
-           
 
-            string testCount_str = entry_testcount.Text;
+
+            string testCount_str = "0";
             int testCount = int.Parse(testCount_str);
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -826,9 +838,9 @@ namespace TQM
             
 
             //selectedSysName = lbl_countsysname.Text;
-            selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
-            selectedYarnLen = decimal.Parse(entry_yarnlen.Text);
-            selectedTestCount = int.Parse(entry_testcount.Text);
+            //selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
+            //selectedYarnLen = decimal.Parse(entry_yarnlen.Text);
+            //selectedTestCount = int.Parse(entry_testcount.Text);
             //STD_HANK_CURR = decimal.Parse(entry_standardHank.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
             selectedProcess = "";
@@ -839,8 +851,8 @@ namespace TQM
             ycTestModelViewlist = new List<YCTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
-            entry_yarnlen.IsEnabled = false;
-            entry_testcount.IsEnabled = false;
+            //entry_yarnlen.IsEnabled = false;
+            //entry_testcount.IsEnabled = false;
             //entry_standardHank.IsEnabled = false;
             picker_shift.IsEnabled = false;
             //picker_process.IsEnabled = false;
@@ -1285,11 +1297,12 @@ namespace TQM
         {
             try
             {
+                picker_drumNumber.ItemsSource = null;
                 selectedMachineCategory = picker_machinecategory.SelectedItem.ToString();
                 if (selectedMachineCategory == "" || selectedMachineCategory == null)
                 {
                     picker_machinename.ItemsSource = null;
-                    lbl_standHank.Text = "Standard Hank";
+                    //lbl_standHank.Text = "Standard Hank";
                 }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
@@ -1316,14 +1329,14 @@ namespace TQM
                     //    entry_yarnlen.Text = "";
                     //}
                 }
-                if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-                {
-                    lbl_standHank.Text = "Standard Count";
-                }
-                else
-                {
-                    lbl_standHank.Text = "Standard Hank";
-                }
+                //if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
+                //{
+                //    lbl_standHank.Text = "Standard Count";
+                //}
+                //else
+                //{
+                //    lbl_standHank.Text = "Standard Hank";
+                //}
                 populateTestParams("", Guid.Empty, "");
                 getUserfieldConfig("", Guid.Empty, "");
             }
@@ -1337,6 +1350,7 @@ namespace TQM
         {
             try
             {
+                picker_drumNumber.Items.Clear();
                 List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
                 if (picker_machinename.SelectedIndex < 0)
                 {
@@ -1345,6 +1359,7 @@ namespace TQM
                     populateTestParams("", Guid.Empty, "");
                     return;
                 }
+
                 selectedMachineID = (Guid)source[picker_machinename.SelectedIndex].ID;
                 MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
                 selectedMachineName = selectedMachine.machineName;
@@ -1414,6 +1429,194 @@ namespace TQM
                     else
                     {
                         await DisplayAlert("Attention!!!", "Unable to save test remark. Please try again!!!", "Ok");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+            }
+        }
+
+        private void picker_drumNumber_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (picker_drumNumber.SelectedItem.ToString() == "" || picker_drumNumber.SelectedItem.ToString() == null)
+                {
+                    entry_stdStrength.Text = "";
+                    entry_strengthDeviation.Text = "";
+                    entry_belowLimit.Text = "";
+                    entry_numberOfTest.Text = "";
+                    picker_drumSelection.SelectedIndex = 0;
+                    return;
+                }
+                int selectedDrumNumber = int.Parse(picker_drumNumber.SelectedItem.ToString());
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<YarnCountConfigModel>();
+                    YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().Where(YarnCountConfigModel =>
+                                                                (YarnCountConfigModel.machineCategory == selectedMachineCategory &&
+                                                                YarnCountConfigModel.machineID == selectedMachineID &&
+                                                                YarnCountConfigModel.machineName == selectedMachineName)).FirstOrDefault();
+                    if (yarncountconfigmodel != null)
+                    {
+                        if (yarncountconfigmodel.totalSections == 3)
+                        {
+                            int sec1_lowerLimit =int.Parse(yarncountconfigmodel.drumNumbers_s1.ToString().Split('.')[0]);
+                            int sec1_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s1.ToString().Split('.')[1]);
+
+                            int sec2_lowerLimit = int.Parse(yarncountconfigmodel.drumNumbers_s2.ToString().Split('.')[0]);
+                            int sec2_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s2.ToString().Split('.')[1]);
+
+                            int sec3_lowerLimit = int.Parse(yarncountconfigmodel.drumNumbers_s3.ToString().Split('.')[0]);
+                            int sec3_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s3.ToString().Split('.')[1]);
+
+                            if(selectedDrumNumber>=sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
+                            {
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s1.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s1.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s1.ToString();
+                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
+                                int drumSelectionMethodIndex = 0;
+                                foreach (string ds in drumSelectionMethodList)
+                                {
+                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s1.ToString())
+                                    {
+                                        drumSelectionMethodIndex++;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                            }
+
+                            if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
+                            {
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s2.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s2.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s2.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s2.ToString();
+                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
+                                int drumSelectionMethodIndex = 0;
+                                foreach (string ds in drumSelectionMethodList)
+                                {
+                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s2.ToString())
+                                    {
+                                        drumSelectionMethodIndex++;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                            }
+
+                            if (selectedDrumNumber >= sec3_lowerLimit && selectedDrumNumber <= sec3_upperLimit)
+                            {
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s3.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s3.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s3.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s3.ToString();
+                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
+                                int drumSelectionMethodIndex = 0;
+                                foreach (string ds in drumSelectionMethodList)
+                                {
+                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s3.ToString())
+                                    {
+                                        drumSelectionMethodIndex++;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                            }
+                        }
+                        else if (yarncountconfigmodel.totalSections == 2)
+                        {
+                            int sec1_lowerLimit = int.Parse(yarncountconfigmodel.drumNumbers_s1.ToString().Split('.')[0]);
+                            int sec1_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s1.ToString().Split('.')[1]);
+
+                            int sec2_lowerLimit = int.Parse(yarncountconfigmodel.drumNumbers_s2.ToString().Split('.')[0]);
+                            int sec2_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s2.ToString().Split('.')[1]);
+
+                            if (selectedDrumNumber >= sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
+                            {
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s1.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s1.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s1.ToString();
+                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
+                                int drumSelectionMethodIndex = 0;
+                                foreach (string ds in drumSelectionMethodList)
+                                {
+                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s1.ToString())
+                                    {
+                                        drumSelectionMethodIndex++;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                            }
+
+                            if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
+                            {
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s2.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s2.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s2.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s2.ToString();
+                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
+                                int drumSelectionMethodIndex = 0;
+                                foreach (string ds in drumSelectionMethodList)
+                                {
+                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s2.ToString())
+                                    {
+                                        drumSelectionMethodIndex++;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                            }
+                        }
+                        else if (yarncountconfigmodel.totalSections == 1)
+                        {
+                            int sec1_lowerLimit = int.Parse(yarncountconfigmodel.drumNumbers_s1.ToString().Split('.')[0]);
+                            int sec1_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s1.ToString().Split('.')[1]);
+
+                            if (selectedDrumNumber >= sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
+                            {
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s1.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s1.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s1.ToString();
+                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
+                                int drumSelectionMethodIndex = 0;
+                                foreach (string ds in drumSelectionMethodList)
+                                {
+                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s1.ToString())
+                                    {
+                                        drumSelectionMethodIndex++;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                            }
+                        }
                     }
                 }
             }
