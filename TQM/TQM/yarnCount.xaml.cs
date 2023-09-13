@@ -214,26 +214,26 @@ namespace TQM
                                                             YarnCountConfigModel.machineName == mac)).FirstOrDefault();
                 if (yarncountconfigmodel != null)
                 {
-                    selectedDeviationPercent = yarncountconfigmodel.deviationPercent;
-                    lbl_countsysname.Text = yarncountconfigmodel.countsysname;
-                    picker_yarncountunit.SelectedItem = yarncountconfigmodel.yarnlenunit.ToString();
-                    if (mCat == "Simplex/SpeedFrame")
-                    {
-                        entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
-                    }
-                    else if (mCat == "Spinning" || mCat == "Winding")
-                    {
-                        entry_yarnlen.Text = yarncountconfigmodel.lealength.ToString();
-                    }
-                    else
-                    {
-                        entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
-                    }
-                    entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
-                    TESTCOUNT = yarncountconfigmodel.testcount;
-                    entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
-                    STD_HANK = formatDecimal(yarncountconfigmodel.standardHank);
-                    STD_HANK_CURR = formatDecimal(yarncountconfigmodel.standardHank);
+                    //selectedDeviationPercent = yarncountconfigmodel.deviationPercent;
+                    //lbl_countsysname.Text = yarncountconfigmodel.countsysname;
+                    //picker_yarncountunit.SelectedItem = yarncountconfigmodel.yarnlenunit.ToString();
+                    //if (mCat == "Simplex/SpeedFrame")
+                    //{
+                    //    entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
+                    //}
+                    //else if (mCat == "Spinning" || mCat == "Winding")
+                    //{
+                    //    entry_yarnlen.Text = yarncountconfigmodel.lealength.ToString();
+                    //}
+                    //else
+                    //{
+                    //    entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
+                    //}
+                    //entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
+                    //TESTCOUNT = yarncountconfigmodel.testcount;
+                    //entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
+                    //STD_HANK = formatDecimal(yarncountconfigmodel.standardHank);
+                    //STD_HANK_CURR = formatDecimal(yarncountconfigmodel.standardHank);
 
                     TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);

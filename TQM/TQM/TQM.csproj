@@ -35,35 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="ApercentPage.xaml.cs">
-      <DependentUpon>ApercentPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="NOILS.xaml.cs">
-      <DependentUpon>NOILS.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="NoilsReport.xaml.cs">
-      <DependentUpon>NoilsReport.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="StretchReport.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>StretchReport.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="YCApercentReport.xaml.cs">
-      <DependentUpon>YCApercentReport.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="ApercentPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Update="BluetoothConfig.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="DataSync.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="NOILS.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="companyPage.xaml">
@@ -87,9 +59,6 @@
     <EmbeddedResource Update="startYarnTest.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="StretchPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Update="UserPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
@@ -97,10 +66,6 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="yarnCount.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="StretchReport.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="YCReport.xaml">
