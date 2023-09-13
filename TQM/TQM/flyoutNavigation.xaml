@@ -13,9 +13,8 @@
     <FlyoutPage.Detail>
         <NavigationPage>
             <x:Arguments>
-                <local:yarnCount/>
+                <local:StrengthAnalyzer/>
             </x:Arguments>
         </NavigationPage>
     </FlyoutPage.Detail>
-    
 </FlyoutPage>

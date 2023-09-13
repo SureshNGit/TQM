@@ -26,7 +26,7 @@ using Color = Xamarin.Forms.Color;
 namespace TQM
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class yarnCount : ContentPage, INotifyPropertyChanged
+    public partial class StrengthAnalyzer : ContentPage, INotifyPropertyChanged
     {
         private BluetoothSocket _socket;
         BluetoothAdapter adapter;
@@ -66,7 +66,7 @@ namespace TQM
         private RunConfiguration runConfiguration = new RunConfiguration();
         private bool toastInitialize = false;
 
-        public yarnCount()
+        public StrengthAnalyzer()
         {
             InitializeComponent();
             lbl_TestID.Text = "";
@@ -196,13 +196,13 @@ namespace TQM
             if (mCat == "" && mid == Guid.Empty && mac == "")
             {
                 selectedDeviationPercent = 0m;
-                lbl_countsysname.Text = "";
+                //lbl_countsysname.Text = "";
                 picker_yarncountunit.SelectedIndex = 0;
                 entry_yarnlen.Text = "";
                 entry_testcount.Text = "";
                 picker_shift.SelectedIndex = 0;
-                picker_process.SelectedIndex = 0;
-                entry_standardHank.Text = "0.0000";
+                //picker_process.SelectedIndex = 0;
+                //entry_standardHank.Text = "0.0000";
                 return;
             }
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -273,13 +273,13 @@ namespace TQM
                 else
                 {
                     DisplayAlert("Settings Alert!!!", "Settings not saved for selected machine (" + mac + ")", "Okay");
-                    lbl_countsysname.Text = "";
+                    //lbl_countsysname.Text = "";
                     picker_yarncountunit.SelectedIndex = 0;
                     entry_yarnlen.Text = "";
                     entry_testcount.Text = "";
                     picker_shift.SelectedIndex = 0;
-                    picker_process.SelectedIndex = 0;
-                    entry_standardHank.Text = "0.0000";
+                    //picker_process.SelectedIndex = 0;
+                    //entry_standardHank.Text = "0.0000";
                 }
             }
         }
@@ -591,8 +591,8 @@ namespace TQM
                     entry_yarnlen.IsEnabled = true;
                     entry_testcount.IsEnabled = true;
                     entry_testcount.Text = TESTCOUNT.ToString();
-                    entry_standardHank.IsEnabled = true;
-                    entry_standardHank.Text = STD_HANK_CURR.ToString();
+                    //entry_standardHank.IsEnabled = true;
+                    //entry_standardHank.Text = STD_HANK_CURR.ToString();
                     picker_machinecategory.IsEnabled = true;
                     //picker_machinecategory.SelectedIndex = 0;
                     picker_machinename.IsEnabled = true;
@@ -600,7 +600,7 @@ namespace TQM
                     picker_shift.IsEnabled = false;
                     //picker_shift.SelectedIndex = 0;
                     //picker_process.SelectedIndex = 0;
-                    picker_process.IsEnabled = true;
+                    //picker_process.IsEnabled = true;
                     if (isTestStarted)
                     {
                         if (ycTestModelViewlist != null)
@@ -720,18 +720,18 @@ namespace TQM
                 _ = showProgress(false);
                 return;
             }
-            if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
-            {
-                await DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
-                _ = showProgress(false);
-                return;
-            }
-            if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
-            {
-                await DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
-                _ = showProgress(false);
-                return;
-            }
+            //if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
+            //{
+            //    await DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
+            //    _ = showProgress(false);
+            //    return;
+            //}
+            //if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
+            //{
+            //    await DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
+            //    _ = showProgress(false);
+            //    return;
+            //}
             if (picker_shift.SelectedIndex <= 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
@@ -739,12 +739,12 @@ namespace TQM
                 return;
             }
 
-            if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) == 0.0m)
-            {
-                await DisplayAlert("Attention", "Standard Hank should not be blank or zero!!!", "Ok");
-                _ = showProgress(false);
-                return;
-            }
+            //if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) == 0.0m)
+            //{
+            //    await DisplayAlert("Attention", "Standard Hank should not be blank or zero!!!", "Ok");
+            //    _ = showProgress(false);
+            //    return;
+            //}
 
             //if (picker_process.SelectedIndex <= 0)
             //{
@@ -825,25 +825,25 @@ namespace TQM
             }
             
 
-            selectedSysName = lbl_countsysname.Text;
+            //selectedSysName = lbl_countsysname.Text;
             selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
             selectedYarnLen = decimal.Parse(entry_yarnlen.Text);
             selectedTestCount = int.Parse(entry_testcount.Text);
-            STD_HANK_CURR = decimal.Parse(entry_standardHank.Text);
+            //STD_HANK_CURR = decimal.Parse(entry_standardHank.Text);
             selectedShift = picker_shift.SelectedItem.ToString();
             selectedProcess = "";
-            if (picker_process.SelectedIndex > 0)
-            {
-                selectedProcess = picker_process.SelectedItem.ToString();
-            }
+            //if (picker_process.SelectedIndex > 0)
+            //{
+            //    selectedProcess = picker_process.SelectedItem.ToString();
+            //}
             ycTestModelViewlist = new List<YCTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
             entry_yarnlen.IsEnabled = false;
             entry_testcount.IsEnabled = false;
-            entry_standardHank.IsEnabled = false;
+            //entry_standardHank.IsEnabled = false;
             picker_shift.IsEnabled = false;
-            picker_process.IsEnabled = false;
+            //picker_process.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
 

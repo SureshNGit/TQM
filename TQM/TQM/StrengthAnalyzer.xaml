@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TQM.yarnCount" BackgroundColor="white" 
+             x:Class="TQM.StrengthAnalyzer" BackgroundColor="white" 
              xmlns:effects="clr-namespace:TQM.Effects" NavigationPage.HasBackButton="False">
 
     <NavigationPage.TitleView>
@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
-                <Label Grid.Row="0" Grid.Column="2" Text="RST" FontSize="18" TextColor="ForestGreen" Margin="10,0,0,0"
+                <Label Grid.Row="0" Grid.Column="2" Text="Strength Test" FontSize="18" TextColor="ForestGreen" Margin="10,0,0,0"
                        VerticalTextAlignment="Center" HorizontalOptions="Start" />
                 <Label Grid.Row="0" Grid.Column="3" Text="Test ID :" FontSize="18" TextColor="#0e0273" 
                        VerticalTextAlignment="Center" HorizontalOptions="Start" />
@@ -126,20 +126,24 @@
             <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="10" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
             
             
-            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Test System Name" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Margin="5"/>
-            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Unit" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
-            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Sample Length" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Test Sample" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Drum Number" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Margin="5"/>
+            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Standard Strength" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
+            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Strength Deviation (±)" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Below Limit" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Process" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Standard Hank" FontSize="16" TextColor="#0e0273" x:Name="lbl_standHank"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="No.Of Test" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Drum Selection" FontSize="16" TextColor="#0e0273" x:Name="lbl_standHank"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
-            <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_countsysname" Text="" FontSize="16" IsEnabled="False"
-                   TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>
-            <!--<Label Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_yarncountunit" Text="" FontSize="16" IsEnabled="True"
-                   TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>-->
+            
+            <Picker Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding drumNumber}" 
+                    x:Name="picker_drumNumber" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+                <Picker.Effects>
+                    <effects:PlainEntry/>
+                </Picker.Effects>
+            </Picker>
+            
             <Picker Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1"
                     x:Name="picker_yarncountunit" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Picker.ItemsSource>
@@ -171,14 +175,7 @@
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
                         <x:String></x:String>
-                        <x:String>Carding</x:String>
-                        <x:String>Breaker Drawing</x:String>
-                        <x:String>Comber</x:String>
-                        <x:String>Drawing</x:String>
-                        <!--<x:String>RSB</x:String>-->
-                        <x:String>Simplex/SpeedFrame</x:String>
-                        <x:String>Spinning</x:String>
-                        <x:String>Winding</x:String>
+                        <x:String>OE Auto Coner</x:String>
                     </x:Array>
                 </Picker.ItemsSource>
                 <Picker.Effects>
@@ -197,7 +194,7 @@
                     <effects:PlainEntry/>
                 </Entry.Effects>
             </Entry>-->
-            <Picker Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+            <Picker Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
                     x:Name="picker_shift" TextColor="Green" FontSize="16" IsEnabled="False">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
@@ -212,14 +209,14 @@
                 </Picker.Effects>
             </Picker>
 
-            <!--<Entry Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_process" TextColor="Green" FontSize="16" 
-                  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Text" MaxLength="15">
+            <Entry Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_numberOfTest" TextColor="Green" FontSize="16" 
+                  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Numeric" MaxLength="15">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
-            </Entry>-->
+            </Entry>
 
-            <Picker Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+            <!--<Picker Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
                     x:Name="picker_process" TextColor="Green" FontSize="16">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
@@ -232,16 +229,30 @@
                 <Picker.Effects>
                     <effects:PlainEntry/>
                 </Picker.Effects>
-            </Picker>
+            </Picker>-->
 
             <!--<Label Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="1" x:Name="lbl_standardHank" Text="" FontSize="16" TextColor="Green" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" HeightRequest="50"/>-->
 
-            <Entry Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_standardHank" TextColor="Green" FontSize="16" Keyboard="Numeric"
+            <!--<Entry Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Text="" x:Name="entry_standardHank" TextColor="Green" FontSize="16" Keyboard="Numeric"
                  HorizontalOptions="Start" WidthRequest="480"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
-            </Entry>
+            </Entry>-->
+
+            <Picker Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                    x:Name="picker_drumSelection" TextColor="Green" FontSize="16" IsEnabled="False">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String></x:String>
+                        <x:String>Random</x:String>
+                        <x:String>Scheduled</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+                <Picker.Effects>
+                    <effects:PlainEntry/>
+                </Picker.Effects>
+            </Picker>
             
                
             

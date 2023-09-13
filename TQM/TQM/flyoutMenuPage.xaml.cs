@@ -56,7 +56,7 @@ namespace TQM
                             {
                                 Title = "RST",
                                 ImageSource = "",
-                                TargetPage = typeof(yarnCount)
+                                TargetPage = typeof(StrengthAnalyzer)
                             });
                             //flyItems.Add(new MenuItem
                             //{
@@ -138,7 +138,7 @@ namespace TQM
                             {
                                 Title = "RST",
                                 ImageSource = "",
-                                TargetPage = typeof(yarnCount)
+                                TargetPage = typeof(StrengthAnalyzer)
                             });
                             //flyItems.Add(new MenuItem
                             //{
