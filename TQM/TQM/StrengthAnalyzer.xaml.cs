@@ -1,6 +1,7 @@
 ﻿using Android.Bluetooth;
 using Android.Content;
 using Android.Graphics;
+using Android.Renderscripts;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
@@ -22,6 +23,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
 using static Android.Icu.Text.IDNA;
+using static System.Net.Mime.MediaTypeNames;
 using Color = Xamarin.Forms.Color;
 
 namespace TQM
@@ -37,20 +39,20 @@ namespace TQM
         const int PER_TEST_LOOP_COUNT = 100;
         const int DATA_READ_LOOP_COUNT = 100;
         const int STABLE_DATA_CHECK = 5;
-        private decimal current_stable_data = 0;
+        private int current_stable_data = 0;
         private List<StrengthTestModelView> StrengthTestModelViewlist;
         private long currentTestID = 0;
         private UserModel currentloggedInUser = null;
         private string selectedMachineCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
-        private string selectedSysName = null;
-        private string selectedCountUnit = null;
-        private decimal selectedYarnLen = 0.0000m;
-        private int selectedTestCount = 0;
+        private int selectedDrumNumber = 0;
+        private decimal selectedStandardStrength = 0.0m;
+        private decimal selectedStrengthDeviation = 0.0m;
+        private int selectedBelowLimit = 0;
+        private int selectedTotalTestCount = 0;
+        private string selectedDrumSelectionMethod = null;
         private string selectedShift = null;
-        private string selectedProcess = null;
-        private decimal selectedDeviationPercent = 0m;
         private string UFVAL1 = null;
         private string UFVAL2 = null;
         private string UFVAL3 = null;
@@ -75,6 +77,8 @@ namespace TQM
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
+                //conn.DropTable<StrengthTestModel>();
+
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
                 {
@@ -101,7 +105,7 @@ namespace TQM
                 if (recordCount > 0)
                 {
                     StrengthTestModel zeroTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel => (StrengthTestModel.testID == 0))
-                                            .OrderBy(StrengthTestModel => StrengthTestModel.testcount).FirstOrDefault();
+                                            .OrderBy(StrengthTestModel => StrengthTestModel.sampleNo).FirstOrDefault();
 
                     if (zeroTest != null)
                     {
@@ -376,20 +380,12 @@ namespace TQM
                     listview_testresult_FinalOut.ItemsSource = null;
                     listview_testresult_FinalOut.IsVisible = visibility;
                     listview_testresult_FinalOut.ItemsSource = StrengthTestModelViewlist;
-                    if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-                    {
-                        //lbl_testresult_Final_stadHank.Text = "Count (" + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
-                        span_head.Text = "Count";
-                        span_stdValue.Text = " (" + STD_HANK.ToString();
-                        span_deviation.Text = " \u00B1" + selectedDeviationPercent + ")";
-                    }
-                    else
-                    {
-                        //lbl_testresult_Final_stadHank.Text = "Hank (" + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
-                        span_head.Text = "Hank";
-                        span_stdValue.Text = " (" + STD_HANK.ToString();
-                        span_deviation.Text = " \u00B1" + selectedDeviationPercent + ")";
-                    }
+
+                    //lbl_testresult_Final_stadHank.Text = "Strength (" + selectedStandardStrength.ToString() + "\u00B1" + selectedStrengthDeviation + ")";
+                    //span_head.Text = "Strength";
+                    //span_stdValue.Text = " (" + STD_HANK.ToString();
+                    //span_deviation.Text = " \u00B1" + selectedDeviationPercent + ")";
+                   
                 }
                 else
                 {
@@ -402,59 +398,59 @@ namespace TQM
                     if (StrengthTestModelViewlist != null)
                     {
                         listview_testresult.ItemsSource = null;
-                        listview_testresult.ItemsSource = StrengthTestModelViewlist.OrderByDescending(StrengthTestModelView => StrengthTestModelView.testcount);
+                        listview_testresult.ItemsSource = StrengthTestModelViewlist.OrderByDescending(StrengthTestModelView => StrengthTestModelView.sampleNo);
                     }
 
-                    if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-                    {
-                        //lbl_testresult_stadHank.Text = "Count " + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
-                        span_head_ind.Text = "Count";
-                        span_stdValue_ind.Text = " (" + STD_HANK.ToString();
-                        span_deviation_ind.Text = " \u00B1" + selectedDeviationPercent + ")";
-                    }
-                    else
-                    {
-                        //lbl_testresult_stadHank.Text = "Hank " + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
-                        span_head_ind.Text = "Hank";
-                        span_stdValue_ind.Text = " (" + STD_HANK.ToString();
-                        span_deviation_ind.Text = " \u00B1" + selectedDeviationPercent + ")";
-                    }
+                    //if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
+                    //{
+                    //    //lbl_testresult_stadHank.Text = "Count " + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
+                    //    span_head_ind.Text = "Count";
+                    //    span_stdValue_ind.Text = " (" + STD_HANK.ToString();
+                    //    //span_deviation_ind.Text = " \u00B1" + selectedDeviationPercent + ")";
+                    //}
+                    //else
+                    //{
+                    //    //lbl_testresult_stadHank.Text = "Hank " + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
+                    //    span_head_ind.Text = "Hank";
+                    //    span_stdValue_ind.Text = " (" + STD_HANK.ToString();
+                    //    //span_deviation_ind.Text = " \u00B1" + selectedDeviationPercent + ")";
+                    //}
                 }
             });
         }
 
-        private async Task refOverallSummary(decimal mean = 0m, decimal sd = 0m, decimal cv = 0m, bool visibility = true, bool showFinalOut = false)
+        private async Task refOverallSummary(decimal strength = 0m, decimal qulaifiedTest = 0m, bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
                 if (showFinalOut)
                 {
                     frame_overallSummary_FinalOut.IsVisible = visibility;
-                    lbl_average_FinalOut.Text = mean.ToString();
-                    lbl_sd_FinalOut.Text = sd.ToString();
-                    lbl_cv_FinalOut.Text = cv.ToString();
+                    lbl_strength_FinalOut.Text = strength.ToString();
+                    lbl_qualifiedTest_FinalOut.Text = qulaifiedTest.ToString();
+                   
 
-                    decimal maxRangeVal = STD_HANK + selectedDeviationPercent;
-                    decimal minRangeVal = STD_HANK - selectedDeviationPercent;
+                    //decimal maxRangeVal = STD_HANK + selectedDeviationPercent;
+                    //decimal minRangeVal = STD_HANK - selectedDeviationPercent;
 
 
-                    if (mean < minRangeVal || mean > maxRangeVal)
-                    {
-                        listview_testresult_FinalOut.BackgroundColor = Color.FromHex("#ffc3c0");
-                        lbl_average_FinalOut.TextColor = Color.Red;
-                    }
-                    else
-                    {
-                        listview_testresult_FinalOut.BackgroundColor = Color.White;
-                        lbl_average_FinalOut.TextColor = Color.DarkSlateGray;
-                    }
+                    //if (mean < minRangeVal || mean > maxRangeVal)
+                    //{
+                    //    listview_testresult_FinalOut.BackgroundColor = Color.FromHex("#ffc3c0");
+                    //    lbl_average_FinalOut.TextColor = Color.Red;
+                    //}
+                    //else
+                    //{
+                    //    listview_testresult_FinalOut.BackgroundColor = Color.White;
+                    //    lbl_average_FinalOut.TextColor = Color.DarkSlateGray;
+                    //}
                 }
                 else
                 {
                     frame_overallSummary.IsVisible = visibility;
-                    lbl_average.Text = mean.ToString();
-                    lbl_sd.Text = sd.ToString();
-                    lbl_cv.Text = cv.ToString();
+                    lbl_strength.Text = strength.ToString();
+                    lbl_qualifiedTest.Text = qulaifiedTest.ToString();
+                    //lbl_cv.Text = cv.ToString();
                 }
             });
         }
@@ -487,102 +483,74 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 bool dbStatus = true;
-                decimal totalCalcCountVal = 0.0000m;
                 conn.CreateTable<StrengthTestModel>();
-                foreach (StrengthTestModelView test in StrengthTestModelViewlist)
+
+                List<StrengthTestModel> st_list = conn.Table<StrengthTestModel>().Where(
+                                                    StrengthTestModel => (StrengthTestModel.testID == currentTestID
+                                                    && StrengthTestModel.machineCategory==selectedMachineCategory
+                                                    && StrengthTestModel.machineID==selectedMachineID)).ToList();
+                if (st_list.Count == 0)
                 {
-                    StrengthTestModel StrengthTestModel = new StrengthTestModel()
+                    ImageNotification("red.png");
+                    UpdateUserNotification("Overall Strength Test Data failed to save in database!!!");
+                    showAlert("Overall Strength Test Data failed to save in database!!!");
+                    return;
+                }
+
+                
+                int sum_sampleStrengthCount = 0;
+                int qualifiedTest = 0;
+                foreach (StrengthTestModel test in st_list)
+                {
+                    sum_sampleStrengthCount += test.sampleStrengthCount;
+                    if (test.sampleStrengthCount >= test.belowLimit)
                     {
-                        ID = Guid.NewGuid(),
-                        testID = test.testID,
-                        userID = test.userID,
-                        userName = test.userName,
-                        machineID = test.machineID,
-                        machineCategory = test.machineCategory,
-                        machineName = test.machineName,
-                        //apercent = test.apercent,
-                        shift = test.shift,
-                        process = test.process,
-                        countsysname = test.countsysname,
-                        yarnlenunit = test.yarnlenunit,
-                        yarnlength = test.yarnlength,
-                        totaltestcount = test.totaltestcount,
-                        testcount = test.testcount,
-                        yarnweight = test.yarnweight,
-                        yccalcval = test.yccalcval,
-                        createdate = DateTime.Now
-                    };
-                    int row = conn.Insert(StrengthTestModel);
-                    if (row < 1)
-                    {
-                        dbStatus = false;
+                        qualifiedTest++;
                     }
-                    totalCalcCountVal = totalCalcCountVal + test.yccalcval;
-                    totalCalcCountVal = formatDecimal(totalCalcCountVal);
+                }
+
+                decimal avg = sum_sampleStrengthCount / st_list[0].totalTestCount;
+
+
+                string testDuration = formatTime(currentTestStartTime);
+
+                StrengthTestSummaryModel StrengthTestSummaryModel = new StrengthTestSummaryModel()
+                {
+                    ID = Guid.NewGuid(),
+                    testID = StrengthTestModelViewlist[0].testID,
+                    userID = StrengthTestModelViewlist[0].userID,
+                    userName = StrengthTestModelViewlist[0].userName,
+                    machineID = StrengthTestModelViewlist[0].machineID,
+                    machineCategory = StrengthTestModelViewlist[0].machineCategory,
+                    machineName = StrengthTestModelViewlist[0].machineName,
+                    drumNumber = StrengthTestModelViewlist[0].drumNumber,
+                    standardStrength = StrengthTestModelViewlist[0].standardStrength,
+                    strengthDeviation = StrengthTestModelViewlist[0].strengthDeviation,
+                    belowLimit = StrengthTestModelViewlist[0].belowLimit,
+                    totalTestCount = StrengthTestModelViewlist[0].totalTestCount,
+                    drumSelectionMethod = StrengthTestModelViewlist[0].drumSelectionMethod,
+                    yarnStrength = avg+qualifiedTest,
+                    shift = StrengthTestModelViewlist[0].shift,
+                    testDuration = testDuration,
+                    uf_value_1 = UFVAL1,
+                    uf_value_2 = UFVAL2,
+                    uf_value_3 = UFVAL3,
+                    uf_value_4 = UFVAL4,
+                    createdate = DateTime.Now
+                };
+
+                conn.CreateTable<StrengthTestSummaryModel>();
+                int row = conn.Insert(StrengthTestSummaryModel);
+                if (row < 1)
+                {
+                    dbStatus = false;
                 }
                 if (dbStatus)
                 {
-                    decimal mean = 0.0000m;
-                    decimal sd = 0.0000m;
-                    decimal cv = 0.0000m;
-                    if (StrengthTestModelViewlist[0].totaltestcount > 1)
-                    {
-                        mean = totalCalcCountVal / StrengthTestModelViewlist[0].totaltestcount;
-                        decimal IndividualCalValminusMean = 0m;
-                        foreach (StrengthTestModelView test in StrengthTestModelViewlist)
-                        {
-                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
-                        }
-                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(StrengthTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
-                        sd = formatDecimal(sd);
-                        mean = formatDecimal(mean);
-                        cv = (sd / mean) * 100.0000m; //Coefficient of Variation
-                        cv = formatDecimal(cv);
-                    }
-                    //TimeSpan duration = (DateTime.Now - currentTestStartTime).Duration();
-                    //string testDuration = duration.Hours.ToString() + ":" + duration.Minutes.ToString() + ":" + duration.Seconds.ToString();
-
-                    string testDuration = formatTime(currentTestStartTime);
-
-                    StrengthTestSummaryModel StrengthTestSummaryModel = new StrengthTestSummaryModel()
-                    {
-                        ID = Guid.NewGuid(),
-                        testID = StrengthTestModelViewlist[0].testID,
-                        userID = StrengthTestModelViewlist[0].userID,
-                        userName = StrengthTestModelViewlist[0].userName,
-                        machineID = StrengthTestModelViewlist[0].machineID,
-                        machineCategory = StrengthTestModelViewlist[0].machineCategory,
-                        machineName = StrengthTestModelViewlist[0].machineName,
-                        shift = StrengthTestModelViewlist[0].shift,
-                        process = StrengthTestModelViewlist[0].process,
-                        countsysname = StrengthTestModelViewlist[0].countsysname,
-                        yarnlenunit = StrengthTestModelViewlist[0].yarnlenunit,
-                        yarnlength = StrengthTestModelViewlist[0].yarnlength,
-                        totaltestcount = StrengthTestModelViewlist[0].totaltestcount,
-                        testaverage = mean,
-                        testsd = sd,
-                        testcv = cv,
-                        standardHank = STD_HANK_CURR,
-                        deviationPercent = selectedDeviationPercent,
-                        testDuration = testDuration,
-                        uf_value_1 = UFVAL1,
-                        uf_value_2 = UFVAL2,
-                        uf_value_3 = UFVAL3,
-                        uf_value_4 = UFVAL4,
-                        createdate = DateTime.Now
-                    };
-                    conn.CreateTable<StrengthTestSummaryModel>();
-                    int row = conn.Insert(StrengthTestSummaryModel);
-                    if (row < 1)
-                    {
-                        dbStatus = false;
-                    }
-                    if (dbStatus)
-                    {
-                        await refListView(true, true);
-                        await refOverallSummary(mean, sd, cv, true, true);
-                    }
+                    await refListView(true, true);
+                    await refOverallSummary(avg + qualifiedTest, qualifiedTest , true, true);
                 }
+                
 
             }
         }
@@ -617,11 +585,11 @@ namespace TQM
                     {
                         if (StrengthTestModelViewlist != null)
                         {
-                            if (selectedTestCount != StrengthTestModelViewlist.Count())
+                            if (selectedTotalTestCount != StrengthTestModelViewlist.Count())
                             {
-                                ImageNotification("red.png");
-                                UpdateUserNotification("IMPROPER TEST!!!");
-                                showAlert("Improper Test!!!");
+                                //ImageNotification("red.png");
+                                //UpdateUserNotification("IMPROPER TEST!!!");
+                                //showAlert("Improper Test!!!");
                             }
                             else
                             {
@@ -631,9 +599,9 @@ namespace TQM
                         }
                         else
                         {
-                            ImageNotification("red.png");
-                            UpdateUserNotification("IMPROPER TEST!!!");
-                            showAlert("Improper Test!!!");
+                            //ImageNotification("red.png");
+                            //UpdateUserNotification("IMPROPER TEST!!!");
+                            //showAlert("Improper Test!!!");
                         }
                         isTestStarted = false;
                         //showAlert("Test Completed!!! Start new test");
@@ -673,7 +641,7 @@ namespace TQM
             UpdateUserNotification("");
             hideFrames();
             await refListView(false);
-            await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
+            await refOverallSummary(0.0000m, 0.0000m, false);
 
             //showProgress
             CancellationTokenSource src_p = new CancellationTokenSource();
@@ -702,67 +670,74 @@ namespace TQM
                 _ = showProgress(false);
                 return;
             }
-            //if (picker_yarncountunit.SelectedIndex <= 0)
-            //{
-            //    await DisplayAlert("Attention", "Please select test unit!!!", "Ok");
-            //    _ = showProgress(false);
-            //    return;
-            //}
-            //if (entry_yarnlen.Text.Trim().Contains("-"))
-            //{
-            //    await DisplayAlert("Attention", "Yarn Length should not be a negative value!!!", "Ok");
-            //    _ = showProgress(false);
-            //    return;
-            //}
-            //if (entry_yarnlen.Text.Trim() == "" || decimal.Parse(entry_yarnlen.Text.Trim()) == 0)
-            //{
-            //    await DisplayAlert("Attention", "Yarn Length should not be blank or zero!!!", "Ok");
-            //    _ = showProgress(false);
-            //    return;
-            //}
-            //if (entry_testcount.Text.Trim().Contains(".") || entry_testcount.Text.Trim().Contains("-"))
-            //{
-            //    await DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
-            //    _ = showProgress(false);
-            //    return;
-            //}
-            //if (entry_testcount.Text.Trim() == "" || int.Parse(entry_testcount.Text.Trim()) == 0)
-            //{
-            //    await DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
-            //    _ = showProgress(false);
-            //    return;
-            //}
-            //if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
-            //{
-            //    await DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
-            //    _ = showProgress(false);
-            //    return;
-            //}
-            //if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
-            //{
-            //    await DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
-            //    _ = showProgress(false);
-            //    return;
-            //}
-            if (picker_shift.SelectedIndex <= 0)
+            if (picker_drumNumber.SelectedIndex < 0)
+            {
+                await DisplayAlert("Attention", "Please select drum number!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+            if (entry_stdStrength.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Standard Strength should not be a negative value!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+            if (entry_stdStrength.Text.Trim() == "" || decimal.Parse(entry_stdStrength.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Standard Strength should not be blank or zero!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+            if (entry_strengthDeviation.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Strength Deviation should not be a negative value!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+            if (entry_strengthDeviation.Text.Trim() == "" || decimal.Parse(entry_strengthDeviation.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Strength Deviation should not be blank or zero!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+            if (entry_belowLimit.Text.Trim().Contains(".") || entry_belowLimit.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "Below limit should not be a decimal or negative value!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+            if (entry_belowLimit.Text.Trim() == "" || int.Parse(entry_belowLimit.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "Below limit should not be blank or zero!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+            if (entry_numberOfTest.Text.Trim().Contains(".") || entry_numberOfTest.Text.Trim().Contains("-"))
+            {
+                await DisplayAlert("Attention", "No. Of Test should not be a decimal or negative value!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+            if (entry_numberOfTest.Text.Trim() == "" || int.Parse(entry_numberOfTest.Text.Trim()) == 0)
+            {
+                await DisplayAlert("Attention", "No. Of Test should not be blank or zero!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+            if (picker_drumSelection.SelectedIndex < 0)
+            {
+                await DisplayAlert("Attention", "Invalid drum selection!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+            if (picker_shift.SelectedIndex < 0)
             {
                 await DisplayAlert("Attention", "Please select shift!!!", "Ok");
                 _ = showProgress(false);
                 return;
             }
 
-            //if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) == 0.0m)
-            //{
-            //    await DisplayAlert("Attention", "Standard Hank should not be blank or zero!!!", "Ok");
-            //    _ = showProgress(false);
-            //    return;
-            //}
-
-            //if (picker_process.SelectedIndex <= 0)
-            //{
-            //    await DisplayAlert("Attention", "Please select process info!!!", "Ok");
-            //    return;
-            //}
+           
 
             //showToast
             src_t = new CancellationTokenSource();
@@ -782,7 +757,7 @@ namespace TQM
 
 
 
-            string testCount_str = "0";
+            string testCount_str = entry_numberOfTest.Text;
             int testCount = int.Parse(testCount_str);
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -835,27 +810,20 @@ namespace TQM
                     currentloggedInUser = loggedInUser;
                 }
             }
-            
 
-            //selectedSysName = lbl_countsysname.Text;
-            //selectedCountUnit = picker_yarncountunit.SelectedItem.ToString();
-            //selectedYarnLen = decimal.Parse(entry_yarnlen.Text);
-            //selectedTestCount = int.Parse(entry_testcount.Text);
-            //STD_HANK_CURR = decimal.Parse(entry_standardHank.Text);
+
+            selectedDrumNumber = int.Parse(picker_drumNumber.SelectedItem.ToString());
+            selectedStandardStrength = decimal.Parse(entry_stdStrength.Text);
+            selectedStrengthDeviation = decimal.Parse(entry_strengthDeviation.Text);
+            selectedBelowLimit = int.Parse(entry_belowLimit.Text);
+            selectedTotalTestCount = int.Parse(entry_numberOfTest.Text);
+            selectedDrumSelectionMethod = picker_drumSelection.SelectedItem.ToString();
             selectedShift = picker_shift.SelectedItem.ToString();
-            selectedProcess = "";
-            //if (picker_process.SelectedIndex > 0)
-            //{
-            //    selectedProcess = picker_process.SelectedItem.ToString();
-            //}
             StrengthTestModelViewlist = new List<StrengthTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
-            //entry_yarnlen.IsEnabled = false;
-            //entry_testcount.IsEnabled = false;
-            //entry_standardHank.IsEnabled = false;
+
             picker_shift.IsEnabled = false;
-            //picker_process.IsEnabled = false;
             picker_machinecategory.IsEnabled = false;
             picker_machinename.IsEnabled = false;
 
@@ -912,73 +880,8 @@ namespace TQM
                         {
                             displayusername = currentloggedInUser.firstname + ", " + currentloggedInUser.lastname + " [" + currentloggedInUser.userId + "]";
                         }
-                        decimal currentCalculatedValue = 0.0000m;
-                        switch (selectedSysName)
-                        {
-                            case "Nec":
-                                switch (selectedCountUnit)
-                                {
-                                    case "Yard":
-                                        decimal drivedVal = (selectedYarnLen / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
-                                        currentCalculatedValue = formatDecimal(drivedVal);
-                                        break;
-                                    case "Meter":
-                                        decimal drivedVal_meter = ((selectedYarnLen * 1.09361m) / 840.0000m) * (1.0000m / ((current_stable_data * 15.4324m) / 7000.0000m));
-                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                        break;
-                                    default:
-                                        break;
-                                };
-                                break;
-                            case "Tex":
-                                switch (selectedCountUnit)
-                                {
-                                    case "Yard":
-                                        decimal drivedVal = current_stable_data * 1000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
-                                        currentCalculatedValue = formatDecimal(drivedVal);
-                                        break;
-                                    case "Meter":
-                                        decimal drivedVal_meter = current_stable_data * 1000.0000m / selectedYarnLen * 1.0000m;
-                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                        break;
-                                    default:
-                                        break;
-                                };
-                                break;
-                            case "Den":
-                                switch (selectedCountUnit)
-                                {
-                                    case "Yard":
-                                        decimal drivedVal = current_stable_data * 9000.0000m / (selectedYarnLen * 0.9144m) * 1.0000m;
-                                        currentCalculatedValue = formatDecimal(drivedVal);
-                                        break;
-                                    case "Meter":
-                                        decimal drivedVal_meter = current_stable_data * 9000.0000m / selectedYarnLen * 1.0000m;
-                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                        break;
-                                    default:
-                                        break;
-                                };
-                                break;
-                            case "Nm":
-                                switch (selectedCountUnit)
-                                {
-                                    case "Yard":
-                                        decimal drivedVal = ((selectedYarnLen * 0.9144m) * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
-                                        currentCalculatedValue = formatDecimal(drivedVal);
-                                        break;
-                                    case "Meter":
-                                        decimal drivedVal_meter = (selectedYarnLen * 1.0000m) / ((current_stable_data * 0.0010m) * 1000.0000m);
-                                        currentCalculatedValue = formatDecimal(drivedVal_meter);
-                                        break;
-                                    default:
-                                        break;
-                                };
-                                break;
-                            default:
-                                break;
-                        };
-                        StrengthTestModelView StrengthTestModelView = new StrengthTestModelView()
+                        
+                        StrengthTestModelView strengthTestModelView = new StrengthTestModelView()
                         {
                             testID = currentTestID,
                             userID = currentloggedInUser.ID,
@@ -986,19 +889,56 @@ namespace TQM
                             machineID = selectedMachineID,
                             machineCategory = selectedMachineCategory,
                             machineName = selectedMachineName,
-                            shift = selectedShift,
-                            process = selectedProcess,
-                            countsysname = selectedSysName,
-                            yarnlenunit = selectedCountUnit,
-                            yarnlength = selectedYarnLen,
-                            totaltestcount = selectedTestCount,
-                            testcount = i + 1,
-                            yarnweight = current_stable_data,
-                            yccalcval = currentCalculatedValue
+                            drumNumber = selectedDrumNumber,
+                            standardStrength = selectedStandardStrength,
+                            strengthDeviation = selectedStrengthDeviation,
+                            belowLimit = selectedBelowLimit,
+                            totalTestCount = selectedTotalTestCount,
+                            drumSelectionMethod=selectedDrumSelectionMethod,
+                            sampleNo = i + 1,
+                            sampleStrengthCount = current_stable_data,
+                            shift = selectedShift
                         };
-                        StrengthTestModelViewlist.Add(StrengthTestModelView);
+                        StrengthTestModelViewlist.Add(strengthTestModelView);
+
                         //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
-                        await refListView();
+                        
+                        StrengthTestModel strengthTestModel = new StrengthTestModel()
+                        {
+                            ID=Guid.NewGuid(),
+                            testID = currentTestID,
+                            userID = currentloggedInUser.ID,
+                            userName = displayusername,
+                            machineID = selectedMachineID,
+                            machineCategory = selectedMachineCategory,
+                            machineName = selectedMachineName,
+                            drumNumber = selectedDrumNumber,
+                            standardStrength = selectedStandardStrength,
+                            strengthDeviation = selectedStrengthDeviation,
+                            belowLimit = selectedBelowLimit,
+                            totalTestCount = selectedTotalTestCount,
+                            drumSelectionMethod = selectedDrumSelectionMethod,
+                            sampleNo = i + 1,
+                            sampleStrengthCount = current_stable_data,
+                            shift = selectedShift,
+                            createdate=DateTime.Now
+                        };
+                        int row = 0;
+                        using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                        {
+                            row= conn.Insert(strengthTestModel);
+                            if (row < 1)
+                            {
+                                showAlert("Test - [" + (i + 1) + "] failed to save in database!!! Please re-start the test!!!");
+                                reset(false);
+                                break;
+                            }
+                            else
+                            {
+                                await refListView();
+                            }
+                        }
+                        
                     }
                     else
                     {
@@ -1033,7 +973,11 @@ namespace TQM
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
-                showAlert("COMMUNICATION ERROR!!!");
+                if (ex.ToString().Contains("SQLite")) { showAlert("Database error!!!"); }
+                else
+                {
+                    showAlert("COMMUNICATION ERROR!!!");
+                }
                 reset();
             }
         }
@@ -1042,100 +986,58 @@ namespace TQM
         {
             try
             {
-                bool blueState = true;
-                if (blueState)
+                string balOutput = Listen();
+                Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
+                if (balOutput != "")
                 {
-                    bool initialWeigthCheck = false;
-                    int perTestLoopCount = 0;
-                    while (true)
+                   if (balOutput == "fail")
                     {
-                        String balOutput = Listen(initialWeigthCheck);
-                        Debug.WriteLine("Recieved from Bluetooth adapter is [" + balOutput + "]");
-                        if (balOutput != "")
-                        {
-                            if (balOutput == "reset" && initialWeigthCheck) //Added to ignore negative values after placing weight
-                            {
-                                continue;
-                            }
+                        ImageNotification("red.png");
+                        UpdateUserNotification("COMMUNICATION ERROR!!!");
+                        Debug.WriteLine("Read data failed");
+                        return false;
+                    }
+                    else
+                    {
+                        string s_op = balOutput;
 
-                            if (balOutput == "reset")
-                            {
-                                ImageNotification("red.png");
-                                UpdateUserNotification("REMOVE WEIGHT");
-                                Debug.WriteLine("Remove weigth to ensure zero!!!");
-                            }
-                            else if (balOutput == "fail")
-                            {
-                                ImageNotification("red.png");
-                                UpdateUserNotification("COMMUNICATION ERROR!!!");
-                                Debug.WriteLine("Read data failed");
-                                return false;
-                            }
-                            else
-                            {
-                                decimal s_op = decimal.Parse(balOutput);
-                                s_op = formatDecimal(s_op);
-                                if (!initialWeigthCheck)
-                                {
-                                    if (s_op == ZERO)
-                                    {
-                                        initialWeigthCheck = true;
-                                        ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
-                                        Debug.WriteLine("Place object to start test!!!");
-                                    }
-                                    else
-                                    {
-                                        ImageNotification("red.png");
-                                        UpdateUserNotification("REMOVE WEIGHT");
-                                        Debug.WriteLine("Remove weigth to ensure zero!!!");
-                                    }
-                                }
-                                else
-                                {
-                                    if (s_op == ZERO || s_op < MIN_VAL)
-                                    {
-                                        ImageNotification("green.png");
-                                        UpdateUserNotification("PLACE WEIGHT" + " (S.No - " + currentTestCount + ")", GREEN);
-                                        Debug.WriteLine("Place object to start test!!!");
-                                    }
-                                    //else if (s_op < MIN_VAL)
-                                    //{
-                                    //    initialWeigthCheck = false;
-                                    //    ImageNotification("red.png");
-                                    //    UpdateUserNotification("Weigth is below minimum value!!!");
-                                    //    Debug.WriteLine("Weigth is below minimum value!!!");
-                                    //}
-                                    else
-                                    {
-                                        current_stable_data = s_op;
-                                        ImageNotification(null);
-                                        UpdateUserNotification("");
-                                        return true;
-                                    }
-                                }
-                            }
+                        if (s_op == "ITO")
+                        {
+                            ImageNotification("red.png");
+                            UpdateUserNotification("Start command not received!!!");
+                            Debug.WriteLine("Start command not received!!!");
+                            return false;
+                        }
+                        else if (s_op == "PNR")
+                        {
+                            ImageNotification("red.png");
+                            UpdateUserNotification("Pulse not received!!!");
+                            Debug.WriteLine("Pulse not received!!!");
+                            return false;
+                        }
+                        else if (s_op.Contains("C"))
+                        {
+                            int parseOut = 0;
+                            int.TryParse(s_op.Split('C')[1], out parseOut);
+                            current_stable_data = parseOut;
+                            ImageNotification(null);
+                            UpdateUserNotification("");
+                            return true;
                         }
                         else
                         {
                             ImageNotification("red.png");
-                            UpdateUserNotification("UNSTABLE DATA!!!");
-                            Debug.WriteLine("Data is unstable!!! Ensure weighing machine is covered properly");
-                        }
-                        if (perTestLoopCount > PER_TEST_LOOP_COUNT)
-                        {
-                            ImageNotification("red.png");
-                            UpdateUserNotification("IMPROPER TEST!!!");
-                            Debug.WriteLine("Improper Test!!! Start new test");
+                            UpdateUserNotification("Invalid command received!!!");
+                            Debug.WriteLine("Invalid command received!!!");
                             return false;
                         }
-                        perTestLoopCount += 1;
                     }
                 }
                 else
                 {
                     ImageNotification("red.png");
-                    UpdateUserNotification("COMMUNICATION ERROR!!!");
+                    UpdateUserNotification("UNSTABLE DATA!!!");
+                    Debug.WriteLine("Data is unstable!!! Ensure weighing machine is covered properly");
                     return false;
                 }
             }
@@ -1218,69 +1120,59 @@ namespace TQM
             return sb.ToString();
         }
 
-        private string Listen(bool iwc)
+        private string Listen()
         {
             string op = "";
-            string prevOp = "";
+            string prevop = "";
+            bool startSignalReceived = false;
             bool Listening = true;
             Debug.WriteLine("Listening has been started.");
+            int bufferfailedcount = 0;
+            int WAITFORSTART = 600;
+            int IdealCount = 0;
             while (Listening)
             {
                 try
                 {
-                    int loopCount = 0;
-                    int stableCount = 0;
-                    int bufferfailedcount = 0;
-                    while (true)
+                    var buffer = new BufferedReader(new InputStreamReader(_socket.InputStream));
+                    System.Threading.Thread.Sleep(100);
+                    if (buffer.Ready())
                     {
-                        var buffer = new BufferedReader(new InputStreamReader(_socket.InputStream));
-                        System.Threading.Thread.Sleep(1000);
-                        if (buffer.Ready())
+                        bufferfailedcount = 0;
+                        op = RemoveSpecialCharacters(buffer.ReadLine());
+                        Debug.WriteLine("Output: " + op);
+                        if (op == "ID")
                         {
-                            op = RemoveSpecialCharacters(buffer.ReadLine());
-                            Debug.WriteLine("Output: " + op);
-                            while (op != null)
-                            {
-                                if (op.Contains("-")) { return "reset"; }
-                                else
-                                {
-                                    decimal op_dec = decimal.Parse(op);
-                                    Debug.WriteLine("Output Modifed to int: [" + op_dec + "]: greater than 0?: " + (op_dec > 0));
-                                    if (!iwc) { return op; }
-                                }
-                                if (prevOp == op)
-                                {
-                                    stableCount += 1;
-                                    if (stableCount > STABLE_DATA_CHECK)
-                                    {
-                                        Debug.WriteLine("Stable Output: " + op.Trim('\0'));
-                                        return op;
-                                    }
-                                }
-                                else
-                                {
-                                    stableCount = 0;
-                                }
-                                prevOp = op;
-                                op = RemoveSpecialCharacters(buffer.ReadLine());
-
-                                if (loopCount > DATA_READ_LOOP_COUNT)
-                                {
-                                    return "";
-                                }
-                                loopCount += 1;
-                            }
+                            IdealCount++;
+                            if (IdealCount > WAITFORSTART) { return "ITO"; } //Ideal Time Out
+                            continue;
                         }
-                        else
+                        if (op == "ST")
                         {
-                            if (bufferfailedcount > BUFFER_WAIT_COUNT)
-                            {
-                                Debug.WriteLine("Buffer is not ready!!!");
-                                return "fail";
-                            }
-                            else { bufferfailedcount++; }
+                            startSignalReceived = true;
+                            continue;
+                        }
+                        if (startSignalReceived && op.Contains('C'))
+                        {
+                            prevop = op;
+                            continue;
+                        }
+                        if(startSignalReceived && op == "TE")
+                        {
+                            if (prevop == "") { return "PNR"; } //Pulse Not Received
+                            else { return prevop; }
                         }
                     }
+                    else
+                    {
+                        if (bufferfailedcount > BUFFER_WAIT_COUNT)
+                        {
+                            Debug.WriteLine("Buffer is not ready!!!");
+                            return "fail";
+                        }
+                        else { bufferfailedcount++; }
+                    }
+                   
                 }
                 catch (Java.IO.IOException e)
                 {
