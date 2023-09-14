@@ -4,11 +4,12 @@ using System;
 
 namespace TQM.Model
 {
-    public class YCTestModel
+    public class StrengthTestSummaryModel
     {
         [PrimaryKey]
         public Guid ID { get; set; }
 
+        [ForeignKey(typeof(StrengthTestModel))]
         public long testID { get; set; }
 
         [ForeignKey(typeof(UserModel))]
@@ -33,16 +34,26 @@ namespace TQM.Model
 
         public int totaltestcount { get; set; }
 
-        public int testcount { get; set; }
+        public decimal testaverage { get; set; }
 
-        public decimal yarnweight { get; set; }
+        public decimal testsd { get; set; }
 
-        public decimal yccalcval { get; set; }
+        public decimal testcv { get; set; }
+
+        public decimal standardHank { get; set; }
+
+        public decimal deviationPercent { get; set; }
+
+        public string testRemark { get; set; }
+
+        public string testDuration { get; set; }
+        public string uf_value_1 { get; set; }
+        public string uf_value_2 { get; set; }
+        public string uf_value_3 { get; set; }
+        public string uf_value_4 { get; set; }
 
         public DateTime createdate { get; set; }
 
         public bool dataSyncStatus { get; set; } = false;
-
-
     }
 }

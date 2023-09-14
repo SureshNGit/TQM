@@ -20,12 +20,12 @@ namespace TQM
 
         private void getUserfieldConfig()
         {
-            YarnCountConfigModel ycConfig_uf = null;
+            ConfigModel ycConfig_uf = null;
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                            Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
-                            YarnCountConfigModel.uf_name_1 != "")).FirstOrDefault();
+                ycConfig_uf = conn.Table<ConfigModel>().
+                            Where(ConfigModel => (ConfigModel.uf_name_1 != null ||
+                            ConfigModel.uf_name_1 != "")).FirstOrDefault();
             }
             if (ycConfig_uf != null)
             {

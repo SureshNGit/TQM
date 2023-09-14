@@ -4,7 +4,7 @@ using System;
 
 namespace TQM.Model
 {
-    public class YarnCountConfigModel
+    public class ConfigModel
     {
         [PrimaryKey]
         public Guid ID { get; set; }

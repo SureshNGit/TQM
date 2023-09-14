@@ -38,7 +38,7 @@ namespace TQM
         const int DATA_READ_LOOP_COUNT = 100;
         const int STABLE_DATA_CHECK = 5;
         private decimal current_stable_data = 0;
-        private List<YCTestModelView> ycTestModelViewlist;
+        private List<StrengthTestModelView> StrengthTestModelViewlist;
         private long currentTestID = 0;
         private UserModel currentloggedInUser = null;
         private string selectedMachineCategory = null;
@@ -95,29 +95,29 @@ namespace TQM
                 }
                 ///*******************************Jaganatha Unit-3, bhagirath Test Reset Issue Issue - Auto Correction**************************
 
-                conn.CreateTable<YCTestModel>();
-                int recordCount = conn.Table<YCTestModel>().Count();
+                conn.CreateTable<StrengthTestModel>();
+                int recordCount = conn.Table<StrengthTestModel>().Count();
 
                 if (recordCount > 0)
                 {
-                    YCTestModel zeroTest = conn.Table<YCTestModel>().Where(YCTestModel => (YCTestModel.testID == 0))
-                                            .OrderBy(YCTestModel => YCTestModel.testcount).FirstOrDefault();
+                    StrengthTestModel zeroTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel => (StrengthTestModel.testID == 0))
+                                            .OrderBy(StrengthTestModel => StrengthTestModel.testcount).FirstOrDefault();
 
                     if (zeroTest != null)
                     {
                         DateTime startDate = zeroTest.createdate;
-                        YCTestModel beforeZeroTest = conn.Table<YCTestModel>().Where(YCTestModel => (YCTestModel.createdate < startDate))
-                                            .OrderByDescending(YCTestModel => YCTestModel.testID).FirstOrDefault();
+                        StrengthTestModel beforeZeroTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel => (StrengthTestModel.createdate < startDate))
+                                            .OrderByDescending(StrengthTestModel => StrengthTestModel.testID).FirstOrDefault();
 
                         if (beforeZeroTest != null)
                         {
                             long lastProperTestID = beforeZeroTest.testID + 1;
-                            List<YCTestModel> resetTestList = conn.Table<YCTestModel>().Where(YCTestModel => (YCTestModel.createdate >= startDate))
-                                                              .OrderBy(YCTestModel => YCTestModel.testID).ToList();
+                            List<StrengthTestModel> resetTestList = conn.Table<StrengthTestModel>().Where(StrengthTestModel => (StrengthTestModel.createdate >= startDate))
+                                                              .OrderBy(StrengthTestModel => StrengthTestModel.testID).ToList();
                             int failCounter = 0;
                             if (resetTestList[0].testID == 0)
                             {
-                                foreach (YCTestModel test in resetTestList)
+                                foreach (StrengthTestModel test in resetTestList)
                                 {
                                     test.testID = lastProperTestID + test.testID;
                                     int row = conn.Update(test);
@@ -128,13 +128,13 @@ namespace TQM
                                 }
                             }
 
-                            List<YCTestSummaryModel> resetTestSummaryList = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                                    (YCTestSummaryModel.createdate >= startDate))
-                                                                    .OrderBy(YCTestSummaryModel => YCTestSummaryModel.testID).ToList();
+                            List<StrengthTestSummaryModel> resetTestSummaryList = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                                                                    (StrengthTestSummaryModel.createdate >= startDate))
+                                                                    .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.testID).ToList();
                             int failCounter_Summary = 0;
                             if (resetTestSummaryList[0].testID == 0)
                             {
-                                foreach (YCTestSummaryModel testsummary in resetTestSummaryList)
+                                foreach (StrengthTestSummaryModel testsummary in resetTestSummaryList)
                                 {
                                     testsummary.testID = lastProperTestID + testsummary.testID;
                                     int row = conn.Update(testsummary);
@@ -173,13 +173,13 @@ namespace TQM
             }
             else
             {
-                YarnCountConfigModel ycConfig_uf = null;
+                ConfigModel ycConfig_uf = null;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                                Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
-                                YarnCountConfigModel.uf_name_1 != "") && YarnCountConfigModel.machineCategory == mCat
-                                && YarnCountConfigModel.machineID == mid && YarnCountConfigModel.machineName == mac).FirstOrDefault();
+                    ycConfig_uf = conn.Table<ConfigModel>().
+                                Where(ConfigModel => (ConfigModel.uf_name_1 != null ||
+                                ConfigModel.uf_name_1 != "") && ConfigModel.machineCategory == mCat
+                                && ConfigModel.machineID == mid && ConfigModel.machineName == mac).FirstOrDefault();
                 }
                 if (ycConfig_uf != null)
                 {
@@ -208,11 +208,11 @@ namespace TQM
             }
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                conn.CreateTable<YarnCountConfigModel>();
-                YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().Where(YarnCountConfigModel =>
-                                                            (YarnCountConfigModel.machineCategory == mCat &&
-                                                            YarnCountConfigModel.machineID == mid &&
-                                                            YarnCountConfigModel.machineName == mac)).FirstOrDefault();
+                conn.CreateTable<ConfigModel>();
+                ConfigModel yarncountconfigmodel = conn.Table<ConfigModel>().Where(ConfigModel =>
+                                                            (ConfigModel.machineCategory == mCat &&
+                                                            ConfigModel.machineID == mid &&
+                                                            ConfigModel.machineName == mac)).FirstOrDefault();
                 if (yarncountconfigmodel != null)
                 {
                     //selectedDeviationPercent = yarncountconfigmodel.deviationPercent;
@@ -375,7 +375,7 @@ namespace TQM
                     individualTestResultFrame_FinalOut.IsVisible = true;
                     listview_testresult_FinalOut.ItemsSource = null;
                     listview_testresult_FinalOut.IsVisible = visibility;
-                    listview_testresult_FinalOut.ItemsSource = ycTestModelViewlist;
+                    listview_testresult_FinalOut.ItemsSource = StrengthTestModelViewlist;
                     if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                     {
                         //lbl_testresult_Final_stadHank.Text = "Count (" + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
@@ -399,10 +399,10 @@ namespace TQM
 
                     individualTestResultFrame.IsVisible = true;
                     listview_testresult.IsVisible = visibility;
-                    if (ycTestModelViewlist != null)
+                    if (StrengthTestModelViewlist != null)
                     {
                         listview_testresult.ItemsSource = null;
-                        listview_testresult.ItemsSource = ycTestModelViewlist.OrderByDescending(YCTestModelView => YCTestModelView.testcount);
+                        listview_testresult.ItemsSource = StrengthTestModelViewlist.OrderByDescending(StrengthTestModelView => StrengthTestModelView.testcount);
                     }
 
                     if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
@@ -488,10 +488,10 @@ namespace TQM
             {
                 bool dbStatus = true;
                 decimal totalCalcCountVal = 0.0000m;
-                conn.CreateTable<YCTestModel>();
-                foreach (YCTestModelView test in ycTestModelViewlist)
+                conn.CreateTable<StrengthTestModel>();
+                foreach (StrengthTestModelView test in StrengthTestModelViewlist)
                 {
-                    YCTestModel ycTestModel = new YCTestModel()
+                    StrengthTestModel StrengthTestModel = new StrengthTestModel()
                     {
                         ID = Guid.NewGuid(),
                         testID = test.testID,
@@ -512,7 +512,7 @@ namespace TQM
                         yccalcval = test.yccalcval,
                         createdate = DateTime.Now
                     };
-                    int row = conn.Insert(ycTestModel);
+                    int row = conn.Insert(StrengthTestModel);
                     if (row < 1)
                     {
                         dbStatus = false;
@@ -525,15 +525,15 @@ namespace TQM
                     decimal mean = 0.0000m;
                     decimal sd = 0.0000m;
                     decimal cv = 0.0000m;
-                    if (ycTestModelViewlist[0].totaltestcount > 1)
+                    if (StrengthTestModelViewlist[0].totaltestcount > 1)
                     {
-                        mean = totalCalcCountVal / ycTestModelViewlist[0].totaltestcount;
+                        mean = totalCalcCountVal / StrengthTestModelViewlist[0].totaltestcount;
                         decimal IndividualCalValminusMean = 0m;
-                        foreach (YCTestModelView test in ycTestModelViewlist)
+                        foreach (StrengthTestModelView test in StrengthTestModelViewlist)
                         {
                             IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
                         }
-                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
+                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(StrengthTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
                         sd = formatDecimal(sd);
                         mean = formatDecimal(mean);
                         cv = (sd / mean) * 100.0000m; //Coefficient of Variation
@@ -544,21 +544,21 @@ namespace TQM
 
                     string testDuration = formatTime(currentTestStartTime);
 
-                    YCTestSummaryModel ycTestSummaryModel = new YCTestSummaryModel()
+                    StrengthTestSummaryModel StrengthTestSummaryModel = new StrengthTestSummaryModel()
                     {
                         ID = Guid.NewGuid(),
-                        testID = ycTestModelViewlist[0].testID,
-                        userID = ycTestModelViewlist[0].userID,
-                        userName = ycTestModelViewlist[0].userName,
-                        machineID = ycTestModelViewlist[0].machineID,
-                        machineCategory = ycTestModelViewlist[0].machineCategory,
-                        machineName = ycTestModelViewlist[0].machineName,
-                        shift = ycTestModelViewlist[0].shift,
-                        process = ycTestModelViewlist[0].process,
-                        countsysname = ycTestModelViewlist[0].countsysname,
-                        yarnlenunit = ycTestModelViewlist[0].yarnlenunit,
-                        yarnlength = ycTestModelViewlist[0].yarnlength,
-                        totaltestcount = ycTestModelViewlist[0].totaltestcount,
+                        testID = StrengthTestModelViewlist[0].testID,
+                        userID = StrengthTestModelViewlist[0].userID,
+                        userName = StrengthTestModelViewlist[0].userName,
+                        machineID = StrengthTestModelViewlist[0].machineID,
+                        machineCategory = StrengthTestModelViewlist[0].machineCategory,
+                        machineName = StrengthTestModelViewlist[0].machineName,
+                        shift = StrengthTestModelViewlist[0].shift,
+                        process = StrengthTestModelViewlist[0].process,
+                        countsysname = StrengthTestModelViewlist[0].countsysname,
+                        yarnlenunit = StrengthTestModelViewlist[0].yarnlenunit,
+                        yarnlength = StrengthTestModelViewlist[0].yarnlength,
+                        totaltestcount = StrengthTestModelViewlist[0].totaltestcount,
                         testaverage = mean,
                         testsd = sd,
                         testcv = cv,
@@ -571,8 +571,8 @@ namespace TQM
                         uf_value_4 = UFVAL4,
                         createdate = DateTime.Now
                     };
-                    conn.CreateTable<YCTestSummaryModel>();
-                    int row = conn.Insert(ycTestSummaryModel);
+                    conn.CreateTable<StrengthTestSummaryModel>();
+                    int row = conn.Insert(StrengthTestSummaryModel);
                     if (row < 1)
                     {
                         dbStatus = false;
@@ -615,9 +615,9 @@ namespace TQM
                     //picker_process.IsEnabled = true;
                     if (isTestStarted)
                     {
-                        if (ycTestModelViewlist != null)
+                        if (StrengthTestModelViewlist != null)
                         {
-                            if (selectedTestCount != ycTestModelViewlist.Count())
+                            if (selectedTestCount != StrengthTestModelViewlist.Count())
                             {
                                 ImageNotification("red.png");
                                 UpdateUserNotification("IMPROPER TEST!!!");
@@ -787,9 +787,9 @@ namespace TQM
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                YCTestModel lastTestRecord = null;
-                conn.CreateTable<YCTestModel>();
-                int recordCount = conn.Table<YCTestModel>().Count();
+                StrengthTestModel lastTestRecord = null;
+                conn.CreateTable<StrengthTestModel>();
+                int recordCount = conn.Table<StrengthTestModel>().Count();
 
                 if (recordCount == 0)
                 {
@@ -797,15 +797,15 @@ namespace TQM
                 }
                 else
                 {
-                    DateTime maxDate = conn.Table<YCTestModel>().Max(YCTestModel => YCTestModel.createdate);
+                    DateTime maxDate = conn.Table<StrengthTestModel>().Max(StrengthTestModel => StrengthTestModel.createdate);
                     if (DateTime.Now <= maxDate)
                     {
                         await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
                         _ = showProgress(false);
                         return;
                     }
-                    lastTestRecord = conn.Table<YCTestModel>()
-                        .Where(YCTestModel => YCTestModel.createdate == maxDate).FirstOrDefault();
+                    lastTestRecord = conn.Table<StrengthTestModel>()
+                        .Where(StrengthTestModel => StrengthTestModel.createdate == maxDate).FirstOrDefault();
                     if (lastTestRecord != null)
                     {
                         if (currentTestID == 0)
@@ -848,7 +848,7 @@ namespace TQM
             //{
             //    selectedProcess = picker_process.SelectedItem.ToString();
             //}
-            ycTestModelViewlist = new List<YCTestModelView>();
+            StrengthTestModelViewlist = new List<StrengthTestModelView>();
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
             //entry_yarnlen.IsEnabled = false;
@@ -978,7 +978,7 @@ namespace TQM
                             default:
                                 break;
                         };
-                        YCTestModelView ycTestModelView = new YCTestModelView()
+                        StrengthTestModelView StrengthTestModelView = new StrengthTestModelView()
                         {
                             testID = currentTestID,
                             userID = currentloggedInUser.ID,
@@ -996,7 +996,7 @@ namespace TQM
                             yarnweight = current_stable_data,
                             yccalcval = currentCalculatedValue
                         };
-                        ycTestModelViewlist.Add(ycTestModelView);
+                        StrengthTestModelViewlist.Add(StrengthTestModelView);
                         //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
                         await refListView();
                     }
@@ -1008,7 +1008,7 @@ namespace TQM
                     }
                 }
 
-                if (ycTestModelViewlist.Count > 0 && passCount == testCount)
+                if (StrengthTestModelViewlist.Count > 0 && passCount == testCount)
                 {
                     updateDB();
                 }
@@ -1413,8 +1413,8 @@ namespace TQM
                 string comment = await DisplayPromptAsync(header, "Please type your remark", "Save", "Discard", null, 100);
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    YCTestSummaryModel summaryModel = conn.Table<YCTestSummaryModel>().Where(
-                        YCTestSummaryModel => YCTestSummaryModel.testID == testID).FirstOrDefault();
+                    StrengthTestSummaryModel summaryModel = conn.Table<StrengthTestSummaryModel>().Where(
+                        StrengthTestSummaryModel => StrengthTestSummaryModel.testID == testID).FirstOrDefault();
                     if (summaryModel != null)
                     {
                         summaryModel.testRemark = comment;
@@ -1444,7 +1444,8 @@ namespace TQM
         {
             try
             {
-                if (picker_drumNumber.SelectedItem.ToString() == "" || picker_drumNumber.SelectedItem.ToString() == null)
+                
+                if (picker_drumNumber.SelectedIndex==-1 || picker_drumNumber.SelectedItem.ToString() == "" || picker_drumNumber.SelectedItem.ToString() == null)
                 {
                     entry_stdStrength.Text = "";
                     entry_strengthDeviation.Text = "";
@@ -1456,11 +1457,11 @@ namespace TQM
                 int selectedDrumNumber = int.Parse(picker_drumNumber.SelectedItem.ToString());
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    conn.CreateTable<YarnCountConfigModel>();
-                    YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().Where(YarnCountConfigModel =>
-                                                                (YarnCountConfigModel.machineCategory == selectedMachineCategory &&
-                                                                YarnCountConfigModel.machineID == selectedMachineID &&
-                                                                YarnCountConfigModel.machineName == selectedMachineName)).FirstOrDefault();
+                    conn.CreateTable<ConfigModel>();
+                    ConfigModel yarncountconfigmodel = conn.Table<ConfigModel>().Where(ConfigModel =>
+                                                                (ConfigModel.machineCategory == selectedMachineCategory &&
+                                                                ConfigModel.machineID == selectedMachineID &&
+                                                                ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
                     if (yarncountconfigmodel != null)
                     {
                         if (yarncountconfigmodel.totalSections == 3)

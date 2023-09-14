@@ -2,7 +2,7 @@
 
 namespace TQM.ModelView
 {
-    public class YCTestModelView
+    public class StrengthTestModelView
     {
         public long testID { get; set; }
 

@@ -28,8 +28,8 @@ namespace TQM
             {
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    //conn.DropTable<YarnCountConfigModel>();
-                    conn.CreateTable<YarnCountConfigModel>();
+                    //conn.DropTable<ConfigModel>();
+                    conn.CreateTable<ConfigModel>();
                 }
                 InitializeComponent();
                 fetchConfig();
@@ -42,13 +42,13 @@ namespace TQM
 
         private void toggleUserField()
         {
-            YarnCountConfigModel ycConfig_uf = null;
+            ConfigModel ycConfig_uf = null;
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                conn.CreateTable<YarnCountConfigModel>();
-                ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                            Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
-                            YarnCountConfigModel.uf_name_1 != "")).FirstOrDefault();
+                conn.CreateTable<ConfigModel>();
+                ycConfig_uf = conn.Table<ConfigModel>().
+                            Where(ConfigModel => (ConfigModel.uf_name_1 != null ||
+                            ConfigModel.uf_name_1 != "")).FirstOrDefault();
             }
             if (ycConfig_uf != null)
             {
@@ -92,13 +92,13 @@ namespace TQM
             {
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    conn.CreateTable<YarnCountConfigModel>();
-                    List<YarnCountConfigModel> ycConfigList = conn.Table<YarnCountConfigModel>().ToList();
+                    conn.CreateTable<ConfigModel>();
+                    List<ConfigModel> ycConfigList = conn.Table<ConfigModel>().ToList();
                     if (ycConfigList.Count > 0)
                     {
 
-                        YarnCountConfigModel SettingWithMachine = ycConfigList.Where(YarnCountConfigModel =>
-                                                (YarnCountConfigModel.machineCategory != null || YarnCountConfigModel.machineCategory != "")).FirstOrDefault();
+                        ConfigModel SettingWithMachine = ycConfigList.Where(ConfigModel =>
+                                                (ConfigModel.machineCategory != null || ConfigModel.machineCategory != "")).FirstOrDefault();
                         if (SettingWithMachine == null)
                         {
                             populateSettingsField(ycConfigList[0]);
@@ -108,10 +108,10 @@ namespace TQM
                             if (selectedMachineCategory != null && selectedMachineCategory != "" && selectedMachineName != null
                                 && selectedMachineName != "" && selectedMachineID != Guid.Empty)
                             {
-                                YarnCountConfigModel machineSetting = ycConfigList.Where(YarnCountConfigModel =>
-                                                (YarnCountConfigModel.machineCategory == selectedMachineCategory &&
-                                                YarnCountConfigModel.machineID == selectedMachineID &&
-                                                YarnCountConfigModel.machineName == selectedMachineName)).FirstOrDefault();
+                                ConfigModel machineSetting = ycConfigList.Where(ConfigModel =>
+                                                (ConfigModel.machineCategory == selectedMachineCategory &&
+                                                ConfigModel.machineID == selectedMachineID &&
+                                                ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
                                 if (machineSetting != null)
                                 {
                                     populateSettingsField(machineSetting);
@@ -134,7 +134,7 @@ namespace TQM
             }
         }
 
-        private void populateSettingsField(YarnCountConfigModel ycConfig, bool shiftAlone = false, bool isMacDiff = false)
+        private void populateSettingsField(ConfigModel ycConfig, bool shiftAlone = false, bool isMacDiff = false)
         {
             toggleUserField();
             if (ycConfig == null)
@@ -540,8 +540,11 @@ namespace TQM
                     }
                     if (entry_scheduledDayLimit_Sec1.Text.Trim() == "" || int.Parse(entry_scheduledDayLimit_Sec1.Text.Trim()) == 0)
                     {
-                        DisplayAlert("Attention", "Scheduled Day Limit should not be blank or zero in section-1!!!", "Ok");
-                        return;
+                        if (picker_drumSection_Sec1.SelectedItem.ToString() == "Scheduled")
+                        {
+                            DisplayAlert("Attention", "Scheduled Day Limit should not be blank or zero in section-1!!!", "Ok");
+                            return;
+                        }
                     }
                     stdRollingStrength_S1 = decimal.Parse(entry_stdRollingStrength_Sec1.Text);
                     strengthDeviation_S1 = decimal.Parse(entry_strengthDeviation_Sec1.Text);
@@ -625,8 +628,11 @@ namespace TQM
                     }
                     if (entry_scheduledDayLimit_Sec2.Text.Trim() == "" || int.Parse(entry_scheduledDayLimit_Sec2.Text.Trim()) == 0)
                     {
-                        DisplayAlert("Attention", "Scheduled Day Limit should not be blank or zero in section-2!!!", "Ok");
-                        return;
+                        if (picker_drumSection_Sec2.SelectedItem.ToString() == "Scheduled")
+                        {
+                            DisplayAlert("Attention", "Scheduled Day Limit should not be blank or zero in section-2!!!", "Ok");
+                            return;
+                        }
                     }
                     stdRollingStrength_S2 = decimal.Parse(entry_stdRollingStrength_Sec2.Text);
                     strengthDeviation_S2 = decimal.Parse(entry_strengthDeviation_Sec2.Text);
@@ -710,8 +716,11 @@ namespace TQM
                     }
                     if (entry_scheduledDayLimit_Sec3.Text.Trim() == "" || int.Parse(entry_scheduledDayLimit_Sec3.Text.Trim()) == 0)
                     {
-                        DisplayAlert("Attention", "Scheduled Day Limit should not be blank or zero in section-3!!!", "Ok");
-                        return;
+                        if (picker_drumSection_Sec3.SelectedItem.ToString() == "Scheduled")
+                        {
+                            DisplayAlert("Attention", "Scheduled Day Limit should not be blank or zero in section-3!!!", "Ok");
+                            return;
+                        }
                     }
                     stdRollingStrength_S3 = decimal.Parse(entry_stdRollingStrength_Sec3.Text);
                     strengthDeviation_S3 = decimal.Parse(entry_strengthDeviation_Sec3.Text);
@@ -861,7 +870,7 @@ namespace TQM
                     uf_value_4 = entry_userfield4.Text.Trim();
                 }
 
-                YarnCountConfigModel yarnCountConfigModel = new YarnCountConfigModel()
+                ConfigModel configModel = new ConfigModel()
                 {
                     ID = guid,
                     machineCategory = selectedMachineCategory,
@@ -915,28 +924,28 @@ namespace TQM
 
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    conn.CreateTable<YarnCountConfigModel>();
+                    conn.CreateTable<ConfigModel>();
                     if (btn_save.Text == "Save")
                     {
-                        yarnCountConfigModel.createdate = DateTime.Now;
-                        yarnCountConfigModel.updateddate = DateTime.Now;
-                        row = conn.Insert(yarnCountConfigModel);
+                        configModel.createdate = DateTime.Now;
+                        configModel.updateddate = DateTime.Now;
+                        row = conn.Insert(configModel);
                     }
                     else
                     {
                         msg = "updated";
-                        yarnCountConfigModel.updateddate = DateTime.Now;
-                        row = conn.Update(yarnCountConfigModel);
+                        configModel.updateddate = DateTime.Now;
+                        row = conn.Update(configModel);
                     }
                     if (row > 0)
                     {
                         int updatedRecCount = 0;
                         bool isShiftChanged = false;
-                        List<YarnCountConfigModel> settingsList = conn.Table<YarnCountConfigModel>().ToList();
-                        YarnCountConfigModel dbSettings = conn.Table<YarnCountConfigModel>().Where(YarnCountConfigModel =>
-                                                            (YarnCountConfigModel.machineCategory == selectedMachineCategory &&
-                                                            YarnCountConfigModel.machineName == selectedMachineName &&
-                                                            YarnCountConfigModel.machineID == selectedMachineID)).FirstOrDefault();
+                        List<ConfigModel> settingsList = conn.Table<ConfigModel>().ToList();
+                        ConfigModel dbSettings = conn.Table<ConfigModel>().Where(ConfigModel =>
+                                                            (ConfigModel.machineCategory == selectedMachineCategory &&
+                                                            ConfigModel.machineName == selectedMachineName &&
+                                                            ConfigModel.machineID == selectedMachineID)).FirstOrDefault();
                         if (dbSettings != null)
                         {
                             if (dbSettings.shiftCount != currentShift) { isShiftChanged = true; }
@@ -949,7 +958,7 @@ namespace TQM
 
                                 if (settingsList.Count > 0)
                                 {
-                                    foreach (YarnCountConfigModel setting in settingsList)
+                                    foreach (ConfigModel setting in settingsList)
                                     {
                                         setting.shiftCount = int.Parse(picker_shiftCount.SelectedItem.ToString());
                                         setting.shift1time = shift1.Hours.ToString() + ":" + shift1.Minutes.ToString();
@@ -1091,33 +1100,33 @@ namespace TQM
                 selectedMachineName = selectedMachine.machineName;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    conn.CreateTable<YarnCountConfigModel>();
-                    List<YarnCountConfigModel> ycConfigList = conn.Table<YarnCountConfigModel>().ToList();
+                    conn.CreateTable<ConfigModel>();
+                    List<ConfigModel> ycConfigList = conn.Table<ConfigModel>().ToList();
                     if (ycConfigList.Count > 0)
                     {
-                        YarnCountConfigModel machineSetting = ycConfigList.Where(YarnCountConfigModel =>
-                                                    (YarnCountConfigModel.machineCategory == selectedMachineCategory &&
-                                                    YarnCountConfigModel.machineID == selectedMachineID &&
-                                                    YarnCountConfigModel.machineName == selectedMachineName)).FirstOrDefault();
+                        ConfigModel machineSetting = ycConfigList.Where(ConfigModel =>
+                                                    (ConfigModel.machineCategory == selectedMachineCategory &&
+                                                    ConfigModel.machineID == selectedMachineID &&
+                                                    ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
                         if (machineSetting != null)
                         {
                             populateSettingsField(machineSetting);
                         }
                         else
                         {
-                            machineSetting = ycConfigList.Where(YarnCountConfigModel =>
-                                                    (YarnCountConfigModel.machineCategory == selectedMachineCategory))
-                                                     .OrderByDescending(YarnCountConfigModel =>
-                                                    (YarnCountConfigModel.createdate)).FirstOrDefault();
+                            machineSetting = ycConfigList.Where(ConfigModel =>
+                                                    (ConfigModel.machineCategory == selectedMachineCategory))
+                                                     .OrderByDescending(ConfigModel =>
+                                                    (ConfigModel.createdate)).FirstOrDefault();
                             if (machineSetting != null)
                             {
                                 populateSettingsField(machineSetting, false, true);
                             }
                             else
                             {
-                                machineSetting = ycConfigList.Where(YarnCountConfigModel =>
-                                                    (YarnCountConfigModel.machineCategory != "" &&
-                                                    YarnCountConfigModel.machineCategory != null)).FirstOrDefault();
+                                machineSetting = ycConfigList.Where(ConfigModel =>
+                                                    (ConfigModel.machineCategory != "" &&
+                                                    ConfigModel.machineCategory != null)).FirstOrDefault();
                                 if (machineSetting != null)
                                 {
                                     populateSettingsField(machineSetting, true, true);

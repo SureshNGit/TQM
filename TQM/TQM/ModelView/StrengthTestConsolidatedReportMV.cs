@@ -1,6 +1,6 @@
 ﻿namespace TQM.ModelView
 {
-    public class YCTestConsolidatedReportMV
+    public class StrengthTestConsolidatedReportMV
     {
         public string serialNo { get; set; }
         public string testID { get; set; }

@@ -33,14 +33,14 @@ namespace TQM
         private List<OverallReportModelView> _listOfReports;
         public List<OverallReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
 
-        private List<YCTestConsolidatedReportMV> _listOfConsolidatedReports;
-        public List<YCTestConsolidatedReportMV> ListOfConsolidatedReports { get { return _listOfConsolidatedReports; } set { _listOfConsolidatedReports = value; base.OnPropertyChanged(); } }
+        private List<StrengthTestConsolidatedReportMV> _listOfConsolidatedReports;
+        public List<StrengthTestConsolidatedReportMV> ListOfConsolidatedReports { get { return _listOfConsolidatedReports; } set { _listOfConsolidatedReports = value; base.OnPropertyChanged(); } }
 
         private string selectedCompanyName = null;
         private string selectedMachineCategory = null;
         private const string BLUE = "#0e0273";
         private RunConfiguration runConfiguration = new RunConfiguration();
-        private List<YCTestSummaryModel> deleteList = null;
+        private List<StrengthTestSummaryModel> deleteList = null;
         private bool deleteAll = false;
         private int TOT_TEST = 0;
         private decimal CON_HANK = 0.0000m;
@@ -112,7 +112,7 @@ namespace TQM
             {
                 decimal stdHank = 0.000m;
                 List<OverallReportModelView> OVS = new List<OverallReportModelView>();
-                List<YCTestConsolidatedReportMV> OverallConsolidatedReports = new List<YCTestConsolidatedReportMV>();
+                List<StrengthTestConsolidatedReportMV> OverallConsolidatedReports = new List<StrengthTestConsolidatedReportMV>();
                 //List<YCTestSummaryModel> ycTestSummaryModels = null;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
@@ -126,17 +126,17 @@ namespace TQM
 
                     //}
 
-                    conn.CreateTable<YCTestModel>();
-                    conn.CreateTable<YCTestSummaryModel>();
+                    conn.CreateTable<StrengthTestModel>();
+                    conn.CreateTable<StrengthTestSummaryModel>();
 
-                    List<YCTestSummaryModel> ycTestSummaryModels = null;
+                    List<StrengthTestSummaryModel> ycTestSummaryModels = null;
                     if (testID != "")
                     {
                         if (!testID.Contains("."))
                         {
                             long givenTestId = long.Parse(testID);
-                            ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                  YCTestSummaryModel.testID == givenTestId).ToList();
+                            ycTestSummaryModels = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                                                  StrengthTestSummaryModel.testID == givenTestId).ToList();
                         }
                         else
                         {
@@ -145,8 +145,8 @@ namespace TQM
                             
                             if (startTestID == endTestID)
                             {
-                                ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                 YCTestSummaryModel.testID == startTestID).ToList();
+                                ycTestSummaryModels = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                                                 StrengthTestSummaryModel.testID == startTestID).ToList();
                             }
                             else
                             {
@@ -154,13 +154,13 @@ namespace TQM
                                 {
                                     if (ycTestSummaryModels == null)
                                     {
-                                        ycTestSummaryModels = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                     YCTestSummaryModel.testID == i).ToList();
+                                        ycTestSummaryModels = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                                                     StrengthTestSummaryModel.testID == i).ToList();
                                     }
                                     else
                                     {
-                                        ycTestSummaryModels.AddRange(conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                        YCTestSummaryModel.testID == i).ToList());
+                                        ycTestSummaryModels.AddRange(conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                                                        StrengthTestSummaryModel.testID == i).ToList());
                                     }
                                 }
                             }
@@ -173,10 +173,10 @@ namespace TQM
                         endDate = actualEndDate.AddDays(1);
                         DateTime endDatePlusOne = endDate.AddDays(1);
                         //Parent List
-                        List<YCTestSummaryModel> parentList = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                (YCTestSummaryModel.createdate >= startDate
-                                                && YCTestSummaryModel.createdate < endDate))
-                                                .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate).ToList();
+                        List<StrengthTestSummaryModel> parentList = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                                                (StrengthTestSummaryModel.createdate >= startDate
+                                                && StrengthTestSummaryModel.createdate < endDate))
+                                                .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.createdate).ToList();
                         if (parentList.Count == 0)
                         {
                             DisplayAlert("Notice", "No records to display!!!", "OK");
@@ -185,27 +185,28 @@ namespace TQM
 
                         //Start of Logic to check last shift for the given end date is logged in end date + 1 day date
                         //Get first record of actual end date + 1 day
-                        List<YCTestSummaryModel> recs_actualEndDatePlusOne = conn.Table<YCTestSummaryModel>().Where(YCTestSummaryModel =>
-                                                                        (YCTestSummaryModel.createdate >= endDate
-                                                                        && YCTestSummaryModel.createdate < endDatePlusOne))
-                                                                        .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate).ToList();
+                        List<StrengthTestSummaryModel> recs_actualEndDatePlusOne = conn.Table<StrengthTestSummaryModel>()
+                                                                        .Where(StrengthTestSummaryModel =>
+                                                                        (StrengthTestSummaryModel.createdate >= endDate
+                                                                        && StrengthTestSummaryModel.createdate < endDatePlusOne))
+                                                                        .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.createdate).ToList();
                         if (recs_actualEndDatePlusOne.Count > 0) { 
                             //Check if the 1st record of actual end date + 1 day is not Shift-1
                             if (recs_actualEndDatePlusOne[0].shift != "Shift-1")
                             {
-                                YCTestSummaryModel actualEndDatePlusOne_Shift1_Recs = recs_actualEndDatePlusOne.Where(YCTestSummaryModel =>
-                                                                                             (YCTestSummaryModel.shift != recs_actualEndDatePlusOne[0].shift))
-                                                                                            .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate)
+                                StrengthTestSummaryModel actualEndDatePlusOne_Shift1_Recs = recs_actualEndDatePlusOne.Where(StrengthTestSummaryModel =>
+                                                                                             (StrengthTestSummaryModel.shift != recs_actualEndDatePlusOne[0].shift))
+                                                                                            .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.createdate)
                                                                                             .FirstOrDefault();
 
                                 //Merge last shift record of actual end date from (actual end date + 1day) with parent list
                                 if (actualEndDatePlusOne_Shift1_Recs != null)
                                 {
-                                    List<YCTestSummaryModel> tempSummaryList = recs_actualEndDatePlusOne.Where(YCTestSummaryModel =>
-                                                                                (YCTestSummaryModel.createdate >= endDate
-                                                                                && YCTestSummaryModel.createdate < actualEndDatePlusOne_Shift1_Recs.createdate
-                                                                                && YCTestSummaryModel.shift == recs_actualEndDatePlusOne[0].shift))
-                                                                                .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate).ToList();
+                                    List<StrengthTestSummaryModel> tempSummaryList = recs_actualEndDatePlusOne.Where(StrengthTestSummaryModel =>
+                                                                                (StrengthTestSummaryModel.createdate >= endDate
+                                                                                && StrengthTestSummaryModel.createdate < actualEndDatePlusOne_Shift1_Recs.createdate
+                                                                                && StrengthTestSummaryModel.shift == recs_actualEndDatePlusOne[0].shift))
+                                                                                .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.createdate).ToList();
                                     parentList.Concat(tempSummaryList);
                                 }
                             }
@@ -215,17 +216,17 @@ namespace TQM
                         //Start of logic to ignore the previous date last shift record from the given actual start date
                         if (parentList[0].shift != "Shift-1")
                         {
-                            YCTestSummaryModel actualStartDate_Shift1_Recs = parentList.Where(YCTestSummaryModel =>
-                                                                                         (YCTestSummaryModel.shift == "Shift-1"))
-                                                                                        .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate)
+                            StrengthTestSummaryModel actualStartDate_Shift1_Recs = parentList.Where(StrengthTestSummaryModel =>
+                                                                                         (StrengthTestSummaryModel.shift == "Shift-1"))
+                                                                                        .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.createdate)
                                                                                         .FirstOrDefault();
                             if (actualStartDate_Shift1_Recs != null)
                             {
-                                List<YCTestSummaryModel> lastShiftOfPreviousDay_in_ActualStartDateRecs =
-                                                                        parentList.Where(YCTestSummaryModel =>
-                                                                        (YCTestSummaryModel.shift == parentList[0].shift
-                                                                        && YCTestSummaryModel.createdate < actualStartDate_Shift1_Recs.createdate))
-                                                                        .OrderBy(YCTestSummaryModel => YCTestSummaryModel.createdate)
+                                List<StrengthTestSummaryModel> lastShiftOfPreviousDay_in_ActualStartDateRecs =
+                                                                        parentList.Where(StrengthTestSummaryModel =>
+                                                                        (StrengthTestSummaryModel.shift == parentList[0].shift
+                                                                        && StrengthTestSummaryModel.createdate < actualStartDate_Shift1_Recs.createdate))
+                                                                        .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.createdate)
                                                                         .ToList();
                                 parentList.RemoveAll(i => lastShiftOfPreviousDay_in_ActualStartDateRecs.Contains(i));
                             }
@@ -425,11 +426,11 @@ namespace TQM
 
                     TOT_TEST = ycTestSummaryModels.Count;
                     int counter = 0;
-                    foreach (YCTestSummaryModel testsummary in ycTestSummaryModels)
+                    foreach (StrengthTestSummaryModel testsummary in ycTestSummaryModels)
                     {
                         OverallReportModelView report = new OverallReportModelView();
-                        YCTestConsolidatedReportMV consolItems = new YCTestConsolidatedReportMV();
-                        List<YCTestModel> yctestlist = conn.Table<YCTestModel>().Where(YCTestModel => YCTestModel.testID == testsummary.testID).ToList();
+                        StrengthTestConsolidatedReportMV consolItems = new StrengthTestConsolidatedReportMV();
+                        List<StrengthTestModel> yctestlist = conn.Table<StrengthTestModel>().Where(StrengthTestModel => StrengthTestModel.testID == testsummary.testID).ToList();
                         if (yctestlist != null)
                         {
                             if (consolidatedReport)
@@ -454,12 +455,12 @@ namespace TQM
 
                                     if (UFVAL1 != "" && UFVAL1 != null)
                                     {
-                                        YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                                                                                        Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
-                                                                                        YarnCountConfigModel.uf_name_1 != "")
-                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                        ConfigModel ycConfig_uf = conn.Table<ConfigModel>().
+                                                                Where(ConfigModel => (ConfigModel.uf_name_1 != null ||
+                                                                ConfigModel.uf_name_1 != "")
+                                                                && ConfigModel.machineCategory == testsummary.machineCategory
+                                                                && ConfigModel.machineID == testsummary.machineID
+                                                                && ConfigModel.machineName == testsummary.machineName).FirstOrDefault();
                                         if (ycConfig_uf != null)
                                         {
                                             CON_UF_NAME_1 = ycConfig_uf.uf_name_1;
@@ -473,12 +474,12 @@ namespace TQM
                                     }
                                     if (UFVAL2 != "" && UFVAL2 != null)
                                     {
-                                        YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                                                                                        Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_2 != null ||
-                                                                                        YarnCountConfigModel.uf_name_2 != "")
-                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                        ConfigModel ycConfig_uf = conn.Table<ConfigModel>().
+                                                                Where(ConfigModel => (ConfigModel.uf_name_2 != null ||
+                                                                ConfigModel.uf_name_2 != "")
+                                                                && ConfigModel.machineCategory == testsummary.machineCategory
+                                                                && ConfigModel.machineID == testsummary.machineID
+                                                                && ConfigModel.machineName == testsummary.machineName).FirstOrDefault();
                                         if (ycConfig_uf != null)
                                         {
                                             CON_UF_NAME_2 = ycConfig_uf.uf_name_2;
@@ -492,12 +493,12 @@ namespace TQM
                                     }
                                     if (UFVAL3 != "" && UFVAL3 != null)
                                     {
-                                        YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                                                                                        Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_3 != null ||
-                                                                                        YarnCountConfigModel.uf_name_3 != "")
-                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                        ConfigModel ycConfig_uf = conn.Table<ConfigModel>().
+                                                                Where(ConfigModel => (ConfigModel.uf_name_3 != null ||
+                                                                ConfigModel.uf_name_3 != "")
+                                                                && ConfigModel.machineCategory == testsummary.machineCategory
+                                                                && ConfigModel.machineID == testsummary.machineID
+                                                                && ConfigModel.machineName == testsummary.machineName).FirstOrDefault();
                                         if (ycConfig_uf != null)
                                         {
                                             CON_UF_NAME_3 = ycConfig_uf.uf_name_3;
@@ -511,12 +512,12 @@ namespace TQM
                                     }
                                     if (UFVAL4 != "" && UFVAL4 != null)
                                     {
-                                        YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                                                                                        Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_4 != null ||
-                                                                                        YarnCountConfigModel.uf_name_4 != "")
-                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                        ConfigModel ycConfig_uf = conn.Table<ConfigModel>().
+                                                                Where(ConfigModel => (ConfigModel.uf_name_4 != null ||
+                                                                ConfigModel.uf_name_4 != "")
+                                                                && ConfigModel.machineCategory == testsummary.machineCategory
+                                                                && ConfigModel.machineID == testsummary.machineID
+                                                                && ConfigModel.machineName == testsummary.machineName).FirstOrDefault();
                                         if (ycConfig_uf != null)
                                         {
                                             CON_UF_NAME_4 = ycConfig_uf.uf_name_4;
@@ -605,7 +606,7 @@ namespace TQM
                                 }
 
 
-                                foreach (YCTestModel test in yctestlist)
+                                foreach (StrengthTestModel test in yctestlist)
                                 {
                                     report.Add(test);
                                 }
@@ -632,12 +633,12 @@ namespace TQM
 
                                 if (testsummary.uf_value_1 != null && testsummary.uf_value_1 != "")
                                 {
-                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                                                                                        Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
-                                                                                        YarnCountConfigModel.uf_name_1 != "")
-                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    ConfigModel ycConfig_uf = conn.Table<ConfigModel>().
+                                                            Where(ConfigModel => (ConfigModel.uf_name_1 != null ||
+                                                            ConfigModel.uf_name_1 != "")
+                                                            && ConfigModel.machineCategory == testsummary.machineCategory
+                                                            && ConfigModel.machineID == testsummary.machineID
+                                                            && ConfigModel.machineName == testsummary.machineName).FirstOrDefault();
                                     if (ycConfig_uf != null)
                                     {
                                         report.uf_name_1 = ycConfig_uf.uf_name_1;
@@ -663,13 +664,13 @@ namespace TQM
                                 }
                                 if (testsummary.uf_value_2 != null && testsummary.uf_value_2 != "")
                                 {
-                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                                                                                        Where(YarnCountConfigModel =>
-                                                                                        (YarnCountConfigModel.uf_name_2 != null ||
-                                                                                        YarnCountConfigModel.uf_name_2 != "")
-                                                                                        && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    ConfigModel ycConfig_uf = conn.Table<ConfigModel>().
+                                                            Where(ConfigModel =>
+                                                            (ConfigModel.uf_name_2 != null ||
+                                                            ConfigModel.uf_name_2 != "")
+                                                            && ConfigModel.machineCategory == testsummary.machineCategory
+                                                            && ConfigModel.machineID == testsummary.machineID
+                                                            && ConfigModel.machineName == testsummary.machineName).FirstOrDefault();
                                     if (ycConfig_uf != null)
                                     {
                                         if (!report.DispUF_1)
@@ -704,13 +705,13 @@ namespace TQM
                                 }
                                 if (testsummary.uf_value_3 != null && testsummary.uf_value_3 != "")
                                 {
-                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                                                                                       Where(YarnCountConfigModel =>
-                                                                                       (YarnCountConfigModel.uf_name_3 != null ||
-                                                                                       YarnCountConfigModel.uf_name_3 != "")
-                                                                                       && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                       && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                       && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    ConfigModel ycConfig_uf = conn.Table<ConfigModel>().
+                                                                Where(ConfigModel =>
+                                                                (ConfigModel.uf_name_3 != null ||
+                                                                ConfigModel.uf_name_3 != "")
+                                                                && ConfigModel.machineCategory == testsummary.machineCategory
+                                                                && ConfigModel.machineID == testsummary.machineID
+                                                                && ConfigModel.machineName == testsummary.machineName).FirstOrDefault();
                                     if (ycConfig_uf != null)
                                     {
                                         report.uf_name_3 = ycConfig_uf.uf_name_3;
@@ -739,13 +740,13 @@ namespace TQM
                                 }
                                 if (testsummary.uf_value_4 != null && testsummary.uf_value_4 != "")
                                 {
-                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
-                                                                                       Where(YarnCountConfigModel =>
-                                                                                       (YarnCountConfigModel.uf_name_4 != null ||
-                                                                                       YarnCountConfigModel.uf_name_4 != "")
-                                                                                       && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                       && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                       && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    ConfigModel ycConfig_uf = conn.Table<ConfigModel>().
+                                                            Where(ConfigModel =>
+                                                            (ConfigModel.uf_name_4 != null ||
+                                                            ConfigModel.uf_name_4 != "")
+                                                            && ConfigModel.machineCategory == testsummary.machineCategory
+                                                            && ConfigModel.machineID == testsummary.machineID
+                                                            && ConfigModel.machineName == testsummary.machineName).FirstOrDefault();
                                     if (ycConfig_uf != null)
                                     {
                                         if (!report.DispUF_3)
@@ -818,7 +819,7 @@ namespace TQM
 
 
 
-                        YCTestConsolidatedReportMV consolItems = new YCTestConsolidatedReportMV()
+                        StrengthTestConsolidatedReportMV consolItems = new StrengthTestConsolidatedReportMV()
                         {
                             serialNo = "Average",
                             testID = "",
@@ -1002,22 +1003,22 @@ namespace TQM
             }
         }
 
-        private void deleteRecords(List<YCTestSummaryModel> lstOfRecs)
+        private void deleteRecords(List<StrengthTestSummaryModel> lstOfRecs)
         {
             if (lstOfRecs.Count == 0)
             {
                 return;
             }
-            foreach (YCTestSummaryModel rec in lstOfRecs)
+            foreach (StrengthTestSummaryModel rec in lstOfRecs)
             {
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    conn.Table<YCTestSummaryModel>().
-                                           Where(YCTestSummaryModel =>
-                                           YCTestSummaryModel.testID == rec.testID).Delete();
-                    conn.Table<YCTestModel>().
-                                        Where(YCTestModel =>
-                                        YCTestModel.testID == rec.testID).Delete();
+                    conn.Table<StrengthTestSummaryModel>().
+                                           Where(StrengthTestSummaryModel =>
+                                           StrengthTestSummaryModel.testID == rec.testID).Delete();
+                    conn.Table<StrengthTestModel>().
+                                        Where(StrengthTestModel =>
+                                        StrengthTestModel.testID == rec.testID).Delete();
                 }
             }
         }
@@ -1093,7 +1094,7 @@ namespace TQM
                 foreach (OverallReportModelView orl in overallReportList)
                 {
 
-                    List<YCTestModel> testList = orl.yctestlist;
+                    List<StrengthTestModel> testList = orl.yctestlist;
 
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
@@ -1374,7 +1375,7 @@ namespace TQM
 
 
                     int rowCount = 1;
-                    foreach (YCTestModel test in testList)
+                    foreach (StrengthTestModel test in testList)
                     {
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
@@ -1521,8 +1522,8 @@ namespace TQM
                     writer.WriteField("Remark");
                     //Actual Data
                     writer.NextRecord();
-                    List<YCTestConsolidatedReportMV> overallReportList = (List<YCTestConsolidatedReportMV>)listview_tcConsolidatedReport.ItemsSource;
-                    foreach (YCTestConsolidatedReportMV orl in overallReportList)
+                    List<StrengthTestConsolidatedReportMV> overallReportList = (List<StrengthTestConsolidatedReportMV>)listview_tcConsolidatedReport.ItemsSource;
+                    foreach (StrengthTestConsolidatedReportMV orl in overallReportList)
                     {
                         writer.WriteField(orl.serialNo);
                         writer.WriteField(orl.testDate);
@@ -1596,7 +1597,7 @@ namespace TQM
                 PdfGrid pdfGrid = null;
                 PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
                 layoutFormat.Layout = PdfLayoutType.Paginate;
-                List<YCTestConsolidatedReportMV> overallReportList = (List<YCTestConsolidatedReportMV>)listview_tcConsolidatedReport.ItemsSource;
+                List<StrengthTestConsolidatedReportMV> overallReportList = (List<StrengthTestConsolidatedReportMV>)listview_tcConsolidatedReport.ItemsSource;
                 PdfLayoutResult result = null;
                 float overallHeight = 0;
                 int tableNo = 1;
@@ -1616,7 +1617,7 @@ namespace TQM
                 bool includeHeader = true;
                 //PdfGrid pdfGridBody = null;
                 PdfGridRow row = null;
-                foreach (YCTestConsolidatedReportMV orl in overallReportList)
+                foreach (StrengthTestConsolidatedReportMV orl in overallReportList)
                 {
                     if (includeHeader)
                     {
