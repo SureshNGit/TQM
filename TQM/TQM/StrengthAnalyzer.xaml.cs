@@ -1297,7 +1297,8 @@ namespace TQM
         {
             try
             {
-                picker_drumNumber.ItemsSource = null;
+                picker_drumNumber.SelectedIndex = -1;
+                picker_drumNumber.Items.Clear();
                 selectedMachineCategory = picker_machinecategory.SelectedItem.ToString();
                 if (selectedMachineCategory == "" || selectedMachineCategory == null)
                 {
@@ -1350,6 +1351,7 @@ namespace TQM
         {
             try
             {
+                picker_drumNumber.SelectedIndex = -1;
                 picker_drumNumber.Items.Clear();
                 List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
                 if (picker_machinename.SelectedIndex < 0)

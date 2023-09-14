@@ -90,8 +90,8 @@ namespace TQM.Model
         public string uf_name_4 { get; set; }
 
         public string uf_value_4 { get; set; }
-
-        public DateTime createdate { get; set; } = DateTime.Now;
+        public DateTime updateddate { get; set; } 
+        public DateTime createdate { get; set; } 
         public bool dataSyncStatus { get; set; } = false;
 
 
