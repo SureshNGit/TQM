@@ -12,7 +12,7 @@
         VerticalOptions="Center" 
         HorizontalOptions="Center" 
         Padding="20, 20, 20, 20">
-        <Label Text="Please enter Admin credentials to change the drum selection" FontSize="14" TextColor="WhiteSmoke"
+        <Label Text="Please enter Admin credentials to change drum selection method" FontSize="14" TextColor="WhiteSmoke"
                HorizontalOptions="Center" HorizontalTextAlignment="Center"
                Margin="10,5,0,0"/>
         <Grid Margin="50,130,50,0">

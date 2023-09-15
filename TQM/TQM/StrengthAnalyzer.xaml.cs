@@ -25,6 +25,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
 using static Android.Icu.Text.IDNA;
+using static Android.Preferences.PreferenceActivity;
 using static System.Net.Mime.MediaTypeNames;
 using Color = Xamarin.Forms.Color;
 
@@ -70,6 +71,8 @@ namespace TQM
         private dynamic currentTestStartTime = null;
         private RunConfiguration runConfiguration = new RunConfiguration();
         private bool toastInitialize = false;
+        private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
+        private bool isTestCompleted = false;
 
         public StrengthAnalyzer()
         {
@@ -199,7 +202,7 @@ namespace TQM
 
         private void populateTestParams(string mCat, Guid mid, string mac)
         {
-            hideFrames();
+            if (!isTestCompleted) { hideFrames(); }
             if (mCat == "" && mid == Guid.Empty && mac == "")
             {
                 //selectedDeviationPercent = 0m;
@@ -511,8 +514,9 @@ namespace TQM
                     }
                 }
 
-                decimal avg = sum_sampleStrengthCount / st_list[0].totalTestCount;
+                decimal avg = formatDecimal(decimal.Parse(sum_sampleStrengthCount.ToString()) / decimal.Parse(st_list[0].totalTestCount.ToString()),2);
 
+                decimal strength = formatDecimal(avg + decimal.Parse(qualifiedTest.ToString()),2);
 
                 string testDuration = formatTime(currentTestStartTime);
 
@@ -531,7 +535,7 @@ namespace TQM
                     belowLimit = StrengthTestModelViewlist[0].belowLimit,
                     totalTestCount = StrengthTestModelViewlist[0].totalTestCount,
                     drumSelectionMethod = StrengthTestModelViewlist[0].drumSelectionMethod,
-                    yarnStrength = avg+qualifiedTest,
+                    yarnStrength = strength,
                     shift = StrengthTestModelViewlist[0].shift,
                     testDuration = testDuration,
                     uf_value_1 = UFVAL1,
@@ -550,7 +554,7 @@ namespace TQM
                 if (dbStatus)
                 {
                     await refListView(true, true);
-                    await refOverallSummary(avg + qualifiedTest, qualifiedTest , true, true);
+                    await refOverallSummary(strength, qualifiedTest , true, true);
                 }
                 
 
@@ -563,26 +567,10 @@ namespace TQM
             {
                 current_stable_data = 0;
                 currentTestStartTime = null;
-                if (fullreset) { ImageNotification(null); UpdateUserNotification(""); }
+                if (fullreset) { ImageNotification(null); UpdateUserNotification(""); isTestCompleted = true; }
                 if (dispose) { disposeble(); }
                 Device.BeginInvokeOnMainThread(() =>
                 {
-
-                    testYCButton.IsEnabled = true;
-                    testYCButton.BackgroundColor = Color.Green;
-                    //entry_yarnlen.IsEnabled = true;
-                    //entry_testcount.IsEnabled = true;
-                    //entry_testcount.Text = TESTCOUNT.ToString();
-                    //entry_standardHank.IsEnabled = true;
-                    //entry_standardHank.Text = STD_HANK_CURR.ToString();
-                    picker_machinecategory.IsEnabled = true;
-                    //picker_machinecategory.SelectedIndex = 0;
-                    picker_machinename.IsEnabled = true;
-                    //picker_machinename.SelectedIndex = 0;
-                    picker_shift.IsEnabled = false;
-                    //picker_shift.SelectedIndex = 0;
-                    //picker_process.SelectedIndex = 0;
-                    //picker_process.IsEnabled = true;
                     if (isTestStarted)
                     {
                         if (StrengthTestModelViewlist != null)
@@ -597,6 +585,14 @@ namespace TQM
                             {
                                 currentTestID = 0;
                                 showAlert("Test Completed!!! Start new test");
+                                picker_drumSelection.IsEnabled = false;
+                                testYCButton.IsEnabled = true;
+                                testYCButton.BackgroundColor = Color.Green;
+                                picker_machinecategory.IsEnabled = true;
+                                picker_machinecategory.SelectedIndex = -1;
+                                picker_machinename.IsEnabled = true;
+                                picker_machinename.SelectedIndex = -1;
+                                picker_shift.IsEnabled = false;
                             }
                         }
                         else
@@ -665,6 +661,7 @@ namespace TQM
             currentTestStartTime = DateTime.Now;
             lbl_TestID.Text = "";
             isTestStarted = true;
+            isTestCompleted = false;
 
             if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
             {
@@ -1205,7 +1202,11 @@ namespace TQM
             {
                 picker_drumNumber.SelectedIndex = -1;
                 picker_drumNumber.Items.Clear();
-                selectedMachineCategory = picker_machinecategory.SelectedItem.ToString();
+                selectedMachineCategory = "";
+                if (picker_machinecategory.SelectedIndex > 0)
+                {
+                    selectedMachineCategory = picker_machinecategory.SelectedItem.ToString();
+                }
                 if (selectedMachineCategory == "" || selectedMachineCategory == null)
                 {
                     picker_machinename.ItemsSource = null;
@@ -1249,7 +1250,7 @@ namespace TQM
             }
             catch (Exception ex)
             {
-                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+                DisplayAlert("Attention", "Machine Category - Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
             }
         }
 
@@ -1259,7 +1260,7 @@ namespace TQM
             {
                 picker_drumNumber.SelectedIndex = -1;
                 picker_drumNumber.Items.Clear();
-                List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
+                
                 if (picker_machinename.SelectedIndex < 0)
                 {
                     selectedMachineID = Guid.Empty;
@@ -1267,7 +1268,7 @@ namespace TQM
                     populateTestParams("", Guid.Empty, "");
                     return;
                 }
-
+                List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
                 selectedMachineID = (Guid)source[picker_machinename.SelectedIndex].ID;
                 MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
                 selectedMachineName = selectedMachine.machineName;
@@ -1276,7 +1277,7 @@ namespace TQM
             }
             catch (Exception ex)
             {
-                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+                DisplayAlert("Attention", "Machine Name - Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
             }
         }
 
@@ -1346,7 +1347,7 @@ namespace TQM
             }
         }
 
-        private void picker_drumNumber_SelectedIndexChanged(object sender, EventArgs e)
+        private async void picker_drumNumber_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
@@ -1361,6 +1362,8 @@ namespace TQM
                     return;
                 }
                 int selectedDrumNumber = int.Parse(picker_drumNumber.SelectedItem.ToString());
+                DateTime startDate = DEFAULTDATE;
+                DateTime endDate = DEFAULTDATE;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     conn.CreateTable<ConfigModel>();
@@ -1383,6 +1386,8 @@ namespace TQM
 
                             if(selectedDrumNumber>=sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
                             {
+                                startDate = yarncountconfigmodel.scheduledStartDate_s1;
+                                endDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s1.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s1.ToString();
@@ -1405,6 +1410,8 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
                             {
+                                startDate = yarncountconfigmodel.scheduledStartDate_s2;
+                                endDate = yarncountconfigmodel.scheduledEndDate_s2;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s2.ToString();
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s2.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s2.ToString();
@@ -1427,6 +1434,8 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec3_lowerLimit && selectedDrumNumber <= sec3_upperLimit)
                             {
+                                startDate = yarncountconfigmodel.scheduledStartDate_s3;
+                                endDate = yarncountconfigmodel.scheduledEndDate_s3;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s3.ToString();
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s3.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s3.ToString();
@@ -1457,6 +1466,8 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
                             {
+                                startDate = yarncountconfigmodel.scheduledStartDate_s1;
+                                endDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s1.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s1.ToString();
@@ -1479,6 +1490,8 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
                             {
+                                startDate = yarncountconfigmodel.scheduledStartDate_s2;
+                                endDate = yarncountconfigmodel.scheduledEndDate_s2;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s2.ToString();
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s2.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s2.ToString();
@@ -1506,6 +1519,8 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
                             {
+                                startDate = yarncountconfigmodel.scheduledStartDate_s1;
+                                endDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s1.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s1.ToString();
@@ -1524,6 +1539,87 @@ namespace TQM
                                     }
                                 }
                                 picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                            }
+                        }
+
+                        if(startDate!=DEFAULTDATE && endDate != DEFAULTDATE)
+                        {
+                            conn.CreateTable<StrengthTestModel>();
+                            StrengthTestModel selectedDrumTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
+                                                                (StrengthTestModel.drumNumber == selectedDrumNumber
+                                                                && (StrengthTestModel.createdate >= startDate
+                                                                || StrengthTestModel.createdate <= endDate))).FirstOrDefault();
+                            if (selectedDrumTest != null)
+                            {
+                                //DisplayAlert("Attention", "Test already completed for Drum Number ("
+                                //                + selectedDrumNumber.ToString() + ") on "
+                                //                + selectedDrumTest.createdate.ToShortDateString()
+                                //                + ". Still want to conduct test for this drum ?", "OK");
+                                bool userDecision = await DisplayAlert("Attention",
+                                                "Test already completed for Drum Number ("
+                                                + selectedDrumNumber.ToString() + ") on "
+                                                + selectedDrumTest.createdate.ToShortDateString()
+                                                + ". Still do you want to conduct test for this drum in Random method?",
+                                                "Yes",
+                                                "No");
+                                if (userDecision)
+                                {
+                                    //using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                                    //{
+                                    UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                                        if (loggedInUser == null)
+                                        {
+                                            DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            if (loggedInUser.isAdmin)
+                                            {
+                                                picker_drumSelection.SelectedItem = "Random";
+                                                picker_drumSelection.IsEnabled = false;
+                                            }
+                                            else
+                                            {
+                                                Environment.SetEnvironmentVariable("DrumSelectionMethodChange", null);
+                                                var result = await Navigation.ShowPopupAsync(new AdminCredPopUp());
+                                                if (result != null)
+                                                {
+                                                    if (result.ToString() == "Success")
+                                                    {
+                                                        picker_drumSelection.SelectedItem = "Random";
+                                                        picker_drumSelection.IsEnabled = false;
+                                                    }
+                                                    else
+                                                    {
+                                                        //reset test params;
+                                                        picker_drumNumber.SelectedIndex = -1;
+                                                        picker_drumSelection.IsEnabled = false;
+                                                        DisplayAlert("Attention", result.ToString(), "OK");
+                                                        return;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    //reset test params;
+                                                    picker_drumNumber.SelectedIndex = -1;
+                                                    picker_drumSelection.IsEnabled = false;
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                    //}
+                                }
+                                else
+                                {
+                                    //reset test params;
+                                    picker_drumNumber.SelectedIndex = -1;
+                                    picker_drumSelection.IsEnabled = false;
+                                }
+                            }
+                            else
+                            {
+                                picker_drumSelection.IsEnabled = false;
                             }
                         }
                     }

@@ -83,8 +83,8 @@
             <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Drum Number" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Margin="5"/>
-            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Standard Strength" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
-            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Strength Deviation (±)" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Std. Strength" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
+            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Deviation (±)" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Below Limit" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="No.Of Test" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
@@ -213,8 +213,8 @@
                                        Text="2.274" FontSize="22" TextColor="ForestGreen"/>
                     <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="0,0"
                                        Text="Qualified Test:" FontSize="20" TextColor="#0e0273"/>
-                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_qualifiedTest" 
-                           HorizontalTextAlignment="Center" Margin="0,0" Text="45.897" FontSize="22" TextColor="ForestGreen"/>
+                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" x:Name="lbl_qualifiedTest" 
+                           HorizontalTextAlignment="Start" Margin="130,0" Text="45.897" FontSize="22" TextColor="ForestGreen"/>
                     <!--<Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="Center" Margin="0,0"
                                        Text="CV:" FontSize="20" TextColor="#0e0273"/>
                     <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_cv"
@@ -285,8 +285,8 @@
                                        Text="1234.8888" FontSize="22" TextColor="DarkSlateGray"/>
                     <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="0,0"
                                        Text="Qualified Test:" FontSize="20" TextColor="#0e0273"/>
-                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_qualifiedTest_FinalOut" 
-                           HorizontalTextAlignment="Center" Margin="0,0" Text="45.897" FontSize="22" TextColor="ForestGreen"/>
+                    <Label Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" x:Name="lbl_qualifiedTest_FinalOut" 
+                           HorizontalTextAlignment="Start" Margin="130,0" Text="45.897" FontSize="22" TextColor="ForestGreen"/>
                     <!--<Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1" HorizontalTextAlignment="start" Margin="20,0"
                                        Text="CV:" FontSize="20" TextColor="#0e0273"/>
                     <Label Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="2" x:Name="lbl_cv_FinalOut"

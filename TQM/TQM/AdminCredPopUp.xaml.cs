@@ -42,7 +42,7 @@ namespace TQM
                         {
                             //Environment.SetEnvironmentVariable("DrumSelectionMethodChange", "NO");
                             //sa.toggleDrumSelectionMethod(false);
-                            Dismiss("Entered user credential is not an Admin");
+                            Dismiss("Entered user credential is not an Admin user");
                         }
 
                     }
