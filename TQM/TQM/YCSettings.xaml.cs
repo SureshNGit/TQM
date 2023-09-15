@@ -19,8 +19,8 @@ namespace TQM
         private TimeSpan currentShift1 = TimeSpan.Zero;
         private TimeSpan currentShift2 = TimeSpan.Zero;
         private TimeSpan currentShift3 = TimeSpan.Zero;
-        private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
-        private DateTime currentUpdatedDate = DEFAULTDATE;
+        //private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
+        //private DateTime currentUpdatedDate = DEFAULTDATE;
 
         public YCSettings()
         {
@@ -143,7 +143,10 @@ namespace TQM
                 btn_save.BackgroundColor = Color.Red;
                 btn_save.TextColor = Color.White;
                 currentID = Guid.Empty;
-                currentUpdatedDate = DEFAULTDATE;
+                //currentUpdatedDate = DEFAULTDATE;
+                picker_drumSection_Sec1.SelectedIndex = -1;
+                picker_drumSection_Sec2.SelectedIndex = -1;
+                picker_drumSection_Sec3.SelectedIndex = -1;
                 picker_shiftCount.SelectedIndex = 0;
                 currentShift = 0;
                 currentShift1 = TimeSpan.Zero;
@@ -207,7 +210,7 @@ namespace TQM
                 btn_save.BackgroundColor = Color.FromHex("#0e0273");
                 btn_save.TextColor = Color.White;
                 currentID = ycConfig.ID;
-                currentUpdatedDate = ycConfig.updateddate;
+                //currentUpdatedDate = ycConfig.updateddate;
             }
             else
             {
@@ -219,6 +222,10 @@ namespace TQM
 
             if (isMacDiff == false)
             {
+                picker_drumSection_Sec1.SelectedItem = "Scheduled";
+                picker_drumSection_Sec2.SelectedItem = "Scheduled";
+                picker_drumSection_Sec3.SelectedItem = "Scheduled";
+
                 IList<string> machineCategorylist = picker_machinecategory.Items;
                 int machineCatindex = 0;
                 foreach (string mCat in machineCategorylist)
@@ -291,7 +298,8 @@ namespace TQM
             }
             picker_drumSection_Sec1.SelectedIndex = drumSelectionMethodIndex;
 
-            date_scheduledDayLimitDate_Sec1.Date = ycConfig.scheduledDayLimitDate_s1;
+            date_scheduledStartDate_Sec1.Date = ycConfig.scheduledStartDate_s1;
+            date_scheduledEndDate_Sec1.Date = ycConfig.scheduledEndDate_s1;
             entry_scheduledDayLimit_Sec1.Text = ycConfig.scheduledDayLimit_s1.ToString();
             //Section-2
             entry_stdRollingStrength_Sec2.Text = ycConfig.stdRollingStrength_s2.ToString();
@@ -315,7 +323,8 @@ namespace TQM
             }
             picker_drumSection_Sec2.SelectedIndex = drumSelectionMethodIndex_S2;
 
-            date_scheduledDayLimitDate_Sec2.Date = ycConfig.scheduledDayLimitDate_s2;
+            date_scheduledStartDate_Sec2.Date = ycConfig.scheduledStartDate_s2;
+            date_scheduledEndDate_Sec2.Date = ycConfig.scheduledEndDate_s2;
             entry_scheduledDayLimit_Sec2.Text = ycConfig.scheduledDayLimit_s2.ToString();
             //Section-3
             entry_stdRollingStrength_Sec3.Text = ycConfig.stdRollingStrength_s3.ToString();
@@ -339,22 +348,23 @@ namespace TQM
             }
             picker_drumSection_Sec3.SelectedIndex = drumSelectionMethodIndex_S3;
 
-            date_scheduledDayLimitDate_Sec3.Date = ycConfig.scheduledDayLimitDate_s3;
+            date_scheduledStartDate_Sec3.Date = ycConfig.scheduledStartDate_s3;
+            date_scheduledEndDate_Sec3.Date = ycConfig.scheduledEndDate_s3;
             entry_scheduledDayLimit_Sec3.Text = ycConfig.scheduledDayLimit_s3.ToString();
 
             //Toggle Frames
             if (btn_section1.IsVisible)
             {
                 frame_sec1.IsVisible = false;
-                toggleSectionFrames(frame_sec1, btn_section1, date_scheduledDayLimitDate_Sec1, entry_scheduledDayLimit_Sec1, picker_drumSection_Sec1);
+                toggleSectionFrames(frame_sec1, btn_section1, date_scheduledStartDate_Sec1,date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1, picker_drumSection_Sec1);
                 if (btn_section2.IsVisible)
                 {
                     frame_sec2.IsVisible = false;
-                    toggleSectionFrames(frame_sec2, btn_section2, date_scheduledDayLimitDate_Sec2, entry_scheduledDayLimit_Sec2, picker_drumSection_Sec2);
+                    toggleSectionFrames(frame_sec2, btn_section2, date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2, picker_drumSection_Sec2);
                     if (btn_section3.IsVisible)
                     {
                         frame_sec3.IsVisible = false;
-                        toggleSectionFrames(frame_sec3, btn_section3, date_scheduledDayLimitDate_Sec3, entry_scheduledDayLimit_Sec3, picker_drumSection_Sec3);
+                        toggleSectionFrames(frame_sec3, btn_section3, date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3, picker_drumSection_Sec3);
                     }
                 }
             }
@@ -475,7 +485,8 @@ namespace TQM
                 string drumNumbers_S1 = "0.0";
                 string drumSelectionMethod_S1 = "";
                 int scheduledDayLimit_S1 = 0;
-                DateTime scheduleDayLimitDate_S1 = DateTime.Now;
+                DateTime scheduleStartDate_S1 = DateTime.Now;
+                DateTime scheduleEndDate_S1 = DateTime.Now;
                 if (btn_section1.IsVisible)
                 {
                     if (entry_stdRollingStrength_Sec1.Text.Trim() == "-")
@@ -533,6 +544,11 @@ namespace TQM
                         DisplayAlert("Attention", "Please select valid drum selection method for section-1!!!", "OK");
                         return;
                     }
+                    if(date_scheduledStartDate_Sec1.Date > date_scheduledEndDate_Sec1.Date)
+                    {
+                        DisplayAlert("Attention", "Scheduled Start date should be less than end date in section-1!!!", "Ok");
+                        return;
+                    }
                     if (entry_scheduledDayLimit_Sec1.Text.Trim().Contains(".") || entry_scheduledDayLimit_Sec1.Text.Trim().Contains("-"))
                     {
                         DisplayAlert("Attention", "Scheduled Day Limit should not be a decimal or negative value in section-1!!!", "Ok");
@@ -553,7 +569,8 @@ namespace TQM
                     drumNumbers_S1 = decimal.Parse(entry_Drums_Sec1.Text).ToString(); 
                     drumSelectionMethod_S1 = picker_drumSection_Sec1.SelectedItem.ToString();
                     scheduledDayLimit_S1 = int.Parse(entry_scheduledDayLimit_Sec1.Text);
-                    scheduleDayLimitDate_S1 = date_scheduledDayLimitDate_Sec1.Date;
+                    scheduleStartDate_S1 = date_scheduledStartDate_Sec1.Date;
+                    scheduleEndDate_S1 = date_scheduledEndDate_Sec1.Date;
                 }
 
                 decimal stdRollingStrength_S2 = 0.0m;
@@ -563,7 +580,8 @@ namespace TQM
                 string drumNumbers_S2 = "0.0";
                 string drumSelectionMethod_S2 = "";
                 int scheduledDayLimit_S2 = 0;
-                DateTime scheduleDayLimitDate_S2 = DateTime.Now;
+                DateTime scheduleStartDate_S2 = DateTime.Now;
+                DateTime scheduleEndDate_S2 = DateTime.Now;
                 if (btn_section2.IsVisible)
                 {
                     if (entry_stdRollingStrength_Sec2.Text.Trim() == "-")
@@ -621,6 +639,11 @@ namespace TQM
                         DisplayAlert("Attention", "Please select valid drum selection method for section-2!!!", "OK");
                         return;
                     }
+                    if (date_scheduledStartDate_Sec2.Date > date_scheduledEndDate_Sec2.Date)
+                    {
+                        DisplayAlert("Attention", "Scheduled Start date should be less than end date in section-2!!!", "Ok");
+                        return;
+                    }
                     if (entry_scheduledDayLimit_Sec2.Text.Trim().Contains(".") || entry_scheduledDayLimit_Sec2.Text.Trim().Contains("-"))
                     {
                         DisplayAlert("Attention", "Scheduled Day Limit should not be a decimal or negative value in section-2!!!", "Ok");
@@ -641,7 +664,8 @@ namespace TQM
                     drumNumbers_S2 = decimal.Parse(entry_Drums_Sec2.Text).ToString();
                     drumSelectionMethod_S2 = picker_drumSection_Sec2.SelectedItem.ToString();
                     scheduledDayLimit_S2 = int.Parse(entry_scheduledDayLimit_Sec2.Text);
-                    scheduleDayLimitDate_S2 = date_scheduledDayLimitDate_Sec2.Date;
+                    scheduleStartDate_S2 = date_scheduledStartDate_Sec2.Date;
+                    scheduleEndDate_S2 = date_scheduledEndDate_Sec2.Date;
                 }
 
                 decimal stdRollingStrength_S3 = 0.0m;
@@ -651,7 +675,8 @@ namespace TQM
                 string drumNumbers_S3 = "0.0";
                 string drumSelectionMethod_S3 = "";
                 int scheduledDayLimit_S3 = 0;
-                DateTime scheduleDayLimitDate_S3 = DateTime.Now;
+                DateTime scheduleStartDate_S3 = DateTime.Now;
+                DateTime scheduleEndDate_S3 = DateTime.Now;
                 if (btn_section3.IsVisible)
                 {
                     if (entry_stdRollingStrength_Sec3.Text.Trim() == "-")
@@ -709,6 +734,11 @@ namespace TQM
                         DisplayAlert("Attention", "Please select valid drum selection method for section-3!!!", "OK");
                         return;
                     }
+                    if (date_scheduledStartDate_Sec3.Date > date_scheduledEndDate_Sec3.Date)
+                    {
+                        DisplayAlert("Attention", "Scheduled Start date should be less than end date in section-3!!!", "Ok");
+                        return;
+                    }
                     if (entry_scheduledDayLimit_Sec3.Text.Trim().Contains(".") || entry_scheduledDayLimit_Sec3.Text.Trim().Contains("-"))
                     {
                         DisplayAlert("Attention", "Scheduled Day Limit should not be a decimal or negative value in section-3!!!", "Ok");
@@ -729,7 +759,8 @@ namespace TQM
                     drumNumbers_S3 = decimal.Parse(entry_Drums_Sec3.Text).ToString();
                     drumSelectionMethod_S3 = picker_drumSection_Sec3.SelectedItem.ToString();
                     scheduledDayLimit_S3 = int.Parse(entry_scheduledDayLimit_Sec3.Text);
-                    scheduleDayLimitDate_S3 = date_scheduledDayLimitDate_Sec3.Date;
+                    scheduleStartDate_S3 = date_scheduledStartDate_Sec3.Date;
+                    scheduleEndDate_S3 = date_scheduledEndDate_Sec3.Date;
                 }
 
                 if (picker_shiftCount.SelectedIndex == -1 || picker_shiftCount.SelectedItem.ToString() == "")
@@ -887,7 +918,8 @@ namespace TQM
                     drumNumbers_s1 = drumNumbers_S1,
                     drumSelectionMethod_s1 = drumSelectionMethod_S1,
                     scheduledDayLimit_s1 = scheduledDayLimit_S1,
-                    scheduledDayLimitDate_s1 = scheduleDayLimitDate_S1,
+                    scheduledStartDate_s1 = scheduleStartDate_S1,
+                    scheduledEndDate_s1 = scheduleEndDate_S1,
                     //Section-2
                     stdRollingStrength_s2 = stdRollingStrength_S2,
                     strengthDeviation_s2 = strengthDeviation_S2,
@@ -896,7 +928,8 @@ namespace TQM
                     drumNumbers_s2 = drumNumbers_S2,
                     drumSelectionMethod_s2 = drumSelectionMethod_S2,
                     scheduledDayLimit_s2 = scheduledDayLimit_S2,
-                    scheduledDayLimitDate_s2 = scheduleDayLimitDate_S2,
+                    scheduledStartDate_s2 = scheduleStartDate_S2,
+                    scheduledEndDate_s2 = scheduleEndDate_S2,
                     //Section-3
                     stdRollingStrength_s3 = stdRollingStrength_S3,
                     strengthDeviation_s3 = strengthDeviation_S3,
@@ -905,7 +938,8 @@ namespace TQM
                     drumNumbers_s3 = drumNumbers_S3,
                     drumSelectionMethod_s3 = drumSelectionMethod_S3,
                     scheduledDayLimit_s3 = scheduledDayLimit_S3,
-                    scheduledDayLimitDate_s3 = scheduleDayLimitDate_S3,
+                    scheduledStartDate_s3 = scheduleStartDate_S3,
+                    scheduledEndDate_s3 = scheduleEndDate_S3,
                     //Shift Details
                     shiftCount = int.Parse(picker_shiftCount.SelectedItem.ToString()),
                     shift1time = shift1.Hours.ToString() + ":" + shift1.Minutes.ToString(),
@@ -1250,7 +1284,7 @@ namespace TQM
             }
         }
 
-        private void toggleSectionFrames(Frame frame,Button sectionButton, DatePicker scheduledDayLimitDate,Entry scheduledDayLimit,Picker drumSelectionMethod)
+        private void toggleSectionFrames(Frame frame,Button sectionButton, DatePicker scheduledStartDate , DatePicker scheduledEndDate,Entry scheduledDayLimit,Picker drumSelectionMethod)
         {
             try
             {
@@ -1264,7 +1298,8 @@ namespace TQM
                     frame.IsVisible = false;
                     sectionButton.BackgroundColor = Color.FromHex("#0e0273");
                 }
-                calculateDay(drumSelectionMethod,scheduledDayLimitDate, scheduledDayLimit);
+                //calculateDay(drumSelectionMethod,scheduledDayLimitDate, scheduledDayLimit);
+                calculateDay(scheduledStartDate, scheduledEndDate, scheduledDayLimit);
             }
             catch (Exception)
             {
@@ -1274,17 +1309,23 @@ namespace TQM
 
         private void btn_section1_Clicked(object sender, EventArgs e)
         {
-           toggleSectionFrames(frame_sec1, btn_section1, date_scheduledDayLimitDate_Sec1, entry_scheduledDayLimit_Sec1, picker_drumSection_Sec1);
+           //toggleSectionFrames(frame_sec1, btn_section1, date_scheduledDayLimitDate_Sec1, entry_scheduledDayLimit_Sec1, picker_drumSection_Sec1);
+            toggleSectionFrames(frame_sec1, btn_section1, date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1, picker_drumSection_Sec1);
+            picker_drumSection_Sec1.SelectedItem = "Scheduled";
         }
 
         private void btn_section2_Clicked(object sender, EventArgs e)
         {
-            toggleSectionFrames(frame_sec2, btn_section2, date_scheduledDayLimitDate_Sec2, entry_scheduledDayLimit_Sec2,picker_drumSection_Sec2);
+            //toggleSectionFrames(frame_sec2, btn_section2, date_scheduledDayLimitDate_Sec2, entry_scheduledDayLimit_Sec2,picker_drumSection_Sec2);
+            toggleSectionFrames(frame_sec2, btn_section2, date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2, picker_drumSection_Sec2);
+            picker_drumSection_Sec2.SelectedItem = "Scheduled";
         }
 
         private void btn_section3_Clicked(object sender, EventArgs e)
         {
-            toggleSectionFrames(frame_sec3, btn_section3, date_scheduledDayLimitDate_Sec3, entry_scheduledDayLimit_Sec3, picker_drumSection_Sec3);
+            //toggleSectionFrames(frame_sec3, btn_section3, date_scheduledDayLimitDate_Sec3, entry_scheduledDayLimit_Sec3, picker_drumSection_Sec3);
+            toggleSectionFrames(frame_sec3, btn_section3, date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3, picker_drumSection_Sec3);
+            picker_drumSection_Sec3.SelectedItem = "Scheduled";
         }
 
         private void picker_sectionCount_SelectedIndexChanged(object sender, EventArgs e)
@@ -1373,128 +1414,214 @@ namespace TQM
             }
         }
 
-        private void date_scheduledDayLimitDate_Sec1_DateSelected(object sender, DateChangedEventArgs e)
-        {
-            calculateDay(picker_drumSection_Sec1,date_scheduledDayLimitDate_Sec1, entry_scheduledDayLimit_Sec1);
-        }
+        //private void date_scheduledDayLimitDate_Sec1_DateSelected(object sender, DateChangedEventArgs e)
+        //{
+        //    calculateDay(picker_drumSection_Sec1,date_scheduledDayLimitDate_Sec1, entry_scheduledDayLimit_Sec1);
+        //}
 
-        private void date_scheduledDayLimitDate_Sec2_DateSelected(object sender, DateChangedEventArgs e)
-        {
-            calculateDay(picker_drumSection_Sec2,date_scheduledDayLimitDate_Sec2, entry_scheduledDayLimit_Sec2);
-        }
+        //private void date_scheduledDayLimitDate_Sec2_DateSelected(object sender, DateChangedEventArgs e)
+        //{
+        //    calculateDay(picker_drumSection_Sec2,date_scheduledDayLimitDate_Sec2, entry_scheduledDayLimit_Sec2);
+        //}
 
-        private void date_scheduledDayLimitDate_Sec3_DateSelected(object sender, DateChangedEventArgs e)
-        {
-            calculateDay(picker_drumSection_Sec3,date_scheduledDayLimitDate_Sec3, entry_scheduledDayLimit_Sec3);
-        }
+        //private void date_scheduledDayLimitDate_Sec3_DateSelected(object sender, DateChangedEventArgs e)
+        //{
+        //    calculateDay(picker_drumSection_Sec3,date_scheduledDayLimitDate_Sec3, entry_scheduledDayLimit_Sec3);
+        //}
 
-        private void calculateDay(Picker picker, DatePicker datePicker, Entry entry)
+        //private void calculateDay(Picker picker, DatePicker datePicker, Entry entry)
+        //{
+        //    try
+        //    {
+        //        DateTime today = DateTime.Today;
+        //        if (currentUpdatedDate != DEFAULTDATE) { today = currentUpdatedDate; }
+        //        DateTime selectedDate = datePicker.Date;
+        //        int dayDiff = (int)(selectedDate - today).TotalDays;
+        //        if (dayDiff < 0 && picker.SelectedItem.ToString() == "Scheduled" && currentUpdatedDate!=DEFAULTDATE)
+        //        {
+        //            entry.Text = "0";
+        //            DisplayAlert("Attention", "Schedule day limit date should be greater than or equal to today's date!!!", "OK");
+        //            return;
+        //        }
+        //        if (dayDiff >= 0)
+        //        {
+        //            entry.Text = (dayDiff + 1).ToString();
+        //        }
+        //    }
+        //    catch(Exception)
+        //    {
+        //        entry.Text = "0";
+        //        DisplayAlert("Attention", "Error occurred in Schedule day limit date selection!!!", "OK");
+        //    }
+        //}
+
+        private void calculateDay(DatePicker startDatePicker, DatePicker endDatePicker, Entry scheduledDayLimit)
         {
             try
             {
-                DateTime today = DateTime.Today;
-                if (currentUpdatedDate != DEFAULTDATE) { today = currentUpdatedDate; }
-                DateTime selectedDate = datePicker.Date;
-                int dayDiff = (int)(selectedDate - today).TotalDays;
-                if (dayDiff < 0 && picker.SelectedItem.ToString() == "Scheduled" && currentUpdatedDate!=DEFAULTDATE)
+                DateTime startDate = startDatePicker.Date;
+                DateTime endDate = endDatePicker.Date;
+                int dayDiff = (int)(endDate - startDate).TotalDays;
+                if (dayDiff < 0)
                 {
-                    entry.Text = "0";
-                    DisplayAlert("Attention", "Schedule day limit date should be greater than or equal to today's date!!!", "OK");
-                    return;
+                    scheduledDayLimit.Text = (dayDiff + (-1)).ToString();
+                    //scheduledDayLimit.Text = "0";
+                    //DisplayAlert("Attention", "Schedule end date should be greater than or equal to start date!!!", "OK");
+                    //return;
                 }
                 if (dayDiff >= 0)
                 {
-                    entry.Text = (dayDiff + 1).ToString();
+                    scheduledDayLimit.Text = (dayDiff + 1).ToString();
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
-                entry.Text = "0";
-                DisplayAlert("Attention", "Error occurred in Schedule day limit date selection!!!", "OK");
+                scheduledDayLimit.Text = "0";
+                DisplayAlert("Attention", "Error occurred in Schedule date selection!!!", "OK");
             }
         }
 
-        private void picker_drumSection_Sec1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (picker_drumSection_Sec1.SelectedItem.ToString() == "Scheduled")
-            {
-                lbl_scheduledDayLimit_Sec1.IsVisible = true;
-                entry_scheduledDayLimit_Sec1.IsVisible = true;
-                date_scheduledDayLimitDate_Sec1.IsVisible = true;
-                if(currentUpdatedDate == DEFAULTDATE) { date_scheduledDayLimitDate_Sec1.Date = DateTime.Now; }
-            }
-            else
-            {
-                lbl_scheduledDayLimit_Sec1.IsVisible = false;
-                entry_scheduledDayLimit_Sec1.IsVisible = false;
-                date_scheduledDayLimitDate_Sec1.IsVisible = false;
-                entry_scheduledDayLimit_Sec1.Text = "0";
-                if (currentUpdatedDate == DEFAULTDATE)
-                {
-                    date_scheduledDayLimitDate_Sec1.Date = DEFAULTDATE;
-                }
-                else
-                {
-                    date_scheduledDayLimitDate_Sec1.Date = currentUpdatedDate;
-                };
-            }
-        }
+        //private void picker_drumSection_Sec1_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    if (picker_drumSection_Sec1.SelectedItem.ToString() == "Scheduled")
+        //    {
+        //        lbl_scheduledDayLimit_Sec1.IsVisible = true;
+        //        entry_scheduledDayLimit_Sec1.IsVisible = true;
+        //        date_scheduledDayLimitDate_Sec1.IsVisible = true;
+        //        if(currentUpdatedDate == DEFAULTDATE) { date_scheduledDayLimitDate_Sec1.Date = DateTime.Now; }
+        //    }
+        //    else
+        //    {
+        //        lbl_scheduledDayLimit_Sec1.IsVisible = false;
+        //        entry_scheduledDayLimit_Sec1.IsVisible = false;
+        //        date_scheduledDayLimitDate_Sec1.IsVisible = false;
+        //        entry_scheduledDayLimit_Sec1.Text = "0";
+        //        if (currentUpdatedDate == DEFAULTDATE)
+        //        {
+        //            date_scheduledDayLimitDate_Sec1.Date = DEFAULTDATE;
+        //        }
+        //        else
+        //        {
+        //            date_scheduledDayLimitDate_Sec1.Date = currentUpdatedDate;
+        //        };
+        //    }
+        //}
 
-        private void picker_drumSection_Sec2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (picker_drumSection_Sec2.SelectedItem.ToString() == "Scheduled")
-            {
-                lbl_scheduledDayLimit_Sec2.IsVisible = true;
-                entry_scheduledDayLimit_Sec2.IsVisible = true;
-                date_scheduledDayLimitDate_Sec2.IsVisible = true;
-                if (currentUpdatedDate == DEFAULTDATE) { date_scheduledDayLimitDate_Sec2.Date = DateTime.Now; }
-            }
-            else
-            {
-                lbl_scheduledDayLimit_Sec2.IsVisible = false;
-                entry_scheduledDayLimit_Sec2.IsVisible = false;
-                date_scheduledDayLimitDate_Sec2.IsVisible = false;
-                entry_scheduledDayLimit_Sec2.Text = "0";
-                if (currentUpdatedDate == DEFAULTDATE)
-                {
-                    date_scheduledDayLimitDate_Sec2.Date = DEFAULTDATE;
-                }
-                else
-                {
-                    date_scheduledDayLimitDate_Sec2.Date = currentUpdatedDate;
-                };
-            }
-        }
+        //private void picker_drumSection_Sec2_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    if (picker_drumSection_Sec2.SelectedItem.ToString() == "Scheduled")
+        //    {
+        //        lbl_scheduledDayLimit_Sec2.IsVisible = true;
+        //        entry_scheduledDayLimit_Sec2.IsVisible = true;
+        //        date_scheduledDayLimitDate_Sec2.IsVisible = true;
+        //        if (currentUpdatedDate == DEFAULTDATE) { date_scheduledDayLimitDate_Sec2.Date = DateTime.Now; }
+        //    }
+        //    else
+        //    {
+        //        lbl_scheduledDayLimit_Sec2.IsVisible = false;
+        //        entry_scheduledDayLimit_Sec2.IsVisible = false;
+        //        date_scheduledDayLimitDate_Sec2.IsVisible = false;
+        //        entry_scheduledDayLimit_Sec2.Text = "0";
+        //        if (currentUpdatedDate == DEFAULTDATE)
+        //        {
+        //            date_scheduledDayLimitDate_Sec2.Date = DEFAULTDATE;
+        //        }
+        //        else
+        //        {
+        //            date_scheduledDayLimitDate_Sec2.Date = currentUpdatedDate;
+        //        };
+        //    }
+        //}
 
-        private void picker_drumSection_Sec3_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (picker_drumSection_Sec3.SelectedItem.ToString() == "Scheduled")
-            {
-                lbl_scheduledDayLimit_Sec3.IsVisible = true;
-                entry_scheduledDayLimit_Sec3.IsVisible = true;
-                date_scheduledDayLimitDate_Sec3.IsVisible = true;
-                if (currentUpdatedDate == DEFAULTDATE) { date_scheduledDayLimitDate_Sec3.Date = DateTime.Now; }
-            }
-            else
-            {
-                lbl_scheduledDayLimit_Sec3.IsVisible = false;
-                entry_scheduledDayLimit_Sec3.IsVisible = false;
-                date_scheduledDayLimitDate_Sec3.IsVisible = false;
-                entry_scheduledDayLimit_Sec3.Text = "0";
-                if (currentUpdatedDate == DEFAULTDATE)
-                {
-                    date_scheduledDayLimitDate_Sec3.Date = DEFAULTDATE;
-                }
-                else
-                {
-                    date_scheduledDayLimitDate_Sec3.Date = currentUpdatedDate;
-                };
-            }
-        }
+        //private void picker_drumSection_Sec3_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    if (picker_drumSection_Sec3.SelectedItem.ToString() == "Scheduled")
+        //    {
+        //        lbl_scheduledDayLimit_Sec3.IsVisible = true;
+        //        entry_scheduledDayLimit_Sec3.IsVisible = true;
+        //        date_scheduledDayLimitDate_Sec3.IsVisible = true;
+        //        if (currentUpdatedDate == DEFAULTDATE) { date_scheduledDayLimitDate_Sec3.Date = DateTime.Now; }
+        //    }
+        //    else
+        //    {
+        //        lbl_scheduledDayLimit_Sec3.IsVisible = false;
+        //        entry_scheduledDayLimit_Sec3.IsVisible = false;
+        //        date_scheduledDayLimitDate_Sec3.IsVisible = false;
+        //        entry_scheduledDayLimit_Sec3.Text = "0";
+        //        if (currentUpdatedDate == DEFAULTDATE)
+        //        {
+        //            date_scheduledDayLimitDate_Sec3.Date = DEFAULTDATE;
+        //        }
+        //        else
+        //        {
+        //            date_scheduledDayLimitDate_Sec3.Date = currentUpdatedDate;
+        //        };
+        //    }
+        //}
 
         private void entry_drumCount_TextChanged(System.Object sender, Xamarin.Forms.TextChangedEventArgs e)
         {
             calculateDrumNumbers();
+        }
+
+        void date_scheduledStartDate_Sec1_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
+        }
+
+        void date_scheduledStartDate_Sec1_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
+        }
+
+        void date_scheduledEndDate_Sec1_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
+        }
+
+        void date_scheduledEndDate_Sec1_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
+        }
+
+        void date_scheduledStartDate_Sec2_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
+        }
+
+        void date_scheduledStartDate_Sec2_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
+        }
+
+        void date_scheduledEndDate_Sec2_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
+        }
+
+        void date_scheduledEndDate_Sec2_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
+        }
+
+        void date_scheduledStartDate_Sec3_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
+        }
+
+        void date_scheduledStartDate_Sec3_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
+        }
+
+        void date_scheduledEndDate_Sec3_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
+        }
+
+        void date_scheduledEndDate_Sec3_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
         }
     }
 }

@@ -33,7 +33,9 @@ namespace TQM.Model
 
         public int scheduledDayLimit_s1 { get; set; }
 
-        public DateTime scheduledDayLimitDate_s1 { get; set; }
+        public DateTime scheduledStartDate_s1 { get; set; }
+
+        public DateTime scheduledEndDate_s1 { get; set; }
 
         public decimal stdRollingStrength_s2 { get; set; }
 
@@ -49,7 +51,9 @@ namespace TQM.Model
 
         public int scheduledDayLimit_s2 { get; set; }
 
-        public DateTime scheduledDayLimitDate_s2 { get; set; }
+        public DateTime scheduledStartDate_s2 { get; set; }
+
+        public DateTime scheduledEndDate_s2 { get; set; }
 
         public decimal stdRollingStrength_s3 { get; set; }
 
@@ -65,7 +69,9 @@ namespace TQM.Model
 
         public int scheduledDayLimit_s3 { get; set; }
 
-        public DateTime scheduledDayLimitDate_s3 { get; set; }
+        public DateTime scheduledStartDate_s3 { get; set; }
+
+        public DateTime scheduledEndDate_s3 { get; set; }
 
         public int shiftCount { get; set; }
 

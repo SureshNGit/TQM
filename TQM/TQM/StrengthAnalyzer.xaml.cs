@@ -1,5 +1,6 @@
 ﻿using Android.Bluetooth;
 using Android.Content;
+using Android.Content.Res;
 using Android.Graphics;
 using Android.Renderscripts;
 using Android.Text;
@@ -19,6 +20,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TQM.Model;
 using TQM.ModelView;
+using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
@@ -936,6 +938,9 @@ namespace TQM
                             else
                             {
                                 await refListView();
+                                ImageNotification("green.png");
+                                UpdateUserNotification("Waiting for start command", "#008000");
+                                Debug.WriteLine("Waiting for start command");
                             }
                         }
                         
@@ -1004,14 +1009,14 @@ namespace TQM
                         if (s_op == "ITO")
                         {
                             ImageNotification("red.png");
-                            UpdateUserNotification("Start command not received!!!");
+                            UpdateUserNotification("START COMMAND NOT RECEIVED");
                             Debug.WriteLine("Start command not received!!!");
                             return false;
                         }
                         else if (s_op == "PNR")
                         {
                             ImageNotification("red.png");
-                            UpdateUserNotification("Pulse not received!!!");
+                            UpdateUserNotification("PULSE NOT RECEIVED");
                             Debug.WriteLine("Pulse not received!!!");
                             return false;
                         }
@@ -1027,7 +1032,7 @@ namespace TQM
                         else
                         {
                             ImageNotification("red.png");
-                            UpdateUserNotification("Invalid command received!!!");
+                            UpdateUserNotification("INVALID COMMAND");
                             Debug.WriteLine("Invalid command received!!!");
                             return false;
                         }
@@ -1145,16 +1150,25 @@ namespace TQM
                         {
                             IdealCount++;
                             if (IdealCount > WAITFORSTART) { return "ITO"; } //Ideal Time Out
+                            ImageNotification("green.png");
+                            UpdateUserNotification("Waiting for start command", "#008000");
+                            Debug.WriteLine("Waiting for start command");
                             continue;
                         }
                         if (op == "ST")
                         {
                             startSignalReceived = true;
+                            ImageNotification("green.png");
+                            UpdateUserNotification("Start command received", "#008000");
+                            Debug.WriteLine("Start command received");
                             continue;
                         }
                         if (startSignalReceived && op.Contains('C'))
                         {
                             prevop = op;
+                            ImageNotification("green.png");
+                            UpdateUserNotification("Reading pulse, please wait...", "#008000");
+                            Debug.WriteLine("Reading pulse, please wait...");
                             continue;
                         }
                         if(startSignalReceived && op == "TE")
@@ -1516,6 +1530,79 @@ namespace TQM
                 }
             }
             catch (Exception ex)
+            {
+                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+            }
+        }
+
+        private void picker_drumSelection_Focused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        {
+            //DisplayAlert("Attention", "Touched", "OK");
+        }
+
+        //public void toggleDrumSelectionMethod(bool command)
+        //{
+        //    //DisplayAlert("Attention", command.ToString(), "OK");
+            
+        //    if (command)
+        //    {
+        //        picker_drumSelection.IsEnabled = true;
+        //    }
+        //    else
+        //    {
+        //        picker_drumSelection.IsEnabled = false;
+        //        DisplayAlert("Attention", "Unable verify you as Admin. Please try again....", "OK");
+        //        return;
+        //    }
+        //    Navigation.PopAllPopupAsync();
+        //}
+
+        private async void btn_drumSelectionMethod_Clicked(System.Object sender, System.EventArgs e)
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                { 
+                    UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                    if (loggedInUser == null)
+                    {
+                        DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                        return;
+                    }
+                    else
+                    {
+                        if (loggedInUser.isAdmin)
+                        {
+                            picker_drumSelection.IsEnabled = true;
+                        }
+                        else
+                        {
+                            Environment.SetEnvironmentVariable("DrumSelectionMethodChange", null);
+                            var result = await Navigation.ShowPopupAsync(new AdminCredPopUp());
+                            if (result != null)
+                            {
+                                if (result.ToString() == "Success")
+                                {
+                                    picker_drumSelection.IsEnabled = true;
+                                }
+                                else
+                                {
+                                    picker_drumSelection.IsEnabled = false;
+                                    DisplayAlert("Attention", result.ToString(), "OK");
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                picker_drumSelection.IsEnabled = false;
+                                return;
+                            }
+                        }
+                        
+                    }
+                }
+            }
+            catch(Exception ex)
             {
                 DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
             }
