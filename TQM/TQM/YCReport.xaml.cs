@@ -64,7 +64,7 @@ namespace TQM
             InitializeComponent();
         }
 
-        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType,string materialLength, string standHank, bool deleteRequest, bool isConsolidated, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
+        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string testID, string drumNumber,string standardStrength, bool deleteRequest, bool isConsolidated, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             InitializeComponent();
             isFinalAvgRowPresent = false;
@@ -103,10 +103,10 @@ namespace TQM
             }
             reportStartDate = startDate;
             reportEndDate = endDate;
-            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, matType, materialLength, standHank, deleteRequest, UFVAL1, UFVAL2, UFVAL3, UFVAL4);
+            getReport(startDate, endDate, categoryName, machineID, shift, testID, drumNumber, standardStrength, deleteRequest, UFVAL1, UFVAL2, UFVAL3, UFVAL4);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, string standHank, bool deleteRequest, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string testID, string drumNumber, string standardStrength, bool deleteRequest, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             try
             {
@@ -240,53 +240,53 @@ namespace TQM
                         {
                             //endDate = endDate.AddDays(1);
 
-                            if (shift != "" && process != null)
-                            {
-                                ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                                                    (YCTestSummaryModel.shift == shift)).ToList();
-                            }
-                            //else if (shift == "" && process != null)
+                            //if (shift != "" && process != null)
                             //{
                             //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            //                        (YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                            //                        (YCTestSummaryModel.shift == shift)).ToList();
                             //}
-                            else if (shift != "" && process == null)
-                            {
-                                ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                                                    (YCTestSummaryModel.shift == shift)).ToList();
-                            }
-                            else if (shift == "" && process == null)
-                            {
-                                ycTestSummaryModels = parentList;
-                            }
+                            ////else if (shift == "" && process != null)
+                            ////{
+                            ////    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
+                            ////                        (YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
+                            ////}
+                            //else if (shift != "" && process == null)
+                            //{
+                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
+                            //                        (YCTestSummaryModel.shift == shift)).ToList();
+                            //}
+                            //else if (shift == "" && process == null)
+                            //{
+                            //    ycTestSummaryModels = parentList;
+                            //}
 
                         }
                         else if (categoryName != null && machineID == Guid.Empty)
                         {
                             //endDate = endDate.AddDays(1);
 
-                            if (shift != "" && process != null)
-                            {
-                                ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                                                     (YCTestSummaryModel.machineCategory == categoryName
-                                                     && YCTestSummaryModel.shift == shift)).ToList();
-                            }
-                            else if (shift == "" && process != null)
-                            {
-                                ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                                                     (YCTestSummaryModel.machineCategory == categoryName)).ToList();
-                            }
-                            else if (shift != "" && process == null)
-                            {
-                                ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                                                     (YCTestSummaryModel.machineCategory == categoryName
-                                                     && YCTestSummaryModel.shift == shift)).ToList();
-                            }
-                            else if (shift == "" && process == null)
-                            {
-                                ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                                                    (YCTestSummaryModel.machineCategory == categoryName)).ToList();
-                            }
+                            //if (shift != "" && process != null)
+                            //{
+                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
+                            //                         (YCTestSummaryModel.machineCategory == categoryName
+                            //                         && YCTestSummaryModel.shift == shift)).ToList();
+                            //}
+                            //else if (shift == "" && process != null)
+                            //{
+                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
+                            //                         (YCTestSummaryModel.machineCategory == categoryName)).ToList();
+                            //}
+                            //else if (shift != "" && process == null)
+                            //{
+                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
+                            //                         (YCTestSummaryModel.machineCategory == categoryName
+                            //                         && YCTestSummaryModel.shift == shift)).ToList();
+                            //}
+                            //else if (shift == "" && process == null)
+                            //{
+                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
+                            //                        (YCTestSummaryModel.machineCategory == categoryName)).ToList();
+                            //}
 
 
                         }
@@ -294,51 +294,51 @@ namespace TQM
                         {
                             //endDate = endDate.AddDays(1);
 
-                            if (shift != "" && process != null)
-                            {
-                                ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                                                        (YCTestSummaryModel.machineCategory == categoryName)
-                                                        && YCTestSummaryModel.machineID == machineID
-                                                        && YCTestSummaryModel.shift == shift).ToList();
-                            }
-                            else if (shift == "" && process != null)
-                            {
-                                ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                                                        (YCTestSummaryModel.machineCategory == categoryName)
-                                                        && YCTestSummaryModel.machineID == machineID).ToList();
-                            }
-                            else if (shift != "" && process == null)
-                            {
-                                ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                                                        (YCTestSummaryModel.machineCategory == categoryName)
-                                                        && YCTestSummaryModel.machineID == machineID
-                                                        && YCTestSummaryModel.shift == shift).ToList();
-                            }
-                            else if (shift == "" && process == null)
-                            {
-                                ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                                                        (YCTestSummaryModel.machineCategory == categoryName)
-                                                        && YCTestSummaryModel.machineID == machineID).ToList();
-                            }
+                            //if (shift != "" && process != null)
+                            //{
+                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
+                            //                            (YCTestSummaryModel.machineCategory == categoryName)
+                            //                            && YCTestSummaryModel.machineID == machineID
+                            //                            && YCTestSummaryModel.shift == shift).ToList();
+                            //}
+                            //else if (shift == "" && process != null)
+                            //{
+                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
+                            //                            (YCTestSummaryModel.machineCategory == categoryName)
+                            //                            && YCTestSummaryModel.machineID == machineID).ToList();
+                            //}
+                            //else if (shift != "" && process == null)
+                            //{
+                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
+                            //                            (YCTestSummaryModel.machineCategory == categoryName)
+                            //                            && YCTestSummaryModel.machineID == machineID
+                            //                            && YCTestSummaryModel.shift == shift).ToList();
+                            //}
+                            //else if (shift == "" && process == null)
+                            //{
+                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
+                            //                            (YCTestSummaryModel.machineCategory == categoryName)
+                            //                            && YCTestSummaryModel.machineID == machineID).ToList();
+                            //}
 
                         }
                     }
 
 
 
-                    if (matType!="" && materialLength != "")
-                    {
-                        decimal yarnLength = 0.00m;
-                        try
-                        {
-                            yarnLength = decimal.Parse(materialLength);
-                        }catch(Exception){
-                            DisplayAlert("Attention", "Invalid unit length!!!", "OK");
-                            return;
-                        }
-                        //ycTestSummaryModels = ycTestSummaryModels.Where(YCTestSummaryModel => (YCTestSummaryModel.yarnlength == yarnLength
-                        //                        &&YCTestSummaryModel.yarnlenunit==matType)).ToList();
-                    }
+                    //if (matType!="" && materialLength != "")
+                    //{
+                    //    decimal yarnLength = 0.00m;
+                    //    try
+                    //    {
+                    //        yarnLength = decimal.Parse(materialLength);
+                    //    }catch(Exception){
+                    //        DisplayAlert("Attention", "Invalid unit length!!!", "OK");
+                    //        return;
+                    //    }
+                    //    //ycTestSummaryModels = ycTestSummaryModels.Where(YCTestSummaryModel => (YCTestSummaryModel.yarnlength == yarnLength
+                    //    //                        &&YCTestSummaryModel.yarnlenunit==matType)).ToList();
+                    //}
 
 
 
@@ -353,10 +353,10 @@ namespace TQM
                         //{
                         //    ycTestSummaryModels = ycTestSummaryModels.Where(t => t.testID == long.Parse(testID)).ToList();
                         //}
-                        if (standHank != "")
-                        {
-                            //ycTestSummaryModels = ycTestSummaryModels.Where(t => t.standardHank == Decimal.Parse(standHank)).ToList();
-                        }
+                        //if (standHank != "")
+                        //{
+                        //    //ycTestSummaryModels = ycTestSummaryModels.Where(t => t.standardHank == Decimal.Parse(standHank)).ToList();
+                        //}
                         if (ycTestSummaryModels.Count == 0)
                         {
                             DisplayAlert("Notice", "No records to display!!!", "OK");

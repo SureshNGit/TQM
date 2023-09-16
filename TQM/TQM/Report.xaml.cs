@@ -10,6 +10,7 @@ namespace TQM
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Report : ContentPage
     {
+        private string selectedCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
         public Report()
@@ -88,7 +89,7 @@ namespace TQM
         {
             try
             {
-                picker_reportName.SelectedIndex = 0;
+                //picker_reportName.SelectedIndex = 0;
                 selectedMachineID = Guid.Empty;
                 selectedMachineName = null;
                 date_fromdate.Date = DateTime.Now;
@@ -105,9 +106,9 @@ namespace TQM
         {
             try
             {
-                if (picker_reportName.SelectedIndex <= 0)
+                if (picker_reportType.SelectedIndex <= 0)
                 {
-                    DisplayAlert("Attention", "Please select report name to proceed!!!", "OK");
+                    DisplayAlert("Attention", "Please select report type to proceed!!!", "OK");
                     return;
                 }
                 if (date_enddate.Date < date_fromdate.Date)
@@ -120,18 +121,23 @@ namespace TQM
                     DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
                     return;
                 }
+                if (picker_machinecategory.SelectedIndex <= 0)
+                {
+                    DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
+                    return;
+                }
                 string testID = "";
                 if (entry_testID.Text.Trim() != "")
                 {
-                    //if (entry_testID.Text.Contains("."))
-                    //{
-                    //    DisplayAlert("Attention", "Test ID should not be decimal", "OK");
-                    //    return;
-                    //}
-                    //else
-                    //{
+                    if (entry_testID.Text.Contains("."))
+                    {
+                        DisplayAlert("Attention", "Test ID should not be decimal", "OK");
+                        return;
+                    }
+                    else
+                    {
                         testID = entry_testID.Text.Trim();
-                    //}
+                    }
                     if (entry_testID.Text.Contains("."))
                     {
                         long startTestID = long.Parse(testID.Split('.')[0]);
@@ -143,63 +149,45 @@ namespace TQM
                         }
                     }
                 }
-                string matType = "";
-                if (picker_matType.SelectedItem != null)
+
+                string drumNumber = "";
+                if (picker_drumNumber.SelectedItem != null)
                 {
-                    matType = picker_matType.SelectedItem.ToString();
-                }
-                string materialLength = "";
-                if (entry_materialLength.Text.Trim() != "")
-                {
-                    if (entry_materialLength.Text.Contains("-"))
+                    if (picker_drumNumber.SelectedItem.ToString().Trim() != "")
                     {
-                        DisplayAlert("Attention", "Unit length should not be a negative value", "OK");
+                        if (picker_drumNumber.SelectedItem.ToString().Contains("."))
+                        {
+                            DisplayAlert("Attention", "Drum number should not be decimal", "OK");
+                            return;
+                        }
+                        else
+                        {
+                            drumNumber = picker_drumNumber.SelectedItem.ToString().Trim();
+                        }
+                    }
+                }
+
+                string standardStrength = "";
+
+                if (entry_stdStrength.Text.Trim() != "")
+                {
+                    if (entry_stdStrength.Text.Trim().Contains("-"))
+                    {
+                        DisplayAlert("Attention", "Standard Strength should not be a negative value!!!", "Ok");
                         return;
                     }
-                    else
+                    if (entry_stdStrength.Text.Trim() == "" || decimal.Parse(entry_stdStrength.Text.Trim()) == 0)
                     {
-                        materialLength = entry_materialLength.Text.Trim();
-                    }
-                }
-                if (matType != "")
-                {
-                    if (materialLength == "")
-                    {
-                        DisplayAlert("Attention", "Unit length should not be blank if Unit is selected", "OK");
+                        DisplayAlert("Attention", "Standard Strength should not be blank or zero!!!", "Ok");
                         return;
                     }
+                    standardStrength = entry_stdStrength.Text.Trim();
                 }
-                if (materialLength != "")
-                {
-                    if (matType == "")
-                    {
-                        DisplayAlert("Attention", "Unit should not be blank if Unit length is entered", "OK");
-                        return;
-                    }
-                }
-                string standHank = "";
-                if (entry_standHank.Text.Trim() != "")
-                {
-                    if (entry_standHank.Text.Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Standard Hank should not be decimal", "OK");
-                        return;
-                    }
-                    else
-                    {
-                        standHank = entry_standHank.Text.Trim();
-                    }
-                }
-                string selectedCategory = null;
+
                 string shift = "";
                 if (picker_shift.SelectedItem != null)
                 {
                     shift = picker_shift.SelectedItem.ToString();
-                }
-                string process = null;
-                if (picker_process.SelectedItem != null)
-                {
-                    process = picker_process.SelectedItem.ToString();
                 }
                 string reportType = null;
                 if (picker_reportType.SelectedItem != null)
@@ -240,36 +228,24 @@ namespace TQM
                 }
                 bool is_consolidated = false;
                 if (reportType == "Consolidated") { is_consolidated = true; }
-                if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
-                if (picker_reportName.SelectedItem.ToString() == "Wrapping")
+                if (is_consolidated)
                 {
-                    if (is_consolidated)
+                    if (selectedCategory == null || selectedCategory == "")
                     {
-                        //if ((selectedCategory == null || selectedMachineID == Guid.Empty) && standHank == "")
-                        if (selectedCategory == null || selectedCategory == "")
-                        {
-                            DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
-                            return;
-                        }
+                        DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
+                        return;
                     }
-                    Navigation.PushAsync(new YCReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, standHank, false, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
                 }
-                //else if (picker_reportName.SelectedItem.ToString() == "A%")
-                //{
-                //    Navigation.PushAsync(new YCApercentReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, false));
-                //}
-                //else if (picker_reportName.SelectedItem.ToString() == "Stretch")
-                //{
-                //    Navigation.PushAsync(new StretchReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, false));
-                //}
-                //else if (picker_reportName.SelectedItem.ToString() == "Noils")
-                //{
-                //    Navigation.PushAsync(new NoilsReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, false));
-                //}
+                else
+                {
+                    if (picker_machinename.SelectedIndex <= 0)
+                    {
+                        DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
+                        return;
+                    }
+                }
+                Navigation.PushAsync(new YCReport
+                    (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength , false, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
             catch (Exception ex)
             {
@@ -286,6 +262,26 @@ namespace TQM
                 selectedMachineID = (Guid)source[picker_machinename.SelectedIndex].ID;
                 MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
                 selectedMachineName = selectedMachine.machineName;
+                picker_drumNumber.SelectedIndex = -1;
+                picker_drumNumber.Items.Clear();
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<ConfigModel>();
+                    ConfigModel yarncountconfigmodel = conn.Table<ConfigModel>().Where(ConfigModel =>
+                                                                (ConfigModel.machineCategory == selectedCategory &&
+                                                                ConfigModel.machineID == selectedMachineID &&
+                                                                ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
+                    if (yarncountconfigmodel != null)
+                    {
+                        List<string> drums = new List<string>();
+                        int totalDrums = yarncountconfigmodel.totalDrumCount;
+                        for (int d = 0; d < totalDrums; d++)
+                        {
+                            picker_drumNumber.Items.Add((d + 1).ToString());
+                        }
+
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -297,22 +293,16 @@ namespace TQM
         {
             try
             {
+                picker_drumNumber.SelectedIndex = -1;
+                picker_drumNumber.Items.Clear();
                 if (picker_machinecategory.SelectedItem == null) { return; }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    string selectedCategory = picker_machinecategory.SelectedItem.ToString();
+                    selectedCategory = picker_machinecategory.SelectedItem.ToString();
                     conn.CreateTable<MachineModel>();
                     List<MachineModel> machines = conn.Table<MachineModel>().Where(
                         MachineModel => MachineModel.machineCategory == selectedCategory).ToList();
                     picker_machinename.ItemsSource = machines;
-                    if (selectedCategory == "Spinning" || selectedCategory == "Winding")
-                    {
-                        lbl_stadHank.Text = "Std. Count:";
-                    }
-                    else
-                    {
-                        lbl_stadHank.Text = "Std. Hank:";
-                    }
                 }
             }
             catch (Exception ex)
@@ -325,9 +315,9 @@ namespace TQM
         {
             try
             {
-                if (picker_reportName.SelectedIndex <= 0)
+                if (picker_reportType.SelectedIndex <= 0)
                 {
-                    DisplayAlert("Attention", "Please select report name to proceed!!!", "OK");
+                    DisplayAlert("Attention", "Please select report type to proceed!!!", "OK");
                     return;
                 }
                 if (date_enddate.Date < date_fromdate.Date)
@@ -340,6 +330,12 @@ namespace TQM
                     DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
                     return;
                 }
+                if (picker_machinecategory.SelectedIndex <= 0)
+                {
+                    DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
+                    return;
+                }
+                
                 string testID = "";
                 if (entry_testID.Text.Trim() != "")
                 {
@@ -353,63 +349,46 @@ namespace TQM
                         testID = entry_testID.Text.Trim();
                     }
                 }
-                string matType = "";
-                if (picker_matType.SelectedItem != null)
+
+                string drumNumber = "";
+                if (picker_drumNumber.SelectedItem != null)
                 {
-                    matType = picker_matType.SelectedItem.ToString();
-                }
-                string materialLength = "";
-                if (entry_materialLength.Text.Trim() != "")
-                {
-                    if (entry_materialLength.Text.Contains("."))
+                    if (picker_drumNumber.SelectedItem.ToString().Trim() != "")
                     {
-                        DisplayAlert("Attention", "Unit length should not be decimal", "OK");
+                        if (picker_drumNumber.SelectedItem.ToString().Contains("."))
+                        {
+                            DisplayAlert("Attention", "Drum number should not be decimal", "OK");
+                            return;
+                        }
+                        else
+                        {
+                            drumNumber = picker_drumNumber.SelectedItem.ToString().Trim();
+                        }
+                    }
+                }
+
+                string standardStrength = "";
+               
+                if (entry_stdStrength.Text.Trim() != "")
+                {
+                    if (entry_stdStrength.Text.Trim().Contains("-"))
+                    {
+                        DisplayAlert("Attention", "Standard Strength should not be a negative value!!!", "Ok");
                         return;
                     }
-                    else
+                    if (entry_stdStrength.Text.Trim() == "" || decimal.Parse(entry_stdStrength.Text.Trim()) == 0)
                     {
-                        materialLength = entry_materialLength.Text.Trim();
-                    }
-                }
-                if(matType != "")
-                {
-                    if (materialLength == "")
-                    {
-                        DisplayAlert("Attention", "Unit length should not be blank if Unit is selected", "OK");
+                        DisplayAlert("Attention", "Standard Strength should not be blank or zero!!!", "Ok");
                         return;
                     }
+                    standardStrength = entry_stdStrength.Text.Trim();
                 }
-                if (materialLength != "")
-                {
-                    if (matType == "")
-                    {
-                        DisplayAlert("Attention", "Unit should not be blank if Unit length is entered", "OK");
-                        return;
-                    }
-                }
-                string standHank = "";
-                if (entry_standHank.Text.Trim() != "")
-                {
-                    if (entry_standHank.Text.Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Standard Hank should not be decimal", "OK");
-                        return;
-                    }
-                    else
-                    {
-                        standHank = entry_standHank.Text.Trim();
-                    }
-                }
-                string selectedCategory = null;
+                
+
                 string shift = "";
                 if (picker_shift.SelectedItem != null)
                 {
                     shift = picker_shift.SelectedItem.ToString();
-                }
-                string process = null;
-                if (picker_process.SelectedItem != null)
-                {
-                    process = picker_process.SelectedItem.ToString();
                 }
                 string reportType = null;
                 if (picker_reportType.SelectedItem != null)
@@ -451,35 +430,24 @@ namespace TQM
                 bool is_consolidated = false;
                 if (reportType == "Consolidated") { is_consolidated = true; }
                 if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
-                if (picker_reportName.SelectedItem.ToString() == "Wrapping")
+                if (is_consolidated)
                 {
-                    if (is_consolidated)
+                    if (selectedCategory == null || selectedCategory == "")
                     {
-                        //if ((selectedCategory == null || selectedMachineID == Guid.Empty) && standHank == "")
-                        if (selectedCategory == null || selectedCategory == "")
-                        {
-                            DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
-                            return;
-                        }
+                        DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
+                        return;
                     }
-                    Navigation.PushAsync(new YCReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, standHank, true, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
                 }
-                //else if (picker_reportName.SelectedItem.ToString() == "A%")
-                //{
-                //    Navigation.PushAsync(new YCApercentReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, true));
-                //}
-                //else if (picker_reportName.SelectedItem.ToString() == "Stretch")
-                //{
-                //    Navigation.PushAsync(new StretchReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, true));
-                //}
-                //else if (picker_reportName.SelectedItem.ToString() == "Noils")
-                //{
-                //    Navigation.PushAsync(new NoilsReport
-                //        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, true));
-                //}
+                else
+                {
+                    if (picker_machinename.SelectedIndex <= 0)
+                    {
+                        DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
+                        return;
+                    }
+                }
+                Navigation.PushAsync(new YCReport
+                    (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength, true, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
             catch (Exception ex)
             {
@@ -494,33 +462,15 @@ namespace TQM
                 string selectedReportType = picker_reportType.SelectedItem.ToString();
                 if (selectedReportType == "Consolidated")
                 {
-                    var lst_reportName = new List<string>();
-                    lst_reportName.Add("");
-                    lst_reportName.Add("Wrapping");
-                    picker_reportName.ItemsSource = lst_reportName;
-                    picker_reportName.SelectedItem = "Wrapping";
                     lbl_testID.IsVisible = false;
                     entry_testID.IsVisible = false;
                     btn_deleteRecords.IsVisible = false;
-                    picker_reportName.IsEnabled = false;
-                    //lbl_stadHank.IsVisible = true;
-                    //entry_standHank.IsVisible = true;
                 }
                 else
                 {
-                    var lst_reportName = new List<string>();
-                    lst_reportName.Add("");
-                    lst_reportName.Add("Wrapping");
-                    lst_reportName.Add("A%");
-                    lst_reportName.Add("Stretch");
-                    lst_reportName.Add("Noils");
-                    picker_reportName.ItemsSource = lst_reportName;
                     lbl_testID.IsVisible = true;
                     entry_testID.IsVisible = true;
                     btn_deleteRecords.IsVisible = true;
-                    picker_reportName.IsEnabled = true;
-                    //lbl_stadHank.IsVisible = false;
-                    //entry_standHank.IsVisible = false;
                 }
             }
             catch (Exception ex)
@@ -528,62 +478,6 @@ namespace TQM
                 DisplayAlert("Notice-ReportType", ex.Message.ToString(), "Ok");
             }
 
-        }
-
-        private void picker_reportName_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                if (picker_reportName.SelectedItem == null) { return; }
-                string selectedReportName = picker_reportName.SelectedItem.ToString();
-                if (selectedReportName == "Wrapping")
-                {
-                    var lst_macCategory = new List<string>();
-                    lst_macCategory.Add("");
-                    lst_macCategory.Add("Carding");
-                    lst_macCategory.Add("Breaker Drawing");
-                    lst_macCategory.Add("Comber");
-                    lst_macCategory.Add("Drawing");
-                    lst_macCategory.Add("Simplex/SpeedFrame");
-                    lst_macCategory.Add("Spinning");
-                    lst_macCategory.Add("Winding");
-                    picker_machinecategory.ItemsSource = lst_macCategory;
-                }
-                else if (selectedReportName == "A%")
-                {
-                    var lst_macCategory = new List<string>();
-                    //lst_macCategory.Add("");
-                    lst_macCategory.Add("Drawing");
-                    picker_machinecategory.ItemsSource = lst_macCategory;
-                    picker_machinecategory.SelectedIndex = 0;
-                }
-                else if (selectedReportName == "Stretch")
-                {
-                    var lst_macCategory = new List<string>();
-                    //lst_macCategory.Add("");
-                    lst_macCategory.Add("Simplex/SpeedFrame");
-                    picker_machinecategory.ItemsSource = lst_macCategory;
-                    picker_machinecategory.SelectedIndex = 0;
-                }
-                else if (selectedReportName == "Noils")
-                {
-                    var lst_macCategory = new List<string>();
-                    //lst_macCategory.Add("");
-                    lst_macCategory.Add("Comber");
-                    picker_machinecategory.ItemsSource = lst_macCategory;
-                    picker_machinecategory.SelectedIndex = 0;
-                }
-                else
-                {
-                    var lst_macCategory = new List<string>();
-                    lst_macCategory.Add("");
-                    picker_machinecategory.ItemsSource = lst_macCategory;
-                }
-            }
-            catch (Exception ex)
-            {
-                DisplayAlert("Notice-ReportName", ex.Message.ToString(), "Ok");
-            }
         }
     }
 }
