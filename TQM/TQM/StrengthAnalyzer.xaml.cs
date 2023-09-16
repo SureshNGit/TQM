@@ -83,6 +83,7 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 //conn.DropTable<StrengthTestModel>();
+                //conn.DropTable<StrengthTestSummaryModel>();
 
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
@@ -167,7 +168,135 @@ namespace TQM
                 }
 
                 //*************************************************************************************
+                //****************** Resume Test **********************
+                conn.CreateTable<StrengthTestModel>();
+                int totalRecords = conn.Table<StrengthTestModel>().Count();
+                if (totalRecords > 0) { 
+                    DateTime maxDate = conn.Table<StrengthTestModel>().Max(StrengthTestModel => StrengthTestModel.createdate);
+                    if (DateTime.Now <= maxDate)
+                    {
+                        DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
+                        return;
+                    }
+                    StrengthTestModel lastTestRecord = conn.Table<StrengthTestModel>()
+                        .Where(StrengthTestModel => StrengthTestModel.createdate == maxDate).FirstOrDefault();
+                    if (lastTestRecord.totalTestCount != lastTestRecord.sampleNo)
+                    {
+                        currentTestID = lastTestRecord.testID;
+                        lbl_TestID.Text = lastTestRecord.testID.ToString();
+                        currentTestStartTime = null;
+                        currentTestStartTime = lastTestRecord.createdate;
 
+                        IList<string> machineCategorylist = picker_machinecategory.Items;
+                        int machineCatindex = 0;
+                        foreach (string mCat in machineCategorylist)
+                        {
+                            if (mCat != lastTestRecord.machineCategory.ToString())
+                            {
+                                machineCatindex++;
+                            }
+                            else
+                            {
+                                selectedMachineCategory = lastTestRecord.machineCategory.ToString();
+                                break;
+                            }
+                        }
+                        picker_machinecategory.SelectedIndex = machineCatindex;
+                        if (machineCatindex != 0) { selectedMachineCategory = machineCategorylist[machineCatindex]; }
+
+                        IList<string> machinelist = picker_machinename.Items;
+                        int machineindex = 0;
+                        foreach (string m in machinelist)
+                        {
+                            if (m != lastTestRecord.machineName.ToString())
+                            {
+                                machineindex++;
+                            }
+                            else
+                            {
+                                selectedMachineID = lastTestRecord.machineID;
+                                selectedMachineName = lastTestRecord.machineName.ToString();
+                                break;
+                            }
+                        }
+                        picker_machinename.SelectedIndex = machineindex;
+
+                        IList<string> drumNumberlist = picker_drumNumber.Items;
+                        int drumNumberindex = 0;
+                        foreach (string drum in drumNumberlist)
+                        {
+                            if (drum != lastTestRecord.drumNumber.ToString())
+                            {
+                                drumNumberindex++;
+                            }
+                            else
+                            {
+                                selectedDrumNumber = lastTestRecord.drumNumber;
+                                break;
+                            }
+                        }
+                        picker_drumNumber.SelectedIndex = drumNumberindex;
+
+                        entry_stdStrength.Text = lastTestRecord.standardStrength.ToString();
+                        entry_strengthDeviation.Text = lastTestRecord.strengthDeviation.ToString();
+                        entry_belowLimit.Text = lastTestRecord.belowLimit.ToString();
+                        entry_numberOfTest.Text = lastTestRecord.totalTestCount.ToString();
+
+                        IList<string> drumSelectionMethodlist = picker_drumSelection.Items;
+                        int drumSelectionMethodindex = 0;
+                        foreach (string drum in drumSelectionMethodlist)
+                        {
+                            if (drum != lastTestRecord.drumSelectionMethod.ToString())
+                            {
+                                drumSelectionMethodindex++;
+                            }
+                            else
+                            {
+                                selectedDrumSelectionMethod = lastTestRecord.drumSelectionMethod;
+                                break;
+                            }
+                        }
+                        picker_drumSelection.SelectedIndex = drumSelectionMethodindex;
+                        picker_drumSelection.IsEnabled = false;
+
+
+                        List<StrengthTestModel> allIncompleteTests = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
+                                                                     (StrengthTestModel.testID == lastTestRecord.testID))
+                                                                    .OrderBy(StrengthTestModel => StrengthTestModel.testID).ToList();
+
+                        if (allIncompleteTests.Count > 0)
+                        {
+                            StrengthTestModelViewlist = new List<StrengthTestModelView>();
+                            foreach (StrengthTestModel test in allIncompleteTests)
+                            {
+                                StrengthTestModelView strengthTestModelView = new StrengthTestModelView()
+                                {
+                                    testID = currentTestID,
+                                    userID = test.userID,
+                                    userName = test.userName,
+                                    machineID = test.machineID,
+                                    machineCategory = test.machineCategory,
+                                    machineName = test.machineName,
+                                    drumNumber = test.drumNumber,
+                                    standardStrength = test.standardStrength,
+                                    strengthDeviation = test.strengthDeviation,
+                                    belowLimit = test.belowLimit,
+                                    totalTestCount = test.totalTestCount,
+                                    drumSelectionMethod = test.drumSelectionMethod,
+                                    sampleNo = test.sampleNo,
+                                    sampleStrengthCount = test.sampleStrengthCount,
+                                    shift = test.shift
+                                };
+                                StrengthTestModelViewlist.Add(strengthTestModelView);
+                            }
+                            refListView(true);
+                        }
+
+                        testYCButton.Text = "Resume";
+                        testYCButton.BackgroundColor = Color.MediumVioletRed;
+                    }
+                }
+                //*************************************************************************************
             }
         }
 
@@ -566,7 +695,7 @@ namespace TQM
             try
             {
                 current_stable_data = 0;
-                currentTestStartTime = null;
+                
                 if (fullreset) { ImageNotification(null); UpdateUserNotification(""); isTestCompleted = true; }
                 if (dispose) { disposeble(); }
                 Device.BeginInvokeOnMainThread(() =>
@@ -577,15 +706,33 @@ namespace TQM
                         {
                             if (selectedTotalTestCount != StrengthTestModelViewlist.Count())
                             {
-                                //ImageNotification("red.png");
-                                //UpdateUserNotification("IMPROPER TEST!!!");
-                                //showAlert("Improper Test!!!");
+                                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                                {
+                                    StrengthTestModel lastTestRecord = conn.Table<StrengthTestModel>()
+                                                                        .Where(StrengthTestModel => StrengthTestModel.testID == currentTestID)
+                                                                        .OrderByDescending(StrengthTestModel=>StrengthTestModel.sampleNo)
+                                                                        .FirstOrDefault();
+                                    if (lastTestRecord ==null || (lastTestRecord.totalTestCount != lastTestRecord.sampleNo))
+                                    {
+                                        //ImageNotification("red.png");
+                                        //UpdateUserNotification("IN-COMPLETE TEST!!!");
+                                        //showAlert("In-complete Test!!!");
+                                        testYCButton.Text = "Resume";
+                                        testYCButton.BackgroundColor = Color.IndianRed;
+                                        testYCButton.TextColor = Color.White;
+                                        testYCButton.IsEnabled = true;
+                                    }
+                                }
                             }
                             else
                             {
+                                frame_overallSummary.IsVisible = false;
+                                individualTestResultFrame.IsVisible = false;
                                 currentTestID = 0;
+                                currentTestStartTime = null;
                                 showAlert("Test Completed!!! Start new test");
                                 picker_drumSelection.IsEnabled = false;
+                                testYCButton.Text = "Start";
                                 testYCButton.IsEnabled = true;
                                 testYCButton.BackgroundColor = Color.Green;
                                 picker_machinecategory.IsEnabled = true;
@@ -637,9 +784,13 @@ namespace TQM
         {
             ImageNotification("null");
             UpdateUserNotification("");
-            hideFrames();
-            await refListView(false);
-            await refOverallSummary(0.0000m, 0.0000m, false);
+
+            if (testYCButton.Text != "Resume")
+            {
+                hideFrames();
+                await refListView(false);
+                await refOverallSummary(0.0000m, 0.0000m, false);
+            }
 
             //showProgress
             CancellationTokenSource src_p = new CancellationTokenSource();
@@ -657,9 +808,13 @@ namespace TQM
             src_t.Cancel();
             //showToast End
 
-            currentTestStartTime = null;
-            currentTestStartTime = DateTime.Now;
-            lbl_TestID.Text = "";
+            if (testYCButton.Text != "Resume")
+            {
+                currentTestStartTime = null;
+                currentTestStartTime = DateTime.Now;
+                lbl_TestID.Text = "";
+            }
+
             isTestStarted = true;
             isTestCompleted = false;
 
@@ -758,55 +913,59 @@ namespace TQM
 
             string testCount_str = entry_numberOfTest.Text;
             int testCount = int.Parse(testCount_str);
-
-            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-            {
-                StrengthTestModel lastTestRecord = null;
-                conn.CreateTable<StrengthTestModel>();
-                int recordCount = conn.Table<StrengthTestModel>().Count();
-
-                if (recordCount == 0)
+            if (testYCButton.Text != "Resume") {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    currentTestID = 1;
-                }
-                else
-                {
-                    DateTime maxDate = conn.Table<StrengthTestModel>().Max(StrengthTestModel => StrengthTestModel.createdate);
-                    if (DateTime.Now <= maxDate)
+                    StrengthTestModel lastTestRecord = null;
+                    conn.CreateTable<StrengthTestModel>();
+                    int recordCount = conn.Table<StrengthTestModel>().Count();
+
+                    if (recordCount == 0)
                     {
-                        await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
-                        _ = showProgress(false);
-                        return;
-                    }
-                    lastTestRecord = conn.Table<StrengthTestModel>()
-                        .Where(StrengthTestModel => StrengthTestModel.createdate == maxDate).FirstOrDefault();
-                    if (lastTestRecord != null)
-                    {
-                        if (currentTestID == 0)
-                        {
-                            currentTestID = lastTestRecord.testID + 1;
-                        }
-                        else if (currentTestID == lastTestRecord.testID)
-                        {
-                            currentTestID = lastTestRecord.testID;
-                        }
+                        currentTestID = 1;
                     }
                     else
                     {
-                        ///to be decided
+                        DateTime maxDate = conn.Table<StrengthTestModel>().Max(StrengthTestModel => StrengthTestModel.createdate);
+                        if (DateTime.Now <= maxDate)
+                        {
+                            await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
+                            _ = showProgress(false);
+                            return;
+                        }
+                        lastTestRecord = conn.Table<StrengthTestModel>()
+                            .Where(StrengthTestModel => StrengthTestModel.createdate == maxDate).FirstOrDefault();
+                        if (lastTestRecord != null)
+                        {
+                            if (currentTestID == 0)
+                            {
+                                currentTestID = lastTestRecord.testID + 1;
+                            }
+                            else if (currentTestID == lastTestRecord.testID)
+                            {
+                                currentTestID = lastTestRecord.testID;
+                            }
+                        }
+                        else
+                        {
+                            ///to be decided
+                        }
                     }
                 }
                 lbl_TestID.Text = currentTestID.ToString();
-                UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
-                if (loggedInUser == null)
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    await DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
-                    _ = showProgress(false);
-                    return;
-                }
-                else
-                {
-                    currentloggedInUser = loggedInUser;
+                    UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                    if (loggedInUser == null)
+                    {
+                        await DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                        _ = showProgress(false);
+                        return;
+                    }
+                    else
+                    {
+                        currentloggedInUser = loggedInUser;
+                    }
                 }
             }
 
@@ -818,7 +977,7 @@ namespace TQM
             selectedTotalTestCount = int.Parse(entry_numberOfTest.Text);
             selectedDrumSelectionMethod = picker_drumSelection.SelectedItem.ToString();
             selectedShift = picker_shift.SelectedItem.ToString();
-            StrengthTestModelViewlist = new List<StrengthTestModelView>();
+            if (testYCButton.Text != "Resume") { StrengthTestModelViewlist = new List<StrengthTestModelView>(); }
             testYCButton.IsEnabled = false;
             testYCButton.BackgroundColor = Color.SlateGray;
 
@@ -851,7 +1010,9 @@ namespace TQM
                 //ImageNotification("loading.gif");
                 bool runResult = false;
                 int passCount = 0;
-                for (int i = 0; i < testCount; i++)
+                int loopStartNo = 0;
+                if (testYCButton.Text == "Resume") { loopStartNo = StrengthTestModelViewlist.Count; passCount= StrengthTestModelViewlist.Count; }
+                for (int i = loopStartNo; i < testCount; i++)
                 {
                     currentTestCount = i + 1;
                     runResult = false;
@@ -1548,8 +1709,10 @@ namespace TQM
                             StrengthTestModel selectedDrumTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
                                                                 (StrengthTestModel.drumNumber == selectedDrumNumber
                                                                 && (StrengthTestModel.createdate >= startDate
-                                                                || StrengthTestModel.createdate <= endDate))).FirstOrDefault();
-                            if (selectedDrumTest != null)
+                                                                || StrengthTestModel.createdate <= endDate)))
+                                                                .OrderByDescending(StrengthTestModel=>StrengthTestModel.sampleNo)
+                                                                .FirstOrDefault();
+                            if (selectedDrumTest != null && (selectedDrumTest.totalTestCount== selectedDrumTest.sampleNo))
                             {
                                 //DisplayAlert("Attention", "Test already completed for Drum Number ("
                                 //                + selectedDrumNumber.ToString() + ") on "
