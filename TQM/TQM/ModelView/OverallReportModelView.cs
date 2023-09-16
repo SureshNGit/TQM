@@ -10,25 +10,20 @@ namespace TQM.ModelView
         public string userName { get; set; }
         public string machineCategory { get; set; }
         public string machineName { get; set; }
+        public int drumNumber { get; set; }
+        public decimal standardStrength { get; set; }
+        public decimal strengthDeviation { get; set; }
+        public int belowLimit { get; set; }
+        public int totalTestCount { get; set; }
+        public string drumSelectionMethod { get; set; }
+        public decimal yarnStrength { get; set; }
         public string shift { get; set; }
-        public string process { get; set; }
-        public string countsysname { get; set; }
-        public string yarnlenunit { get; set; }
-        public decimal yarnlength { get; set; }
-        public int totaltestcount { get; set; }
-        public decimal testaverage { get; set; }
-        public decimal standardHank { get; set; }
-        public decimal testsd { get; set; }
-        public decimal testcv { get; set; }
         public string testRemark { get; set; }
-        public bool isSpinning { get; set; } = false;
-        public bool otherThanSpinning { get; set; } = false;
         public bool isIndividualReport { get; set; } = true;
         public bool isConsolidatedReport { get; set; } = false;
         public string testDuration { get; set; }
         public string deviationPercent { get; set; }
-        public string hankColor { get; set; } = "Green";
-        public string hankColorGg { get; set; } = "White";
+        public string testResultColor { get; set; } = "White";
         public bool DispUF_1 { get; set; } = false;
         public bool DispUF_2 { get; set; } = false;
         public bool DispUF_2_Col1 { get; set; } = false;
@@ -47,7 +42,7 @@ namespace TQM.ModelView
         public bool remark_2 { get; set; } = false;
         public bool remark_3 { get; set; } = false;
         public DateTime createdate { get; set; }
-        public List<StrengthTestModel> yctestlist => this;
+        public List<StrengthTestModel> strengthtestlist => this;
     }
 
 

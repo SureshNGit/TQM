@@ -21,6 +21,7 @@ namespace TQM.Model
         public decimal standardStrength { get; set; }
         public decimal strengthDeviation { get; set; }
         public int belowLimit { get; set; }
+        public int qualifiedTestCount { get; set; }
         public int totalTestCount { get; set; }
         public string drumSelectionMethod { get; set; }
         public decimal yarnStrength { get; set; }
@@ -32,6 +33,9 @@ namespace TQM.Model
         public string uf_value_3 { get; set; }
         public string uf_value_4 { get; set; }
         public DateTime createdate { get; set; }
+        public DateTime scheduledStartDate { get; set; }
+        public DateTime scheduledEndDate { get; set; }
+        public DateTime settingsUpdatedDate { get; set; }
         public bool dataSyncStatus { get; set; } = false;
     }
 }

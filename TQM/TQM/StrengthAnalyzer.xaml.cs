@@ -34,6 +34,8 @@ namespace TQM
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class StrengthAnalyzer : ContentPage, INotifyPropertyChanged
     {
+
+        private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
         private BluetoothSocket _socket;
         BluetoothAdapter adapter;
         BluetoothDevice device;
@@ -56,6 +58,9 @@ namespace TQM
         private int selectedTotalTestCount = 0;
         private string selectedDrumSelectionMethod = null;
         private string selectedShift = null;
+        private DateTime scheduledStartDate = DEFAULTDATE;
+        private DateTime scheduledEndDate = DEFAULTDATE;
+        private DateTime settingsUpdatedDate = DEFAULTDATE;
         private string UFVAL1 = null;
         private string UFVAL2 = null;
         private string UFVAL3 = null;
@@ -71,7 +76,6 @@ namespace TQM
         private dynamic currentTestStartTime = null;
         private RunConfiguration runConfiguration = new RunConfiguration();
         private bool toastInitialize = false;
-        private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
         private bool isTestCompleted = false;
 
         public StrengthAnalyzer()
@@ -186,6 +190,10 @@ namespace TQM
                         lbl_TestID.Text = lastTestRecord.testID.ToString();
                         currentTestStartTime = null;
                         currentTestStartTime = lastTestRecord.createdate;
+
+                        scheduledStartDate = lastTestRecord.scheduledStartDate;
+                        scheduledEndDate = lastTestRecord.scheduledEndDate;
+                        settingsUpdatedDate = lastTestRecord.settingsUpdatedDate;
 
                         IList<string> machineCategorylist = picker_machinecategory.Items;
                         int machineCatindex = 0;
@@ -334,7 +342,9 @@ namespace TQM
             if (!isTestCompleted) { hideFrames(); }
             if (mCat == "" && mid == Guid.Empty && mac == "")
             {
-                //selectedDeviationPercent = 0m;
+                scheduledStartDate = DEFAULTDATE;
+                scheduledEndDate = DEFAULTDATE;
+                settingsUpdatedDate = DEFAULTDATE;
                 picker_drumNumber.ItemsSource = null;
                 entry_stdStrength.Text = "";
                 entry_strengthDeviation.Text = "";
@@ -353,38 +363,12 @@ namespace TQM
                                                             ConfigModel.machineName == mac)).FirstOrDefault();
                 if (yarncountconfigmodel != null)
                 {
-                    //selectedDeviationPercent = yarncountconfigmodel.deviationPercent;
-                    //lbl_countsysname.Text = yarncountconfigmodel.countsysname;
-                    //picker_yarncountunit.SelectedItem = yarncountconfigmodel.yarnlenunit.ToString();
-                    //if (mCat == "Simplex/SpeedFrame")
-                    //{
-                    //    entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
-                    //}
-                    //else if (mCat == "Spinning" || mCat == "Winding")
-                    //{
-                    //    entry_yarnlen.Text = yarncountconfigmodel.lealength.ToString();
-                    //}
-                    //else
-                    //{
-                    //    entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
-                    //}
-                    //entry_testcount.Text = yarncountconfigmodel.testcount.ToString();
-                    //TESTCOUNT = yarncountconfigmodel.testcount;
-                    //entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
-                    //STD_HANK = formatDecimal(yarncountconfigmodel.standardHank);
-                    //STD_HANK_CURR = formatDecimal(yarncountconfigmodel.standardHank);
-
                     List<string> drums = new List<string>();
                     int totalDrums = yarncountconfigmodel.totalDrumCount;
                     for(int d = 0; d < totalDrums; d++)
                     {
-                        //drums.Add((d + 1).ToString());
                         picker_drumNumber.Items.Add((d + 1).ToString());
                     }
-                    //picker_drumNumber.ItemsSource = drums;
-
-
-
                     TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
                     TimeSpan shit3time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift3time).TotalHours);
@@ -662,6 +646,7 @@ namespace TQM
                     standardStrength = StrengthTestModelViewlist[0].standardStrength,
                     strengthDeviation = StrengthTestModelViewlist[0].strengthDeviation,
                     belowLimit = StrengthTestModelViewlist[0].belowLimit,
+                    qualifiedTestCount = qualifiedTest,
                     totalTestCount = StrengthTestModelViewlist[0].totalTestCount,
                     drumSelectionMethod = StrengthTestModelViewlist[0].drumSelectionMethod,
                     yarnStrength = strength,
@@ -671,6 +656,9 @@ namespace TQM
                     uf_value_2 = UFVAL2,
                     uf_value_3 = UFVAL3,
                     uf_value_4 = UFVAL4,
+                    scheduledStartDate = scheduledStartDate,
+                    scheduledEndDate = scheduledEndDate,
+                    settingsUpdatedDate = settingsUpdatedDate,
                     createdate = DateTime.Now
                 };
 
@@ -1081,7 +1069,10 @@ namespace TQM
                             sampleNo = i + 1,
                             sampleStrengthCount = current_stable_data,
                             shift = selectedShift,
-                            createdate=DateTime.Now
+                            scheduledStartDate=scheduledStartDate,
+                            scheduledEndDate=scheduledEndDate,
+                            settingsUpdatedDate=settingsUpdatedDate,
+                            createdate = DateTime.Now
                         };
                         int row = 0;
                         using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -1371,41 +1362,13 @@ namespace TQM
                 if (selectedMachineCategory == "" || selectedMachineCategory == null)
                 {
                     picker_machinename.ItemsSource = null;
-                    //lbl_standHank.Text = "Standard Hank";
                 }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     conn.CreateTable<MachineModel>();
                     List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
                     picker_machinename.ItemsSource = machineModelList;
-
-                    //conn.CreateTable<YarnCountConfigModel>();
-                    //YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
-                    //if (yarncountconfigmodel != null)
-                    //{
-                    //    if (selectedMachineCategory == "Simplex/SpeedFrame")
-                    //    {
-                    //        entry_yarnlen.Text = yarncountconfigmodel.rovinglength.ToString();
-                    //    }
-                    //    else
-                    //    {
-                    //        entry_yarnlen.Text = yarncountconfigmodel.sliverlength.ToString();
-                    //    }
-
-                    //}
-                    //else
-                    //{
-                    //    entry_yarnlen.Text = "";
-                    //}
                 }
-                //if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-                //{
-                //    lbl_standHank.Text = "Standard Count";
-                //}
-                //else
-                //{
-                //    lbl_standHank.Text = "Standard Hank";
-                //}
                 populateTestParams("", Guid.Empty, "");
                 getUserfieldConfig("", Guid.Empty, "");
             }
@@ -1515,6 +1478,9 @@ namespace TQM
                 
                 if (picker_drumNumber.SelectedIndex==-1 || picker_drumNumber.SelectedItem.ToString() == "" || picker_drumNumber.SelectedItem.ToString() == null)
                 {
+                    scheduledStartDate = DEFAULTDATE;
+                    scheduledEndDate = DEFAULTDATE;
+                    settingsUpdatedDate = DEFAULTDATE;
                     entry_stdStrength.Text = "";
                     entry_strengthDeviation.Text = "";
                     entry_belowLimit.Text = "";
@@ -1525,6 +1491,7 @@ namespace TQM
                 int selectedDrumNumber = int.Parse(picker_drumNumber.SelectedItem.ToString());
                 DateTime startDate = DEFAULTDATE;
                 DateTime endDate = DEFAULTDATE;
+
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     conn.CreateTable<ConfigModel>();
@@ -1547,6 +1514,10 @@ namespace TQM
 
                             if(selectedDrumNumber>=sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
                             {
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s1;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
+                                settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
                                 startDate = yarncountconfigmodel.scheduledStartDate_s1;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
@@ -1571,6 +1542,10 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
                             {
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s2;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s2;
+                                settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
                                 startDate = yarncountconfigmodel.scheduledStartDate_s2;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s2;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s2.ToString();
@@ -1595,6 +1570,10 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec3_lowerLimit && selectedDrumNumber <= sec3_upperLimit)
                             {
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s3;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s3;
+                                settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
                                 startDate = yarncountconfigmodel.scheduledStartDate_s3;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s3;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s3.ToString();
@@ -1627,6 +1606,10 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
                             {
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s1;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
+                                settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
                                 startDate = yarncountconfigmodel.scheduledStartDate_s1;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
@@ -1651,6 +1634,10 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
                             {
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s2;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s2;
+                                settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
                                 startDate = yarncountconfigmodel.scheduledStartDate_s2;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s2;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s2.ToString();
@@ -1680,6 +1667,10 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
                             {
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s1;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
+                                settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
                                 startDate = yarncountconfigmodel.scheduledStartDate_s1;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();

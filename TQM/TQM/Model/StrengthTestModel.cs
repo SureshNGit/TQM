@@ -26,6 +26,9 @@ namespace TQM.Model
         public int sampleStrengthCount { get; set; }
         public string shift { get; set; }
         public DateTime createdate { get; set; }
+        public DateTime scheduledStartDate { get; set; }
+        public DateTime scheduledEndDate{ get; set; }
+        public DateTime settingsUpdatedDate { get; set; }
         public bool dataSyncStatus { get; set; } = false;
     }
 }

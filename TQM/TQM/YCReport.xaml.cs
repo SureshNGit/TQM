@@ -84,11 +84,11 @@ namespace TQM
             {
                 if (categoryName != null && categoryName != "")
                 {
-                    lbl_reportHeader.Text = "Wrapping Report - " + categoryName;
+                    lbl_reportHeader.Text = "Detailed Report - " + categoryName;
                 }
                 else
                 {
-                    lbl_reportHeader.Text = "Wrapping Report - All";
+                    lbl_reportHeader.Text = "Detailed Report - All";
                 }
             }
             if (deleteRequest)
@@ -110,7 +110,7 @@ namespace TQM
         {
             try
             {
-                decimal stdHank = 0.000m;
+                //decimal stdHank = 0.000m;
                 List<OverallReportModelView> OVS = new List<OverallReportModelView>();
                 List<StrengthTestConsolidatedReportMV> OverallConsolidatedReports = new List<StrengthTestConsolidatedReportMV>();
                 //List<YCTestSummaryModel> ycTestSummaryModels = null;
@@ -238,107 +238,44 @@ namespace TQM
 
                         if (categoryName == null || categoryName == "")
                         {
-                            //endDate = endDate.AddDays(1);
-
-                            //if (shift != "" && process != null)
-                            //{
-                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            //                        (YCTestSummaryModel.shift == shift)).ToList();
-                            //}
-                            ////else if (shift == "" && process != null)
-                            ////{
-                            ////    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            ////                        (YCTestSummaryModel.process.ToLower() == process.ToLower())).ToList();
-                            ////}
-                            //else if (shift != "" && process == null)
-                            //{
-                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            //                        (YCTestSummaryModel.shift == shift)).ToList();
-                            //}
-                            //else if (shift == "" && process == null)
-                            //{
-                            //    ycTestSummaryModels = parentList;
-                            //}
-
+                            DisplayAlert("Notice", "Machine category is blank!!!", "OK");
+                            return;
                         }
                         else if (categoryName != null && machineID == Guid.Empty)
                         {
-                            //endDate = endDate.AddDays(1);
-
-                            //if (shift != "" && process != null)
-                            //{
-                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            //                         (YCTestSummaryModel.machineCategory == categoryName
-                            //                         && YCTestSummaryModel.shift == shift)).ToList();
-                            //}
-                            //else if (shift == "" && process != null)
-                            //{
-                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            //                         (YCTestSummaryModel.machineCategory == categoryName)).ToList();
-                            //}
-                            //else if (shift != "" && process == null)
-                            //{
-                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            //                         (YCTestSummaryModel.machineCategory == categoryName
-                            //                         && YCTestSummaryModel.shift == shift)).ToList();
-                            //}
-                            //else if (shift == "" && process == null)
-                            //{
-                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            //                        (YCTestSummaryModel.machineCategory == categoryName)).ToList();
-                            //}
-
-
+                            DisplayAlert("Notice", "Machine name is blank!!!", "OK");
+                            return;
                         }
-                        else if (categoryName != null && machineID != Guid.Empty)
+
+                        if(drumNumber!=null || drumNumber != "")
                         {
-                            //endDate = endDate.AddDays(1);
-
-                            //if (shift != "" && process != null)
-                            //{
-                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            //                            (YCTestSummaryModel.machineCategory == categoryName)
-                            //                            && YCTestSummaryModel.machineID == machineID
-                            //                            && YCTestSummaryModel.shift == shift).ToList();
-                            //}
-                            //else if (shift == "" && process != null)
-                            //{
-                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            //                            (YCTestSummaryModel.machineCategory == categoryName)
-                            //                            && YCTestSummaryModel.machineID == machineID).ToList();
-                            //}
-                            //else if (shift != "" && process == null)
-                            //{
-                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            //                            (YCTestSummaryModel.machineCategory == categoryName)
-                            //                            && YCTestSummaryModel.machineID == machineID
-                            //                            && YCTestSummaryModel.shift == shift).ToList();
-                            //}
-                            //else if (shift == "" && process == null)
-                            //{
-                            //    ycTestSummaryModels = parentList.Where(YCTestSummaryModel =>
-                            //                            (YCTestSummaryModel.machineCategory == categoryName)
-                            //                            && YCTestSummaryModel.machineID == machineID).ToList();
-                            //}
-
+                            int givenDrumNumber = int.Parse(drumNumber);
+                            parentList = parentList.Where(StrengthTestSummaryModel =>
+                                         (StrengthTestSummaryModel.drumNumber == givenDrumNumber))
+                                        .ToList();
+                            if (parentList.Count == 0)
+                            {
+                                DisplayAlert("Notice", "No records to display!!!", "OK");
+                                return;
+                            }
                         }
+
+                        if (standardStrength != null || standardStrength != "")
+                        {
+                            decimal givenStandardStrength = decimal.Parse(standardStrength);
+                            parentList = parentList.Where(StrengthTestSummaryModel =>
+                                         (StrengthTestSummaryModel.standardStrength == givenStandardStrength))
+                                        .ToList();
+                            if (parentList.Count == 0)
+                            {
+                                DisplayAlert("Notice", "No records to display!!!", "OK");
+                                return;
+                            }
+                        }
+
+                        ycTestSummaryModels = parentList;
+
                     }
-
-
-
-                    //if (matType!="" && materialLength != "")
-                    //{
-                    //    decimal yarnLength = 0.00m;
-                    //    try
-                    //    {
-                    //        yarnLength = decimal.Parse(materialLength);
-                    //    }catch(Exception){
-                    //        DisplayAlert("Attention", "Invalid unit length!!!", "OK");
-                    //        return;
-                    //    }
-                    //    //ycTestSummaryModels = ycTestSummaryModels.Where(YCTestSummaryModel => (YCTestSummaryModel.yarnlength == yarnLength
-                    //    //                        &&YCTestSummaryModel.yarnlenunit==matType)).ToList();
-                    //}
 
 
 
@@ -349,19 +286,6 @@ namespace TQM
                     }
                     else
                     {
-                        //if (testID != "")
-                        //{
-                        //    ycTestSummaryModels = ycTestSummaryModels.Where(t => t.testID == long.Parse(testID)).ToList();
-                        //}
-                        //if (standHank != "")
-                        //{
-                        //    //ycTestSummaryModels = ycTestSummaryModels.Where(t => t.standardHank == Decimal.Parse(standHank)).ToList();
-                        //}
-                        if (ycTestSummaryModels.Count == 0)
-                        {
-                            DisplayAlert("Notice", "No records to display!!!", "OK");
-                            return;
-                        }
                         if (UFVAL1 != "" && UFVAL1 != null)
                         {
                             ycTestSummaryModels = ycTestSummaryModels.Where(t => t.uf_value_1 != null).ToList();
@@ -415,39 +339,19 @@ namespace TQM
                         ycTestSummaryModels = ycTestSummaryModels.OrderBy(YCTestSummaryModel => YCTestSummaryModel.machineName).ToList();
                     }
 
-                    CON_HANK = 0.0000m;
-                    CON_STD_DEV = 0.0000m;
-                    CON_CV = 0.0000m;
-
                     TOT_TEST = ycTestSummaryModels.Count;
                     int counter = 0;
                     foreach (StrengthTestSummaryModel testsummary in ycTestSummaryModels)
                     {
                         OverallReportModelView report = new OverallReportModelView();
                         StrengthTestConsolidatedReportMV consolItems = new StrengthTestConsolidatedReportMV();
-                        List<StrengthTestModel> yctestlist = conn.Table<StrengthTestModel>().Where(StrengthTestModel => StrengthTestModel.testID == testsummary.testID).ToList();
-                        if (yctestlist != null)
+                        List<StrengthTestModel> strengthtestlist = conn.Table<StrengthTestModel>().Where(StrengthTestModel => StrengthTestModel.testID == testsummary.testID).ToList();
+                        if (strengthtestlist != null)
                         {
                             if (consolidatedReport)
                             {
-                                //CON_HANK = CON_HANK + formatDecimal(testsummary.testaverage);
-                                //CON_STD_DEV = CON_STD_DEV + formatDecimal(testsummary.testsd);
-                                //CON_CV = CON_CV + formatDecimal(testsummary.testcv);
                                 if (counter == 0)
                                 {
-                                    if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
-                                    {
-                                        //lbl_con_Hank.Text = "Avg. COUNT : ";
-                                        lbl_conStdHank.Text = "Std. Count";
-                                        lbl_conAvgHank.Text = "Avg. Count";
-                                    }
-                                    else
-                                    {
-                                        //lbl_con_Hank.Text = "Avg. HANK : ";
-                                        lbl_conStdHank.Text = "Std. Hank";
-                                        lbl_conAvgHank.Text = "Avg. Hank";
-                                    }
-
                                     if (UFVAL1 != "" && UFVAL1 != null)
                                     {
                                         ConfigModel ycConfig_uf = conn.Table<ConfigModel>().
@@ -527,59 +431,39 @@ namespace TQM
                                 }
 
 
-                                //decimal maxRangeVal = testsummary.standardHank + (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
-                                //decimal minRangeVal = testsummary.standardHank - (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
-
-                                //decimal maxRangeVal = testsummary.standardHank + testsummary.deviationPercent;
-                                //decimal minRangeVal = testsummary.standardHank - testsummary.deviationPercent;
 
 
-                                //if (testsummary.testaverage < minRangeVal || testsummary.testaverage > maxRangeVal)
-                                //{
-                                //    consolItems.isRed = true;
-                                //    consolItems.isWhite = false;
-                                //}
-                                //else
-                                //{
-                                //    consolItems.isRed = false;
-                                //    consolItems.isWhite = true;
-                                //}
+                                decimal maxRangeVal = testsummary.standardStrength + testsummary.strengthDeviation;
+                                decimal minRangeVal = testsummary.standardStrength - testsummary.strengthDeviation;
+
+
+                                if (testsummary.yarnStrength < minRangeVal || testsummary.yarnStrength > maxRangeVal)
+                                {
+                                    consolItems.isRed = true;
+                                    consolItems.isWhite = false;
+                                }
+                                else
+                                {
+                                    consolItems.isRed = false;
+                                    consolItems.isWhite = true;
+                                }
 
                                 consolItems.serialNo = (counter + 1).ToString();
                                 consolItems.testID = testsummary.testID.ToString();
                                 consolItems.machineName = testsummary.machineName;
                                 consolItems.testDate = testsummary.createdate.Day.ToString() + "-" + testsummary.createdate.Month.ToString() + "-" + testsummary.createdate.Year.ToString();
                                 consolItems.shift = testsummary.shift;
-                                //if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
-                                //{
-                                //    consolItems.standardValue = formatDecimal(testsummary.standardHank, 2).ToString() + " " + "\u00B1" + formatDecimal(testsummary.deviationPercent, 2).ToString();
-
-                                //}
-                                //else
-                                //{
-                                //    consolItems.standardValue = formatDecimal(testsummary.standardHank, 4).ToString() + " " + "\u00B1" + formatDecimal(testsummary.deviationPercent, 4).ToString();
-                                //}
-                                //consolItems.testAverage = formatDecimal(testsummary.testaverage).ToString();
-                                //consolItems.standardDeviation = formatDecimal(testsummary.testsd).ToString();
-                                //consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
-                                //consolItems.testDuration = testsummary.testDuration;
+                                consolItems.drumNumber = testsummary.drumNumber.ToString();
+                                consolItems.drumSelectionMethod = testsummary.drumSelectionMethod.ToString();
+                                consolItems.belowLimit = testsummary.belowLimit.ToString();
+                                consolItems.totalTestCount = testsummary.totalTestCount.ToString();
+                                consolItems.qualifiedTestCount = testsummary.qualifiedTestCount.ToString();
+                                consolItems.standardValue = testsummary.standardStrength.ToString();
+                                consolItems.actualStrength = testsummary.yarnStrength.ToString();
                                 consolItems.testDuration = formatTime(testsummary.createdate);
                                 consolItems.remarks = testsummary.testRemark;
 
-                                if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
-                                {
-                                    consolItems.isSpinning = true;
-                                    consolItems.otherThanSpinning = false;
-                                }
-                                else
-                                {
-                                    consolItems.isSpinning = false;
-                                    consolItems.otherThanSpinning = true;
-                                }
-
-                                //YCTestModel firstTest = yctestlist.Where(YCTestModel => YCTestModel.testcount == 1).FirstOrDefault();
-                                //TimeSpan duration = (firstTest.createdate - testsummary.createdate).Duration();
-                                //consolItems.testDuration = duration.Hours.ToString() + ":" + duration.Minutes.ToString() + ":" + duration.Seconds.ToString();
+                               
 
 
                                 counter++;
@@ -589,19 +473,7 @@ namespace TQM
                             else
                             {
 
-                                if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
-                                {
-                                    report.isSpinning = true;
-                                    report.otherThanSpinning = false;
-                                }
-                                else
-                                {
-                                    report.isSpinning = false;
-                                    report.otherThanSpinning = true;
-                                }
-
-
-                                foreach (StrengthTestModel test in yctestlist)
+                                foreach (StrengthTestModel test in strengthtestlist)
                                 {
                                     report.Add(test);
                                 }
@@ -610,20 +482,27 @@ namespace TQM
                                 report.machineCategory = testsummary.machineCategory;
                                 report.machineName = testsummary.machineName;
                                 report.shift = testsummary.shift;
-                                //report.process = testsummary.process;
-                                ////report.apercent = testsummary.apercent;
-                                //report.countsysname = testsummary.countsysname;
-                                //report.yarnlenunit = testsummary.yarnlenunit;
-                                //report.yarnlength = testsummary.yarnlength;
-                                //report.totaltestcount = testsummary.totaltestcount;
+
                                 report.createdate = testsummary.createdate;
                                 report.testRemark = testsummary.testRemark;
-                                //report.testaverage = formatDecimal(testsummary.testaverage);
-                                //report.testsd = formatDecimal(testsummary.testsd);
-                                //report.testcv = formatDecimal(testsummary.testcv);
-                                //report.standardHank = formatDecimal(stdHank);
-                                //report.standardHank = formatDecimal(testsummary.standardHank);
                                 report.testDuration = testsummary.testDuration;
+
+
+
+                                report.drumNumber = testsummary.drumNumber;
+                                report.standardStrength = testsummary.standardStrength;
+                                report.strengthDeviation = testsummary.strengthDeviation;
+                                report.belowLimit = testsummary.belowLimit;
+                                report.totalTestCount = testsummary.totalTestCount;
+                                report.drumSelectionMethod = testsummary.drumSelectionMethod;
+                                report.yarnStrength = testsummary.yarnStrength;
+
+                                report.isIndividualReport= true;
+                                report.isConsolidatedReport = false;
+                                report.deviationPercent = "\u00B1" + testsummary.strengthDeviation;
+                               
+
+
                                 //report.deviationPercent = "\u00B1" + testsummary.deviationPercent;
 
                                 if (testsummary.uf_value_1 != null && testsummary.uf_value_1 != "")
@@ -777,20 +656,18 @@ namespace TQM
 
                                 if (report.remark_1 == false && report.remark_2 == false) { report.remark_3 = true; }
 
-                                //decimal maxRangeVal = testsummary.standardHank + testsummary.deviationPercent;
-                                //decimal minRangeVal = testsummary.standardHank - testsummary.deviationPercent;
+                                decimal maxRangeVal = testsummary.standardStrength + testsummary.strengthDeviation;
+                                decimal minRangeVal = testsummary.standardStrength - testsummary.strengthDeviation;
 
 
-                                //if (testsummary.testaverage < minRangeVal || testsummary.testaverage > maxRangeVal)
-                                //{
-                                //    report.hankColor = "Red";
-                                //    report.hankColorGg = "Yellow";
-                                //}
-                                //else
-                                //{
-                                //    report.hankColor = "Green";
-                                //    report.hankColorGg = "None";
-                                //}
+                                if (testsummary.yarnStrength < minRangeVal || testsummary.yarnStrength > maxRangeVal)
+                                {
+                                    report.testResultColor = "Red";
+                                }
+                                else
+                                {
+                                    report.testResultColor = "White";
+                                }
 
 
                             }
@@ -808,13 +685,7 @@ namespace TQM
 
                     if (consolidatedReport)
                     {
-                        CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
-                        CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
-                        CON_CV = formatDecimal(CON_CV / TOT_TEST);
-
-
-
-                        StrengthTestConsolidatedReportMV consolItems = new StrengthTestConsolidatedReportMV()
+                       StrengthTestConsolidatedReportMV consolItems = new StrengthTestConsolidatedReportMV()
                         {
                             serialNo = "Average",
                             testID = "",
@@ -822,9 +693,9 @@ namespace TQM
                             testDate = "",
                             shift = "",
                             standardValue = "",
-                            testAverage = CON_HANK.ToString(),
-                            standardDeviation = CON_STD_DEV.ToString(),
-                            CoEfficientOfVariation = CON_CV.ToString(),
+                            //testAverage = CON_HANK.ToString(),
+                            //standardDeviation = CON_STD_DEV.ToString(),
+                            //CoEfficientOfVariation = CON_CV.ToString(),
                             testDuration = "",
                             remarks = "",
                             isWhite = true,
@@ -833,17 +704,7 @@ namespace TQM
 
                         };
 
-                        if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-                        {
-                            consolItems.isSpinning = true;
-                            consolItems.otherThanSpinning = false;
-                        }
-                        else
-                        {
-                            consolItems.isSpinning = false;
-                            consolItems.otherThanSpinning = true;
-                        }
-
+                      
                         if (machineID != Guid.Empty)
                         {
                             isFinalAvgRowPresent = true;
@@ -854,9 +715,6 @@ namespace TQM
                     }
                     else
                     {
-                        //CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
-                        //CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
-                        //CON_CV = formatDecimal(CON_CV / TOT_TEST);
                         ListOfReport = OVS;
                     }
 
@@ -865,11 +723,7 @@ namespace TQM
                 listview_tcConsolidatedReport.ItemsSource = null;
                 if (consolidatedReport)
                 {
-                    //lbl_totalTest.Text = TOT_TEST.ToString();
-                    //lbl_AvgHank.Text = CON_HANK.ToString();
-                    //lbl_AvgSD.Text = CON_STD_DEV.ToString();
-                    //lbl_AvgCV.Text = CON_CV.ToString();
-
+                    
                     if (((CON_UF_NAME_1 != null && CON_UF_NAME_1 != "") && (CON_UF_VAL_1 != null && CON_UF_VAL_1 != "")) ||
                         ((CON_UF_NAME_2 != null && CON_UF_NAME_2 != "") && (CON_UF_VAL_2 != null && CON_UF_VAL_2 != "")) ||
                         ((CON_UF_NAME_3 != null && CON_UF_NAME_3 != "") && (CON_UF_VAL_3 != null && CON_UF_VAL_3 != "")) ||
@@ -1089,7 +943,7 @@ namespace TQM
                 foreach (OverallReportModelView orl in overallReportList)
                 {
 
-                    List<StrengthTestModel> testList = orl.yctestlist;
+                    List<StrengthTestModel> testList = orl.strengthtestlist;
 
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
@@ -1147,43 +1001,43 @@ namespace TQM
                     pdfGridInfo.Rows[2].Cells[0].ColumnSpan = 2;
                     pdfGridInfo.Rows[2].Cells[2].Value = "Machine Name: " + orl.machineName;
                     pdfGridInfo.Rows[2].Cells[2].ColumnSpan = 2;
-                    pdfGridInfo.Rows[3].Cells[0].Value = "Test System: " + orl.countsysname;
-                    pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
-                    pdfGridInfo.Rows[3].Cells[2].Value = "Length: " + orl.yarnlength;
-                    pdfGridInfo.Rows[3].Cells[3].Value = "Total Test: " + orl.totaltestcount;
+                    //pdfGridInfo.Rows[3].Cells[0].Value = "Test System: " + orl.countsysname;
+                    //pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
+                    //pdfGridInfo.Rows[3].Cells[2].Value = "Length: " + orl.yarnlength;
+                    //pdfGridInfo.Rows[3].Cells[3].Value = "Total Test: " + orl.totaltestcount;
 
-                    if (orl.machineCategory == "Spinning" || orl.machineCategory == "Winding")
-                    {
-                        pdfGridInfo.Rows[4].Cells[0].Value = "Count: " + formatDecimal(orl.testaverage, 2).ToString() +
-                            " [Std Count: " + formatDecimal(orl.standardHank, 2) + " " + orl.deviationPercent + "]";
-                    }
-                    else
-                    {
-                        pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + formatDecimal(orl.testaverage, 4).ToString() +
-                            " [Std Hank: " + formatDecimal(orl.standardHank, 4) + " " + orl.deviationPercent + "]";
-                    }
-                    pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
-                    if (orl.hankColor == "Red")
-                    {
-                        pdfGridInfo.Rows[4].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGridInfo.Rows[4].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGridInfo.Rows[4].Cells[0].Style.BackgroundBrush = PdfBrushes.Red;
-                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
-                        pdfGridInfo.Rows[4].Cells[0].Style.TextBrush = brush_con;
-                    }
+                    //if (orl.machineCategory == "Spinning" || orl.machineCategory == "Winding")
+                    //{
+                    //    pdfGridInfo.Rows[4].Cells[0].Value = "Count: " + formatDecimal(orl.testaverage, 2).ToString() +
+                    //        " [Std Count: " + formatDecimal(orl.standardHank, 2) + " " + orl.deviationPercent + "]";
+                    //}
+                    //else
+                    //{
+                    //    pdfGridInfo.Rows[4].Cells[0].Value = "Hank: " + formatDecimal(orl.testaverage, 4).ToString() +
+                    //        " [Std Hank: " + formatDecimal(orl.standardHank, 4) + " " + orl.deviationPercent + "]";
+                    //}
+                    //pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
+                    //if (orl.hankColor == "Red")
+                    //{
+                    //    pdfGridInfo.Rows[4].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //    pdfGridInfo.Rows[4].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //    pdfGridInfo.Rows[4].Cells[0].Style.BackgroundBrush = PdfBrushes.Red;
+                    //    PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                    //    pdfGridInfo.Rows[4].Cells[0].Style.TextBrush = brush_con;
+                    //}
 
 
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[2].Value = "SD: " + orl.testsd;
+                    //pdfGridInfo.Rows[4].Cells[2].Value = "SD: " + orl.testsd;
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[3].Value = "CV: " + orl.testcv;
+                    //pdfGridInfo.Rows[4].Cells[3].Value = "CV: " + orl.testcv;
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
                     pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
                     pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 1;
                     pdfGridInfo.Rows[5].Cells[1].Value = "Duration: " + orl.testDuration;
                     pdfGridInfo.Rows[5].Cells[2].Value = "Shift: " + orl.shift;
-                    pdfGridInfo.Rows[5].Cells[3].Value = "Process: " + orl.process;
+                    //pdfGridInfo.Rows[5].Cells[3].Value = "Process: " + orl.process;
 
                     if (orl.remark_1)
                     {
@@ -1528,32 +1382,32 @@ namespace TQM
                         writer.WriteField(orl.standardValue);
 
 
-                        if (orl.testAverage != null && orl.testAverage != "")
-                        {
-                            writer.WriteField(formatDecimal(Decimal.Parse(orl.testAverage)).ToString());
-                        }
-                        else
-                        {
-                            writer.WriteField(orl.testAverage);
-                        }
+                        //if (orl.testAverage != null && orl.testAverage != "")
+                        //{
+                        //    writer.WriteField(formatDecimal(Decimal.Parse(orl.testAverage)).ToString());
+                        //}
+                        //else
+                        //{
+                        //    writer.WriteField(orl.testAverage);
+                        //}
 
-                        if (orl.standardDeviation != null && orl.standardDeviation != "")
-                        {
-                            writer.WriteField(formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString());
-                        }
-                        else
-                        {
-                            writer.WriteField(orl.standardDeviation);
-                        }
+                        //if (orl.standardDeviation != null && orl.standardDeviation != "")
+                        //{
+                        //    writer.WriteField(formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString());
+                        //}
+                        //else
+                        //{
+                        //    writer.WriteField(orl.standardDeviation);
+                        //}
 
-                        if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
-                        {
-                            writer.WriteField(formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString());
-                        }
-                        else
-                        {
-                            writer.WriteField(orl.CoEfficientOfVariation);
-                        }
+                        //if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
+                        //{
+                        //    writer.WriteField(formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString());
+                        //}
+                        //else
+                        //{
+                        //    writer.WriteField(orl.CoEfficientOfVariation);
+                        //}
 
                         writer.WriteField(orl.testDuration);
                         writer.WriteField(orl.remarks);
@@ -1713,30 +1567,30 @@ namespace TQM
 
 
 
-                    if (orl.testAverage != null && orl.testAverage != "")
-                    {
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Value = formatDecimal(Decimal.Parse(orl.testAverage)).ToString();
-                    }
-                    else
-                    {
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.testAverage;
-                    }
-                    if (orl.standardDeviation != null && orl.standardDeviation != "")
-                    {
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString();
-                    }
-                    else
-                    {
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.standardDeviation;
-                    }
-                    if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
-                    {
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Value = formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString();
-                    }
-                    else
-                    {
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.CoEfficientOfVariation;
-                    }
+                    //if (orl.testAverage != null && orl.testAverage != "")
+                    //{
+                    //    pdfGrid.Rows[pageRecordCount].Cells[6].Value = formatDecimal(Decimal.Parse(orl.testAverage)).ToString();
+                    //}
+                    //else
+                    //{
+                    //    pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.testAverage;
+                    //}
+                    //if (orl.standardDeviation != null && orl.standardDeviation != "")
+                    //{
+                    //    pdfGrid.Rows[pageRecordCount].Cells[7].Value = formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString();
+                    //}
+                    //else
+                    //{
+                    //    pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.standardDeviation;
+                    //}
+                    //if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
+                    //{
+                    //    pdfGrid.Rows[pageRecordCount].Cells[8].Value = formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString();
+                    //}
+                    //else
+                    //{
+                    //    pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.CoEfficientOfVariation;
+                    //}
                     pdfGrid.Rows[pageRecordCount].Cells[9].Value = orl.testDuration;
                     pdfGrid.Rows[pageRecordCount].Cells[10].Value = orl.remarks;
 
