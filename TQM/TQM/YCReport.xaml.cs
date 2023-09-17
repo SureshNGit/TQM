@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using TQM.Model;
@@ -29,12 +30,15 @@ namespace TQM
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class YCReport : ContentPage
     {
-
+        private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
         private List<OverallReportModelView> _listOfReports;
         public List<OverallReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
 
         private List<StrengthTestConsolidatedReportMV> _listOfConsolidatedReports;
         public List<StrengthTestConsolidatedReportMV> ListOfConsolidatedReports { get { return _listOfConsolidatedReports; } set { _listOfConsolidatedReports = value; base.OnPropertyChanged(); } }
+
+        private List<MissingDrumReportModelView> _listOfMissingDrumReports;
+        public List<MissingDrumReportModelView> ListOfMissingDrumReports { get { return _listOfMissingDrumReports; } set { _listOfMissingDrumReports = value; base.OnPropertyChanged(); } }
 
         private string selectedCompanyName = null;
         private string selectedMachineCategory = null;
@@ -47,6 +51,7 @@ namespace TQM
         private decimal CON_STD_DEV = 0.0000m;
         private decimal CON_CV = 0.0000m;
         private bool consolidatedReport = false;
+        private bool drumDetailsReport = false;
         private DateTime reportStartDate;
         private DateTime reportEndDate;
         private string CON_UF_NAME_1 = null;
@@ -59,16 +64,20 @@ namespace TQM
         private string CON_UF_VAL_4 = null;
         private bool isFinalAvgRowPresent = false;
 
+        private List<MissingDrumReportModelView> odl = new List<MissingDrumReportModelView>();
+        
+
         public YCReport()
         {
             InitializeComponent();
         }
 
-        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string testID, string drumNumber,string standardStrength, bool deleteRequest, bool isConsolidated, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
+        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string testID, string drumNumber,string standardStrength, bool deleteRequest, bool isConsolidated, bool drumDetails, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             InitializeComponent();
             isFinalAvgRowPresent = false;
             consolidatedReport = isConsolidated;
+            drumDetailsReport = drumDetails;
             if (consolidatedReport)
             {
                 //if (categoryName != null && categoryName != "")
@@ -80,6 +89,10 @@ namespace TQM
                 //    lbl_reportHeader.Text = "Con. Wrapping Report - All";
                 //}
                 lbl_reportHeader.Text = "Consolidated Report";
+            }
+            else if (drumDetailsReport)
+            {
+                lbl_reportHeader.Text = "Drum Details Report";
             }
             else
             {
@@ -108,10 +121,203 @@ namespace TQM
             getReport(startDate, endDate, categoryName, machineID, shift, testID, drumNumber, standardStrength, deleteRequest, UFVAL1, UFVAL2, UFVAL3, UFVAL4);
         }
 
+        private void updateDrumReportModel(String machineCat,
+                                            String macName,
+                                            int secNo,
+                                            string totDrumNos,
+                                            DateTime SSD,
+                                            DateTime SED,
+                                            DateTime SUD,
+                                            int minDrumNo,
+                                            int maxDrumNo,
+                                            List<int> dl)
+        {
+            try
+            {
+                MissingDrumReportModelView mdd = new MissingDrumReportModelView();
+
+                mdd.machineCategory = machineCat;
+                mdd.machineName = macName;
+                mdd.sectionNumber = secNo;
+                mdd.totalDrumNumbers = totDrumNos;
+                mdd.scheduledStartDate = SSD;
+                mdd.scheduledEndDate = SED;
+                mdd.settingsUpdatedDate = SUD;
+
+                //List<DrumDetailsModelView> ddmv_list = new List<DrumDetailsModelView>();
+                DrumDetailsModelView ddmv = new DrumDetailsModelView();
+                string testCompletedDrums = "";
+                string pendingTestDrums = "";
+
+                for (int i= minDrumNo; i<= maxDrumNo; i++)
+                {
+                    if (!dl.Contains(i))
+                    {
+                        if (testCompletedDrums == "") { testCompletedDrums = i.ToString(); }
+                        else
+                        {
+                            testCompletedDrums = testCompletedDrums + " , " + i.ToString();
+                        }
+                    }
+                    else
+                    {
+                        if (pendingTestDrums == "") { pendingTestDrums = i.ToString(); }
+                        else
+                        {
+                            pendingTestDrums = pendingTestDrums + " , " + i.ToString();
+                        }
+                    }
+                }
+
+                ddmv.testCompletedDrums = testCompletedDrums;
+                ddmv.pendingTestDrums = pendingTestDrums;
+
+                //ddmv_list.Add(ddmv);
+
+                mdd.drumDetailsListView.Add(ddmv);
+
+                odl.Add(mdd);
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
+            }
+        }
+
+        private void getDrumReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    List<StrengthTestSummaryModel> strengthTestSummaryList =
+                        conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                         ((StrengthTestSummaryModel.scheduledStartDate <= startDate
+                         || StrengthTestSummaryModel.scheduledEndDate >= endDate)
+                         && StrengthTestSummaryModel.machineCategory == categoryName
+                         && StrengthTestSummaryModel.machineID == machineID))
+                        .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.machineID)
+                        .ThenBy(StrengthTestSummaryModel => StrengthTestSummaryModel.sectionNumber)
+                        .ThenBy(StrengthTestSummaryModel => StrengthTestSummaryModel.totalDrumNumbers)
+                        .ToList();
+
+                    if (strengthTestSummaryList.Count == 0)
+                    {
+                        DisplayAlert("Notice", "No records to display!!!", "OK");
+                        return;
+                    }
+
+                    string prev_MachineCategory = null;
+                    string prev_MachineName = null;
+                    int prev_SectionNumber = 0;
+                    string prev_TotalDrumNumbers = null;
+                    DateTime prev_SSD = DEFAULTDATE;
+                    DateTime prev_SED = DEFAULTDATE;
+                    DateTime prev_SUD = DEFAULTDATE;
+                    int prev_MinDrumNo = 0;
+                    int prev_MaxDrumNo = 0;
+                    List<int> drumList = null;
+
+                    foreach (StrengthTestSummaryModel S_Test in strengthTestSummaryList)
+                    {
+                        int minDrumNo = int.Parse(S_Test.totalDrumNumbers.ToString().Split('.')[0]);
+                        int maxDrumNo = int.Parse(S_Test.totalDrumNumbers.ToString().Split('.')[1]);
+                        
+                        if(prev_MachineName ==null && prev_SectionNumber==0 && prev_TotalDrumNumbers == null)
+                        {
+                            drumList = new List<int>();
+                            prev_MachineCategory = S_Test.machineCategory;
+                            prev_MachineName = S_Test.machineName;
+                            prev_SectionNumber = S_Test.sectionNumber;
+                            prev_TotalDrumNumbers = S_Test.totalDrumNumbers;
+                            prev_SSD = S_Test.scheduledStartDate;
+                            prev_SED = S_Test.scheduledEndDate;
+                            prev_SUD = S_Test.settingsUpdatedDate;
+                            prev_MinDrumNo = minDrumNo;
+                            prev_MaxDrumNo = maxDrumNo;
+
+
+                            for (int i= minDrumNo; i <= maxDrumNo; i++)
+                            {
+                                drumList.Add(i);
+                            }
+                            drumList.Remove(S_Test.drumNumber);
+                        }
+                        else
+                        {
+                            if(prev_MachineName == S_Test.machineName
+                                && prev_SectionNumber == S_Test.sectionNumber
+                                && prev_TotalDrumNumbers == S_Test.totalDrumNumbers)
+                            {
+                                drumList.Remove(S_Test.drumNumber);
+                            }
+                            else
+                            {
+                                updateDrumReportModel(prev_MachineCategory,
+                                                        prev_MachineName,
+                                                        prev_SectionNumber,
+                                                        prev_TotalDrumNumbers,
+                                                        prev_SSD,
+                                                        prev_SED,
+                                                        prev_SUD,
+                                                        prev_MinDrumNo,
+                                                        prev_MaxDrumNo,
+                                                        drumList);
+                                drumList = new List<int>();
+                                prev_MachineCategory = S_Test.machineCategory;
+                                prev_MachineName = S_Test.machineName;
+                                prev_SectionNumber = S_Test.sectionNumber;
+                                prev_TotalDrumNumbers = S_Test.totalDrumNumbers;
+                                prev_SSD = S_Test.scheduledStartDate;
+                                prev_SED = S_Test.scheduledEndDate;
+                                prev_SUD = S_Test.settingsUpdatedDate;
+                                prev_MinDrumNo = minDrumNo;
+                                prev_MaxDrumNo = maxDrumNo;
+                                for (int i = minDrumNo; i <= maxDrumNo; i++)
+                                {
+                                    drumList.Add(i);
+                                }
+                                drumList.Remove(S_Test.drumNumber);
+                            }
+                        }
+                    }
+
+                    if (drumList != null)
+                    {
+                        updateDrumReportModel(prev_MachineCategory,
+                                                            prev_MachineName,
+                                                            prev_SectionNumber,
+                                                            prev_TotalDrumNumbers,
+                                                            prev_SSD,
+                                                            prev_SED,
+                                                            prev_SUD,
+                                                            prev_MinDrumNo,
+                                                            prev_MaxDrumNo,
+                                                            drumList);
+                    }
+                    ListOfMissingDrumReports = odl;
+                    listview_tcreport_missingDrum.IsVisible = true;
+                    listview_tcreport_missingDrum.ItemsSource = null;
+                    listview_tcreport_missingDrum.ItemsSource = ListOfMissingDrumReports;
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
+            }
+        }
+
+
         private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string testID, string drumNumber, string standardStrength, bool deleteRequest, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             try
             {
+                if (drumDetailsReport)
+                {
+                    getDrumReport( startDate,  endDate,  categoryName,  machineID);
+                    return;
+                }
+
                 //decimal stdHank = 0.000m;
                 List<OverallReportModelView> OVS = new List<OverallReportModelView>();
                 List<StrengthTestConsolidatedReportMV> OverallConsolidatedReports = new List<StrengthTestConsolidatedReportMV>();
@@ -889,7 +1095,7 @@ namespace TQM
         [Obsolete]
         private async void btn_saveToPDF_Clicked(object sender, EventArgs e)
         {
-            if (listview_tcreport.ItemsSource == null && listview_tcConsolidatedReport.ItemsSource == null)
+            if (listview_tcreport.ItemsSource == null && listview_tcConsolidatedReport.ItemsSource == null && listview_tcreport_missingDrum ==null)
             {
                 await DisplayAlert("Notice", "No records to generate PDF!!!", "OK");
                 return;
@@ -1362,6 +1568,240 @@ namespace TQM
             }
         }
 
+        private bool generatePDFreport_drumDetails()
+        {
+            try
+            {
+
+
+                PdfDocument pdfDocument = new PdfDocument();
+
+
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<CompanyModel>();
+                    List<CompanyModel> companieslist = conn.Table<CompanyModel>().ToList();
+                    selectedCompanyName = companieslist[0].Name;
+                };
+
+
+                PdfPage pdfPage = pdfDocument.Pages.Add();
+                PdfGrid pdfGrid = null;
+                PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
+                layoutFormat.Layout = PdfLayoutType.Paginate;
+                List<MissingDrumReportModelView> overallReportList = (List<MissingDrumReportModelView>)listview_tcreport_missingDrum.ItemsSource;
+                PdfLayoutResult result = null;
+                float overallHeight = 0;
+                int tableNo = 1;
+                bool newPageAdded_Header = false;
+                bool newPageAdded_Body = false;
+                foreach (MissingDrumReportModelView orl in overallReportList)
+                {
+
+                    List<DrumDetailsModelView> testList = orl.drumDetailsListView;
+
+                    //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
+                    PdfGrid pdfGridInfo = new PdfGrid();
+                    pdfGridInfo.RepeatHeader = true;
+                    pdfGridInfo.Columns.Add(6);
+                    pdfGridInfo.Rows.Add();
+                    pdfGridInfo.Rows.Add();
+                    pdfGridInfo.Rows.Add();
+
+                    pdfGridInfo.Rows[0].Cells[0].Value = "Machine Category: " + orl.machineCategory;
+                    pdfGridInfo.Rows[0].Cells[0].ColumnSpan = 2;
+                    pdfGridInfo.Rows[0].Cells[2].Value = "Machine Name: " + orl.machineName;
+                    pdfGridInfo.Rows[0].Cells[2].ColumnSpan = 2;
+                    pdfGridInfo.Rows[0].Cells[4].Value = "Section No: " + orl.sectionNumber.ToString();
+
+                    pdfGridInfo.Rows[1].Cells[0].Value = "Sch. Start Date: " + orl.scheduledStartDate.ToString();
+                    pdfGridInfo.Rows[1].Cells[0].ColumnSpan = 2;
+                    pdfGridInfo.Rows[1].Cells[2].Value = "Sch. End Date: " + orl.scheduledEndDate.ToString();
+                    pdfGridInfo.Rows[1].Cells[2].ColumnSpan = 2;
+                    
+
+                    pdfGridInfo.Rows[0].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[5].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[5].Style.Borders.All = PdfPens.Transparent;
+                    
+                    int totalRow_header = 3;
+                    int totalRow_header_height = totalRow_header * 18;
+
+                    if (overallHeight == 0)
+                    {
+                        result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
+                        overallHeight = result.Bounds.Height + 35;
+                    }
+                    else
+                    {
+                        int prevPageCount = result.Page.Section.Pages.Count;
+                        if (newPageAdded_Body)
+                        {
+                            newPageAdded_Body = false;
+                            result = pdfGridInfo.Draw(pdfPage, new PointF(10, overallHeight), layoutFormat);
+                        }
+                        else
+                        {
+                            if ((overallHeight + totalRow_header_height + (testList.Count * 18)) > 730)
+                            {
+                                pdfPage = pdfDocument.Pages.Add();
+                                result = pdfGridInfo.Draw(pdfPage, new PointF(10, 30), layoutFormat);
+                                overallHeight = 0;
+                                newPageAdded_Header = true;
+                                pdfPage = result.Page;
+                                overallHeight = result.Bounds.Height + 5;
+                            }
+                            else
+                            {
+                                result = pdfGridInfo.Draw(result.Page, new PointF(10, (overallHeight)));
+                            }
+                        }
+
+                        if (prevPageCount < result.Page.Section.Pages.Count)
+                        {
+                            overallHeight = 0;
+                            newPageAdded_Header = true;
+                            pdfPage = result.Page;
+                            overallHeight = result.Bounds.Height + 5;
+                        }
+                        else
+                        {
+                            overallHeight = overallHeight + result.Bounds.Height + 5;
+                        }
+                    }
+
+                    pdfGrid = new PdfGrid();
+
+                    pdfGrid.Columns.Add(2);
+                    PdfGridRow row = new PdfGridRow(pdfGrid);
+                    pdfGrid.Rows.Add(row);
+
+                    pdfGrid.Rows[0].Cells[0].Value = "Test Completed Drum Numbers";
+                    pdfGrid.Rows[0].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //pdfGrid.Rows[0].Cells[0].Style.TextPen = PdfPens.Black;
+                    pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                    pdfGrid.Rows[0].Cells[1].Value = "Test Pending Drum Numbers";
+                    pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //pdfGrid.Rows[0].Cells[1].Style.TextPen = PdfPens.Black;
+                    pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                   
+
+
+
+                    int rowCount = 1;
+                    foreach (DrumDetailsModelView test in testList)
+                    {
+                        row = new PdfGridRow(pdfGrid);
+                        pdfGrid.Rows.Add(row);
+                        pdfGrid.Rows[rowCount].Cells[0].Value = test.testCompletedDrums.ToString();
+                        pdfGrid.Rows[rowCount].Cells[1].Value = test.pendingTestDrums.ToString();
+                        pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[rowCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        rowCount++;
+                    }
+
+                    int totalRow_body_height = rowCount * 18;
+
+                    if (result == null && overallHeight == 0)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, result.Bounds.Height + 10), layoutFormat);
+                        overallHeight = result.Bounds.Height + 30;
+                    }
+                    else if (result == null && overallHeight > 0)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
+                        overallHeight = overallHeight + result.Bounds.Height + 40;//changed from 30 to 40
+                    }
+                    else
+                    {
+                        if (overallHeight == 0)
+                        {
+                            result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 10), layoutFormat);
+                        }
+                        else
+                        {
+                            int prevPageCount = result.Page.Section.Pages.Count;
+                            if (newPageAdded_Header)
+                            {
+                                newPageAdded_Header = false;
+                                result = pdfGrid.Draw(pdfPage, new PointF(10, overallHeight + 25), layoutFormat);
+                                //changed from 10 to 25
+                            }
+                            else
+                            {
+                                if ((overallHeight + totalRow_body_height) > 730)
+                                {
+                                    pdfPage = pdfDocument.Pages.Add();
+                                    result = pdfGrid.Draw(pdfPage, new PointF(10, 30), layoutFormat);
+                                }
+                                else
+                                {
+                                    result = pdfGrid.Draw(result.Page, new PointF(10, (overallHeight + 25)));
+                                    //changed from 10 to 25
+                                }
+                            }
+
+
+
+                            if (prevPageCount < result.Page.Section.Pages.Count)
+                            {
+                                if (result.Bounds.Height > 0)
+                                {
+                                    overallHeight = result.Bounds.Height + 30;
+                                }
+                                else //do not know when this condition will occur :( Need to analyze!!!
+                                {
+                                    overallHeight = overallHeight + result.Bounds.Height + 30;
+                                }
+                                newPageAdded_Body = true;
+                                pdfPage = result.Page;
+                            }
+                            else
+                            {
+                                overallHeight = overallHeight + result.Bounds.Height + 30;
+                            }
+
+                        }
+
+                    }
+
+                    Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
+                    Debug.WriteLine("Table NO==>" + tableNo + " ,tableHeigth ===>" + overallHeight);
+                    tableNo++;
+                };
+
+
+                addPageHeaderAndFooter(pdfDocument);
+                MemoryStream stream = new MemoryStream();
+                pdfDocument.Save(stream);
+                pdfDocument.Close(true);
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "SVYA_Drum_Detailed_Report.pdf");
+                //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
+                //Process.Start(pdfPath);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                return false;
+            }
+        }
+
         [Obsolete]
         private bool generateCSVConsolidatedReport()
         {
@@ -1783,6 +2223,10 @@ namespace TQM
                         }
                     }
                 }
+                else if (drumDetailsReport)
+                {
+                    header.Graphics.DrawString("SVYA Drum Details Report (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                }
                 else
                 {
                     //if (selectedMachineCategory != null)
@@ -1922,6 +2366,52 @@ namespace TQM
                         await resetBtn();
                     }
 
+                }
+                else if (drumDetailsReport)
+                {
+                    if (!generatePDFreport_drumDetails()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+                    else
+                    {
+                        String companyName = null;
+                        try
+                        {
+                            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                            conn.CreateTable<CompanyModel>();
+                            var company = conn.Table<CompanyModel>().FirstOrDefault();
+                            if (company != null)
+                            {
+                                companyName = company.Name;
+                            }
+                            conn.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                        }
+                        string fileName = "SVYA_Drum_Detailed_Report.pdf";
+                        string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                        Java.IO.File myDir = new Java.IO.File(root + "/SVYADownloads");
+                        Java.IO.File file = new Java.IO.File(myDir, fileName);
+                        string filePath = file.Path;
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        //request.Timeout = Timeout.Infinite;
+                        request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                        request.AddParameter("uploadedby", companyName);
+                        request.AddParameter("title", "SVYA-Drum-Details-Report-" + DateTime.Now.ToString());
+                        request.AddFile("reportpath", filePath);
+                        RestResponse response = client.Execute(request);
+                        if (response.IsSuccessful)
+                        {
+                            showAlert("Report uploaded sucessfully!!!");
+                        }
+                        else
+                        {
+                            showAlert("Upload Failed. Please try again!!!", "Error");
+                        }
+                        await resetBtn();
+                    }
                 }
                 else
                 {

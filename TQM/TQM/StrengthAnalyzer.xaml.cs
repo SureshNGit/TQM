@@ -647,6 +647,8 @@ namespace TQM
                     machineID = StrengthTestModelViewlist[0].machineID,
                     machineCategory = StrengthTestModelViewlist[0].machineCategory,
                     machineName = StrengthTestModelViewlist[0].machineName,
+                    sectionNumber = StrengthTestModelViewlist[0].sectionNumber,
+                    totalDrumNumbers = StrengthTestModelViewlist[0].totalDrumNumbers,
                     drumNumber = StrengthTestModelViewlist[0].drumNumber,
                     standardStrength = StrengthTestModelViewlist[0].standardStrength,
                     strengthDeviation = StrengthTestModelViewlist[0].strengthDeviation,
@@ -1537,6 +1539,15 @@ namespace TQM
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
+                                if(DateTime.Now> scheduledEndDate)
+                                {
+                                    picker_drumNumber.SelectedIndex = -1;
+                                    picker_drumSelection.IsEnabled = false;
+                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum ["+
+                                        selectedDrumNumber.ToString()+"]. Please reach admin to change the machine settings", "OK");
+                                    return;
+                                }
+
                                 startDate = yarncountconfigmodel.scheduledStartDate_s1;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
@@ -1567,6 +1578,15 @@ namespace TQM
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s2;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
+                                if (DateTime.Now > scheduledEndDate)
+                                {
+                                    picker_drumNumber.SelectedIndex = -1;
+                                    picker_drumSelection.IsEnabled = false;
+                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                    return;
+                                }
+
                                 startDate = yarncountconfigmodel.scheduledStartDate_s2;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s2;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s2.ToString();
@@ -1596,6 +1616,15 @@ namespace TQM
                                 scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s3;
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s3;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
+                                if (DateTime.Now > scheduledEndDate)
+                                {
+                                    picker_drumNumber.SelectedIndex = -1;
+                                    picker_drumSelection.IsEnabled = false;
+                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                    return;
+                                }
 
                                 startDate = yarncountconfigmodel.scheduledStartDate_s3;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s3;
@@ -1635,6 +1664,15 @@ namespace TQM
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
+                                if (DateTime.Now > scheduledEndDate)
+                                {
+                                    picker_drumNumber.SelectedIndex = -1;
+                                    picker_drumSelection.IsEnabled = false;
+                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                    return;
+                                }
+
                                 startDate = yarncountconfigmodel.scheduledStartDate_s1;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
@@ -1664,6 +1702,15 @@ namespace TQM
                                 scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s2;
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s2;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
+                                if (DateTime.Now > scheduledEndDate)
+                                {
+                                    picker_drumNumber.SelectedIndex = -1;
+                                    picker_drumSelection.IsEnabled = false;
+                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                    return;
+                                }
 
                                 startDate = yarncountconfigmodel.scheduledStartDate_s2;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s2;
@@ -1699,6 +1746,15 @@ namespace TQM
                                 scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s1;
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
+                                if (DateTime.Now > scheduledEndDate)
+                                {
+                                    picker_drumNumber.SelectedIndex = -1;
+                                    picker_drumSelection.IsEnabled = false;
+                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                    return;
+                                }
 
                                 startDate = yarncountconfigmodel.scheduledStartDate_s1;
                                 endDate = yarncountconfigmodel.scheduledEndDate_s1;

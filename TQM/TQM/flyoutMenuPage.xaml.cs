@@ -46,48 +46,18 @@ namespace TQM
                                 ImageSource = "user.png",
                                 TargetPage = null
                             });
-                            //flyItems.Add(new MenuItem
-                            //{
-                            //    Title = "Settings",
-                            //    ImageSource = "",
-                            //    TargetPage = typeof(YCSettings)
-                            //});
                             flyItems.Add(new MenuItem
                             {
-                                Title = "RST",
+                                Title = "Strength Test",
                                 ImageSource = "",
                                 TargetPage = typeof(StrengthAnalyzer)
                             });
-                            //flyItems.Add(new MenuItem
-                            //{
-                            //    Title = "A %",
-                            //    ImageSource = "",
-                            //    TargetPage = typeof(ApercentPage)
-                            //});
-                            //flyItems.Add(new MenuItem
-                            //{
-                            //    Title = "Stretch",
-                            //    ImageSource = "",
-                            //    TargetPage = typeof(StretchPage)
-                            //});
-                            //flyItems.Add(new MenuItem
-                            //{
-                            //    Title = "Noils",
-                            //    ImageSource = "",
-                            //    TargetPage = typeof(NOILS)
-                            //});
                             flyItems.Add(new MenuItem
                             {
                                 Title = "Reports",
                                 ImageSource = "",
                                 TargetPage = typeof(Report)
                             });
-                            //flyItems.Add(new MenuItem
-                            //{
-                            //    Title = "BackUp",
-                            //    ImageSource = "",
-                            //    TargetPage = typeof(DataSync)
-                            //});
                             flyItems.Add(new MenuItem
                             {
                                 Title = "Log Out",
@@ -136,40 +106,16 @@ namespace TQM
                             });
                             flyItems.Add(new MenuItem
                             {
-                                Title = "RST",
+                                Title = "Strength Test",
                                 ImageSource = "",
                                 TargetPage = typeof(StrengthAnalyzer)
                             });
-                            //flyItems.Add(new MenuItem
-                            //{
-                            //    Title = "A %",
-                            //    ImageSource = "",
-                            //    TargetPage = typeof(ApercentPage)
-                            //});
-                            //flyItems.Add(new MenuItem
-                            //{
-                            //    Title = "Stretch",
-                            //    ImageSource = "",
-                            //    TargetPage = typeof(StretchPage)
-                            //});
-                            //flyItems.Add(new MenuItem
-                            //{
-                            //    Title = "Noils",
-                            //    ImageSource = "",
-                            //    TargetPage = typeof(NOILS)
-                            //});
                             flyItems.Add(new MenuItem
                             {
                                 Title = "Reports",
                                 ImageSource = "",
                                 TargetPage = typeof(Report)
                             });
-                            //flyItems.Add(new MenuItem
-                            //{
-                            //    Title = "BackUp",
-                            //    ImageSource = "",
-                            //    TargetPage = typeof(DataSync)
-                            //});
                             flyItems.Add(new MenuItem
                             {
                                 Title = "Log Out",
