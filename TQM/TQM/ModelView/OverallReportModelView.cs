@@ -42,6 +42,9 @@ namespace TQM.ModelView
         public bool remark_2 { get; set; } = false;
         public bool remark_3 { get; set; } = false;
         public DateTime createdate { get; set; }
+        public DateTime scheduledStartDate { get; set; }
+        public DateTime scheduledEndDate { get; set; }
+        public DateTime settingsUpdatedDate { get; set; }
         public List<StrengthTestModel> strengthtestlist => this;
     }
 

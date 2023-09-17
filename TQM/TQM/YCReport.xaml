@@ -6,7 +6,7 @@
     <ContentPage.Resources>
         <local:AllTrueMultiConverter x:Key="AllTrueConverter" />
         <local:TextFormatterBaedOnMacCat x:Key="MacCategoryTestValueConverter" />
-        <local:TextFormatterStandardValue x:Key="MacCategoryStdConverter" />
+        <local:TextFormatterStandardValue x:Key="StandardFormatter" />
     </ContentPage.Resources>
 
    
@@ -164,35 +164,54 @@
                                     Text="Machine Category" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="1" Grid.Row="1"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="0,0,0,0"
                                     Text="{Binding machineCategory}" FontSize="14" TextColor="Green"/>
-                                    <Label Grid.Column="3" Grid.Row="1" Grid.ColumnSpan="1"
+                                    <Label Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="1"
                                     Text="Machine Name" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="3" Grid.Row="1"  Grid.ColumnSpan="2" HorizontalTextAlignment="End" Margin="100,0,0,0" HorizontalOptions="StartAndExpand"
+                                    <Label Grid.Column="2" Grid.Row="1"  Grid.ColumnSpan="2" HorizontalTextAlignment="End" Margin="100,0,0,0" HorizontalOptions="StartAndExpand"
                                     Text="{Binding machineName}" FontSize="14" TextColor="Green"/>
+                                    <Label Grid.Column="4" Grid.Row="1" Grid.ColumnSpan="1"
+                                    Text="Drum Number" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="4" Grid.Row="1"  Grid.ColumnSpan="2" HorizontalTextAlignment="End" Margin="100,0,0,0" HorizontalOptions="StartAndExpand"
+                                    Text="{Binding drumNumber}" FontSize="14" TextColor="Green"/>
 
                                     <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1"
-                                    Text="Test System" FontSize="14" TextColor="#0e0273"/>
+                                    Text="Sch. Start Date" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="100,0,0,0"
-                                    Text="{Binding countsysname}" FontSize="14" TextColor="Green"/>
+                                    Text="{Binding scheduledStartDate}" FontSize="14" TextColor="Green"/>
                                     <Label Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1"
-                                    Text="Length Unit" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="80,0,0,0"
-                                    Text="{Binding yarnlenunit}" FontSize="14" TextColor="Green"/>
-                                    <Label Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="1"
-                                    Text="Length" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="3" Grid.Row="2"  Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="50,0,0,0"
-                                    Text="{Binding yarnlength}" FontSize="14" TextColor="Green"/>
-                                    <Label Grid.Column="4" Grid.Row="2" Grid.ColumnSpan="1" HorizontalTextAlignment="Center" Margin="50,0,0,0"
+                                    Text="Sch. End Date" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="100,0,0,0"
+                                    Text="{Binding scheduledEndDate}" FontSize="14" TextColor="Green"/>
+                                    <Label Grid.Column="4" Grid.Row="2" Grid.ColumnSpan="1"
+                                    Text="Act. Test Date" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="4" Grid.Row="2"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="100,0,0,0"
+                                    Text="{Binding createdate}" FontSize="14" TextColor="Green"/>
+                                    <!--<Label Grid.Column="4" Grid.Row="2" Grid.ColumnSpan="1" HorizontalTextAlignment="Center" Margin="50,0,0,0"
                                     Text="Total Test" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="4" Grid.Row="2"  Grid.ColumnSpan="2" HorizontalTextAlignment="Center" 
-                                    Text="{Binding totaltestcount}" FontSize="14" TextColor="Green"/>
+                                    Text="{Binding totaltestcount}" FontSize="14" TextColor="Green"/>-->
 
-                                    <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" IsVisible="{Binding otherThanSpinning}"
-                                    Text="Hank" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" 
+                                    Text="Yarn Strength" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" Margin="100,0,0,0"
+                                     FontSize="14" TextColor="Green">
+                                         <Label.Text>
+                                            <MultiBinding Converter="{StaticResource StandardFormatter}">
+                                                <Binding Path="yarnStrength"/>
+                                                <Binding Path="standardStrength"/>
+                                                <Binding Path="deviationPercent"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+
+                                    <Label Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="1"
+                                    Text="Drum Selection Method" FontSize="14" TextColor="#0e0273"/>
+                                    <Label Grid.Column="4" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-20,0,0,0"
+                                    Text="{Binding drumSelectionMethod}" FontSize="14" TextColor="Green"/>
                                     
-                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" IsVisible="{Binding isSpinning}"
-                                    Text="Count" FontSize="14" TextColor="#0e0273"/>
+                                     <!--<Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" IsVisible="{Binding isSpinning}"
+                                    Text="Count" FontSize="14" TextColor="#0e0273"/>-->
                                      
-                                    <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Center" Margin="60,0,0,0"
+                                    <!--<Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Center" Margin="60,0,0,0"
                                      FontSize="14" TextColor="{Binding hankColor}" 
                                            FontAttributes="Bold" BackgroundColor="{Binding hankColorGg}">
                                         <Label.Text>
@@ -247,56 +266,56 @@
                                     <Label Grid.Column="4" Grid.Row="4" Grid.ColumnSpan="1" HorizontalTextAlignment="Center" Margin="50,0,0,0"
                                     Text="Duration" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="4" Grid.Row="4"  Grid.ColumnSpan="2" HorizontalTextAlignment="Center" 
-                                    Text="{Binding testDuration}" FontSize="14" TextColor="Green"/>
+                                    Text="{Binding testDuration}" FontSize="14" TextColor="Green"/>-->
 
-                                    <Label Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_1}"
+                                    <Label Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_1}"
                                     Text="{Binding uf_name_1}" FontSize="14" TextColor="#0e0273"/>
                                     <Label Grid.Column="1" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-35,0,0,0"
                                     Text="{Binding uf_value_1}" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_1}"/>
                                     <!--<Label Grid.Column="1" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-35,0,0,0"
                                     Text="Django - Get Foreign key objects in single query ?" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_1}"/>-->
 
-                                    <Label Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_2_Col1}"
+                                    <Label Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_2_Col1}"
                                     Text="{Binding uf_name_2}" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="1" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-35,0,0,0"
+                                    <Label Grid.Column="1" Grid.Row="4"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-35,0,0,0"
                                     Text="{Binding uf_value_2}" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_2_Col1}"/>
 
 
-                                    <Label Grid.Column="3" Grid.Row="5" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_2}"
+                                    <Label Grid.Column="3" Grid.Row="4" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_2}"
                                     Text="{Binding uf_name_2}" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="4" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-100,0,0,0"
+                                    <Label Grid.Column="4" Grid.Row="4"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-100,0,0,0"
                                     Text="{Binding uf_value_2}" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_2}"/>
                                     <!--<Label Grid.Column="4" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-100,0,0,0"
                                     Text="Django - Get Foreign key objects in single query ?" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_2}"/>-->
 
-                                    <Label Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_3}"
+                                    <Label Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_3}"
                                     Text="{Binding uf_name_3}" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="1" Grid.Row="6"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-35,0,0,0"
+                                    <Label Grid.Column="1" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-35,0,0,0"
                                     Text="{Binding uf_value_3}" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_3}"/>
 
-                                    <Label Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_4_Col1}"
+                                    <Label Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_4_Col1}"
                                     Text="{Binding uf_name_4}" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="1" Grid.Row="6"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-35,0,0,0"
+                                    <Label Grid.Column="1" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-35,0,0,0"
                                     Text="{Binding uf_value_4}" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_4_Col1}"/>
 
-                                    <Label Grid.Column="3" Grid.Row="6" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_4}"
+                                    <Label Grid.Column="3" Grid.Row="5" Grid.ColumnSpan="1" IsVisible="{Binding DispUF_4}"
                                     Text="{Binding uf_name_4}" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="4" Grid.Row="6"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-100,0,0,0"
+                                    <Label Grid.Column="4" Grid.Row="5"  Grid.ColumnSpan="2" HorizontalTextAlignment="Start" Margin="-100,0,0,0"
                                     Text="{Binding uf_value_4}" FontSize="14" TextColor="Green" IsVisible="{Binding DispUF_5}"/>
 
-                                    <Label Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1" IsVisible="{Binding remark_1}"
+                                    <Label Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="1" IsVisible="{Binding remark_1}"
                                     Text="Remark" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="0" Grid.Row="5"  Grid.ColumnSpan="5" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    <Label Grid.Column="0" Grid.Row="4"  Grid.ColumnSpan="5" HorizontalTextAlignment="Start" Margin="60,0,0,0"
                                     Text="{Binding testRemark}" FontSize="14" TextColor="Red" IsVisible="{Binding remark_1}"/>
 
-                                    <Label Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="1" IsVisible="{Binding remark_2}"
+                                    <Label Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1" IsVisible="{Binding remark_2}"
                                     Text="Remark" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="0" Grid.Row="6"  Grid.ColumnSpan="5" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    <Label Grid.Column="0" Grid.Row="5"  Grid.ColumnSpan="5" HorizontalTextAlignment="Start" Margin="60,0,0,0"
                                     Text="{Binding testRemark}" FontSize="14" TextColor="Red" IsVisible="{Binding remark_2}"/>
 
-                                    <Label Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="1" IsVisible="{Binding remark_3}"
+                                    <Label Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="1" IsVisible="{Binding remark_3}"
                                     Text="Remark" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="0" Grid.Row="7"  Grid.ColumnSpan="5" HorizontalTextAlignment="Start" Margin="60,0,0,0"
+                                    <Label Grid.Column="0" Grid.Row="6"  Grid.ColumnSpan="5" HorizontalTextAlignment="Start" Margin="60,0,0,0"
                                     Text="{Binding testRemark}" FontSize="14" TextColor="Red" IsVisible="{Binding remark_3}"/>
                                 </Grid>
 
@@ -306,26 +325,30 @@
                                         <ColumnDefinition Width="80"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
 
-                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
-                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
 
 
                                     <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-                                    <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+                                    <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
                                     
                                     <Label  Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                             Text="Sample No"  TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="Sample Weigth"  TextColor="#0e0273" FontSize="14"/>
+                                            Text="No. Of Rolling"  TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="Hank" IsVisible="{Binding otherThanSpinning}" TextColor="#0e0273" FontSize="14"/>
-                                    <Label  Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="Count" IsVisible="{Binding isSpinning}" TextColor="#0e0273" FontSize="14"/>
+                                            Text="Below Limit" IsVisible="{Binding otherThanSpinning}" TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="Qualified (Yes/No)" IsVisible="{Binding otherThanSpinning}" TextColor="#0e0273" FontSize="14"/>
+                                    <!--<Label  Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="Count" IsVisible="{Binding isSpinning}" TextColor="#0e0273" FontSize="14"/>-->
 
 
                                 </Grid>
@@ -346,21 +369,32 @@
                                         <ColumnDefinition Width="80"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
 
-                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
 
                                     <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-                                    <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+                                    <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
 
                                     <Label Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                           Text="{Binding testcount}" FontSize="14"/>
-
+                                           Text="{Binding sampleNo}" FontSize="14"/>
 
                                     <Label Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                        Text="{Binding sampleNo}" FontSize="14"/>
+
+                                    <Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                        Text="{Binding belowLimit}" FontSize="14"/>
+
+                                    <Label Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                        Text="{Binding isQualified}" FontSize="14"/>
+
+
+                                    <!--<Label Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            
                                            FontSize="14">
                                         
@@ -371,10 +405,10 @@
                                             </MultiBinding>
                                         </Label.Text>
 
-                                    </Label>
+                                    </Label>-->
 
 
-                                    <Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                    <!--<Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            
                                            FontSize="14">
 
@@ -385,7 +419,7 @@
                                             </MultiBinding>
                                         </Label.Text>
 
-                                    </Label>
+                                    </Label>-->
 
 
 

@@ -247,7 +247,7 @@ namespace TQM
                             return;
                         }
 
-                        if(drumNumber!=null || drumNumber != "")
+                        if(drumNumber!=null && drumNumber != "")
                         {
                             int givenDrumNumber = int.Parse(drumNumber);
                             parentList = parentList.Where(StrengthTestSummaryModel =>
@@ -260,7 +260,7 @@ namespace TQM
                             }
                         }
 
-                        if (standardStrength != null || standardStrength != "")
+                        if (standardStrength != null && standardStrength != "")
                         {
                             decimal givenStandardStrength = decimal.Parse(standardStrength);
                             parentList = parentList.Where(StrengthTestSummaryModel =>
@@ -481,14 +481,6 @@ namespace TQM
                                 report.userName = testsummary.userName;
                                 report.machineCategory = testsummary.machineCategory;
                                 report.machineName = testsummary.machineName;
-                                report.shift = testsummary.shift;
-
-                                report.createdate = testsummary.createdate;
-                                report.testRemark = testsummary.testRemark;
-                                report.testDuration = testsummary.testDuration;
-
-
-
                                 report.drumNumber = testsummary.drumNumber;
                                 report.standardStrength = testsummary.standardStrength;
                                 report.strengthDeviation = testsummary.strengthDeviation;
@@ -496,14 +488,17 @@ namespace TQM
                                 report.totalTestCount = testsummary.totalTestCount;
                                 report.drumSelectionMethod = testsummary.drumSelectionMethod;
                                 report.yarnStrength = testsummary.yarnStrength;
-
+                                report.scheduledStartDate = testsummary.scheduledStartDate;
+                                report.scheduledEndDate = testsummary.scheduledEndDate;
+                                report.settingsUpdatedDate = testsummary.settingsUpdatedDate;
+                                report.shift = testsummary.shift;
+                                report.createdate = testsummary.createdate;
+                                report.testRemark = testsummary.testRemark;
+                                report.testDuration = testsummary.testDuration;
                                 report.isIndividualReport= true;
                                 report.isConsolidatedReport = false;
                                 report.deviationPercent = "\u00B1" + testsummary.strengthDeviation;
                                
-
-
-                                //report.deviationPercent = "\u00B1" + testsummary.deviationPercent;
 
                                 if (testsummary.uf_value_1 != null && testsummary.uf_value_1 != "")
                                 {
@@ -685,31 +680,31 @@ namespace TQM
 
                     if (consolidatedReport)
                     {
-                       StrengthTestConsolidatedReportMV consolItems = new StrengthTestConsolidatedReportMV()
-                        {
-                            serialNo = "Average",
-                            testID = "",
-                            machineName = "",
-                            testDate = "",
-                            shift = "",
-                            standardValue = "",
-                            //testAverage = CON_HANK.ToString(),
-                            //standardDeviation = CON_STD_DEV.ToString(),
-                            //CoEfficientOfVariation = CON_CV.ToString(),
-                            testDuration = "",
-                            remarks = "",
-                            isWhite = true,
-                            isRed = false
-
-
-                        };
+                        //StrengthTestConsolidatedReportMV consolItems = new StrengthTestConsolidatedReportMV()
+                        //{
+                        //    serialNo = "Average",
+                        //    testID = "",
+                        //    machineName = "",
+                        //    testDate = "",
+                        //    drumNumber = "",
+                        //    drumSelectionMethod = "",
+                        //    belowLimit = "",
+                        //    totalTestCount = "",
+                        //    qualifiedTestCount = "",
+                        //    standardValue = "",
+                        //    actualStrength = "",
+                        //    testDuration = "",
+                        //    remarks = "",
+                        //    isWhite = true,
+                        //    isRed = false
+                        //};
 
                       
-                        if (machineID != Guid.Empty)
-                        {
-                            isFinalAvgRowPresent = true;
-                            OverallConsolidatedReports.Add(consolItems);
-                        }
+                        //if (machineID != Guid.Empty)
+                        //{
+                        //    isFinalAvgRowPresent = true;
+                        //    OverallConsolidatedReports.Add(consolItems);
+                        //}
 
                         ListOfConsolidatedReports = OverallConsolidatedReports;
                     }

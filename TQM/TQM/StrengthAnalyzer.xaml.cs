@@ -1050,10 +1050,15 @@ namespace TQM
                         StrengthTestModelViewlist.Add(strengthTestModelView);
 
                         //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
-                        
+
+                        string isQualified = "Yes";
+
+                        if (current_stable_data < selectedBelowLimit) { isQualified = "No"; }
+
+
                         StrengthTestModel strengthTestModel = new StrengthTestModel()
                         {
-                            ID=Guid.NewGuid(),
+                            ID = Guid.NewGuid(),
                             testID = currentTestID,
                             userID = currentloggedInUser.ID,
                             userName = displayusername,
@@ -1068,6 +1073,7 @@ namespace TQM
                             drumSelectionMethod = selectedDrumSelectionMethod,
                             sampleNo = i + 1,
                             sampleStrengthCount = current_stable_data,
+                            isQualified = isQualified,
                             shift = selectedShift,
                             scheduledStartDate=scheduledStartDate,
                             scheduledEndDate=scheduledEndDate,

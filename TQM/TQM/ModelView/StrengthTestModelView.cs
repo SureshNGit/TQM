@@ -18,6 +18,7 @@ namespace TQM.ModelView
         public string drumSelectionMethod { get; set; }
         public int sampleNo { get; set; }
         public int sampleStrengthCount { get; set; }
+        public string isQualified { get; set; }
         public string shift { get; set; }
         public DateTime scheduledStartDate { get; set; }
         public DateTime scheduledEndDate { get; set; }

@@ -106,7 +106,7 @@ namespace TQM
         {
             try
             {
-                if (picker_reportType.SelectedIndex <= 0)
+                if (picker_reportType.SelectedIndex < 0)
                 {
                     DisplayAlert("Attention", "Please select report type to proceed!!!", "OK");
                     return;
@@ -238,7 +238,7 @@ namespace TQM
                 }
                 else
                 {
-                    if (picker_machinename.SelectedIndex <= 0)
+                    if (picker_machinename.SelectedIndex < 0)
                     {
                         DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
                         return;
@@ -315,7 +315,7 @@ namespace TQM
         {
             try
             {
-                if (picker_reportType.SelectedIndex <= 0)
+                if (picker_reportType.SelectedIndex < 0)
                 {
                     DisplayAlert("Attention", "Please select report type to proceed!!!", "OK");
                     return;
@@ -440,7 +440,7 @@ namespace TQM
                 }
                 else
                 {
-                    if (picker_machinename.SelectedIndex <= 0)
+                    if (picker_machinename.SelectedIndex < 0)
                     {
                         DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
                         return;

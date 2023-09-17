@@ -19,22 +19,24 @@ namespace TQM
 
             }
 
-            var machineCat = (string)values[0];
-            var act = (decimal)values[1];
-            var exp = (decimal)values[2];
-            var deviation = (string)values[3];
+            //var machineCat = (string)values[0];
+            var act = (decimal)values[0];
+            var exp = (decimal)values[1];
+            var deviation = (string)values[2];
 
-            if (machineCat != "Spinning" && machineCat != "Winding")
-            {
-                return formatDecimal(act, 4).ToString() + " [Std Hank:" + formatDecimal(exp, 4).ToString() + " " + deviation.ToString() + "]";
-            }
+            //if (machineCat != "Spinning" && machineCat != "Winding")
+            //{
+            //    return formatDecimal(act, 4).ToString() + " [Std Hank:" + formatDecimal(exp, 4).ToString() + " " + deviation.ToString() + "]";
+            //}
 
-            if (machineCat == "Spinning" || machineCat == "Winding")
-            {
-                return formatDecimal(act, 2).ToString() + " [Std Count:" + formatDecimal(exp, 2).ToString() + " " + deviation.ToString() + "]";
-            }
+            //if (machineCat == "Spinning" || machineCat == "Winding")
+            //{
+            //    return formatDecimal(act, 2).ToString() + " [Std Count:" + formatDecimal(exp, 2).ToString() + " " + deviation.ToString() + "]";
+            //}
 
-            return "";
+            return formatDecimal(act, 2).ToString() + " [Standard Strength: " + formatDecimal(exp, 2).ToString() + "  " + deviation.ToString() + "]";
+
+            //return "";
         }
 
         public object[] ConvertBack(
