@@ -461,7 +461,9 @@ namespace TQM
                                 consolItems.totalTestCount = testsummary.totalTestCount.ToString();
                                 consolItems.qualifiedTestCount = testsummary.qualifiedTestCount.ToString();
                                 consolItems.standardValue = testsummary.standardStrength.ToString();
+                                consolItems.deviation = "\u00B1" + testsummary.strengthDeviation.ToString();
                                 consolItems.actualStrength = testsummary.yarnStrength.ToString();
+                                consolItems.strength = testsummary.yarnStrength.ToString() + " \n"+ testsummary.standardStrength.ToString() + " " + "\u00B1" + testsummary.strengthDeviation.ToString();
                                 consolItems.testDuration = formatTime(testsummary.createdate);
                                 consolItems.remarks = testsummary.testRemark;
 
@@ -963,10 +965,11 @@ namespace TQM
                         //pdfGridInfo.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.Blue;
                         //pdfGridInfo.Rows[0].Cells[0].Style.TextPen = PdfPens.White;
                         //pdfGridInfo.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 18);
-                        pdfGridInfo.Rows[0].Cells[0].Value = "Total Test: " + TOT_TEST;
-                        pdfGridInfo.Rows[0].Cells[1].Value = "Con. HANK: " + CON_HANK;
-                        pdfGridInfo.Rows[0].Cells[2].Value = "Con. SD: " + CON_STD_DEV;
-                        pdfGridInfo.Rows[0].Cells[3].Value = "Con. CV: " + CON_CV;
+
+                        //pdfGridInfo.Rows[0].Cells[0].Value = "Total Test: " + TOT_TEST;
+                        //pdfGridInfo.Rows[0].Cells[1].Value = "Con. HANK: " + CON_HANK;
+                        //pdfGridInfo.Rows[0].Cells[2].Value = "Con. SD: " + CON_STD_DEV;
+                        //pdfGridInfo.Rows[0].Cells[3].Value = "Con. CV: " + CON_CV;
 
                         PdfBrush brush_bg_con = new PdfSolidBrush(Syncfusion.Drawing.Color.LightSteelBlue);
                         pdfGridInfo.Rows[0].Cells[0].Style.BackgroundBrush = brush_bg_con;
@@ -1365,7 +1368,7 @@ namespace TQM
             try
             {
                 string downloadsFolder = Path.Combine(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads),"TQMDownloads");
-                using (var textWriter = new StreamWriter(Path.Combine(downloadsFolder, "TQM_Report_Consolidated(Wrapping).csv")))
+                using (var textWriter = new StreamWriter(Path.Combine(downloadsFolder, "SVYA_Consolidated_CSV_Report.csv")))
                 {
                    
                     var writer = new CsvWriter(textWriter, CultureInfo.InvariantCulture);
@@ -1380,17 +1383,10 @@ namespace TQM
                     writer.WriteField("ID");
                     writer.WriteField("Mac Name");
                     writer.WriteField("Shift");
-                    if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-                    {
-                        writer.WriteField("Std. Count");
-                        writer.WriteField("Avg. Count");
-                    }
-                    else { 
-                        writer.WriteField("Std. Hank");
-                        writer.WriteField("Avg. Hank");
-                    }
-                    writer.WriteField("SD");
-                    writer.WriteField("CV");
+                    writer.WriteField("Drum No");
+                    writer.WriteField("Tot. Sample");
+                    writer.WriteField("Qualified");
+                    writer.WriteField("Strength");
                     writer.WriteField("Test Time");
                     writer.WriteField("Remark");
                     //Actual Data
@@ -1403,36 +1399,10 @@ namespace TQM
                         writer.WriteField(orl.testID);
                         writer.WriteField(orl.machineName);
                         writer.WriteField(orl.shift);
-                        writer.WriteField(orl.standardValue);
-
-
-                        //if (orl.testAverage != null && orl.testAverage != "")
-                        //{
-                        //    writer.WriteField(formatDecimal(Decimal.Parse(orl.testAverage)).ToString());
-                        //}
-                        //else
-                        //{
-                        //    writer.WriteField(orl.testAverage);
-                        //}
-
-                        //if (orl.standardDeviation != null && orl.standardDeviation != "")
-                        //{
-                        //    writer.WriteField(formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString());
-                        //}
-                        //else
-                        //{
-                        //    writer.WriteField(orl.standardDeviation);
-                        //}
-
-                        //if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
-                        //{
-                        //    writer.WriteField(formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString());
-                        //}
-                        //else
-                        //{
-                        //    writer.WriteField(orl.CoEfficientOfVariation);
-                        //}
-
+                        writer.WriteField(orl.drumNumber);
+                        writer.WriteField(orl.totalTestCount);
+                        writer.WriteField(orl.qualifiedTestCount);
+                        writer.WriteField(orl.strength);
                         writer.WriteField(orl.testDuration);
                         writer.WriteField(orl.remarks);
                         writer.NextRecord();
@@ -1516,7 +1486,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        pdfGrid.Rows[0].Cells[3].Value = "Mac Name";
+                        pdfGrid.Rows[0].Cells[3].Value = "Machine";
                         pdfGrid.Rows[0].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -1527,39 +1497,22 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[4].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
 
-                        if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-                        {
-                            pdfGrid.Rows[0].Cells[5].Value = "Std. Count";
-                            pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
-                            pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                            pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
-                            pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                            pdfGrid.Rows[0].Cells[6].Value = "Avg. Count";
-                            pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
-                            pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                            pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
-                            pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        }
-                        else
-                        {
-                            pdfGrid.Rows[0].Cells[5].Value = "Std. Hank";
-                            pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
-                            pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                            pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
-                            pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                            pdfGrid.Rows[0].Cells[6].Value = "Avg. Hank";
-                            pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
-                            pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                            pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
-                            pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        }
-
-                        pdfGrid.Rows[0].Cells[7].Value = "SD";
+                        pdfGrid.Rows[0].Cells[5].Value = "Drum No";
+                        pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[6].Value = "Total Sample";
+                        pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[7].Value = "Qualified";
                         pdfGrid.Rows[0].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[7].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        pdfGrid.Rows[0].Cells[8].Value = "CV";
+                        pdfGrid.Rows[0].Cells[8].Value = "Strength";
                         pdfGrid.Rows[0].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -1574,8 +1527,9 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[10].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[10].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[10].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Height = pdfGrid.Rows[0].Height * 2;
                         row = new PdfGridRow(pdfGrid);
-                        pdfGrid.Rows.Add(row);
+                        pdfGrid.Rows.Add(row); 
                         rowHeights = rowHeights + pdfGrid.Rows[0].Height;
                     }
 
@@ -1587,43 +1541,15 @@ namespace TQM
                     pdfGrid.Rows[pageRecordCount].Cells[2].Value = orl.testID;
                     pdfGrid.Rows[pageRecordCount].Cells[3].Value = orl.machineName;
                     pdfGrid.Rows[pageRecordCount].Cells[4].Value = orl.shift;
-                    pdfGrid.Rows[pageRecordCount].Cells[5].Value = orl.standardValue;
-
-
-
-                    //if (orl.testAverage != null && orl.testAverage != "")
-                    //{
-                    //    pdfGrid.Rows[pageRecordCount].Cells[6].Value = formatDecimal(Decimal.Parse(orl.testAverage)).ToString();
-                    //}
-                    //else
-                    //{
-                    //    pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.testAverage;
-                    //}
-                    //if (orl.standardDeviation != null && orl.standardDeviation != "")
-                    //{
-                    //    pdfGrid.Rows[pageRecordCount].Cells[7].Value = formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString();
-                    //}
-                    //else
-                    //{
-                    //    pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.standardDeviation;
-                    //}
-                    //if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
-                    //{
-                    //    pdfGrid.Rows[pageRecordCount].Cells[8].Value = formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString();
-                    //}
-                    //else
-                    //{
-                    //    pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.CoEfficientOfVariation;
-                    //}
+                    pdfGrid.Rows[pageRecordCount].Cells[5].Value = orl.drumNumber;
+                    pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.totalTestCount;
+                    pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.qualifiedTestCount;
+                    pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.strength;
                     pdfGrid.Rows[pageRecordCount].Cells[9].Value = orl.testDuration;
                     pdfGrid.Rows[pageRecordCount].Cells[10].Value = orl.remarks;
 
-                    if (orl.remarks != null || orl.standardValue != null)
+                    if (orl.remarks != null || orl.strength != null)
                     {
-                        //if (orl.testID == "82")
-                        //{
-                        //    decimal a = 1 / 9;
-                        //}
                         PdfStringFormat format = new PdfStringFormat();
                         format.WordWrap = PdfWordWrapType.Word;
                         pdfGrid.Rows[pageRecordCount].Cells[10].Style.StringFormat = format;
@@ -1633,16 +1559,16 @@ namespace TQM
                         {
                             contentLength = orl.remarks.Length;
                         }
-                        if (orl.standardValue != null && orl.remarks != null)
+                        if (orl.strength != null && orl.remarks != null)
                         {
-                            if (orl.standardValue.Length > orl.remarks.Length)
+                            if (orl.strength.Length > orl.remarks.Length)
                             {
-                                contentLength = orl.standardValue.Length;
+                                contentLength = orl.strength.Length;
                             }
                         }
-                        else if (orl.standardValue != null && orl.remarks == null)
+                        else if (orl.strength != null && orl.remarks == null)
                         {
-                            contentLength = orl.standardValue.Length;
+                            contentLength = orl.strength.Length;
                         }
                         if (contentLength >= 9)
                         {
@@ -1662,30 +1588,36 @@ namespace TQM
                     pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
 
-                    if (orl.isWhite)
-                    {
-                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.BackgroundBrush = PdfBrushes.White;
-                        //pdfGrid.Rows[pageRecordCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.TextBrush = brush_con;
-                    }
-                    else
-                    {
-                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.BackgroundBrush = PdfBrushes.Red;
-                        //pdfGrid.Rows[pageRecordCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.TextBrush = brush_con;
-                    }
+                  
 
                     pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
-                    pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+
+                    if (orl.isWhite)
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.BackgroundBrush = PdfBrushes.White;
+                        //pdfGrid.Rows[pageRecordCount].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.BackgroundBrush = PdfBrushes.Red;
+                        //pdfGrid.Rows[pageRecordCount].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.TextBrush = brush_con;
+                    }
+
                     pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[pageRecordCount].Cells[10].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -1753,7 +1685,7 @@ namespace TQM
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
                 pdfDocument.Close(true);
-                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "TQM_Report_Consolidated(Wrapping).pdf");
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "SVYA_Consolidated_Report.pdf");
                 //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
                 //Process.Start(pdfPath);
                 return true;
@@ -1801,7 +1733,7 @@ namespace TQM
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
                 if (consolidatedReport)
                 {
-                    header.Graphics.DrawString("Con. Wrappping Report - " + selectedMachineCategory + " (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(135, 20));
+                    header.Graphics.DrawString("Consolidated Report -" + " (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(135, 20));
                     header.Graphics.DrawString("Date: " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(200, 36));
                     if (CON_UF_NAME_1 != null && CON_UF_NAME_1 != "")
                     {
@@ -1905,9 +1837,9 @@ namespace TQM
                         {
                             showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
                         }
-                        string fileName = "TQM_Report_Consolidated(Wrapping).pdf";
+                        string fileName = "SVYA_Consolidated_Report.pdf";
                         string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                        Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                        Java.IO.File myDir = new Java.IO.File(root + "/SVYADownloads");
                         Java.IO.File file = new Java.IO.File(myDir, fileName);
                         string filePath = file.Path;
                         var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
@@ -1916,14 +1848,15 @@ namespace TQM
                         //request.Timeout = Timeout.Infinite;
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("uploadedby", companyName);
-                        if (selectedMachineCategory != null)
-                        {
-                            request.AddParameter("title", "TQMReportsConsolidated(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
-                        }
-                        else
-                        {
-                            request.AddParameter("title", "TQMReportsConsolidated(Wrapping-All)-" + DateTime.Now.ToString());
-                        }
+                        //if (selectedMachineCategory != null)
+                        //{
+                        //    request.AddParameter("title", "TQMReportsConsolidated(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                        //}
+                        //else
+                        //{
+                        //    request.AddParameter("title", "TQMReportsConsolidated(Wrapping-All)-" + DateTime.Now.ToString());
+                        //}
+                        request.AddParameter("title", "SVYA-Consolidated-Report-" + DateTime.Now.ToString());
                         request.AddFile("reportpath", filePath);
                         RestResponse response = client.Execute(request);
                         if (response.IsSuccessful)
@@ -1931,9 +1864,9 @@ namespace TQM
                             if (runConfiguration.getCSVReportStatus())
                             {
                                 if (!generateCSVConsolidatedReport()) { showAlert("Error occurred in CSV report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
-                                fileName = "TQM_Report_Consolidated(Wrapping).csv";
+                                fileName = "SVYA_Consolidated_CSV_Report.csv";
                                 root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                                myDir = new Java.IO.File(root + "/TQMDownloads");
+                                myDir = new Java.IO.File(root + "/SVYADownloads");
                                 file = new Java.IO.File(myDir, fileName);
                                 filePath = file.Path;
                                 client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
@@ -1942,14 +1875,15 @@ namespace TQM
                                 //request.Timeout = Timeout.Infinite;
                                 request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                                 request.AddParameter("uploadedby", companyName);
-                                if (selectedMachineCategory != null)
-                                {
-                                    request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
-                                }
-                                else
-                                {
-                                    request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-All)-" + DateTime.Now.ToString());
-                                }
+                                //if (selectedMachineCategory != null)
+                                //{
+                                //    request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                                //}
+                                //else
+                                //{
+                                //    request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-All)-" + DateTime.Now.ToString());
+                                //}
+                                request.AddParameter("title", "SVYA-Consolidated-CSV-Report-" + DateTime.Now.ToString());
                                 request.AddFile("reportpath", filePath);
                                 response = client.Execute(request);
                                 if (response.IsSuccessful)

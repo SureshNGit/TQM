@@ -498,13 +498,17 @@
                             <Label  Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="Shift"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="Drum No"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <Label  Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="Tot. Sample"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <!--<Label  Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="Std. Hank" x:Name="lbl_conStdHank" TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                                Text="Avg. Hank" x:Name="lbl_conAvgHank" TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                                                Text="Avg. Hank" x:Name="lbl_conAvgHank" TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>-->
                             <Label  Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                                Text="SD"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                                                Text="Qualified"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                                Text="CV"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                                                Text="Strength"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="9" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="Test Time"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="10" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
@@ -562,11 +566,31 @@
                                     
                                     
                                     <Label Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding standardValue}" FontSize="14"/>
+                                               Text="{Binding drumNumber}" FontSize="14"/>
+
+                                     <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding totalTestCount}" FontSize="14"/>
+
+                                    <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding qualifiedTestCount}" FontSize="14"/>
+
+                                    <Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding strength}" FontSize="14"/>
+
+                                    <!--<Label Grid.Column="8" Grid.Row="0"  HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                     FontSize="14" >
+                                         <Label.Text>
+                                            <MultiBinding Converter="{StaticResource StandardFormatter}">
+                                                <Binding Path="actualStrength"/>
+                                                <Binding Path="standardValue"/>
+                                                <Binding Path="deviation"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>-->
 
                                     <!--< Test Average >-->
 
-                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                    <!--<Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                             Text="{Binding testAverage,StringFormat='{0:N2}'}" 
                                         FontSize="14">
 
@@ -590,9 +614,9 @@
                                             </MultiBinding>
                                         </Label.IsVisible>
 
-                                    </Label>
+                                    </Label>-->
 
-                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                    <!--<Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                Text="{Binding testAverage,StringFormat='{0:N4}'}" 
                                            FontSize="14">
 
@@ -603,9 +627,9 @@
                                             </MultiBinding>
                                         </Label.IsVisible>
 
-                                    </Label>
+                                    </Label>-->
 
-                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                    <!--<Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                Text="{Binding testAverage,StringFormat='{0:N4}'}" 
                                            FontSize="14" BackgroundColor="Red" TextColor="White">
 
@@ -616,32 +640,32 @@
                                             </MultiBinding>
                                         </Label.IsVisible>
 
-                                    </Label>
+                                    </Label>-->
 
                                     <!--< End of Test Average >-->
                                     
                                     <!--< Standard Deviation >-->
 
 
-                                    <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                    <!--<Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            IsVisible="{Binding isSpinning}"
                                                Text="{Binding standardDeviation,StringFormat='{0:N2}'}" FontSize="14"/>
                                     
                                     <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            IsVisible="{Binding otherThanSpinning}"
-                                               Text="{Binding standardDeviation,StringFormat='{0:N4}'}" FontSize="14"/>
+                                               Text="{Binding standardDeviation,StringFormat='{0:N4}'}" FontSize="14"/>-->
 
                                     <!--< End of Standard Deviation >-->
 
                                     <!--< Co-Efficient of Variation >-->
 
-                                    <Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                    <!--<Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            IsVisible="{Binding isSpinning}"
                                                Text="{Binding CoEfficientOfVariation,StringFormat='{0:N2}'}" FontSize="14"/>
 
                                     <Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            IsVisible="{Binding otherThanSpinning}"
-                                               Text="{Binding CoEfficientOfVariation,StringFormat='{0:N4}'}" FontSize="14"/>
+                                               Text="{Binding CoEfficientOfVariation,StringFormat='{0:N4}'}" FontSize="14"/>-->
 
                                     <!--< End of Co-Efficient of Variation >-->
                                     

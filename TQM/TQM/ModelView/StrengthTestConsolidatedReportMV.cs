@@ -15,7 +15,9 @@ namespace TQM.ModelView
         public string totalTestCount { get; set; }
         public string qualifiedTestCount { get; set; }
         public string standardValue { get; set; }
+        public string deviation { get; set; }
         public string actualStrength { get; set; }
+        public string strength { get; set; }
         public string testDuration { get; set; }
         public string remarks { get; set; }
         public bool isWhite { get; set; } = true;
