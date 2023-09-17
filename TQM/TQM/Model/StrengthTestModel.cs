@@ -16,6 +16,8 @@ namespace TQM.Model
         public Guid machineID { get; set; }
         public string machineCategory { get; set; }
         public string machineName { get; set; }
+        public int sectionNumber { get; set; }
+        public string totalDrumNumbers { get; set; }
         public int drumNumber { get; set; }
         public decimal standardStrength { get; set; }
         public decimal strengthDeviation { get; set; }

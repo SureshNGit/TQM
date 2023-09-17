@@ -51,6 +51,8 @@ namespace TQM
         private string selectedMachineCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
+        private int selectedSectionNumber = 0;
+        public string selectedTotalDrumNumbers = "";
         private int selectedDrumNumber = 0;
         private decimal selectedStandardStrength = 0.0m;
         private decimal selectedStrengthDeviation = 0.0m;
@@ -228,6 +230,9 @@ namespace TQM
                             }
                         }
                         picker_machinename.SelectedIndex = machineindex;
+
+                        selectedSectionNumber = lastTestRecord.sectionNumber;
+                        selectedTotalDrumNumbers = lastTestRecord.totalDrumNumbers;
 
                         IList<string> drumNumberlist = picker_drumNumber.Items;
                         int drumNumberindex = 0;
@@ -1037,6 +1042,8 @@ namespace TQM
                             machineID = selectedMachineID,
                             machineCategory = selectedMachineCategory,
                             machineName = selectedMachineName,
+                            sectionNumber = selectedSectionNumber,
+                            totalDrumNumbers = selectedTotalDrumNumbers,
                             drumNumber = selectedDrumNumber,
                             standardStrength = selectedStandardStrength,
                             strengthDeviation = selectedStrengthDeviation,
@@ -1065,6 +1072,8 @@ namespace TQM
                             machineID = selectedMachineID,
                             machineCategory = selectedMachineCategory,
                             machineName = selectedMachineName,
+                            sectionNumber = selectedSectionNumber,
+                            totalDrumNumbers = selectedTotalDrumNumbers,
                             drumNumber = selectedDrumNumber,
                             standardStrength = selectedStandardStrength,
                             strengthDeviation = selectedStrengthDeviation,
@@ -1484,6 +1493,8 @@ namespace TQM
                 
                 if (picker_drumNumber.SelectedIndex==-1 || picker_drumNumber.SelectedItem.ToString() == "" || picker_drumNumber.SelectedItem.ToString() == null)
                 {
+                    selectedTotalDrumNumbers = "";
+                    selectedSectionNumber = 0;
                     scheduledStartDate = DEFAULTDATE;
                     scheduledEndDate = DEFAULTDATE;
                     settingsUpdatedDate = DEFAULTDATE;
@@ -1520,6 +1531,8 @@ namespace TQM
 
                             if(selectedDrumNumber>=sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
                             {
+                                selectedSectionNumber = 1;
+                                selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s1;
                                 scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s1;
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
@@ -1548,6 +1561,8 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
                             {
+                                selectedSectionNumber = 2;
+                                selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s2;
                                 scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s2;
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s2;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
@@ -1576,6 +1591,8 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec3_lowerLimit && selectedDrumNumber <= sec3_upperLimit)
                             {
+                                selectedSectionNumber = 3;
+                                selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s3;
                                 scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s3;
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s3;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
@@ -1612,6 +1629,8 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
                             {
+                                selectedSectionNumber = 1;
+                                selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s1;
                                 scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s1;
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
@@ -1640,6 +1659,8 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
                             {
+                                selectedSectionNumber = 2;
+                                selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s2;
                                 scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s2;
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s2;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
@@ -1673,6 +1694,8 @@ namespace TQM
 
                             if (selectedDrumNumber >= sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
                             {
+                                selectedSectionNumber = 1;
+                                selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s1;
                                 scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s1;
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
