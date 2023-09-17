@@ -12,7 +12,7 @@ namespace TQM.Droid
             string root = null;
             //string fileName = "TQM_Report.pdf";
             root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-            Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+            Java.IO.File myDir = new Java.IO.File(root + "/SVYADownloads");
             if (myDir.Exists()) { myDir.Delete(); }
             myDir.Mkdir();
             Java.IO.File file = new Java.IO.File(myDir, fileName);

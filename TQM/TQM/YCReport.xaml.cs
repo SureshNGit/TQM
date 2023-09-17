@@ -71,25 +71,27 @@ namespace TQM
             consolidatedReport = isConsolidated;
             if (consolidatedReport)
             {
-                if (categoryName != null && categoryName != "")
-                {
-                    lbl_reportHeader.Text = "Con. Wrapping Report - " + categoryName;
-                }
-                else
-                {
-                    lbl_reportHeader.Text = "Con. Wrapping Report - All";
-                }
+                //if (categoryName != null && categoryName != "")
+                //{
+                //    lbl_reportHeader.Text = "Con. Wrapping Report - " + categoryName;
+                //}
+                //else
+                //{
+                //    lbl_reportHeader.Text = "Con. Wrapping Report - All";
+                //}
+                lbl_reportHeader.Text = "Consolidated Report";
             }
             else
             {
-                if (categoryName != null && categoryName != "")
-                {
-                    lbl_reportHeader.Text = "Detailed Report - " + categoryName;
-                }
-                else
-                {
-                    lbl_reportHeader.Text = "Detailed Report - All";
-                }
+                //if (categoryName != null && categoryName != "")
+                //{
+                //    lbl_reportHeader.Text = "Detailed Report - " + categoryName;
+                //}
+                //else
+                //{
+                //    lbl_reportHeader.Text = "Detailed Report - All";
+                //}
+                lbl_reportHeader.Text = "Detailed Report";
             }
             if (deleteRequest)
             {
@@ -943,7 +945,7 @@ namespace TQM
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
                     pdfGridInfo.RepeatHeader = true;
-                    pdfGridInfo.Columns.Add(4);
+                    pdfGridInfo.Columns.Add(6);
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
                     pdfGridInfo.Rows.Add();
@@ -988,14 +990,32 @@ namespace TQM
                         pdfGridInfo.Rows[0].Cells[2].Style.StringFormat = format;
                         pdfGridInfo.Rows[0].Cells[3].Style.StringFormat = format;
                     }
-                    pdfGridInfo.Rows[1].Cells[0].Value = "Test ID: " + orl.testID;
+                    pdfGridInfo.Rows[1].Cells[0].Value = "Test ID: " + orl.testID.ToString();
                     pdfGridInfo.Rows[1].Cells[0].ColumnSpan = 2;
                     pdfGridInfo.Rows[1].Cells[2].Value = "Tester: " + orl.userName;
-                    pdfGridInfo.Rows[1].Cells[2].ColumnSpan = 2;
+                    pdfGridInfo.Rows[1].Cells[2].ColumnSpan = 4;
+
                     pdfGridInfo.Rows[2].Cells[0].Value = "Machine Category: " + orl.machineCategory;
                     pdfGridInfo.Rows[2].Cells[0].ColumnSpan = 2;
                     pdfGridInfo.Rows[2].Cells[2].Value = "Machine Name: " + orl.machineName;
                     pdfGridInfo.Rows[2].Cells[2].ColumnSpan = 2;
+                    pdfGridInfo.Rows[2].Cells[4].Value = "Drum Number: " + orl.drumNumber.ToString();
+
+                    pdfGridInfo.Rows[3].Cells[0].Value = "Sch. Start Date: " + orl.scheduledStartDate.ToString();
+                    pdfGridInfo.Rows[3].Cells[0].ColumnSpan = 2;
+                    pdfGridInfo.Rows[3].Cells[2].Value = "Sch. End Date: " + orl.scheduledEndDate.ToString();
+                    pdfGridInfo.Rows[3].Cells[2].ColumnSpan = 2;
+                    pdfGridInfo.Rows[3].Cells[4].Value = "Act. Test Date: " + orl.createdate.ToString();
+                    pdfGridInfo.Rows[3].Cells[4].ColumnSpan = 2;
+
+                    pdfGridInfo.Rows[4].Cells[0].Value = "Yarn Strength: " + orl.yarnStrength.ToString() + " [STD: "+ orl.standardStrength.ToString()+" "+orl.deviationPercent.ToString()+"]" ;
+                    pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
+                    pdfGridInfo.Rows[4].Cells[2].Value = "Drum Selection Method: " + orl.drumSelectionMethod;
+                    pdfGridInfo.Rows[4].Cells[2].ColumnSpan = 2;
+                    pdfGridInfo.Rows[4].Cells[4].Value = "Lower Limit: " + orl.belowLimit.ToString();
+                    pdfGridInfo.Rows[4].Cells[4].ColumnSpan = 2;
+
+
                     //pdfGridInfo.Rows[3].Cells[0].Value = "Test System: " + orl.countsysname;
                     //pdfGridInfo.Rows[3].Cells[1].Value = "Length Unit: " + orl.yarnlenunit;
                     //pdfGridInfo.Rows[3].Cells[2].Value = "Length: " + orl.yarnlength;
@@ -1028,66 +1048,66 @@ namespace TQM
                     //pdfGridInfo.Rows[4].Cells[3].Value = "CV: " + orl.testcv;
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
-                    pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
-                    pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 1;
-                    pdfGridInfo.Rows[5].Cells[1].Value = "Duration: " + orl.testDuration;
-                    pdfGridInfo.Rows[5].Cells[2].Value = "Shift: " + orl.shift;
+                    //pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
+                    //pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 1;
+                    //pdfGridInfo.Rows[5].Cells[1].Value = "Duration: " + orl.testDuration;
+                    //pdfGridInfo.Rows[5].Cells[2].Value = "Shift: " + orl.shift;
                     //pdfGridInfo.Rows[5].Cells[3].Value = "Process: " + orl.process;
 
                     if (orl.remark_1)
                     {
-                        pdfGridInfo.Rows[6].Cells[0].Value = "Remark: " + orl.testRemark;
-                        pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 4;
+                        pdfGridInfo.Rows[5].Cells[0].Value = "Remark: " + orl.testRemark;
+                        pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 4;
                     }
                     else if (orl.remark_1 == false && orl.DispUF_1)
                     {
-                        pdfGridInfo.Rows[6].Cells[0].Value = orl.uf_name_1 + ": " + orl.uf_value_1;
-                        pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 2;
+                        pdfGridInfo.Rows[5].Cells[0].Value = orl.uf_name_1 + ": " + orl.uf_value_1;
+                        pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 2;
 
                         if (orl.DispUF_2)
                         {
-                            pdfGridInfo.Rows[6].Cells[2].Value = orl.uf_name_2 + ": " + orl.uf_value_2;
-                            pdfGridInfo.Rows[6].Cells[2].ColumnSpan = 2;
+                            pdfGridInfo.Rows[5].Cells[2].Value = orl.uf_name_2 + ": " + orl.uf_value_2;
+                            pdfGridInfo.Rows[5].Cells[2].ColumnSpan = 2;
                         }
 
                     }
                     else if (orl.remark_1 == false && orl.DispUF_1 == false && orl.DispUF_2_Col1 == true)
                     {
-                        pdfGridInfo.Rows[6].Cells[0].Value = orl.uf_name_2 + ": " + orl.uf_value_2;
-                        pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 2;
+                        pdfGridInfo.Rows[5].Cells[0].Value = orl.uf_name_2 + ": " + orl.uf_value_2;
+                        pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 2;
                     }
 
                     if (orl.remark_2)
                     {
                         pdfGridInfo.Rows.Add();
-                        pdfGridInfo.Rows[7].Cells[0].Value = "Remark: " + orl.testRemark;
-                        pdfGridInfo.Rows[7].Cells[0].ColumnSpan = 4;
+                        pdfGridInfo.Rows[6].Cells[0].Value = "Remark: " + orl.testRemark;
+                        pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 4;
                     }
                     else if (orl.remark_2 == false && orl.DispUF_3)
                     {
                         pdfGridInfo.Rows.Add();
-                        pdfGridInfo.Rows[7].Cells[0].Value = orl.uf_name_3 + ": " + orl.uf_value_3;
-                        pdfGridInfo.Rows[7].Cells[0].ColumnSpan = 2;
+                        pdfGridInfo.Rows[6].Cells[0].Value = orl.uf_name_3 + ": " + orl.uf_value_3;
+                        pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 2;
 
                         if (orl.DispUF_4)
                         {
-                            pdfGridInfo.Rows[7].Cells[2].Value = orl.uf_name_4 + ": " + orl.uf_value_4;
-                            pdfGridInfo.Rows[7].Cells[2].ColumnSpan = 2;
+                            pdfGridInfo.Rows[6].Cells[2].Value = orl.uf_name_4 + ": " + orl.uf_value_4;
+                            pdfGridInfo.Rows[6].Cells[2].ColumnSpan = 2;
                         }
 
                     }
                     else if (orl.remark_2 == false && orl.DispUF_3 == false && orl.DispUF_4_Col1 == true)
                     {
                         pdfGridInfo.Rows.Add();
-                        pdfGridInfo.Rows[7].Cells[0].Value = orl.uf_name_4 + ": " + orl.uf_value_4;
-                        pdfGridInfo.Rows[7].Cells[0].ColumnSpan = 2;
+                        pdfGridInfo.Rows[6].Cells[0].Value = orl.uf_name_4 + ": " + orl.uf_value_4;
+                        pdfGridInfo.Rows[6].Cells[0].ColumnSpan = 2;
                     }
 
                     if (orl.remark_1 == false && orl.remark_2 == false)
                     {
                         pdfGridInfo.Rows.Add();
-                        pdfGridInfo.Rows[8].Cells[0].Value = "Remark: " + orl.testRemark;
-                        pdfGridInfo.Rows[8].Cells[0].ColumnSpan = 4;
+                        pdfGridInfo.Rows[7].Cells[0].Value = "Remark: " + orl.testRemark;
+                        pdfGridInfo.Rows[7].Cells[0].ColumnSpan = 4;
                     }
 
 
@@ -1095,44 +1115,60 @@ namespace TQM
                     pdfGridInfo.Rows[0].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[0].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[0].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[0].Cells[5].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[1].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[1].Cells[5].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[2].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[2].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[2].Cells[5].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[3].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[3].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[3].Cells[5].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[4].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[4].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[4].Cells[5].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[5].Cells[0].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[5].Cells[1].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[5].Cells[2].Style.Borders.All = PdfPens.Transparent;
                     pdfGridInfo.Rows[5].Cells[3].Style.Borders.All = PdfPens.Transparent;
-                    pdfGridInfo.Rows[6].Cells[0].Style.Borders.All = PdfPens.Transparent;
-                    pdfGridInfo.Rows[6].Cells[1].Style.Borders.All = PdfPens.Transparent;
-                    pdfGridInfo.Rows[6].Cells[2].Style.Borders.All = PdfPens.Transparent;
-                    pdfGridInfo.Rows[6].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                    pdfGridInfo.Rows[5].Cells[5].Style.Borders.All = PdfPens.Transparent;
+                    //pdfGridInfo.Rows[6].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                    //pdfGridInfo.Rows[6].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                    //pdfGridInfo.Rows[6].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                    //pdfGridInfo.Rows[6].Cells[3].Style.Borders.All = PdfPens.Transparent;
 
                     if ((orl.remark_1 == false && orl.DispUF_1) || (orl.remark_1 == false && orl.DispUF_1 == false && orl.DispUF_2_Col1))
+                    {
+                        pdfGridInfo.Rows[6].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[6].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[6].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[6].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[6].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[6].Cells[5].Style.Borders.All = PdfPens.Transparent;
+                    }
+                    if ((orl.remark_2 == false && orl.DispUF_3) || (orl.remark_2 == false && orl.DispUF_3 == false && orl.DispUF_4_Col1))
                     {
                         pdfGridInfo.Rows[7].Cells[0].Style.Borders.All = PdfPens.Transparent;
                         pdfGridInfo.Rows[7].Cells[1].Style.Borders.All = PdfPens.Transparent;
                         pdfGridInfo.Rows[7].Cells[2].Style.Borders.All = PdfPens.Transparent;
                         pdfGridInfo.Rows[7].Cells[3].Style.Borders.All = PdfPens.Transparent;
-                    }
-                    if ((orl.remark_2 == false && orl.DispUF_3) || (orl.remark_2 == false && orl.DispUF_3 == false && orl.DispUF_4_Col1))
-                    {
-                        pdfGridInfo.Rows[8].Cells[0].Style.Borders.All = PdfPens.Transparent;
-                        pdfGridInfo.Rows[8].Cells[1].Style.Borders.All = PdfPens.Transparent;
-                        pdfGridInfo.Rows[8].Cells[2].Style.Borders.All = PdfPens.Transparent;
-                        pdfGridInfo.Rows[8].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[7].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                        pdfGridInfo.Rows[7].Cells[5].Style.Borders.All = PdfPens.Transparent;
                     }
 
                     int totalRow_header = 7;
@@ -1193,20 +1229,21 @@ namespace TQM
                     pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[0].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    pdfGrid.Rows[0].Cells[1].Value = "Sample Weight";
+                    pdfGrid.Rows[0].Cells[1].Value = "No. Of Rolling";
                     pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
                     //pdfGrid.Rows[0].Cells[1].Style.TextPen = PdfPens.Black;
                     pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
-                    if (orl.machineCategory == "Spinning" || orl.machineCategory == "Winding")
-                    {
-                        pdfGrid.Rows[0].Cells[2].Value = "Count";
-                    }
-                    else
-                    {
-                        pdfGrid.Rows[0].Cells[2].Value = "Hank";
-                    }
+                    //if (orl.machineCategory == "Spinning" || orl.machineCategory == "Winding")
+                    //{
+                    //    pdfGrid.Rows[0].Cells[2].Value = "Count";
+                    //}
+                    //else
+                    //{
+                    //    pdfGrid.Rows[0].Cells[2].Value = "Hank";
+                    //}
+                    pdfGrid.Rows[0].Cells[2].Value = "Qualified (Yes/No)";
                     pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -1223,17 +1260,9 @@ namespace TQM
                     {
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
-                        //pdfGrid.Rows[rowCount].Cells[0].Value = test.testcount.ToString();
-                        //if (orl.machineCategory == "Spinning" || orl.machineCategory == "Winding")
-                        //{
-                        //    pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight, 2).ToString();
-                        //    pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval, 2).ToString();
-                        //}
-                        //else
-                        //{
-                        //    pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight, 4).ToString();
-                        //    pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval, 4).ToString();
-                        //}
+                        pdfGrid.Rows[rowCount].Cells[0].Value = test.sampleNo.ToString();
+                        pdfGrid.Rows[rowCount].Cells[1].Value = test.sampleStrengthCount.ToString();
+                        pdfGrid.Rows[rowCount].Cells[2].Value = test.isQualified.ToString();
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -1318,7 +1347,7 @@ namespace TQM
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
                 pdfDocument.Close(true);
-                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "TQM_Report(Wrapping).pdf");
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "SVYA_Detailed_Report.pdf");
                 //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
                 //Process.Start(pdfPath);
                 return true;
@@ -1824,14 +1853,15 @@ namespace TQM
                 }
                 else
                 {
-                    if (selectedMachineCategory != null)
-                    {
-                        header.Graphics.DrawString("Wrapping Report - " + selectedMachineCategory + " (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
-                    }
-                    else
-                    {
-                        header.Graphics.DrawString("Wrapping Report - All (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
-                    }
+                    //if (selectedMachineCategory != null)
+                    //{
+                    //    header.Graphics.DrawString("Wrapping Report - " + selectedMachineCategory + " (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                    //}
+                    //else
+                    //{
+                    //    header.Graphics.DrawString("Wrapping Report - All (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                    //}
+                    header.Graphics.DrawString("SVYA Detailed Report (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
                 }
                 //Title Ends
                 pdfDocument.Template.Top = header;
@@ -1980,9 +2010,9 @@ namespace TQM
                         {
                             showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
                         }
-                        string fileName = "TQM_Report(Wrapping).pdf";
+                        string fileName = "SVYA_Detailed_Report.pdf";
                         string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                        Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                        Java.IO.File myDir = new Java.IO.File(root + "/SVYADownloads");
                         Java.IO.File file = new Java.IO.File(myDir, fileName);
                         string filePath = file.Path;
                         var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
@@ -1991,14 +2021,15 @@ namespace TQM
                         //request.Timeout = Timeout.Infinite;
                         request.AddParameter("userName", runConfiguration.getTQMAppUserID());
                         request.AddParameter("uploadedby", companyName);
-                        if (selectedMachineCategory != null)
-                        {
-                            request.AddParameter("title", "TQMReports(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
-                        }
-                        else
-                        {
-                            request.AddParameter("title", "TQMReports(Wrapping-All" + DateTime.Now.ToString());
-                        }
+                        //if (selectedMachineCategory != null)
+                        //{
+                        //    request.AddParameter("title", "TQMReports(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                        //}
+                        //else
+                        //{
+                        //    request.AddParameter("title", "TQMReports(Wrapping-All" + DateTime.Now.ToString());
+                        //}
+                        request.AddParameter("title", "SVYA-Detailed-Report-" + DateTime.Now.ToString());
                         request.AddFile("reportpath", filePath);
                         RestResponse response = client.Execute(request);
                         if (response.IsSuccessful)
