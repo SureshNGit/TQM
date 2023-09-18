@@ -390,7 +390,7 @@
                                            Text="{Binding sampleNo}" FontSize="14"/>
 
                                     <Label Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                        Text="{Binding sampleNo}" FontSize="14"/>
+                                        Text="{Binding sampleStrengthCount}" FontSize="14"/>
 
                                     <!--<Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                         Text="{Binding belowLimit}" FontSize="14"/>-->
