@@ -15,6 +15,14 @@ namespace TQM.Model
         public string machineCategory { get; set; }
         public string machineName { get; set; }
 
+        public int speed { get; set; }
+        public decimal p1 { get; set; }
+        public decimal p1Deviation { get; set; }
+        public decimal p2 { get; set; }
+        public decimal p2Deviation { get; set; }
+        public decimal n1 { get; set; }
+        public decimal n1Deviation { get; set; }
+
         public int totalDrumCount { get; set; }
 
         public int totalSections { get; set; }
@@ -37,6 +45,10 @@ namespace TQM.Model
 
         public DateTime scheduledEndDate_s1 { get; set; }
 
+        public int maxRollingCount_s1 { get; set; }
+
+        public string materialCount_s1 { get; set; }
+
         public decimal stdRollingStrength_s2 { get; set; }
 
         public decimal strengthDeviation_s2 { get; set; }
@@ -55,6 +67,10 @@ namespace TQM.Model
 
         public DateTime scheduledEndDate_s2 { get; set; }
 
+        public int maxRollingCount_s2 { get; set; }
+
+        public string materialCount_s2 { get; set; }
+
         public decimal stdRollingStrength_s3 { get; set; }
 
         public decimal strengthDeviation_s3 { get; set; }
@@ -72,6 +88,10 @@ namespace TQM.Model
         public DateTime scheduledStartDate_s3 { get; set; }
 
         public DateTime scheduledEndDate_s3 { get; set; }
+
+        public int maxRollingCount_s3 { get; set; }
+
+        public string materialCount_s3 { get; set; }
 
         public int shiftCount { get; set; }
 

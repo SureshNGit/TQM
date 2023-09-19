@@ -32,6 +32,7 @@ namespace TQM
                     conn.CreateTable<ConfigModel>();
                 }
                 InitializeComponent();
+                picker_machinecategory.SelectedItem = "OE Auto Coner";
                 fetchConfig();
             }
             catch (Exception ex)
@@ -276,6 +277,13 @@ namespace TQM
                 }
             }
             picker_sectionCount.SelectedIndex = sectionindex;
+            entry_macSpeed.Text = ycConfig.speed.ToString();
+            entry_p1.Text = ycConfig.p1.ToString();
+            entry_p1Deviation.Text = ycConfig.p1Deviation.ToString();
+            entry_p2.Text = ycConfig.p2.ToString();
+            entry_p2Deviation.Text = ycConfig.p2Deviation.ToString();
+            entry_n1.Text = ycConfig.n1.ToString();
+            entry_n1Deviation.Text = ycConfig.n1Deviation.ToString();
             //Section-1
             entry_stdRollingStrength_Sec1.Text = ycConfig.stdRollingStrength_s1.ToString();
             entry_strengthDeviation_Sec1.Text = ycConfig.strengthDeviation_s1.ToString();
@@ -301,6 +309,10 @@ namespace TQM
             date_scheduledStartDate_Sec1.Date = ycConfig.scheduledStartDate_s1;
             date_scheduledEndDate_Sec1.Date = ycConfig.scheduledEndDate_s1;
             entry_scheduledDayLimit_Sec1.Text = ycConfig.scheduledDayLimit_s1.ToString();
+
+            entry_maxRollingCount_Sec1.Text = ycConfig.maxRollingCount_s1.ToString();
+            entry_matCount_Sec1.Text = ycConfig.materialCount_s1;
+
             //Section-2
             entry_stdRollingStrength_Sec2.Text = ycConfig.stdRollingStrength_s2.ToString();
             entry_strengthDeviation_Sec2.Text = ycConfig.strengthDeviation_s2.ToString();
@@ -326,6 +338,10 @@ namespace TQM
             date_scheduledStartDate_Sec2.Date = ycConfig.scheduledStartDate_s2;
             date_scheduledEndDate_Sec2.Date = ycConfig.scheduledEndDate_s2;
             entry_scheduledDayLimit_Sec2.Text = ycConfig.scheduledDayLimit_s2.ToString();
+
+            entry_maxRollingCount_Sec2.Text = ycConfig.maxRollingCount_s2.ToString();
+            entry_matCount_Sec2.Text = ycConfig.materialCount_s2;
+
             //Section-3
             entry_stdRollingStrength_Sec3.Text = ycConfig.stdRollingStrength_s3.ToString();
             entry_strengthDeviation_Sec3.Text = ycConfig.strengthDeviation_s3.ToString();
@@ -351,6 +367,9 @@ namespace TQM
             date_scheduledStartDate_Sec3.Date = ycConfig.scheduledStartDate_s3;
             date_scheduledEndDate_Sec3.Date = ycConfig.scheduledEndDate_s3;
             entry_scheduledDayLimit_Sec3.Text = ycConfig.scheduledDayLimit_s3.ToString();
+
+            entry_maxRollingCount_Sec3.Text = ycConfig.maxRollingCount_s3.ToString();
+            entry_matCount_Sec3.Text = ycConfig.materialCount_s3;
 
             //Toggle Frames
             if (btn_section1.IsVisible)
@@ -462,6 +481,76 @@ namespace TQM
                     DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
                     return;
                 }
+                if (entry_macSpeed.Text.Trim().Contains(".") || entry_macSpeed.Text.Trim().Contains("-"))
+                {
+                    DisplayAlert("Attention", "Machine speed should not be a decimal or negative value!!!", "Ok");
+                    return;
+                }
+                if (entry_macSpeed.Text.Trim() == "" || int.Parse(entry_macSpeed.Text.Trim()) == 0)
+                {
+                    DisplayAlert("Attention", "Machine speed should not be blank or zero!!!", "Ok");
+                    return;
+                }
+                if (entry_p1.Text.Trim() == "-")
+                {
+                    DisplayAlert("Attention", "P1 is invalid. Please check!!!", "Ok");
+                    return;
+                }
+                if (entry_p1.Text.Trim() == "" || decimal.Parse(entry_p1.Text.Trim()) <= 0m)
+                {
+                    DisplayAlert("Attention", "P1 should not be blank or zero or negative!!!", "Ok");
+                    return;
+                }
+                if (entry_p1Deviation.Text.Trim() == "-")
+                {
+                    DisplayAlert("Attention", "P1 Deviation is invalid. Please check!!!", "Ok");
+                    return;
+                }
+                if (entry_p1Deviation.Text.Trim() == "" || decimal.Parse(entry_p1Deviation.Text.Trim()) < 0m)
+                {
+                    DisplayAlert("Attention", "P1 Deviation should not be blank or negative!!!", "Ok");
+                    return;
+                }
+                if (entry_p2.Text.Trim() == "-")
+                {
+                    DisplayAlert("Attention", "P2 is invalid. Please check!!!", "Ok");
+                    return;
+                }
+                if (entry_p2.Text.Trim() == "" || decimal.Parse(entry_p2.Text.Trim()) <= 0m)
+                {
+                    DisplayAlert("Attention", "P2 should not be blank or zero or negative!!!", "Ok");
+                    return;
+                }
+                if (entry_p2Deviation.Text.Trim() == "-")
+                {
+                    DisplayAlert("Attention", "P2 Deviation is invalid. Please check!!!", "Ok");
+                    return;
+                }
+                if (entry_p2Deviation.Text.Trim() == "" || decimal.Parse(entry_p2Deviation.Text.Trim()) < 0m)
+                {
+                    DisplayAlert("Attention", "P2 Deviation should not be blank or negative!!!", "Ok");
+                    return;
+                }
+                if (entry_n1.Text.Trim() == "-")
+                {
+                    DisplayAlert("Attention", "N1 is invalid. Please check!!!", "Ok");
+                    return;
+                }
+                if (entry_n1.Text.Trim() == "" || decimal.Parse(entry_n1.Text.Trim()) <= 0m)
+                {
+                    DisplayAlert("Attention", "N1 should not be blank or zero or negative!!!", "Ok");
+                    return;
+                }
+                if (entry_n1Deviation.Text.Trim() == "-")
+                {
+                    DisplayAlert("Attention", "N1 Deviation is invalid. Please check!!!", "Ok");
+                    return;
+                }
+                if (entry_n1Deviation.Text.Trim() == "" || decimal.Parse(entry_n1Deviation.Text.Trim()) < 0m)
+                {
+                    DisplayAlert("Attention", "N1 Deviation should not be blank or negative!!!", "Ok");
+                    return;
+                }
                 if (entry_drumCount.Text.Trim().Contains(".") || entry_drumCount.Text.Trim().Contains("-"))
                 {
                     DisplayAlert("Attention", "Total Drum Count should not be a decimal or negative value!!!", "Ok");
@@ -487,6 +576,8 @@ namespace TQM
                 int scheduledDayLimit_S1 = 0;
                 DateTime scheduleStartDate_S1 = DateTime.Now;
                 DateTime scheduleEndDate_S1 = DateTime.Now;
+                int maxRollingCount_S1 = 0;
+                string matCount_S1 = "";
                 if (btn_section1.IsVisible)
                 {
                     if (entry_stdRollingStrength_Sec1.Text.Trim() == "-")
@@ -562,6 +653,21 @@ namespace TQM
                             return;
                         }
                     }
+                    if (entry_maxRollingCount_Sec1.Text.Trim().Contains(".") || entry_maxRollingCount_Sec1.Text.Trim().Contains("-"))
+                    {
+                        DisplayAlert("Attention", "Maximum rolling count should not be a decimal or negative value in section-1!!!", "Ok");
+                        return;
+                    }
+                    if (entry_maxRollingCount_Sec1.Text.Trim() == "" || int.Parse(entry_maxRollingCount_Sec1.Text.Trim()) == 0)
+                    {
+                        DisplayAlert("Attention", "Maximum rolling count should not be blank or zero in section-1!!!", "Ok");
+                        return;
+                    }
+                    if (entry_matCount_Sec1.Text.Trim() == "")
+                    {
+                        DisplayAlert("Attention", "Section-1 material count is invalid. Please check!!!", "Ok");
+                        return;
+                    }
                     stdRollingStrength_S1 = decimal.Parse(entry_stdRollingStrength_Sec1.Text);
                     strengthDeviation_S1 = decimal.Parse(entry_strengthDeviation_Sec1.Text);
                     belowLimit_S1 = int.Parse(entry_belowLimit_Sec1.Text);
@@ -571,6 +677,8 @@ namespace TQM
                     scheduledDayLimit_S1 = int.Parse(entry_scheduledDayLimit_Sec1.Text);
                     scheduleStartDate_S1 = date_scheduledStartDate_Sec1.Date;
                     scheduleEndDate_S1 = date_scheduledEndDate_Sec1.Date;
+                    maxRollingCount_S1 = int.Parse(entry_maxRollingCount_Sec1.Text);
+                    matCount_S1 = entry_matCount_Sec1.Text;
                 }
 
                 decimal stdRollingStrength_S2 = 0.0m;
@@ -582,6 +690,8 @@ namespace TQM
                 int scheduledDayLimit_S2 = 0;
                 DateTime scheduleStartDate_S2 = DateTime.Now;
                 DateTime scheduleEndDate_S2 = DateTime.Now;
+                int maxRollingCount_S2 = 0;
+                string matCount_S2 = "";
                 if (btn_section2.IsVisible)
                 {
                     if (entry_stdRollingStrength_Sec2.Text.Trim() == "-")
@@ -657,6 +767,21 @@ namespace TQM
                             return;
                         }
                     }
+                    if (entry_maxRollingCount_Sec2.Text.Trim().Contains(".") || entry_maxRollingCount_Sec2.Text.Trim().Contains("-"))
+                    {
+                        DisplayAlert("Attention", "Maximum rolling count should not be a decimal or negative value in section-2!!!", "Ok");
+                        return;
+                    }
+                    if (entry_maxRollingCount_Sec2.Text.Trim() == "" || int.Parse(entry_maxRollingCount_Sec2.Text.Trim()) == 0)
+                    {
+                        DisplayAlert("Attention", "Maximum rolling count should not be blank or zero in section-2!!!", "Ok");
+                        return;
+                    }
+                    if (entry_matCount_Sec2.Text.Trim() == "")
+                    {
+                        DisplayAlert("Attention", "Section-2 material count is invalid. Please check!!!", "Ok");
+                        return;
+                    }
                     stdRollingStrength_S2 = decimal.Parse(entry_stdRollingStrength_Sec2.Text);
                     strengthDeviation_S2 = decimal.Parse(entry_strengthDeviation_Sec2.Text);
                     belowLimit_S2 = int.Parse(entry_belowLimit_Sec2.Text);
@@ -666,6 +791,8 @@ namespace TQM
                     scheduledDayLimit_S2 = int.Parse(entry_scheduledDayLimit_Sec2.Text);
                     scheduleStartDate_S2 = date_scheduledStartDate_Sec2.Date;
                     scheduleEndDate_S2 = date_scheduledEndDate_Sec2.Date;
+                    maxRollingCount_S2 = int.Parse(entry_maxRollingCount_Sec2.Text);
+                    matCount_S2 = entry_matCount_Sec2.Text;
                 }
 
                 decimal stdRollingStrength_S3 = 0.0m;
@@ -677,6 +804,8 @@ namespace TQM
                 int scheduledDayLimit_S3 = 0;
                 DateTime scheduleStartDate_S3 = DateTime.Now;
                 DateTime scheduleEndDate_S3 = DateTime.Now;
+                int maxRollingCount_S3 = 0;
+                string matCount_S3 = "";
                 if (btn_section3.IsVisible)
                 {
                     if (entry_stdRollingStrength_Sec3.Text.Trim() == "-")
@@ -752,6 +881,21 @@ namespace TQM
                             return;
                         }
                     }
+                    if (entry_maxRollingCount_Sec3.Text.Trim().Contains(".") || entry_maxRollingCount_Sec3.Text.Trim().Contains("-"))
+                    {
+                        DisplayAlert("Attention", "Maximum rolling count should not be a decimal or negative value in section-3!!!", "Ok");
+                        return;
+                    }
+                    if (entry_maxRollingCount_Sec3.Text.Trim() == "" || int.Parse(entry_maxRollingCount_Sec3.Text.Trim()) == 0)
+                    {
+                        DisplayAlert("Attention", "Maximum rolling count should not be blank or zero in section-3!!!", "Ok");
+                        return;
+                    }
+                    if (entry_matCount_Sec3.Text.Trim() == "")
+                    {
+                        DisplayAlert("Attention", "Section-3 material count is invalid. Please check!!!", "Ok");
+                        return;
+                    }
                     stdRollingStrength_S3 = decimal.Parse(entry_stdRollingStrength_Sec3.Text);
                     strengthDeviation_S3 = decimal.Parse(entry_strengthDeviation_Sec3.Text);
                     belowLimit_S3 = int.Parse(entry_belowLimit_Sec3.Text);
@@ -761,6 +905,8 @@ namespace TQM
                     scheduledDayLimit_S3 = int.Parse(entry_scheduledDayLimit_Sec3.Text);
                     scheduleStartDate_S3 = date_scheduledStartDate_Sec3.Date;
                     scheduleEndDate_S3 = date_scheduledEndDate_Sec3.Date;
+                    maxRollingCount_S3 = int.Parse(entry_maxRollingCount_Sec3.Text);
+                    matCount_S3 = entry_matCount_Sec3.Text;
                 }
 
                 if (picker_shiftCount.SelectedIndex == -1 || picker_shiftCount.SelectedItem.ToString() == "")
@@ -908,6 +1054,13 @@ namespace TQM
                     machineID = selectedMachineID,
                     machineName = selectedMachineName,
                     //General Data
+                    speed = int.Parse(entry_macSpeed.Text),
+                    p1 = decimal.Parse(entry_p1.Text.ToString()),
+                    p1Deviation = decimal.Parse(entry_p1Deviation.Text.ToString()),
+                    p2 = decimal.Parse(entry_p2.Text.ToString()),
+                    p2Deviation = decimal.Parse(entry_p2Deviation.Text.ToString()),
+                    n1 = decimal.Parse(entry_n1.Text.ToString()),
+                    n1Deviation = decimal.Parse(entry_n1Deviation.Text.ToString()),
                     totalDrumCount = int.Parse(entry_drumCount.Text),
                     totalSections = int.Parse(picker_sectionCount.SelectedItem.ToString()),
                     //Section-1
@@ -920,6 +1073,8 @@ namespace TQM
                     scheduledDayLimit_s1 = scheduledDayLimit_S1,
                     scheduledStartDate_s1 = scheduleStartDate_S1,
                     scheduledEndDate_s1 = scheduleEndDate_S1,
+                    maxRollingCount_s1 = int.Parse(entry_maxRollingCount_Sec1.Text.ToString()),
+                    materialCount_s1 = entry_matCount_Sec1.Text,
                     //Section-2
                     stdRollingStrength_s2 = stdRollingStrength_S2,
                     strengthDeviation_s2 = strengthDeviation_S2,
@@ -930,6 +1085,8 @@ namespace TQM
                     scheduledDayLimit_s2 = scheduledDayLimit_S2,
                     scheduledStartDate_s2 = scheduleStartDate_S2,
                     scheduledEndDate_s2 = scheduleEndDate_S2,
+                    maxRollingCount_s2 = int.Parse(entry_maxRollingCount_Sec2.Text.ToString()),
+                    materialCount_s2 = entry_matCount_Sec2.Text,
                     //Section-3
                     stdRollingStrength_s3 = stdRollingStrength_S3,
                     strengthDeviation_s3 = strengthDeviation_S3,
@@ -940,6 +1097,8 @@ namespace TQM
                     scheduledDayLimit_s3 = scheduledDayLimit_S3,
                     scheduledStartDate_s3 = scheduleStartDate_S3,
                     scheduledEndDate_s3 = scheduleEndDate_S3,
+                    maxRollingCount_s3 = int.Parse(entry_maxRollingCount_Sec3.Text.ToString()),
+                    materialCount_s3 = entry_matCount_Sec3.Text,
                     //Shift Details
                     shiftCount = int.Parse(picker_shiftCount.SelectedItem.ToString()),
                     shift1time = shift1.Hours.ToString() + ":" + shift1.Minutes.ToString(),
@@ -1196,6 +1355,7 @@ namespace TQM
                 if (userconfirmation)
                 {
                     string fieldName = await DisplayPromptAsync("Field Name", "Enter the field name to proceed");
+                    if (fieldName == null) { return; }
                     fieldName = fieldName.Trim();
                     if (fieldName != null && fieldName != "")
                     {

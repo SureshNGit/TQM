@@ -48,69 +48,113 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" Text="Category" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                    <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
-                        HorizontalOptions="Start"
-                        x:Name="picker_machinecategory" TextColor="Green" FontSize="16" SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged">
-                        <Picker.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String></x:String>
-                                <x:String>OE Auto Coner</x:String>
-                            </x:Array>
-                        </Picker.ItemsSource>
-                    </Picker>
+                    <Frame Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7" HorizontalOptions="Start" IsVisible="true"
+                        BackgroundColor="LightGoldenrodYellow" BorderColor="White" CornerRadius="0" HasShadow="False" x:Name="frame_general">
+                       <StackLayout>
+                            <Grid Margin="5,0,0,-30">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Name" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16"
-                           Margin="105,10,0,0"/>
-                    <Picker Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding machineName}"
-                            SelectedIndexChanged="picker_machinename_SelectedIndexChanged" Margin="5,0,0,0"
-                        x:Name="picker_machinename" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
-                    </Picker>
+                                <Label Grid.Row="0" Grid.Column="0" Text="Category" HorizontalOptions="Start"
+                                       TextColor="#0e0273" FontSize="16" Margin="0,10,0,0" IsVisible="true" />
+                                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                                    HorizontalOptions="Start" IsVisible="true" Margin="0,0,0,0" IsEnabled="False"
+                                    x:Name="picker_machinecategory" TextColor="Green" FontSize="16" SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String></x:String>
+                                            <x:String>OE Auto Coner</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
 
-                    <Label Grid.Row="0" Grid.Column="3" x:Name="lbl_macSpeed" Text="Speed"
-                           HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                    <Entry Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_macSpeed" 
-                           Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="45,0,0,0"
-                           VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                                <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="1" Text="Name" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16"
+                                       Margin="-50,10,0,0"/>
+                                <Picker Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding machineName}"
+                                        SelectedIndexChanged="picker_machinename_SelectedIndexChanged" Margin="5,0,0,0"
+                                    x:Name="picker_machinename" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+                                </Picker>
 
-                    <Label Grid.Row="0" Grid.Column="4" x:Name="lbl_p1" Text="P1"
-                           HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                    <Entry Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="1" Text = "" x:Name="entry_p1" 
-                           Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="15,0,0,0"
-                           VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                                <Label Grid.Row="0" Grid.Column="3" x:Name="lbl_macSpeed" Text="Speed"
+                                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                                <Entry Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_macSpeed" 
+                                       Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="45,0,0,0"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
 
-                    <Label Grid.Row="0" Grid.Column="5" x:Name="lbl_p2" Text="P2"
-                           HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                    <Entry Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="1" Text = "" x:Name="entry_p2" 
-                           Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="15,0,0,0"
-                           VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                                <Label Grid.Row="0" Grid.Column="4" x:Name="lbl_p1" Text="P1"
+                                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                                <Entry Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="1" Text = "" x:Name="entry_p1" 
+                                       Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="15,0,50,0"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
 
-                    <Label Grid.Row="1" Grid.Column="0" x:Name="lbl_n1" Text="N1"
-                           HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                    <Entry Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text = "" x:Name="entry_n1" 
-                           Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="15,0,0,0"
-                           VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                                <Label Grid.Row="0" Grid.Column="5" x:Name="lbl_p1Deviation" Text="P1 Deviation (±)"
+                                       HorizontalOptions="Start" TextColor="red" FontSize="16" Margin="-50,10,0,0"/>
+                                <Entry Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="1" Text = "" x:Name="entry_p1Deviation" 
+                                       Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="65,0,0,0"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
 
-                    <Label Grid.Row="1" Grid.Column="1" x:Name="lbl_drumCount" Text="Drum Count"
-                           HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                    <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text = "" x:Name="entry_drumCount" Margin="85,0,110,0"
-                           Keyboard="Numeric" TextColor="Green" FontSize="16" TextChanged="entry_drumCount_TextChanged"
-                           VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+                                <Label Grid.Row="1" Grid.Column="0" x:Name="lbl_p2" Text="P2"
+                                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                                <Entry Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text = "" x:Name="entry_p2" 
+                                       Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="15,0,-20,0"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
 
-                    <Label Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Text="No. Of Sections" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16"
-                           Margin="40,10,0,0"/>
-                    <Picker Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
-                            Margin="-10,0,80,0"
-                        x:Name="picker_sectionCount" TextColor="Green" FontSize="16" SelectedIndexChanged="picker_sectionCount_SelectedIndexChanged">
-                        <Picker.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String></x:String>
-                                <x:String>1</x:String>
-                                <x:String>2</x:String>
-                                <x:String>3</x:String>
-                            </x:Array>
-                        </Picker.ItemsSource>
-                    </Picker>
+                                <Label Grid.Row="1" Grid.Column="1" x:Name="lbl_p2Deviation" Text="P2 Deviation (±)"
+                                       HorizontalOptions="Start" TextColor="red" FontSize="16" Margin="20,10,0,0"/>
+                                <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text = "" x:Name="entry_p2Deviation" 
+                                       Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="130,0,110,0"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+
+                                <Label Grid.Row="1" Grid.Column="2" x:Name="lbl_n1" Text="N1"
+                                       HorizontalOptions="Center" TextColor="#0e0273" FontSize="16" Margin="-30,10,0,0"/>
+                                <Entry Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1" Text = "" x:Name="entry_n1" 
+                                       Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="70,0,0,0"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+
+                                <Label Grid.Row="1" Grid.Column="3" x:Name="lbl_n1Deviation" Text="N1 Deviation (±)"
+                                       HorizontalOptions="Start" TextColor="red" FontSize="16" Margin="0,10,0,0"/>
+                                <Entry Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Text = "" x:Name="entry_n1Deviation" 
+                                       Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="110,0,130,0"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+
+                                <Label Grid.Row="2" Grid.Column="0" x:Name="lbl_drumCount" Text="Drum Count"
+                                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                                <Entry Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text = "" x:Name="entry_drumCount" Margin="90,0,0,0"
+                                       Keyboard="Numeric" TextColor="Green" FontSize="16" TextChanged="entry_drumCount_TextChanged"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
+
+                                <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Text="No. Of Sections" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16"
+                                       Margin="15,10,0,0"/>
+                                <Picker Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                                        Margin="-40,0,80,0"
+                                    x:Name="picker_sectionCount" TextColor="Green" FontSize="16" SelectedIndexChanged="picker_sectionCount_SelectedIndexChanged">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String></x:String>
+                                            <x:String>1</x:String>
+                                            <x:String>2</x:String>
+                                            <x:String>3</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
+                            </Grid>
+                       </StackLayout>
+                    </Frame>
 
                     <!--Section -1 -->
                     
@@ -221,7 +265,7 @@
                                 HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="-85,10,0,0"/>
 
                                 <Entry Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="1" Text = "" x:Name="entry_matCount_Sec1" 
-                                Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="20,0,60,0"
+                                Keyboard="Text" TextColor="Green" FontSize="16" Margin="20,0,60,0"
                                 VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
 
                             </Grid>
@@ -333,7 +377,7 @@
                                 HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="-85,10,0,0"/>
 
                                 <Entry Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="1" Text = "" x:Name="entry_matCount_Sec2" 
-                                Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="20,0,60,0"
+                                Keyboard="Text" TextColor="Green" FontSize="16" Margin="20,0,60,0"
                                 VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
 
                             </Grid>
@@ -445,68 +489,91 @@
                                 HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="-85,10,0,0"/>
 
                                 <Entry Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="1" Text = "" x:Name="entry_matCount_Sec3" 
-                                Keyboard="Numeric" TextColor="Green" FontSize="16" Margin="20,0,60,0"
+                                Keyboard="Text" TextColor="Green" FontSize="16" Margin="20,0,60,0"
                                 VerticalTextAlignment="Center" HorizontalTextAlignment="Center" />
 
                             </Grid>
                        </StackLayout>
                     </Frame>
 
+                    <Frame Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="7" HorizontalOptions="Start" IsVisible="true"
+                        BackgroundColor="LightGoldenrodYellow" BorderColor="White" CornerRadius="0" HasShadow="False" x:Name="frame_shift">
+                       <StackLayout>
+                            <Grid Margin="10,0,0,-30">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1"  Text="No.Of Shift(s)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
+                                <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" x:Name="picker_shiftCount" TextColor="Green" FontSize="16"
+                                        VerticalTextAlignment="Center" HorizontalTextAlignment="Center" SelectedIndexChanged="picker_shiftCount_SelectedIndexChanged">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String></x:String>
+                                            <x:String>1</x:String>
+                                            <x:String>2</x:String>
+                                            <x:String>3</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
 
-                    <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1"  Text="No.Of Shift(s)" HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0"/>
-                    <Picker Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="1" x:Name="picker_shiftCount" TextColor="Green" FontSize="16"
-                            VerticalTextAlignment="Center" HorizontalTextAlignment="Center" SelectedIndexChanged="picker_shiftCount_SelectedIndexChanged">
-                        <Picker.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String></x:String>
-                                <x:String>1</x:String>
-                                <x:String>2</x:String>
-                                <x:String>3</x:String>
-                            </x:Array>
-                        </Picker.ItemsSource>
-                    </Picker>
+                                <Label x:Name="shift1label" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Text="Shift-1 Start Time (in 24hrs)" 
+                                       HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0" IsVisible="False" />
+                                <TimePicker Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="1" x:Name="Shift1_timePicker"
+                                    Time="11:00:00" HorizontalOptions="Center"
+                                    Format="HH:mm" TextColor="Green" IsVisible="False" />
 
-                    <Label x:Name="shift1label" Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="2" Text="Shift-1 Start Time (in 24hrs)" 
-                           HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0" IsVisible="False" />
-                    <TimePicker Grid.Row="8" Grid.Column="3" Grid.ColumnSpan="1" x:Name="Shift1_timePicker"
-                        Time="11:00:00" HorizontalOptions="Center"
-                        Format="HH:mm" TextColor="Green" IsVisible="False" />
+                                <Label  x:Name="shift2label" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift-2 Start Time (in 24hrs)" 
+                                        HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0" IsVisible="False" />
+                                <TimePicker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" x:Name="Shift2_timePicker"
+                                    Time="11:00:00" HorizontalOptions="Center"
+                                    Format="HH:mm" TextColor="Green" IsVisible="False" />
 
-                    <Label  x:Name="shift2label" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift-2 Start Time (in 24hrs)" 
-                            HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0" IsVisible="False" />
-                    <TimePicker Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="1" x:Name="Shift2_timePicker"
-                        Time="11:00:00" HorizontalOptions="Center"
-                        Format="HH:mm" TextColor="Green" IsVisible="False" />
+                                <Label  x:Name="shift3label" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Text="Shift-3 Start Time (in 24hrs)" 
+                                        HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0" IsVisible="False" />
+                                <TimePicker Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="1" x:Name="Shift3_timePicker"
+                                    Time="11:00:00" HorizontalOptions="Center"
+                                    Format="HH:mm" TextColor="Green" IsVisible="False" />
 
-                    <Label  x:Name="shift3label" Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2" Text="Shift-3 Start Time (in 24hrs)" 
-                            HorizontalOptions="Start" TextColor="#0e0273" FontSize="16" Margin="0,10,0,0" IsVisible="False" />
-                    <TimePicker Grid.Row="9" Grid.Column="3" Grid.ColumnSpan="1" x:Name="Shift3_timePicker"
-                        Time="11:00:00" HorizontalOptions="Center"
-                        Format="HH:mm" TextColor="Green" IsVisible="False" />
+                                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="User Field 1" IsVisible="False"
+                                       HorizontalOptions="Start" TextColor="red" FontSize="16" x:Name="lbl_userfield1" Margin="0,10,0,0"/>
+                                <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_userfield1" 
+                                       Keyboard="Text" TextColor="Green" FontSize="16" IsVisible="False" Margin="0,0,0,0" MaxLength="50"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
-                    <Label Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Text="User Field 1" IsVisible="false"
-                           HorizontalOptions="Start" TextColor="red" FontSize="16" x:Name="lbl_userfield1" Margin="0,10,0,0"/>
-                    <Entry Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_userfield1" 
-                           Keyboard="Text" TextColor="Green" FontSize="16" IsVisible="false" Margin="0,0,0,0" MaxLength="50"
-                           VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                                <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Text="User Field 2" IsVisible="False"
+                                       HorizontalOptions="Start" TextColor="red" FontSize="16" x:Name="lbl_userfield2" Margin="0,10,0,0"/>
+                                <Entry Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_userfield2" 
+                                       Keyboard="Text" TextColor="Green" FontSize="16" IsVisible="False" Margin="0,0,0,0" MaxLength="50"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
-                    <Label Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="2" Text="User Field 2" IsVisible="false"
-                           HorizontalOptions="Start" TextColor="red" FontSize="16" x:Name="lbl_userfield2" Margin="0,10,0,0"/>
-                    <Entry Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_userfield2" 
-                           Keyboard="Text" TextColor="Green" FontSize="16" IsVisible="false" Margin="0,0,0,0" MaxLength="50"
-                           VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                                <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="User Field 3" IsVisible="False"
+                                       HorizontalOptions="Start" TextColor="red" FontSize="16" x:Name="lbl_userfield3" Margin="0,10,0,0"/>
+                                <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_userfield3" 
+                                       Keyboard="Text" TextColor="Green" FontSize="16" IsVisible="False" Margin="0,0,0,0" MaxLength="50"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
-                    <Label Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" Text="User Field 3" IsVisible="false"
-                           HorizontalOptions="Start" TextColor="red" FontSize="16" x:Name="lbl_userfield3" Margin="0,10,0,0"/>
-                    <Entry Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="1" Text = "" x:Name="entry_userfield3" 
-                           Keyboard="Text" TextColor="Green" FontSize="16" IsVisible="false" Margin="0,0,0,0" MaxLength="50"
-                           VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-
-                    <Label Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="2" Text="User Field 4" IsVisible="false"
-                           HorizontalOptions="Start" TextColor="red" FontSize="16" x:Name="lbl_userfield4" Margin="0,10,0,0"/>
-                    <Entry Grid.Row="11" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_userfield4" 
-                           Keyboard="Text" TextColor="Green" FontSize="16" IsVisible="false" Margin="0,0,0,0" MaxLength="50"
-                           VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                                <Label Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Text="User Field 4" IsVisible="False"
+                                       HorizontalOptions="Start" TextColor="red" FontSize="16" x:Name="lbl_userfield4" Margin="0,10,0,0"/>
+                                <Entry Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="1" Text = "" x:Name="entry_userfield4" 
+                                       Keyboard="Text" TextColor="Green" FontSize="16" IsVisible="False" Margin="0,0,0,0" MaxLength="50"
+                                       VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                            </Grid>
+                       </StackLayout>
+                    </Frame>
                 </Grid>
             </StackLayout>
         </ScrollView>

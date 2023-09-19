@@ -17,6 +17,13 @@ namespace TQM.Model
         public Guid machineID { get; set; }
         public string machineCategory { get; set; }
         public string machineName { get; set; }
+        public int speed { get; set; }
+        public decimal p1 { get; set; }
+        public decimal p1Deviation { get; set; }
+        public decimal p2 { get; set; }
+        public decimal p2Deviation { get; set; }
+        public decimal n1 { get; set; }
+        public decimal n1Deviation { get; set; }
         public int sectionNumber { get; set; }
         public string totalDrumNumbers { get; set; }
         public int drumNumber { get; set; }
@@ -27,6 +34,8 @@ namespace TQM.Model
         public int totalTestCount { get; set; }
         public string drumSelectionMethod { get; set; }
         public decimal yarnStrength { get; set; }
+        public int maxRollingCount { get; set; }
+        public string materialCount { get; set; }
         public string shift { get; set; }
         public string testRemark { get; set; }
         public string testDuration { get; set; }

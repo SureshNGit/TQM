@@ -80,12 +80,19 @@
             <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="10" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
             
 
-            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Category" FontSize="16" IsVisible="false"
+                   TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Machine Name" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <!--<Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="P1, P2, N1" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>-->
+
+            <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" HorizontalOptions="Center"  x:Name="btn_pressure"
+                        Padding="0,0,0,0" Margin="10,5,0,0" Font="16" Text="Speed, P1, P2, N1" Clicked="btn_pressure_Clicked"
+                         BackgroundColor="White" TextColor="red" CornerRadius="25"/>
+
             <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Drum Number" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Margin="5"/>
             <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="Std. Strength" FontSize="16" TextColor="#0e0273" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"  />
             <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Deviation (±)" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-            <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Below Limit" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Min &amp; Max Limit" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="No.Of Test" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Shift" FontSize="16" TextColor="#0e0273"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" HorizontalOptions="Center"  x:Name="btn_drumSelectionMethod"
@@ -93,7 +100,7 @@
                          BackgroundColor="White" TextColor="red" CornerRadius="25"/>
              
              <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
-                    x:Name="picker_machinecategory" TextColor="Green" FontSize="16"
+                    x:Name="picker_machinecategory" TextColor="Green" FontSize="16" IsVisible="false"
                     SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">
@@ -106,16 +113,24 @@
                 </Picker.Effects>
             </Picker>
 
-            <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding machineName}"
+            <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding machineName}"
                     SelectedIndexChanged="picker_machinename_SelectedIndexChanged" 
                     x:Name="picker_machinename" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Picker.Effects>
                     <effects:PlainEntry/>
                 </Picker.Effects>
             </Picker>
+
+             <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_pressure" TextColor="Green" FontSize="16"
+                   Keyboard="Text" IsEnabled="False"
+                 HorizontalOptions="Start" WidthRequest="490"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" >
+                <Entry.Effects>
+                    <effects:PlainEntry/>
+                </Entry.Effects>
+            </Entry>
             
             <Picker Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding drumNumber}"
-                    SelectedIndexChanged="picker_drumNumber_SelectedIndexChanged"
+                    SelectedIndexChanged="picker_drumNumber_SelectedIndexChanged" IsEnabled="True"
                     x:Name="picker_drumNumber" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Picker.Effects>
                     <effects:PlainEntry/>
@@ -123,8 +138,8 @@
             </Picker>
             
             <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_stdStrength" TextColor="Green" FontSize="16"
-                   Keyboard="Numeric"
-                 HorizontalOptions="Start" WidthRequest="490"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
+                   Keyboard="Numeric" 
+                 HorizontalOptions="Start" WidthRequest="490"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="False">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
@@ -132,14 +147,14 @@
 
             <Entry Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_strengthDeviation" TextColor="Green" FontSize="16"
                    Keyboard="Numeric"
-                 HorizontalOptions="Start" WidthRequest="490"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
+                 HorizontalOptions="Start" WidthRequest="490"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="False">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
             </Entry>
 
             <Entry Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" Text="" x:Name="entry_belowLimit" TextColor="Green" FontSize="16"
-                   Keyboard="Numeric"
+                   Keyboard="Numeric" IsEnabled="False"
                  HorizontalOptions="Start" WidthRequest="490"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Entry.Effects>
                     <effects:PlainEntry/>

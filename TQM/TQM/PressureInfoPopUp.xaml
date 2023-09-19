@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<xct:Popup xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:xct="clr-namespace:Xamarin.CommunityToolkit.UI.Views;assembly=Xamarin.CommunityToolkit"
+    xmlns:effects="clr-namespace:TQM.Effects"
+    x:Class="TQM.PressureInfoPopUp">
+
+    
+
+    <!--You can use any elements here which are extended from Xamarin.Forms.View-->
+    <StackLayout BackgroundColor="#2ECC71" Margin="50,25,50,50"
+        VerticalOptions="Center" 
+        HorizontalOptions="Center" 
+        Padding="20, 20, 20, 20">
+        <Label Text="Please confirm below machine parameters" FontSize="16" TextColor="WhiteSmoke"
+               HorizontalOptions="Center" HorizontalTextAlignment="Center"
+               Margin="10,5,0,0"/>
+
+        <Label Text="" FontSize="16" x:Name="lbl_error" TextColor="Red"
+               HorizontalOptions="Center" HorizontalTextAlignment="Center"
+               Margin="10,5,0,0"/>
+
+        <Grid Margin="50,15,50,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="Speed" FontSize="16"
+                   TextColor="WhiteSmoke"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Entry Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_speed" TextColor="Green" FontSize="16"
+                   Keyboard="Numeric"  BackgroundColor="White"
+                 HorizontalOptions="Start" WidthRequest="700"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
+                <Entry.Effects>
+                    <effects:PlainEntry/>
+                </Entry.Effects>
+            </Entry>
+            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="P1" FontSize="16"
+                   TextColor="WhiteSmoke"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_p1" TextColor="Green" FontSize="16"
+                   Keyboard="Numeric"  BackgroundColor="White"
+                 HorizontalOptions="Start" WidthRequest="700"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
+                <Entry.Effects>
+                    <effects:PlainEntry/>
+                </Entry.Effects>
+            </Entry>
+            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="P2" FontSize="16"
+                   TextColor="WhiteSmoke"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_p2" TextColor="Green" FontSize="16"
+                   Keyboard="Numeric" BackgroundColor="White"
+                 HorizontalOptions="Start" WidthRequest="700"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
+                <Entry.Effects>
+                    <effects:PlainEntry/>
+                </Entry.Effects>
+            </Entry>
+            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="N1" FontSize="16"
+                   TextColor="WhiteSmoke"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+            <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_n1" TextColor="Green" FontSize="16"
+                   Keyboard="Numeric" BackgroundColor="White"
+                 HorizontalOptions="Start" WidthRequest="700"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
+                <Entry.Effects>
+                    <effects:PlainEntry/>
+                </Entry.Effects>
+            </Entry>
+            <Button Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="1" HorizontalOptions="End"  x:Name="btn_confirm"
+                        Padding="0,0,0,0" Margin="10,5,0,0" Font="16" Text="Confirm" Clicked="btn_confirm_Clicked"
+                         BackgroundColor="White" TextColor="red" CornerRadius="25"/>
+        </Grid>
+    </StackLayout>
+</xct:Popup>
+
