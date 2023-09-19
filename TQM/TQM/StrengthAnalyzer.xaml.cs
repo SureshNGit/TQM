@@ -79,6 +79,7 @@ namespace TQM
         private RunConfiguration runConfiguration = new RunConfiguration();
         private bool toastInitialize = false;
         private bool isTestCompleted = false;
+        private bool isTestResume = false;
 
         public StrengthAnalyzer()
         {
@@ -188,6 +189,10 @@ namespace TQM
                         .Where(StrengthTestModel => StrengthTestModel.createdate == maxDate).FirstOrDefault();
                     if (lastTestRecord.totalTestCount != lastTestRecord.sampleNo)
                     {
+                        isTestResume = true;
+                        testYCButton.Text = "Resume";
+                        testYCButton.BackgroundColor = Color.IndianRed;
+
                         currentTestID = lastTestRecord.testID;
                         lbl_TestID.Text = lastTestRecord.testID.ToString();
                         currentTestStartTime = null;
@@ -305,8 +310,11 @@ namespace TQM
                             refListView(true);
                         }
 
-                        testYCButton.Text = "Resume";
-                        testYCButton.BackgroundColor = Color.MediumVioletRed;
+                        
+                    }
+                    else
+                    {
+                        isTestResume = false;
                     }
                 }
                 //*************************************************************************************
@@ -712,15 +720,21 @@ namespace TQM
                                         //ImageNotification("red.png");
                                         //UpdateUserNotification("IN-COMPLETE TEST!!!");
                                         //showAlert("In-complete Test!!!");
+                                        isTestResume = true;
                                         testYCButton.Text = "Resume";
                                         testYCButton.BackgroundColor = Color.IndianRed;
                                         testYCButton.TextColor = Color.White;
                                         testYCButton.IsEnabled = true;
                                     }
+                                    else
+                                    {
+                                        isTestResume = false;
+                                    }
                                 }
                             }
                             else
                             {
+                                isTestResume = false;
                                 frame_overallSummary.IsVisible = false;
                                 individualTestResultFrame.IsVisible = false;
                                 currentTestID = 0;
@@ -1104,8 +1118,8 @@ namespace TQM
                             else
                             {
                                 await refListView();
-                                ImageNotification("green.png");
-                                UpdateUserNotification("Waiting for start command", "#008000");
+                                ImageNotification("yellow.png");
+                                UpdateUserNotification("Waiting for start command", "#FFBF00");
                                 Debug.WriteLine("Waiting for start command");
                             }
                         }
@@ -1316,24 +1330,34 @@ namespace TQM
                         {
                             IdealCount++;
                             if (IdealCount > WAITFORSTART) { return "ITO"; } //Ideal Time Out
-                            ImageNotification("green.png");
-                            UpdateUserNotification("Waiting for start command", "#008000");
+                            ImageNotification("yellow.png");
+                            UpdateUserNotification("Waiting for start command", "#FFBF00");
                             Debug.WriteLine("Waiting for start command");
                             continue;
                         }
                         if (op == "ST")
                         {
-                            startSignalReceived = true;
-                            ImageNotification("green.png");
-                            UpdateUserNotification("Start command received", "#008000");
-                            Debug.WriteLine("Start command received");
-                            continue;
+                            //if (startSignalReceived)
+                            //{
+                            //    ImageNotification("yellow.png");
+                            //    UpdateUserNotification("Waiting for pulse", "#DEA808");
+                            //    Debug.WriteLine("Waiting for pulse");
+                            //    continue;
+                            //}
+                            //else
+                            //{
+                                startSignalReceived = true;
+                                ImageNotification("green.png");
+                                UpdateUserNotification("Start command received", "#008000");
+                                Debug.WriteLine("Start command received");
+                                continue;
+                            //}
                         }
                         if (startSignalReceived && op.Contains('C'))
                         {
                             prevop = op;
-                            ImageNotification("green.png");
-                            UpdateUserNotification("Reading pulse, please wait...", "#008000");
+                            ImageNotification("blue.png");
+                            UpdateUserNotification("Reading pulse, please wait...", "#0e0273");
                             Debug.WriteLine("Reading pulse, please wait...");
                             continue;
                         }
@@ -1539,7 +1563,7 @@ namespace TQM
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
-                                if(DateTime.Now> scheduledEndDate)
+                                if(DateTime.Now> scheduledEndDate && isTestResume ==false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -1578,7 +1602,7 @@ namespace TQM
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s2;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
-                                if (DateTime.Now > scheduledEndDate)
+                                if (DateTime.Now > scheduledEndDate && isTestResume == false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -1617,7 +1641,7 @@ namespace TQM
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s3;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
-                                if (DateTime.Now > scheduledEndDate)
+                                if (DateTime.Now > scheduledEndDate && isTestResume==false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -1664,7 +1688,7 @@ namespace TQM
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
-                                if (DateTime.Now > scheduledEndDate)
+                                if (DateTime.Now > scheduledEndDate && isTestResume==false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -1703,7 +1727,7 @@ namespace TQM
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s2;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
-                                if (DateTime.Now > scheduledEndDate)
+                                if (DateTime.Now > scheduledEndDate && isTestResume==false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -1747,7 +1771,7 @@ namespace TQM
                                 scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
-                                if (DateTime.Now > scheduledEndDate)
+                                if (DateTime.Now > scheduledEndDate && isTestResume==false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -1788,7 +1812,7 @@ namespace TQM
                                                                 || StrengthTestModel.createdate <= endDate)))
                                                                 .OrderByDescending(StrengthTestModel=>StrengthTestModel.sampleNo)
                                                                 .FirstOrDefault();
-                            if (selectedDrumTest != null && (selectedDrumTest.totalTestCount== selectedDrumTest.sampleNo))
+                            if (selectedDrumTest != null && (selectedDrumTest.totalTestCount== selectedDrumTest.sampleNo) && isTestResume==false)
                             {
                                 //DisplayAlert("Attention", "Test already completed for Drum Number ("
                                 //                + selectedDrumNumber.ToString() + ") on "
