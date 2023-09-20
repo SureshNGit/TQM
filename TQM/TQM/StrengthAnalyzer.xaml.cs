@@ -10,6 +10,7 @@ using Java.IO;
 using Java.Util;
 using Javax.Crypto;
 using SQLite;
+using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -101,6 +102,7 @@ namespace TQM
             {
                 //conn.DropTable<StrengthTestModel>();
                 //conn.DropTable<StrengthTestSummaryModel>();
+                //conn.DropTable<TestConfigModel>();
 
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
@@ -124,6 +126,7 @@ namespace TQM
 
                 conn.CreateTable<StrengthTestModel>();
                 conn.CreateTable<StrengthTestSummaryModel>();
+                conn.CreateTable<TestConfigModel>();
 
                 int recordCount = conn.Table<StrengthTestModel>().Count();
 
@@ -190,7 +193,7 @@ namespace TQM
                 //****************** Resume Test **********************
                 conn.CreateTable<StrengthTestModel>();
                 int totalRecords = conn.Table<StrengthTestModel>().Count();
-                if (totalRecords > 0) { 
+                if (totalRecords > 0) {
                     DateTime maxDate = conn.Table<StrengthTestModel>().Max(StrengthTestModel => StrengthTestModel.createdate);
                     if (DateTime.Now <= maxDate)
                     {
@@ -329,8 +332,13 @@ namespace TQM
                                     machineName = test.machineName,
                                     speed = test.speed,
                                     p1 = test.p1,
+                                    p1Deviation = test.p1Deviation,
                                     p2 = test.p2,
+                                    p2Deviation = test.p2Deviation,
                                     n1 = test.n1,
+                                    n1Deviation = test.n1Deviation,
+                                    sectionNumber = test.sectionNumber,
+                                    totalDrumNumbers = test.totalDrumNumbers,
                                     drumNumber = test.drumNumber,
                                     standardStrength = test.standardStrength,
                                     strengthDeviation = test.strengthDeviation,
@@ -339,16 +347,19 @@ namespace TQM
                                     drumSelectionMethod = test.drumSelectionMethod,
                                     sampleNo = test.sampleNo,
                                     sampleStrengthCount = test.sampleStrengthCount,
+                                    isQualified = test.isQualified,
                                     maxRollingCount = test.maxRollingCount,
                                     materialCount = test.materialCount,
-                                    shift = test.shift
+                                    shift = test.shift,
+                                    scheduledStartDate = test.scheduledStartDate,
+                                    scheduledEndDate = test.scheduledEndDate
                                 };
                                 StrengthTestModelViewlist.Add(strengthTestModelView);
                             }
                             refListView(true);
                         }
 
-                        
+
                     }
                     else
                     {
@@ -424,16 +435,16 @@ namespace TQM
                                                             ConfigModel.machineName == mac)).FirstOrDefault();
                 if (yarncountconfigmodel != null)
                 {
-                    
+
                     entry_pressure.Text = yarncountconfigmodel.speed.ToString() + ", "
                                             + yarncountconfigmodel.p1.ToString() + ", "
                                             + yarncountconfigmodel.p2.ToString() + ", "
                                             + yarncountconfigmodel.n1.ToString();
-               
+
 
                     List<string> drums = new List<string>();
                     int totalDrums = yarncountconfigmodel.totalDrumCount;
-                    for(int d = 0; d < totalDrums; d++)
+                    for (int d = 0; d < totalDrums; d++)
                     {
                         picker_drumNumber.Items.Add((d + 1).ToString());
                     }
@@ -571,7 +582,7 @@ namespace TQM
                     //span_head.Text = "Strength";
                     //span_stdValue.Text = " (" + STD_HANK.ToString();
                     //span_deviation.Text = " \u00B1" + selectedDeviationPercent + ")";
-                   
+
                 }
                 else
                 {
@@ -614,7 +625,7 @@ namespace TQM
                     frame_overallSummary_FinalOut.IsVisible = visibility;
                     lbl_strength_FinalOut.Text = strength.ToString();
                     lbl_qualifiedTest_FinalOut.Text = qulaifiedTest.ToString();
-                   
+
 
                     //decimal maxRangeVal = STD_HANK + selectedDeviationPercent;
                     //decimal minRangeVal = STD_HANK - selectedDeviationPercent;
@@ -673,8 +684,8 @@ namespace TQM
 
                 List<StrengthTestModel> st_list = conn.Table<StrengthTestModel>().Where(
                                                     StrengthTestModel => (StrengthTestModel.testID == currentTestID
-                                                    && StrengthTestModel.machineCategory==selectedMachineCategory
-                                                    && StrengthTestModel.machineID==selectedMachineID)).ToList();
+                                                    && StrengthTestModel.machineCategory == selectedMachineCategory
+                                                    && StrengthTestModel.machineID == selectedMachineID)).ToList();
                 if (st_list.Count == 0)
                 {
                     ImageNotification("red.png");
@@ -683,7 +694,7 @@ namespace TQM
                     return;
                 }
 
-                
+
                 int sum_sampleStrengthCount = 0;
                 int qualifiedTest = 0;
                 foreach (StrengthTestModel test in st_list)
@@ -695,9 +706,9 @@ namespace TQM
                     }
                 }
 
-                decimal avg = formatDecimal(decimal.Parse(sum_sampleStrengthCount.ToString()) / decimal.Parse(st_list[0].totalTestCount.ToString()),2);
+                decimal avg = formatDecimal(decimal.Parse(sum_sampleStrengthCount.ToString()) / decimal.Parse(st_list[0].totalTestCount.ToString()), 2);
 
-                decimal strength = formatDecimal(avg + decimal.Parse(qualifiedTest.ToString()),2);
+                decimal strength = formatDecimal(avg + decimal.Parse(qualifiedTest.ToString()), 2);
 
                 string testDuration = formatTime(currentTestStartTime);
 
@@ -746,6 +757,88 @@ namespace TQM
                 if (row < 1)
                 {
                     dbStatus = false;
+                }
+                else
+                {
+                    ConfigModel cm = conn.Table<ConfigModel>().Where(ConfigModel =>
+                                    (ConfigModel.machineID == selectedMachineID)).FirstOrDefault();
+
+                    if (cm != null)
+                    {
+                        TestConfigModel tcm = new TestConfigModel()
+                        {
+                            ID = Guid.NewGuid(),
+                            testID = StrengthTestSummaryModel.testID,
+                            machineID = cm.machineID,
+                            machineCategory = cm.machineCategory,
+                            machineName = cm.machineName,
+                            speed = cm.speed,
+                            p1 = cm.p1,
+                            p1Deviation = cm.p1Deviation,
+                            p2 = cm.p2,
+                            p2Deviation = cm.p2Deviation,
+                            n1 = cm.n1,
+                            n1Deviation = cm.n1Deviation,
+                            totalDrumCount = cm.totalDrumCount,
+                            totalSections = cm.totalSections,
+                            stdRollingStrength_s1 = cm.stdRollingStrength_s1,
+                            strengthDeviation_s1 = cm.strengthDeviation_s1,
+                            belowLimit_s1 = cm.belowLimit_s1,
+                            totalSamples_s1 = cm.totalSamples_s1,
+                            drumNumbers_s1 = cm.drumNumbers_s1,
+                            drumSelectionMethod_s1 = cm.drumSelectionMethod_s1,
+                            scheduledDayLimit_s1 = cm.scheduledDayLimit_s1,
+                            scheduledStartDate_s1 = cm.scheduledStartDate_s1,
+                            scheduledEndDate_s1 = cm.scheduledEndDate_s1,
+                            maxRollingCount_s1 = cm.maxRollingCount_s1,
+                            materialCount_s1 = cm.materialCount_s1,
+                            stdRollingStrength_s2 = cm.stdRollingStrength_s2,
+                            strengthDeviation_s2 = cm.strengthDeviation_s2,
+                            belowLimit_s2 = cm.belowLimit_s2,
+                            totalSamples_s2 = cm.totalSamples_s2,
+                            drumNumbers_s2 = cm.drumNumbers_s2,
+                            drumSelectionMethod_s2 = cm.drumSelectionMethod_s2,
+                            scheduledDayLimit_s2 = cm.scheduledDayLimit_s2,
+                            scheduledStartDate_s2 = cm.scheduledStartDate_s2,
+                            scheduledEndDate_s2 = cm.scheduledEndDate_s2,
+                            maxRollingCount_s2 = cm.maxRollingCount_s2,
+                            materialCount_s2 = cm.materialCount_s2,
+                            stdRollingStrength_s3 = cm.stdRollingStrength_s3,
+                            strengthDeviation_s3 = cm.strengthDeviation_s3,
+                            belowLimit_s3 = cm.belowLimit_s3,
+                            totalSamples_s3 = cm.totalSamples_s3,
+                            drumNumbers_s3 = cm.drumNumbers_s3,
+                            drumSelectionMethod_s3 = cm.drumSelectionMethod_s3,
+                            scheduledDayLimit_s3 = cm.scheduledDayLimit_s3,
+                            scheduledStartDate_s3 = cm.scheduledStartDate_s3,
+                            scheduledEndDate_s3 = cm.scheduledEndDate_s3,
+                            maxRollingCount_s3 = cm.maxRollingCount_s3,
+                            materialCount_s3 = cm.materialCount_s3,
+                            shiftCount = cm.shiftCount,
+                            shift1time = cm.shift1time,
+                            shift2time = cm.shift2time,
+                            shift3time = cm.shift3time,
+                            uf_name_1 = cm.uf_name_1,
+                            uf_value_1 = cm.uf_value_1,
+                            uf_name_2 = cm.uf_name_2,
+                            uf_value_2 = cm.uf_value_2,
+                            uf_name_3 = cm.uf_name_3,
+                            uf_value_3 = cm.uf_value_3,
+                            uf_name_4 = cm.uf_name_4,
+                            uf_value_4 = cm.uf_value_4,
+                            updateddate = cm.updateddate,
+                            createdate = cm.createdate,
+                        };
+                        int row_tcm = conn.Insert(tcm);
+                        if (row_tcm <1)
+                        {
+                            dbStatus = false;
+                        }
+                    }
+                    else
+                    {
+                        dbStatus = false;
+                    }
                 }
                 if (dbStatus)
                 {
@@ -1226,6 +1319,11 @@ namespace TQM
                             displayusername = currentloggedInUser.firstname + ", " + currentloggedInUser.lastname + " [" + currentloggedInUser.userId + "]";
                         }
 
+                        string isQualified = "Yes";
+
+                        if (current_stable_data < selectedBelowLimit) { isQualified = "No"; }
+
+
                         StrengthTestModelView strengthTestModelView = new StrengthTestModelView()
                         {
                             testID = currentTestID,
@@ -1251,9 +1349,12 @@ namespace TQM
                             drumSelectionMethod=selectedDrumSelectionMethod,
                             sampleNo = i + 1,
                             sampleStrengthCount = current_stable_data,
+                            isQualified = isQualified,
                             maxRollingCount = selectedMaxRollingCount,
                             materialCount = selectedMaterialCount,
-                            shift = selectedShift
+                            shift = selectedShift,
+                            scheduledStartDate = scheduledStartDate,
+                            scheduledEndDate = scheduledEndDate
                         };
                         StrengthTestModelViewlist.Add(strengthTestModelView);
 
@@ -1269,10 +1370,7 @@ namespace TQM
 
                         //showAlert("Test - [" + (i + 1) + "] Completed!!! [" + current_stable_data + "]");
 
-                        string isQualified = "Yes";
-
-                        if (current_stable_data < selectedBelowLimit) { isQualified = "No"; }
-
+                        
 
                         StrengthTestModel strengthTestModel = new StrengthTestModel()
                         {
@@ -1321,10 +1419,12 @@ namespace TQM
                             }
                             else
                             {
-                                await refListView();
-                                ImageNotification("yellow.png");
-                                UpdateUserNotification("Waiting for start command", "#FFBF00");
-                                Debug.WriteLine("Waiting for start command");
+                                if (StrengthTestModelViewlist.Count > 0 && passCount < testCount) { 
+                                    await refListView();
+                                    ImageNotification("yellow.png");
+                                    UpdateUserNotification("Waiting for start command", "#FFBF00");
+                                    Debug.WriteLine("Waiting for start command");
+                                }
                             }
                         }
                         

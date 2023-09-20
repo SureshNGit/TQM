@@ -34,7 +34,7 @@ namespace TQM
             //    return formatDecimal(act, 2).ToString() + " [Std Count:" + formatDecimal(exp, 2).ToString() + " " + deviation.ToString() + "]";
             //}
 
-            return formatDecimal(act, 2).ToString() + " [Standard Strength: " + formatDecimal(exp, 2).ToString() + "  " + deviation.ToString() + "]";
+            return formatDecimal(act, 2).ToString() + " [Std: " + formatDecimal(exp, 2).ToString() + "  " + deviation.ToString() + "]";
 
             //return "";
         }
@@ -63,7 +63,11 @@ namespace TQM
             }
             else
             {
-                return decimal.Parse(inputString + ".0000");
+                if (afterDecimalCount == 4)
+                {
+                    return decimal.Parse(inputString + ".0000");
+                }
+                else { return decimal.Parse(inputString + ".00"); }
             }
         }
     }

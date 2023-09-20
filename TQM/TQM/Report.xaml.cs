@@ -17,6 +17,7 @@ namespace TQM
         {
             InitializeComponent();
             getUserfieldConfig();
+            picker_machinecategory.SelectedItem = "OE Auto Coner";
         }
 
         private void getUserfieldConfig()
@@ -94,7 +95,7 @@ namespace TQM
                 selectedMachineName = null;
                 date_fromdate.Date = DateTime.Now;
                 date_enddate.Date = DateTime.Now;
-                picker_machinecategory.SelectedIndex = 0;
+                picker_machinecategory.SelectedItem = "OE Auto Coner";
             }
             catch (Exception ex)
             {
@@ -111,24 +112,23 @@ namespace TQM
                     DisplayAlert("Attention", "Please select report type to proceed!!!", "OK");
                     return;
                 }
-                if (date_enddate.Date < date_fromdate.Date)
-                {
-                    DisplayAlert("Attention", "Report End Date cannot be less than Report Start Date", "OK");
-                    return;
-                }
-                if (date_fromdate.Date > date_fromdate.Date)
-                {
-                    DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
-                    return;
-                }
-                if (picker_machinecategory.SelectedIndex <= 0)
-                {
-                    DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
-                    return;
-                }
+                string drumNumber = "";
+                string standardStrength = "";
                 string testID = "";
+                string reportType = null;
+                string shift = "";
+                string UFVAL1 = null;
+                string UFVAL2 = null;
+                string UFVAL3 = null;
+                string UFVAL4 = null;
                 if (entry_testID.Text.Trim() != "")
                 {
+                    if(picker_reportType.SelectedItem.ToString()!= "Detailed")
+                    {
+                        DisplayAlert("Attention", "Only Detailed Report is allowed with Test ID", "OK");
+                        return;
+                    }
+
                     if (entry_testID.Text.Contains("."))
                     {
                         DisplayAlert("Attention", "Test ID should not be decimal", "OK");
@@ -149,99 +149,119 @@ namespace TQM
                         }
                     }
                 }
-
-                string drumNumber = "";
-                if (picker_drumNumber.SelectedItem != null)
+                else
                 {
-                    if (picker_drumNumber.SelectedItem.ToString().Trim() != "")
+                    if (date_enddate.Date < date_fromdate.Date)
                     {
-                        if (picker_drumNumber.SelectedItem.ToString().Contains("."))
+                        DisplayAlert("Attention", "Report End Date cannot be less than Report Start Date", "OK");
+                        return;
+                    }
+                    if (date_fromdate.Date > date_fromdate.Date)
+                    {
+                        DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
+                        return;
+                    }
+                    if (picker_machinecategory.SelectedIndex <= 0)
+                    {
+                        DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
+                        return;
+                    }
+                    
+                    if (picker_drumNumber.SelectedItem != null)
+                    {
+                        if (picker_drumNumber.SelectedItem.ToString().Trim() != "")
                         {
-                            DisplayAlert("Attention", "Drum number should not be decimal", "OK");
+                            if (picker_drumNumber.SelectedItem.ToString().Contains("."))
+                            {
+                                DisplayAlert("Attention", "Drum number should not be decimal", "OK");
+                                return;
+                            }
+                            else
+                            {
+                                drumNumber = picker_drumNumber.SelectedItem.ToString().Trim();
+                            }
+                        }
+                    }
+
+                    
+
+                    if (entry_stdStrength.Text.Trim() != "")
+                    {
+                        if (entry_stdStrength.Text.Trim().Contains("-"))
+                        {
+                            DisplayAlert("Attention", "Standard Strength should not be a negative value!!!", "Ok");
                             return;
                         }
-                        else
+                        if (entry_stdStrength.Text.Trim() == "" || decimal.Parse(entry_stdStrength.Text.Trim()) == 0)
                         {
-                            drumNumber = picker_drumNumber.SelectedItem.ToString().Trim();
+                            DisplayAlert("Attention", "Standard Strength should not be blank or zero!!!", "Ok");
+                            return;
+                        }
+                        standardStrength = entry_stdStrength.Text.Trim();
+                    }
+
+                    if (selectedCategory == null || selectedCategory == "")
+                    {
+                        DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
+                        return;
+                    }
+
+                    if (picker_machinename.SelectedIndex < 0)
+                    {
+                        DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
+                        return;
+                    }
+
+                    
+                    if (picker_shift.SelectedItem != null)
+                    {
+                        shift = picker_shift.SelectedItem.ToString();
+                    }
+                    
+                    if (picker_reportType.SelectedItem != null)
+                    {
+                        reportType = picker_reportType.SelectedItem.ToString();
+                    }
+                    
+                    if (lbl_userfield1.IsVisible)
+                    {
+                        if (entry_userfield1.Text.Trim() != "")
+                        {
+                            UFVAL1 = entry_userfield1.Text.Trim();
+                        }
+                    }
+                    if (lbl_userfield2.IsVisible)
+                    {
+                        if (entry_userfield2.Text.Trim() != "")
+                        {
+                            UFVAL2 = entry_userfield2.Text.Trim();
+                        }
+                    }
+                    if (lbl_userfield3.IsVisible)
+                    {
+                        if (entry_userfield3.Text.Trim() != "")
+                        {
+                            UFVAL3 = entry_userfield3.Text.Trim();
+                        }
+                    }
+                    if (lbl_userfield4.IsVisible)
+                    {
+                        if (entry_userfield4.Text.Trim() != "")
+                        {
+                            UFVAL4 = entry_userfield4.Text.Trim();
                         }
                     }
                 }
 
-                string standardStrength = "";
+                
 
-                if (entry_stdStrength.Text.Trim() != "")
-                {
-                    if (entry_stdStrength.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Standard Strength should not be a negative value!!!", "Ok");
-                        return;
-                    }
-                    if (entry_stdStrength.Text.Trim() == "" || decimal.Parse(entry_stdStrength.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Standard Strength should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-                    standardStrength = entry_stdStrength.Text.Trim();
-                }
-
-                string shift = "";
-                if (picker_shift.SelectedItem != null)
-                {
-                    shift = picker_shift.SelectedItem.ToString();
-                }
-                string reportType = null;
-                if (picker_reportType.SelectedItem != null)
-                {
-                    reportType = picker_reportType.SelectedItem.ToString();
-                }
-                string UFVAL1 = null;
-                string UFVAL2 = null;
-                string UFVAL3 = null;
-                string UFVAL4 = null;
-                if (lbl_userfield1.IsVisible)
-                {
-                    if (entry_userfield1.Text.Trim() != "")
-                    {
-                        UFVAL1 = entry_userfield1.Text.Trim();
-                    }
-                }
-                if (lbl_userfield2.IsVisible)
-                {
-                    if (entry_userfield2.Text.Trim() != "")
-                    {
-                        UFVAL2 = entry_userfield2.Text.Trim();
-                    }
-                }
-                if (lbl_userfield3.IsVisible)
-                {
-                    if (entry_userfield3.Text.Trim() != "")
-                    {
-                        UFVAL3 = entry_userfield3.Text.Trim();
-                    }
-                }
-                if (lbl_userfield4.IsVisible)
-                {
-                    if (entry_userfield4.Text.Trim() != "")
-                    {
-                        UFVAL4 = entry_userfield4.Text.Trim();
-                    }
-                }
+                
                 bool is_consolidated = false;
                 if (reportType == "Consolidated") { is_consolidated = true; }
                 bool drumDetails = false;
                 if (reportType == "Drum Details") { drumDetails = true; }
 
-                if (selectedCategory == null || selectedCategory == "")
-                {
-                    DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
-                    return;
-                }
-
-                if (picker_machinename.SelectedIndex < 0)
-                {
-                    DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
-                    return;
-                }
+                
 
                 Navigation.PushAsync(new YCReport
                     (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength , false, is_consolidated, drumDetails, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
@@ -314,30 +334,35 @@ namespace TQM
         {
             try
             {
+                bool is_consolidated = false;
+                bool drumDetails = false;
                 if (picker_reportType.SelectedIndex < 0)
                 {
                     DisplayAlert("Attention", "Please select report type to proceed!!!", "OK");
                     return;
                 }
-                if (date_enddate.Date < date_fromdate.Date)
+                if (picker_reportType.SelectedItem.ToString() != "Detailed")
                 {
-                    DisplayAlert("Attention", "Report End Date cannot be less than Report Start Date", "OK");
+                    DisplayAlert("Attention", "Please select report type as 'Detailed Report' for record deletion", "OK");
                     return;
                 }
-                if (date_fromdate.Date > date_fromdate.Date)
-                {
-                    DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
-                    return;
-                }
-                if (picker_machinecategory.SelectedIndex <= 0)
-                {
-                    DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
-                    return;
-                }
-                
+                string drumNumber = "";
+                string standardStrength = "";
                 string testID = "";
+                string reportType = null;
+                string shift = "";
+                string UFVAL1 = null;
+                string UFVAL2 = null;
+                string UFVAL3 = null;
+                string UFVAL4 = null;
                 if (entry_testID.Text.Trim() != "")
                 {
+                    if (picker_reportType.SelectedItem.ToString() != "Detailed")
+                    {
+                        DisplayAlert("Attention", "Only Detailed Report is allowed with Test ID", "OK");
+                        return;
+                    }
+
                     if (entry_testID.Text.Contains("."))
                     {
                         DisplayAlert("Attention", "Test ID should not be decimal", "OK");
@@ -347,107 +372,122 @@ namespace TQM
                     {
                         testID = entry_testID.Text.Trim();
                     }
-                }
-
-                string drumNumber = "";
-                if (picker_drumNumber.SelectedItem != null)
-                {
-                    if (picker_drumNumber.SelectedItem.ToString().Trim() != "")
+                    if (entry_testID.Text.Contains("."))
                     {
-                        if (picker_drumNumber.SelectedItem.ToString().Contains("."))
+                        long startTestID = long.Parse(testID.Split('.')[0]);
+                        long endTestID = long.Parse(testID.Split('.')[1]);
+                        if (startTestID > endTestID)
                         {
-                            DisplayAlert("Attention", "Drum number should not be decimal", "OK");
+                            DisplayAlert("Notice", "Invalid. Start Test ID should be less than End Test ID!!!", "OK");
                             return;
                         }
-                        else
+                    }
+                }
+                else
+                {
+                    if (date_enddate.Date < date_fromdate.Date)
+                    {
+                        DisplayAlert("Attention", "Report End Date cannot be less than Report Start Date", "OK");
+                        return;
+                    }
+                    if (date_fromdate.Date > date_fromdate.Date)
+                    {
+                        DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
+                        return;
+                    }
+                    if (picker_machinecategory.SelectedIndex <= 0)
+                    {
+                        DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
+                        return;
+                    }
+
+                    if (picker_drumNumber.SelectedItem != null)
+                    {
+                        if (picker_drumNumber.SelectedItem.ToString().Trim() != "")
                         {
-                            drumNumber = picker_drumNumber.SelectedItem.ToString().Trim();
+                            if (picker_drumNumber.SelectedItem.ToString().Contains("."))
+                            {
+                                DisplayAlert("Attention", "Drum number should not be decimal", "OK");
+                                return;
+                            }
+                            else
+                            {
+                                drumNumber = picker_drumNumber.SelectedItem.ToString().Trim();
+                            }
                         }
                     }
-                }
 
-                string standardStrength = "";
-               
-                if (entry_stdStrength.Text.Trim() != "")
-                {
-                    if (entry_stdStrength.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Standard Strength should not be a negative value!!!", "Ok");
-                        return;
-                    }
-                    if (entry_stdStrength.Text.Trim() == "" || decimal.Parse(entry_stdStrength.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Standard Strength should not be blank or zero!!!", "Ok");
-                        return;
-                    }
-                    standardStrength = entry_stdStrength.Text.Trim();
-                }
-                
 
-                string shift = "";
-                if (picker_shift.SelectedItem != null)
-                {
-                    shift = picker_shift.SelectedItem.ToString();
-                }
-                string reportType = null;
-                if (picker_reportType.SelectedItem != null)
-                {
-                    reportType = picker_reportType.SelectedItem.ToString();
-                }
-                string UFVAL1 = null;
-                string UFVAL2 = null;
-                string UFVAL3 = null;
-                string UFVAL4 = null;
-                if (lbl_userfield1.IsVisible)
-                {
-                    if (entry_userfield1.Text.Trim() != "")
+
+                    if (entry_stdStrength.Text.Trim() != "")
                     {
-                        UFVAL1 = entry_userfield1.Text.Trim();
+                        if (entry_stdStrength.Text.Trim().Contains("-"))
+                        {
+                            DisplayAlert("Attention", "Standard Strength should not be a negative value!!!", "Ok");
+                            return;
+                        }
+                        if (entry_stdStrength.Text.Trim() == "" || decimal.Parse(entry_stdStrength.Text.Trim()) == 0)
+                        {
+                            DisplayAlert("Attention", "Standard Strength should not be blank or zero!!!", "Ok");
+                            return;
+                        }
+                        standardStrength = entry_stdStrength.Text.Trim();
                     }
-                }
-                if (lbl_userfield2.IsVisible)
-                {
-                    if (entry_userfield2.Text.Trim() != "")
-                    {
-                        UFVAL2 = entry_userfield2.Text.Trim();
-                    }
-                }
-                if (lbl_userfield3.IsVisible)
-                {
-                    if (entry_userfield3.Text.Trim() != "")
-                    {
-                        UFVAL3 = entry_userfield3.Text.Trim();
-                    }
-                }
-                if (lbl_userfield4.IsVisible)
-                {
-                    if (entry_userfield4.Text.Trim() != "")
-                    {
-                        UFVAL4 = entry_userfield4.Text.Trim();
-                    }
-                }
-                bool is_consolidated = false;
-                if (reportType == "Consolidated") { is_consolidated = true; }
-                bool drumDetails = false;
-                if (reportType == "Drum Details") { drumDetails = true; }
-                if (picker_machinecategory.SelectedItem != null) { selectedCategory = picker_machinecategory.SelectedItem.ToString(); };
-                //if (is_consolidated)
-                //{
+
                     if (selectedCategory == null || selectedCategory == "")
                     {
                         DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
                         return;
                     }
-                //}
-                //else
-                //{
+
                     if (picker_machinename.SelectedIndex < 0)
                     {
                         DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
                         return;
                     }
-                //}
-                Navigation.PushAsync(new YCReport
+
+
+                    if (picker_shift.SelectedItem != null)
+                    {
+                        shift = picker_shift.SelectedItem.ToString();
+                    }
+
+                    if (picker_reportType.SelectedItem != null)
+                    {
+                        reportType = picker_reportType.SelectedItem.ToString();
+                    }
+
+                    if (lbl_userfield1.IsVisible)
+                    {
+                        if (entry_userfield1.Text.Trim() != "")
+                        {
+                            UFVAL1 = entry_userfield1.Text.Trim();
+                        }
+                    }
+                    if (lbl_userfield2.IsVisible)
+                    {
+                        if (entry_userfield2.Text.Trim() != "")
+                        {
+                            UFVAL2 = entry_userfield2.Text.Trim();
+                        }
+                    }
+                    if (lbl_userfield3.IsVisible)
+                    {
+                        if (entry_userfield3.Text.Trim() != "")
+                        {
+                            UFVAL3 = entry_userfield3.Text.Trim();
+                        }
+                    }
+                    if (lbl_userfield4.IsVisible)
+                    {
+                        if (entry_userfield4.Text.Trim() != "")
+                        {
+                            UFVAL4 = entry_userfield4.Text.Trim();
+                        }
+                    }
+                }
+
+               Navigation.PushAsync(new YCReport
                     (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength, true, is_consolidated, drumDetails, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
             catch (Exception ex)
@@ -461,7 +501,7 @@ namespace TQM
             try
             {
                 string selectedReportType = picker_reportType.SelectedItem.ToString();
-                if (selectedReportType == "Consolidated")
+                if (selectedReportType != "Detailed")
                 {
                     lbl_testID.IsVisible = false;
                     entry_testID.IsVisible = false;

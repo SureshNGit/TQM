@@ -1,0 +1,126 @@
+﻿using SQLite;
+using SQLiteNetExtensions.Attributes;
+using System;
+
+namespace TQM.Model
+{
+    public class TestConfigModel
+    {
+        [PrimaryKey]
+        public Guid ID { get; set; }
+
+        public long testID { get; set; }
+        [ForeignKey(typeof(MachineModel))]
+        public Guid machineID { get; set; }
+
+        public string machineCategory { get; set; }
+        public string machineName { get; set; }
+
+        public int speed { get; set; }
+        public decimal p1 { get; set; }
+        public decimal p1Deviation { get; set; }
+        public decimal p2 { get; set; }
+        public decimal p2Deviation { get; set; }
+        public decimal n1 { get; set; }
+        public decimal n1Deviation { get; set; }
+
+        public int totalDrumCount { get; set; }
+
+        public int totalSections { get; set; }
+
+        public decimal stdRollingStrength_s1 { get; set; }
+
+        public decimal strengthDeviation_s1 { get; set; }
+
+        public int belowLimit_s1 { get; set; }
+
+        public int totalSamples_s1 { get; set; }
+
+        public string drumNumbers_s1 { get; set; }
+
+        public string drumSelectionMethod_s1 { get; set; }
+
+        public int scheduledDayLimit_s1 { get; set; }
+
+        public DateTime scheduledStartDate_s1 { get; set; }
+
+        public DateTime scheduledEndDate_s1 { get; set; }
+
+        public int maxRollingCount_s1 { get; set; }
+
+        public string materialCount_s1 { get; set; }
+
+        public decimal stdRollingStrength_s2 { get; set; }
+
+        public decimal strengthDeviation_s2 { get; set; }
+
+        public int belowLimit_s2 { get; set; }
+
+        public int totalSamples_s2 { get; set; }
+
+        public string drumNumbers_s2 { get; set; }
+
+        public string drumSelectionMethod_s2 { get; set; }
+
+        public int scheduledDayLimit_s2 { get; set; }
+
+        public DateTime scheduledStartDate_s2 { get; set; }
+
+        public DateTime scheduledEndDate_s2 { get; set; }
+
+        public int maxRollingCount_s2 { get; set; }
+
+        public string materialCount_s2 { get; set; }
+
+        public decimal stdRollingStrength_s3 { get; set; }
+
+        public decimal strengthDeviation_s3 { get; set; }
+
+        public int belowLimit_s3 { get; set; }
+
+        public int totalSamples_s3 { get; set; }
+
+        public string drumNumbers_s3 { get; set; }
+
+        public string drumSelectionMethod_s3 { get; set; }
+
+        public int scheduledDayLimit_s3 { get; set; }
+
+        public DateTime scheduledStartDate_s3 { get; set; }
+
+        public DateTime scheduledEndDate_s3 { get; set; }
+
+        public int maxRollingCount_s3 { get; set; }
+
+        public string materialCount_s3 { get; set; }
+
+        public int shiftCount { get; set; }
+
+        public string shift1time { get; set; }
+
+        public string shift2time { get; set; }
+
+        public string shift3time { get; set; }
+
+        public string uf_name_1 { get; set; }
+
+        public string uf_value_1 { get; set; }
+
+        public string uf_name_2 { get; set; }
+
+        public string uf_value_2 { get; set; }
+
+        public string uf_name_3 { get; set; }
+
+        public string uf_value_3 { get; set; }
+
+        public string uf_name_4 { get; set; }
+
+        public string uf_value_4 { get; set; }
+        public DateTime updateddate { get; set; } 
+        public DateTime createdate { get; set; } 
+        public bool dataSyncStatus { get; set; } = false;
+        public DateTime actualcreatedate { get; set; } = DateTime.Now;
+
+    }
+}

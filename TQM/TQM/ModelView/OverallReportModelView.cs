@@ -14,6 +14,7 @@ namespace TQM.ModelView
         public decimal standardStrength { get; set; }
         public decimal strengthDeviation { get; set; }
         public int belowLimit { get; set; }
+        public int maxRollingCount { get; set; }
         public int totalTestCount { get; set; }
         public string drumSelectionMethod { get; set; }
         public decimal yarnStrength { get; set; }
