@@ -24,7 +24,7 @@ namespace TQM.ModelView
         public bool isConsolidatedReport { get; set; } = false;
         public string testDuration { get; set; }
         public string deviationPercent { get; set; }
-        public string testResultColor { get; set; } = "White";
+        public string testResultColor { get; set; } = "white";
         public bool DispUF_1 { get; set; } = false;
         public bool DispUF_2 { get; set; } = false;
         public bool DispUF_2_Col1 { get; set; } = false;
@@ -43,8 +43,8 @@ namespace TQM.ModelView
         public bool remark_2 { get; set; } = false;
         public bool remark_3 { get; set; } = false;
         public DateTime createdate { get; set; }
-        public DateTime scheduledStartDate { get; set; }
-        public DateTime scheduledEndDate { get; set; }
+        public string scheduledStartDate { get; set; }
+        public string scheduledEndDate { get; set; }
         public DateTime settingsUpdatedDate { get; set; }
         public List<StrengthTestModel> strengthtestlist => this;
     }

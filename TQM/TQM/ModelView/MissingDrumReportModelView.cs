@@ -15,6 +15,8 @@ namespace TQM.ModelView
         public string totalDrumNumbers { get; set; }
         public string testCompletedDrums { get; set; }
         public string pendingTestDrums { get; set; }
+        public string pendingTestDrumsColor { get; set; } = "green";
+        public string pendingTestDrumsTextColor { get; set; } = "black";
         public string scheduledStartDate { get; set; }
         public string scheduledEndDate { get; set; }
         public string settingsUpdatedDate { get; set; }

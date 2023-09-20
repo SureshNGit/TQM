@@ -85,33 +85,35 @@ namespace TQM
                 decimal.TryParse(entry_p2.Text.Trim(), out p2);
                 decimal n1 = 0.0m;
                 decimal.TryParse(entry_n1.Text.Trim(), out n1);
-                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-                {
-                    ConfigModel macDetails = conn.Table<ConfigModel>().Where(ConfigModel =>
-                                            (ConfigModel.machineID == macID && ConfigModel.machineName == macName)).FirstOrDefault();
-                    if (macDetails == null)
-                    {
-                        Dismiss("Unable to reterive selected machine details. Please contact admin!!!");
-                    }
-                    else
-                    {
-                        macDetails.speed = speed;
-                        macDetails.p1 = p1;
-                        macDetails.p2 = p2;
-                        macDetails.n1 = n1;
-                        int row = conn.Update(macDetails);
+                //using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                //{
+                //    ConfigModel macDetails = conn.Table<ConfigModel>().Where(ConfigModel =>
+                //                            (ConfigModel.machineID == macID && ConfigModel.machineName == macName)).FirstOrDefault();
+                //    if (macDetails == null)
+                //    {
+                //        Dismiss("Unable to reterive selected machine details. Please contact admin!!!");
+                //    }
+                //    else
+                //    {
+                //        macDetails.speed = speed;
+                //        macDetails.p1 = p1;
+                //        macDetails.p2 = p2;
+                //        macDetails.n1 = n1;
+                //        int row = conn.Update(macDetails);
 
-                        if (row>0)
-                        {
-                            Dismiss("Success");
-                        }
-                        else
-                        {
-                            Dismiss("Failed to update machine details. Please try again");
-                        }
+                //        if (row>0)
+                //        {
+                //            Dismiss("Success");
+                //        }
+                //        else
+                //        {
+                //            Dismiss("Failed to update machine details. Please try again");
+                //        }
 
-                    }
-                }
+                //    }
+                //}
+
+                Dismiss("Success~"+speed.ToString() +"|"+ p1.ToString() + "|"+ p2.ToString() + "|"+ n1.ToString());
             }
             catch (Exception)
             {

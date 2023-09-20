@@ -20,7 +20,9 @@ namespace TQM.ModelView
         public string strength { get; set; }
         public string testDuration { get; set; }
         public string remarks { get; set; }
-        public bool isWhite { get; set; } = true;
-        public bool isRed { get; set; } = false;
+        public string strengthColor { get; set; } = "green";
+        public string strengthColor_text { get; set; } = "black";
+        public string testIDColor { get; set; } = "green";
+        public string testIDColor_text { get; set; } = "black";
     }
 }

@@ -2356,25 +2356,58 @@ namespace TQM
                     var result = await Navigation.ShowPopupAsync(new PressureInfoPopUp(selectedMachineID, selectedMachineName));
                     if (result != null)
                     {
-                        if (result.ToString() == "Success")
+                        if (!result.ToString().Contains('~'))
+                        {
+                            entry_pressure.Text = "";
+                            DisplayAlert("Attention", result.ToString(), "OK");
+                            return;
+                        }
+
+                        string res_msg = result.ToString().Split('~')[0];
+                        string mac_params = result.ToString().Split('~')[1];
+
+
+                        if (res_msg == "Success")
                         {
                             ConfigModel macDetails = conn.Table<ConfigModel>().Where(ConfigModel =>
                                         (ConfigModel.machineID == selectedMachineID
                                         && ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
                             if (macDetails != null)
                             {
-                                entry_pressure.Text = macDetails.speed.ToString() + ", "
-                                                      + macDetails.p1.ToString() + ", "
-                                                      + macDetails.p2.ToString() + ", "
-                                                      + macDetails.n1.ToString();
-                                selectedSpeed = macDetails.speed;
-                                selectedP1 = macDetails.p1;
-                                selectedP1Deviation = macDetails.p1Deviation;
-                                selectedP2 = macDetails.p2;
-                                selectedP2Deviation = macDetails.p2Deviation;
-                                selectedN1 = macDetails.n1;
-                                selectedN1Deviation = macDetails.n1Deviation;
-                                return;
+
+                                if (mac_params.Contains('|'))
+                                {
+                                    string speed = mac_params.Split('|')[0];
+                                    string p1 = mac_params.Split('|')[1];
+                                    string p2 = mac_params.Split('|')[2];
+                                    string n1 = mac_params.Split('|')[3];
+
+                                    entry_pressure.Text = speed + ", "
+                                                          + p1 + ", "
+                                                          + p2 + ", "
+                                                          + n1;
+                                    selectedSpeed = int.Parse(speed);
+                                    selectedP1 = decimal.Parse(p1);
+                                    selectedP1Deviation = macDetails.p1Deviation;
+                                    selectedP2 = decimal.Parse(p2);
+                                    selectedP2Deviation = macDetails.p2Deviation;
+                                    selectedN1 = decimal.Parse(n1);
+                                    selectedN1Deviation = macDetails.n1Deviation;
+                                    return;
+                                }
+                                else
+                                {
+                                    entry_pressure.Text = "";
+                                    selectedSpeed = 0;
+                                    selectedP1 = 0.0m;
+                                    selectedN1Deviation = 0.0m;
+                                    selectedP2 = 0.0m;
+                                    selectedP2Deviation = 0.0m;
+                                    selectedN1 = 0.0m;
+                                    selectedN1Deviation = 0.0m;
+                                    DisplayAlert("Attention", "Unable to reterive machine details. Please try again", "OK");
+                                    return;
+                                }
                             }
                             else
                             {

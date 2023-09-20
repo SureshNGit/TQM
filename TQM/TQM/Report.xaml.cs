@@ -260,11 +260,13 @@ namespace TQM
                 if (reportType == "Consolidated") { is_consolidated = true; }
                 bool drumDetails = false;
                 if (reportType == "Drum Details") { drumDetails = true; }
+                bool is_maintenance = false;
+                if(reportType == "Maintenance") { is_maintenance = true; }
 
                 
 
                 Navigation.PushAsync(new YCReport
-                    (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength , false, is_consolidated, drumDetails, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
+                    (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength , false, is_consolidated, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
             catch (Exception ex)
             {
@@ -336,6 +338,8 @@ namespace TQM
             {
                 bool is_consolidated = false;
                 bool drumDetails = false;
+                bool is_maintenance = false;
+
                 if (picker_reportType.SelectedIndex < 0)
                 {
                     DisplayAlert("Attention", "Please select report type to proceed!!!", "OK");
@@ -488,7 +492,7 @@ namespace TQM
                 }
 
                Navigation.PushAsync(new YCReport
-                    (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength, true, is_consolidated, drumDetails, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
+                    (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength, true, is_consolidated, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
             catch (Exception ex)
             {

@@ -501,7 +501,7 @@
                             <BoxView Grid.Column="10" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
 
                             <Label  Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="S.No"  TextColor="#0e0273" FontSize="14" FontAttributes="Bold"/>
+                                            Text="Mac Parameters"  TextColor="#0e0273" FontSize="14" FontAttributes="Bold"/>
                             <Label  Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="Date"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
@@ -569,7 +569,9 @@
                                     <Label Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                Text="{Binding serialNo}" FontSize="14"/>
                                     <Label Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding testDate}" FontSize="14"/>
+                                               Text="{Binding testDate}"
+                                               TextColor="{Binding testIDColor_text}"
+                                               BackgroundColor="{Binding testIDColor}" FontSize="14"/>
                                     <Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                Text="{Binding testID}" FontSize="14"/>
                                     <Label Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
@@ -588,7 +590,9 @@
                                                Text="{Binding qualifiedTestCount}" FontSize="14"/>
 
                                     <Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding strength}" FontSize="14"/>
+                                               Text="{Binding strength}" FontSize="14"
+                                               TextColor="{Binding strengthColor_text}"
+                                               BackgroundColor="{Binding strengthColor}"/>
 
                                     <!--<Label Grid.Column="8" Grid.Row="0"  HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                      FontSize="14" >
@@ -789,11 +793,135 @@
                                     <Label Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            Text="{Binding testCompletedDrums}" FontSize="14"/>
                                     <Label Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                           Text="{Binding pendingTestDrums}" FontSize="14"/>
+                                           Text="{Binding pendingTestDrums}"
+                                           BackgroundColor="{Binding pendingTestDrumsColor}"
+                                           TextColor="{Binding pendingTestDrumsTextColor}"
+                                           FontSize="14"/>
                                     <Label Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            Text="{Binding scheduledStartDate}" FontSize="14"/>
                                     <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            Text="{Binding scheduledEndDate}" FontSize="14"/>
+                                    <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="                              " FontSize="14"/>
+
+                                </Grid>
+
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+
+            <ListView x:Name="listview_tcreport_maintenance"   
+                      HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always" 
+                       IsVisible="false">
+                <ListView.Header>
+                   
+                            <StackLayout Margin="0,20,0,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+
+
+                                    <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="5" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="6" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                                    <Label  Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="S.No"  TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="Date"  TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="Machine Name"  TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="Speed" TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="P1"  TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="P2"  TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="N1"  TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="Remark"  TextColor="#0e0273" FontSize="14"/>
+
+
+                                </Grid>
+
+                            </StackLayout>
+                        
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+
+                        <ViewCell>
+                            <StackLayout Margin="0,0,0,0">
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+
+                                    <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="5" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="6" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                                    <Label Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding serialNo}" FontSize="14"/>
+                                    <Label Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding date}" FontSize="14"/>
+                                    <Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding machineName}" FontSize="14"/>
+                                    <Label Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding speed}" FontSize="14"/>
+                                    <Label Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding p1}"
+                                           BackgroundColor="{Binding p1_bgcolor}"
+                                           TextColor="{Binding p1_textcolor}"
+                                           FontSize="14"/>
+                                    <Label Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding p2}"
+                                           BackgroundColor="{Binding p2_bgcolor}"
+                                           TextColor="{Binding p2_textcolor}"
+                                           FontSize="14"/>
+                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding n1}"
+                                           BackgroundColor="{Binding n1_bgcolor}"
+                                           TextColor="{Binding n1_textcolor}"
+                                           FontSize="14"/>
                                     <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            Text="                              " FontSize="14"/>
 
