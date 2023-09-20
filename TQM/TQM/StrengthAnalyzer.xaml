@@ -184,7 +184,6 @@
             </Picker>
 
             <Picker Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
-                    Focused="picker_drumSelection_Focused"
                     x:Name="picker_drumSelection" TextColor="Green" FontSize="16" IsEnabled="False">
                 <Picker.ItemsSource>
                     <x:Array Type="{x:Type x:String}">

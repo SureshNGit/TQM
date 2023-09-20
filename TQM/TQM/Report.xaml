@@ -27,6 +27,7 @@
             </Grid>
         </StackLayout>
     </NavigationPage.TitleView>
+
     <ContentPage.Content>
         <StackLayout>
             <Grid Margin="20,30">
@@ -178,4 +179,7 @@
             </Grid>
          </StackLayout>
     </ContentPage.Content>
+
+
+
 </ContentPage>

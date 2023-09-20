@@ -681,9 +681,9 @@
             </ListView>
 
 
-            <!--<ListView x:Name="listview_tcConsolidatedReport"   IsGroupingEnabled="true" 
-                      HasUnevenRows="True"
-                       Margin="5,0,10,10" IsVisible="false" VerticalScrollBarVisibility="Always" HorizontalScrollBarVisibility="Always">
+            <ListView x:Name="listview_tcreport_missingDrum"   
+                      HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always" 
+                       IsVisible="false">
                 <ListView.GroupHeaderTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -696,11 +696,13 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
 
-                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
-                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
 
 
                                     <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
@@ -709,24 +711,26 @@
                                     <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="5" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-                                    <BoxView Grid.Column="5" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+                                    <BoxView Grid.Column="6" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
 
                                     <Label  Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="S.No"  TextColor="#0e0273" FontSize="14"/>
+                                            Text="Machine Name"  TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="Test ID"  TextColor="#0e0273" FontSize="14"/>
+                                            Text="Section No"  TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="Std. Hank" IsVisible="{Binding otherThanSpinning}" TextColor="#0e0273" FontSize="14"/>
-                                    <Label  Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="Std. Count" IsVisible="{Binding isSpinning}" TextColor="#0e0273" FontSize="14"/>
+                                            Text="Total Drums"  TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="Avg. Hank" IsVisible="{Binding otherThanSpinning}" TextColor="#0e0273" FontSize="14"/>
-                                    <Label  Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="Avg. Count" IsVisible="{Binding isSpinning}" TextColor="#0e0273" FontSize="14"/>
+                                            Text="Completed Drums" TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="SD"  TextColor="#0e0273" FontSize="14"/>
+                                            Text="Pending Drums"  TextColor="#0e0273" FontSize="14"/>
                                     <Label  Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="CV"  TextColor="#0e0273" FontSize="14"/>
+                                            Text="Sch. Start Date"  TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="Sch. End Date"  TextColor="#0e0273" FontSize="14"/>
+                                    <Label  Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="Remark"  TextColor="#0e0273" FontSize="14"/>
 
 
                                 </Grid>
@@ -740,9 +744,11 @@
 
                         <ViewCell>
                             <StackLayout Margin="0,20,0,0">
-                                <Grid x:Name="grid_ConsolidatedTestValues" IsVisible="{Binding isConsolidatedReport}">
+                                <Grid >
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
@@ -751,7 +757,7 @@
                                     </Grid.ColumnDefinitions>
 
 
-                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
 
                                     <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
@@ -759,20 +765,26 @@
                                     <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="5" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-                                    <BoxView Grid.Column="5" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+                                    <BoxView Grid.Column="6" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
 
                                     <Label Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                           Text="{Binding serialNo}" FontSize="14"/>
+                                           Text="{Binding machineName}" FontSize="14"/>
                                     <Label Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                           Text="{Binding testID}" FontSize="14"/>
+                                           Text="{Binding sectionNumber}" FontSize="14"/>
                                     <Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                           Text="{Binding standardValue,StringFormat='{0:N4}'}" FontSize="14"/>
+                                           Text="{Binding totalDrumNumbers}" FontSize="14"/>
                                     <Label Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                           Text="{Binding testAverage,StringFormat='{0:N4}'}" FontSize="14"/>
+                                           Text="{Binding testCompletedDrums}" FontSize="14"/>
                                     <Label Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                           Text="{Binding standardDeviation,StringFormat='{0:N4}'}" FontSize="14"/>
+                                           Text="{Binding pendingTestDrums}" FontSize="14"/>
                                     <Label Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                           Text="{Binding CoEfficientOfVariation,StringFormat='{0:N4}'}" FontSize="14"/>
+                                           Text="{Binding scheduledStartDate}" FontSize="14"/>
+                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding scheduledEndDate}" FontSize="14"/>
+                                    <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="                              " FontSize="14"/>
 
                                 </Grid>
 
@@ -780,10 +792,10 @@
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-            </ListView>-->
+            </ListView>
 
 
-            <ListView x:Name="listview_tcreport_missingDrum"   IsGroupingEnabled="true" 
+            <!--<ListView x:Name="listview_tcreport_missingDrum"   IsGroupingEnabled="true" 
                       HasUnevenRows="True"
                        Margin="5,0,10,10" IsVisible="false" VerticalScrollBarVisibility="Always" HorizontalScrollBarVisibility="Always">
                 <ListView.GroupHeaderTemplate>
@@ -887,7 +899,7 @@
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-            </ListView>
+            </ListView>-->
 
 
         </StackLayout>

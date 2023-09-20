@@ -99,8 +99,8 @@ namespace TQM
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                conn.DropTable<StrengthTestModel>();
-                conn.DropTable<StrengthTestSummaryModel>();
+                //conn.DropTable<StrengthTestModel>();
+                //conn.DropTable<StrengthTestSummaryModel>();
 
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
@@ -123,6 +123,8 @@ namespace TQM
                 ///*******************************Jaganatha Unit-3, bhagirath Test Reset Issue Issue - Auto Correction**************************
 
                 conn.CreateTable<StrengthTestModel>();
+                conn.CreateTable<StrengthTestSummaryModel>();
+
                 int recordCount = conn.Table<StrengthTestModel>().Count();
 
                 if (recordCount > 0)
@@ -710,8 +712,11 @@ namespace TQM
                     machineName = StrengthTestModelViewlist[0].machineName,
                     speed = StrengthTestModelViewlist[0].speed,
                     p1 = StrengthTestModelViewlist[0].p1,
+                    p1Deviation = StrengthTestModelViewlist[0].p1Deviation,
                     p2 = StrengthTestModelViewlist[0].p2,
+                    p2Deviation = StrengthTestModelViewlist[0].p2Deviation,
                     n1 = StrengthTestModelViewlist[0].n1,
+                    n1Deviation = StrengthTestModelViewlist[0].n1Deviation,
                     sectionNumber = StrengthTestModelViewlist[0].sectionNumber,
                     totalDrumNumbers = StrengthTestModelViewlist[0].totalDrumNumbers,
                     drumNumber = StrengthTestModelViewlist[0].drumNumber,
@@ -852,18 +857,43 @@ namespace TQM
             });
         }
 
+
         [Obsolete]
         private async void testYCButton_Clicked(object sender, EventArgs e)
         {
-            ImageNotification("null");
-            UpdateUserNotification("");
+            
 
-            if (testYCButton.Text != "Resume")
+            if (!isTestResume)
             {
                 hideFrames();
                 await refListView(false);
                 await refOverallSummary(0.0000m, 0.0000m, false);
             }
+            else
+            {
+                if(StrengthTestModelViewlist != null && StrengthTestModelViewlist.Count > 0)
+                {
+                    List<StrengthTestModelView> tempList = new List<StrengthTestModelView>();
+                    tempList = StrengthTestModelViewlist;
+                    StrengthTestModelView toBeDeletedTest = null;
+                    int lastSampleNo = tempList.Max(StrengthTestModelView => StrengthTestModelView.sampleNo);
+                    foreach(StrengthTestModelView test in tempList)
+                    {
+                        if(test.sampleNo == lastSampleNo && test.maxRollingCount<test.sampleStrengthCount)
+                        {
+                            toBeDeletedTest = test;
+                        }
+                    }
+                    if (toBeDeletedTest != null)
+                    {
+                        StrengthTestModelViewlist.Remove(toBeDeletedTest);
+                        await refListView();
+                    }
+                }
+            }
+
+            ImageNotification("null");
+            UpdateUserNotification("");
 
             //showProgress
             CancellationTokenSource src_p = new CancellationTokenSource();
@@ -881,7 +911,7 @@ namespace TQM
             src_t.Cancel();
             //showToast End
 
-            if (testYCButton.Text != "Resume")
+            if (!isTestResume)
             {
                 currentTestStartTime = null;
                 currentTestStartTime = DateTime.Now;
@@ -1165,7 +1195,7 @@ namespace TQM
                 bool runResult = false;
                 int passCount = 0;
                 int loopStartNo = 0;
-                if (testYCButton.Text == "Resume") { loopStartNo = StrengthTestModelViewlist.Count; passCount= StrengthTestModelViewlist.Count; }
+                if (isTestResume) { loopStartNo = StrengthTestModelViewlist.Count; passCount= StrengthTestModelViewlist.Count; }
                 for (int i = loopStartNo; i < testCount; i++)
                 {
                     currentTestCount = i + 1;
@@ -1593,7 +1623,7 @@ namespace TQM
             }
         }
 
-        private void picker_machinename_SelectedIndexChanged(object sender, EventArgs e)
+        private async void picker_machinename_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
@@ -1615,19 +1645,32 @@ namespace TQM
                 selectedMachineName = selectedMachine.machineName;
                 populateTestParams(selectedMachineCategory, selectedMachineID, selectedMachineName);
                 getUserfieldConfig(selectedMachineCategory, selectedMachineID, selectedMachineName);
+                if (!isTestResume)
+                {
+                    using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                    {
+                        int macRecordForToday = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                                                (StrengthTestSummaryModel.createdate >= DateTime.Now.Date
+                                                && StrengthTestSummaryModel.machineID == selectedMachineID)).Count();
+                        if (macRecordForToday == 0)
+                        {
+                            await getPressureConfirmation();
+                            if (entry_pressure.Text == "")
+                            {
+                                picker_machinename.SelectedIndex = -1;
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
-                DisplayAlert("Attention", "Machine Name - Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+                await DisplayAlert("Attention", "Machine Name - Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
             }
         }
 
         private decimal formatDecimal(decimal inputVal, int afterDecimalCount = 4)
         {
-            //if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-            //{
-            //    afterDecimalCount = 2;
-            //}
             inputVal = Math.Round(inputVal, afterDecimalCount);
             string inputString = inputVal.ToString();
             string[] ipStringArray = inputString.Split('.');
@@ -2142,27 +2185,7 @@ namespace TQM
             }
         }
 
-        private void picker_drumSelection_Focused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
-        {
-            //DisplayAlert("Attention", "Touched", "OK");
-        }
-
-        //public void toggleDrumSelectionMethod(bool command)
-        //{
-        //    //DisplayAlert("Attention", command.ToString(), "OK");
-            
-        //    if (command)
-        //    {
-        //        picker_drumSelection.IsEnabled = true;
-        //    }
-        //    else
-        //    {
-        //        picker_drumSelection.IsEnabled = false;
-        //        DisplayAlert("Attention", "Unable verify you as Admin. Please try again....", "OK");
-        //        return;
-        //    }
-        //    Navigation.PopAllPopupAsync();
-        //}
+       
 
         private async void btn_drumSelectionMethod_Clicked(System.Object sender, System.EventArgs e)
         {
@@ -2217,7 +2240,12 @@ namespace TQM
             }
         }
 
-        private async void btn_pressure_Clicked(System.Object sender, System.EventArgs e)
+        private void btn_pressure_Clicked(System.Object sender, System.EventArgs e)
+        {
+            _ = getPressureConfirmation();
+        }
+
+        private async Task getPressureConfirmation()
         {
             try
             {
@@ -2225,7 +2253,6 @@ namespace TQM
                 if (picker_machinename.SelectedIndex < 0) { return; }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    
                     var result = await Navigation.ShowPopupAsync(new PressureInfoPopUp(selectedMachineID, selectedMachineName));
                     if (result != null)
                     {
@@ -2247,6 +2274,7 @@ namespace TQM
                                 selectedP2Deviation = macDetails.p2Deviation;
                                 selectedN1 = macDetails.n1;
                                 selectedN1Deviation = macDetails.n1Deviation;
+                                return;
                             }
                             else
                             {
@@ -2274,13 +2302,14 @@ namespace TQM
                         entry_pressure.Text = "";
                         return;
                     }
-                        
+
                 }
             }
             catch (Exception ex)
             {
                 DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
-            }
+                return;
+            } 
         }
     }
 }

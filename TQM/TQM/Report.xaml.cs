@@ -230,22 +230,19 @@ namespace TQM
                 if (reportType == "Consolidated") { is_consolidated = true; }
                 bool drumDetails = false;
                 if (reportType == "Drum Details") { drumDetails = true; }
-                //if (is_consolidated || drumDetails)
-                //{
-                    if (selectedCategory == null || selectedCategory == "")
-                    {
-                        DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
-                        return;
+
+                if (selectedCategory == null || selectedCategory == "")
+                {
+                    DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
+                    return;
                 }
-                //}
-                //else
-                //{
+
                 if (picker_machinename.SelectedIndex < 0)
-                    {
-                        DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
-                        return;
-                    }
-                //}
+                {
+                    DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
+                    return;
+                }
+
                 Navigation.PushAsync(new YCReport
                     (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength , false, is_consolidated, drumDetails, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
