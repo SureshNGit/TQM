@@ -1,14 +1,17 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using Java.Util;
+using OpenTK;
 using RestSharp;
 using SQLite;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
+using Syncfusion.Pdf.Functions;
 using Syncfusion.Pdf.Graphics;
 using Syncfusion.Pdf.Grid;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -25,6 +28,7 @@ using static Android.Icu.Text.AlphabeticIndex;
 using Color = Xamarin.Forms.Color;
 using Exception = Java.Lang.Exception;
 using String = System.String;
+
 
 namespace TQM
 {
@@ -85,7 +89,7 @@ namespace TQM
             InitializeComponent();
             isFinalAvgRowPresent = false;
             is_IncompleteTest = false;
-            long inCompleteTestID = 0;
+            inCompleteTestID = 0;
             consolidatedReport = isConsolidated;
             drumDetailsReport = drumDetails;
             maintenanceReport = is_maintenance;
@@ -170,7 +174,7 @@ namespace TQM
                     {
                         for (int i = 1; i <= tdmv.totalSections; i++)
                         {
-                            if (i!= secNo)
+                            if (i!= secNo || odl.Count==0)
                             {
                                 MissingDrumReportModelView mdd_temp = new MissingDrumReportModelView();
 
@@ -259,9 +263,7 @@ namespace TQM
                         List<MissingDrumReportModelView> testedDrumsList = temp_final.Where(MissingDrumReportModelView =>
                                                     (MissingDrumReportModelView.machineID == tdmv.machineID
                                                     && MissingDrumReportModelView.totalDrumCount == tdmv.totalDrumCount
-                                                    && MissingDrumReportModelView.totalSections == tdmv.totalSections
-                                                    && MissingDrumReportModelView.scheduledStartDate == tdmv.scheduledStartDate
-                                                    && MissingDrumReportModelView.scheduledEndDate == tdmv.scheduledEndDate))
+                                                    && MissingDrumReportModelView.totalSections == tdmv.totalSections))
                                                     .ToList();
                         List<int> testedSections = new List<int>();
                         if (testedDrumsList.Count > 0)
@@ -350,6 +352,25 @@ namespace TQM
                     tdmv = tdmv_temp;
                 }
 
+                bool currentSrcAlreadyExist = false;
+                MissingDrumReportModelView toBeRemoved = new MissingDrumReportModelView();
+
+                if (odl.Count > 0)
+                {
+                    foreach (MissingDrumReportModelView m in odl)
+                    {
+                        if(m.machineID== macID && m.sectionNumber==secNo && m.scheduledStartDate==SSD.ToShortDateString()
+                            && m.scheduledEndDate == SED.ToShortDateString())
+                        {
+                            currentSrcAlreadyExist = true;
+                            toBeRemoved = m;
+                            break;
+                        }
+                    }
+                }
+
+                if (currentSrcAlreadyExist) { odl.Remove(toBeRemoved); }
+              
                 MissingDrumReportModelView mdd = new MissingDrumReportModelView();
 
                 mdd.machineID = macID;
@@ -367,21 +388,38 @@ namespace TQM
                 string pendingTestDrums = "";
                 for (int i = minDrumNo; i <= maxDrumNo; i++)
                 {
-                    if (!dl.Contains(i))
+                    if (dl.Count > 0)
                     {
-                        if (testCompletedDrums == "") { testCompletedDrums = i.ToString(); }
+                        if (!dl.Contains(i))
+                        {
+                            if (testCompletedDrums == "") { testCompletedDrums = i.ToString(); }
+                            else
+                            {
+                                testCompletedDrums = testCompletedDrums + " , " + i.ToString();
+                            }
+                        }
                         else
                         {
-                            testCompletedDrums = testCompletedDrums + " , " + i.ToString();
+                            if (pendingTestDrums == "") { pendingTestDrums = i.ToString(); }
+                            else
+                            {
+                                pendingTestDrums = pendingTestDrums + " , " + i.ToString();
+                            }
                         }
                     }
                     else
                     {
-                        if (pendingTestDrums == "") { pendingTestDrums = i.ToString(); }
+
+                        if (testCompletedDrums == "")
+                        {
+                            testCompletedDrums = i.ToString();
+                        }
                         else
                         {
-                            pendingTestDrums = pendingTestDrums + " , " + i.ToString();
+                            testCompletedDrums = testCompletedDrums + " , " + i.ToString();
                         }
+
+
                     }
                 }
 
@@ -421,8 +459,8 @@ namespace TQM
 
                     List<StrengthTestSummaryModel> strengthTestSummaryList =
                         conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
-                         ((StrengthTestSummaryModel.scheduledStartDate <= startDate
-                         || StrengthTestSummaryModel.scheduledEndDate >= endDate)
+                         ((StrengthTestSummaryModel.scheduledStartDate >= startDate
+                         || StrengthTestSummaryModel.scheduledEndDate <= endDate)
                          && StrengthTestSummaryModel.machineCategory == categoryName
                          && StrengthTestSummaryModel.machineID == machineID))
                         .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.machineID)
@@ -432,11 +470,131 @@ namespace TQM
                         .ThenBy(StrengthTestSummaryModel => StrengthTestSummaryModel.scheduledEndDate)
                         .ToList();
 
+
+
                     if (strengthTestSummaryList.Count == 0)
                     {
-                        DisplayAlert("Notice", "No records to display!!!", "OK");
+                        //DisplayAlert("Notice", "No records to display!!!", "OK");
+
+                        ConfigModel configModel = conn.Table<ConfigModel>().Where(ConfigModel =>
+                                                    (ConfigModel.machineID == machineID
+                                                    && ((ConfigModel.scheduledStartDate_s1 >= startDate
+                                                    || ConfigModel.scheduledEndDate_s1 <= endDate)
+                                                    || (ConfigModel.scheduledStartDate_s2 >= startDate
+                                                    || ConfigModel.scheduledEndDate_s2 <= endDate)
+                                                    || (ConfigModel.scheduledStartDate_s3 >= startDate
+                                                    || ConfigModel.scheduledEndDate_s3 <= endDate)))).FirstOrDefault();
+
+                        if (configModel == null)
+                        {
+                            DisplayAlert("Notice", "No records to display!!!", "OK");
+                            return;
+                        }
+
+                        int minDrumNo = 0;
+                        int maxDrumNo = 0;
+                        if (configModel.drumNumbers_s1 != null)
+                        {
+                            minDrumNo = int.Parse(configModel.drumNumbers_s1.ToString().Split('.')[0]);
+                            maxDrumNo = int.Parse(configModel.drumNumbers_s1.ToString().Split('.')[1]);
+                        }
+                        List<int> drumList_nr = new List<int>();
+
+                        for (int i = minDrumNo; i <= maxDrumNo; i++)
+                        {
+                            drumList_nr.Add(i);
+                        }
+
+                        TestConfigModel tcm = new TestConfigModel()
+                        {
+                            testID = 0,
+                            machineID = configModel.machineID,
+                            machineCategory = configModel.machineCategory,
+                            machineName = configModel.machineName,
+                            speed = configModel.speed,
+                            p1 = configModel.p1,
+                            p1Deviation = configModel.p1Deviation,
+                            p2 = configModel.p2,
+                            p2Deviation = configModel.p2Deviation,
+                            n1 = configModel.n1,
+                            n1Deviation = configModel.n1Deviation,
+                            totalDrumCount = configModel.totalDrumCount,
+                            totalSections = configModel.totalSections,
+                            stdRollingStrength_s1 = configModel.stdRollingStrength_s1,
+                            strengthDeviation_s1 = configModel.strengthDeviation_s1,
+                            belowLimit_s1 = configModel.belowLimit_s1,
+                            totalSamples_s1 = configModel.totalSamples_s1,
+                            drumNumbers_s1 = configModel.drumNumbers_s1,
+                            drumSelectionMethod_s1 = configModel.drumSelectionMethod_s1,
+                            scheduledDayLimit_s1 = configModel.scheduledDayLimit_s1,
+                            scheduledStartDate_s1 = configModel.scheduledStartDate_s1,
+                            scheduledEndDate_s1 = configModel.scheduledEndDate_s1,
+                            maxRollingCount_s1 = configModel.maxRollingCount_s1,
+                            materialCount_s1 = configModel.materialCount_s1,
+                            stdRollingStrength_s2 = configModel.stdRollingStrength_s2,
+                            strengthDeviation_s2 = configModel.strengthDeviation_s2,
+                            belowLimit_s2 = configModel.belowLimit_s2,
+                            totalSamples_s2 = configModel.totalSamples_s2,
+                            drumNumbers_s2 = configModel.drumNumbers_s2,
+                            drumSelectionMethod_s2 = configModel.drumSelectionMethod_s2,
+                            scheduledDayLimit_s2 = configModel.scheduledDayLimit_s2,
+                            scheduledStartDate_s2 = configModel.scheduledStartDate_s2,
+                            scheduledEndDate_s2 = configModel.scheduledEndDate_s2,
+                            maxRollingCount_s2 = configModel.maxRollingCount_s2,
+                            materialCount_s2 = configModel.materialCount_s2,
+                            stdRollingStrength_s3 = configModel.stdRollingStrength_s3,
+                            strengthDeviation_s3 = configModel.strengthDeviation_s3,
+                            belowLimit_s3 = configModel.belowLimit_s3,
+                            totalSamples_s3 = configModel.totalSamples_s3,
+                            drumNumbers_s3 = configModel.drumNumbers_s3,
+                            drumSelectionMethod_s3 = configModel.drumSelectionMethod_s3,
+                            scheduledDayLimit_s3 = configModel.scheduledDayLimit_s3,
+                            scheduledStartDate_s3 = configModel.scheduledStartDate_s3,
+                            scheduledEndDate_s3 = configModel.scheduledEndDate_s3,
+                            maxRollingCount_s3 = configModel.maxRollingCount_s3,
+                            materialCount_s3 = configModel.materialCount_s3,
+                            shiftCount = configModel.shiftCount,
+                            shift1time = configModel.shift1time,
+                            shift2time = configModel.shift2time,
+                            shift3time = configModel.shift3time,
+                            uf_name_1 = configModel.uf_name_1,
+                            uf_value_1 = configModel.uf_value_1,
+                            uf_name_2 = configModel.uf_name_2,
+                            uf_value_2 = configModel.uf_value_2,
+                            uf_name_3 = configModel.uf_name_3,
+                            uf_value_3 = configModel.uf_value_3,
+                            uf_name_4 = configModel.uf_name_4,
+                            uf_value_4 = configModel.uf_value_4,
+                            updateddate = configModel.updateddate,
+                            createdate = configModel.createdate,
+                        };
+
+                        updateDrumReportModel(categoryName,
+                                                machineID,
+                                                configModel.machineName,
+                                                configModel.totalDrumCount,
+                                                configModel.totalSections,
+                                                1,
+                                                configModel.drumNumbers_s1,
+                                                configModel.scheduledStartDate_s1.Date,
+                                                configModel.scheduledEndDate_s1.Date,
+                                                configModel.updateddate.Date,
+                                                minDrumNo,
+                                                maxDrumNo,
+                                                drumList_nr,
+                                                tcm,
+                                                true);
+
+                        odl = odl.OrderBy(MissingDrumReportModelView => MissingDrumReportModelView.machineName)
+                            .ThenBy(MissingDrumReportModelView => MissingDrumReportModelView.sectionNumber).ToList();
+                        ListOfMissingDrumReports = odl;
+                        listview_tcreport_missingDrum.IsVisible = true;
+                        listview_tcreport_missingDrum.ItemsSource = null;
+                        listview_tcreport_missingDrum.ItemsSource = ListOfMissingDrumReports;
+
                         return;
                     }
+
                     
 
                     Guid prev_machineID = Guid.Empty;
@@ -486,9 +644,9 @@ namespace TQM
                             prev_MachineName = S_Test.machineName;
                             prev_SectionNumber = S_Test.sectionNumber;
                             prev_TotalDrumNumbers = S_Test.totalDrumNumbers;
-                            prev_SSD = S_Test.scheduledStartDate;
-                            prev_SED = S_Test.scheduledEndDate;
-                            prev_SUD = S_Test.settingsUpdatedDate;
+                            prev_SSD = S_Test.scheduledStartDate.Date;
+                            prev_SED = S_Test.scheduledEndDate.Date;
+                            prev_SUD = S_Test.settingsUpdatedDate.Date;
                             prev_MinDrumNo = minDrumNo;
                             prev_MaxDrumNo = maxDrumNo;
 
@@ -504,8 +662,8 @@ namespace TQM
                             if(prev_MachineName == S_Test.machineName
                                 && prev_SectionNumber == S_Test.sectionNumber
                                 && prev_TotalDrumNumbers == S_Test.totalDrumNumbers
-                                && prev_SSD == S_Test.scheduledStartDate
-                                && prev_SED == S_Test.scheduledEndDate)
+                                && prev_SSD == S_Test.scheduledStartDate.Date
+                                && prev_SED == S_Test.scheduledEndDate.Date)
                             {
                                 drumList.Remove(S_Test.drumNumber);
                             }
@@ -532,9 +690,9 @@ namespace TQM
                                 prev_MachineName = S_Test.machineName;
                                 prev_SectionNumber = S_Test.sectionNumber;
                                 prev_TotalDrumNumbers = S_Test.totalDrumNumbers;
-                                prev_SSD = S_Test.scheduledStartDate;
-                                prev_SED = S_Test.scheduledEndDate;
-                                prev_SUD = S_Test.settingsUpdatedDate;
+                                prev_SSD =S_Test.scheduledStartDate.Date;
+                                prev_SED = S_Test.scheduledEndDate.Date;
+                                prev_SUD = S_Test.settingsUpdatedDate.Date;
                                 prev_MinDrumNo = minDrumNo;
                                 prev_MaxDrumNo = maxDrumNo;
                                 for (int i = minDrumNo; i <= maxDrumNo; i++)
@@ -953,6 +1111,18 @@ namespace TQM
                             }
                         }
 
+                        if (machineID != Guid.Empty)
+                        {
+                            parentList = parentList.Where(StrengthTestSummaryModel =>
+                                         (StrengthTestSummaryModel.machineID == machineID))
+                                        .ToList();
+                            if (parentList.Count == 0)
+                            {
+                                DisplayAlert("Notice", "No records to display!!!", "OK");
+                                return;
+                            }
+                        }
+
                         if (drumNumber!=null && drumNumber != "")
                         {
                             int givenDrumNumber = int.Parse(drumNumber);
@@ -1033,16 +1203,20 @@ namespace TQM
                             return;
                         }
 
-                        if (deleteRequest)
-                        {
-                            deleteAll = true;
-                            deleteList = ycTestSummaryModels;
-                        }
+                        
                     }
 
                     if (consolidatedReport)
                     {
                         ycTestSummaryModels = ycTestSummaryModels.OrderBy(YCTestSummaryModel => YCTestSummaryModel.machineName).ToList();
+                    }
+                    else
+                    {
+                        if (deleteRequest)
+                        {
+                            deleteAll = true;
+                            deleteList = ycTestSummaryModels;
+                        }
                     }
 
                     TOT_TEST = ycTestSummaryModels.Count;
@@ -1157,8 +1331,8 @@ namespace TQM
                                 //consolItems.serialNo = (counter + 1).ToString();
                                 consolItems.serialNo = "SP-"+ testsummary.speed.ToString()
                                                         + "\n" + "P1-" + testsummary.p1.ToString()
-                                                        + "\n" + "P2 - " + testsummary.p2.ToString()
-                                                        + "\n" + "N1 - " + testsummary.n1.ToString();
+                                                        + "\n" + "P2-" + testsummary.p2.ToString()
+                                                        + "\n" + "N1-" + testsummary.n1.ToString();
                                 if (testsummary.drumSelectionMethod.ToString() == "Random")
                                 {
                                     consolItems.testID = testsummary.testID.ToString() + " (R)";
@@ -1173,7 +1347,7 @@ namespace TQM
                                 }
                                 consolItems.machineName = testsummary.machineName;
                                 //consolItems.testDate = testsummary.createdate.Day.ToString() + "-" + testsummary.createdate.Month.ToString() + "-" + testsummary.createdate.Year.ToString();
-                                consolItems.testDate = testsummary.createdate.ToString();
+                                consolItems.testDate = testsummary.createdate.ToString() + "\n" + testsummary.shift;
                                 consolItems.shift = testsummary.shift;
                                 consolItems.drumNumber = testsummary.drumNumber.ToString();
                                 consolItems.drumSelectionMethod = testsummary.drumSelectionMethod.ToString();
@@ -1186,6 +1360,7 @@ namespace TQM
                                 consolItems.strength = testsummary.yarnStrength.ToString() + " \n"+ testsummary.standardStrength.ToString() + " " + "\u00B1" + testsummary.strengthDeviation.ToString();
                                 consolItems.testDuration = testsummary.testDuration;
                                 consolItems.remarks = testsummary.testRemark;
+                                consolItems.materialCount = testsummary.materialCount;
 
                                
 
@@ -1433,7 +1608,7 @@ namespace TQM
 
                         OverallConsolidatedReports = OverallConsolidatedReports
                                                     .OrderBy(StrengthTestConsolidatedReportMV => StrengthTestConsolidatedReportMV.machineName)
-                                                    .ThenBy(StrengthTestConsolidatedReportMV => StrengthTestConsolidatedReportMV.drumNumber)
+                                                    .ThenBy(StrengthTestConsolidatedReportMV => int.Parse(StrengthTestConsolidatedReportMV.drumNumber))
                                                     .ToList();
                         ListOfConsolidatedReports = OverallConsolidatedReports;
                     }
@@ -2261,7 +2436,7 @@ namespace TQM
                     }
 
                     float currentRowHeight = pdfGrid.Rows[pageRecordCount].Height;
-                    pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 14) + 1);
+                    pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 30) + 1);
 
                     
 
@@ -2729,7 +2904,7 @@ namespace TQM
         {
             try
             {
-                string downloadsFolder = Path.Combine(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads),"TQMDownloads");
+                string downloadsFolder = Path.Combine(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads),"SVYADownloads");
                 using (var textWriter = new StreamWriter(Path.Combine(downloadsFolder, "SVYA_Consolidated_CSV_Report.csv")))
                 {
                    
@@ -2741,10 +2916,10 @@ namespace TQM
                     };
                     //Header
                     writer.WriteField("Mac Parameters");
-                    writer.WriteField("Date");
+                    writer.WriteField("Date & Shift");
                     writer.WriteField("ID");
                     writer.WriteField("Mac Name");
-                    writer.WriteField("Shift");
+                    writer.WriteField("Count");
                     writer.WriteField("Drum No");
                     writer.WriteField("Tot. Sample");
                     writer.WriteField("Qualified");
@@ -2760,7 +2935,7 @@ namespace TQM
                         writer.WriteField(orl.testDate);
                         writer.WriteField(orl.testID);
                         writer.WriteField(orl.machineName);
-                        writer.WriteField(orl.shift);
+                        writer.WriteField(orl.materialCount);
                         writer.WriteField(orl.drumNumber);
                         writer.WriteField(orl.totalTestCount);
                         writer.WriteField(orl.qualifiedTestCount);
@@ -2838,7 +3013,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        pdfGrid.Rows[0].Cells[1].Value = "Date";
+                        pdfGrid.Rows[0].Cells[1].Value = "Date & Shift";
                         pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -2853,7 +3028,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        pdfGrid.Rows[0].Cells[4].Value = "Shift";
+                        pdfGrid.Rows[0].Cells[4].Value = "Count";
                         pdfGrid.Rows[0].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[4].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -2902,7 +3077,7 @@ namespace TQM
                     pdfGrid.Rows[pageRecordCount].Cells[1].Value = orl.testDate;
                     pdfGrid.Rows[pageRecordCount].Cells[2].Value = orl.testID;
                     pdfGrid.Rows[pageRecordCount].Cells[3].Value = orl.machineName;
-                    pdfGrid.Rows[pageRecordCount].Cells[4].Value = orl.shift;
+                    pdfGrid.Rows[pageRecordCount].Cells[4].Value = orl.materialCount;
                     pdfGrid.Rows[pageRecordCount].Cells[5].Value = orl.drumNumber;
                     pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.totalTestCount;
                     pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.qualifiedTestCount;
@@ -2932,9 +3107,9 @@ namespace TQM
                         {
                             contentLength = orl.strength.Length;
                         }
-                        if (contentLength >= 9)
+                        if (contentLength >= 30)
                         {
-                            pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 9) + 1);
+                            pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 14) + 1);
                         }
                     }
 
@@ -3040,11 +3215,11 @@ namespace TQM
                     rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
                     if (rowHeights <= 700 && rowCount == overallReportList.Count)
                     {
-                        result = pdfGrid.Draw(pdfPage, new PointF(10, 75), layoutFormat);
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, 60), layoutFormat);
                     }
                     else if ((rowHeights >= 670 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
                     {
-                        result = pdfGrid.Draw(pdfPage, new PointF(10, 75), layoutFormat);
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, 60), layoutFormat);
                         pdfPage = pdfDocument.Pages.Add();
                         pageRecordCount = 0;
                         rowHeights = 0;

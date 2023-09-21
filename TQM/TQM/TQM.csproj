@@ -34,6 +34,7 @@
     <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="Rg.Plugins.Popup" Version="2.1.0" />
     <PackageReference Include="Xamarin.CommunityToolkit" Version="2.0.6" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -90,6 +91,12 @@
     </Reference>
     <Reference Include="System.Xml">
       <HintPath>..\..\..\..\..\..\..\..\Library\Frameworks\System\System.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.iOS">
+      <HintPath>..\..\..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\16.4.0.6\lib\mono\Xamarin.iOS\Xamarin.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\..\..\..\..\..\..\Library\Frameworks\EntityFramework\EntityFramework.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

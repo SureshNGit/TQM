@@ -503,13 +503,13 @@
                             <Label  Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                             Text="Mac Parameters"  TextColor="#0e0273" FontSize="14" FontAttributes="Bold"/>
                             <Label  Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                                Text="Date"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                                                Text="Date &amp; Shift"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="Test ID"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="Machine"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                                Text="Shift"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                                                Text="Count"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="Drum No"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
@@ -569,15 +569,16 @@
                                     <Label Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                Text="{Binding serialNo}" FontSize="14"/>
                                     <Label Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding testDate}"
-                                               TextColor="{Binding testIDColor_text}"
-                                               BackgroundColor="{Binding testIDColor}" FontSize="14"/>
+                                               Text="{Binding testDate}" FontSize="14"/>
                                     <Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding testID}" FontSize="14"/>
+                                               Text="{Binding testID}"
+                                                TextColor="{Binding testIDColor_text}"
+                                               BackgroundColor="{Binding testIDColor}" 
+                                               FontSize="14"/>
                                     <Label Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                Text="{Binding machineName}" FontSize="14"/>
                                     <Label Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding shift}" FontSize="14"/>
+                                               Text="{Binding materialCount}" FontSize="14"/>
                                     
                                     
                                     <Label Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"

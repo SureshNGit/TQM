@@ -10,6 +10,7 @@ namespace TQM.ModelView
         public string machineName { get; set; }
         public string shift { get; set; }
         public string drumNumber { get; set; }
+        public string materialCount { get; set; }
         public string drumSelectionMethod { get; set; }
         public string belowLimit { get; set; }
         public string totalTestCount { get; set; }
