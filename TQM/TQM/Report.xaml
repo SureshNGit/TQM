@@ -82,7 +82,7 @@
                 <Label Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" Text="Test ID"  x:Name="lbl_testID" HorizontalOptions="Start"
                        FontSize="16" TextColor="#0e0273" Margin="90,10"/>
                 <Entry Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="1" Text="" x:Name="entry_testID" TextColor="Green" FontSize="16" 
-                  VerticalTextAlignment="Center" HorizontalTextAlignment="Start" Keyboard="Numeric" Margin="15,0,0,0">
+                  VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Keyboard="Numeric" Margin="15,0,0,0">
                 </Entry>
 
 

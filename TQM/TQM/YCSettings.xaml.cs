@@ -909,6 +909,99 @@ namespace TQM
                     matCount_S3 = entry_matCount_Sec3.Text;
                 }
 
+                int totalSections = int.Parse(picker_sectionCount.SelectedItem.ToString());
+
+                if (totalSections == 3)
+                {
+                    int min_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[0]);
+                    int max_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[1]);
+
+                    List<int> list_s1 = new List<int>();
+                    for (int i = min_s1; i <= max_s1; i++)
+                    {
+                        list_s1.Add(i);
+                    }
+
+                    int min_s2 = int.Parse(entry_Drums_Sec2.Text.Split('.')[0]);
+                    int max_s2 = int.Parse(entry_Drums_Sec2.Text.Split('.')[1]);
+
+                    List<int> list_s2 = new List<int>();
+                    for (int i = min_s2; i <= max_s2; i++)
+                    {
+                        list_s2.Add(i);
+                    }
+
+                    int min_s3 = int.Parse(entry_Drums_Sec3.Text.Split('.')[0]);
+                    int max_s3 = int.Parse(entry_Drums_Sec3.Text.Split('.')[1]);
+
+                    List<int> list_s3 = new List<int>();
+                    for (int i = min_s3; i <= max_s3; i++)
+                    {
+                        list_s3.Add(i);
+                    }
+
+                    //check S1 drums in S2
+                    if (checkDrumsInRange(min_s2, max_s2, list_s1))
+                    {
+                        DisplayAlert("Attention", "Section-1 drums are overlapping with Section-2 drums. Please check!!!", "Ok");
+                        return;
+                    }
+
+                    //check S2 drums in S3
+                    if (checkDrumsInRange(min_s3, max_s3, list_s2))
+                    {
+                        DisplayAlert("Attention", "Section-2 drums are overlapping with Section-3 drums. Please check!!!", "Ok");
+                        return;
+                    }
+
+                    //check S3 drums in S1
+                    if (checkDrumsInRange(min_s1, max_s1, list_s3))
+                    {
+                        DisplayAlert("Attention", "Section-3 drums are overlapping with Section-1 drums. Please check!!!", "Ok");
+                        return;
+                    }
+                }else if (totalSections == 2)
+                {
+                    int min_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[0]);
+                    int max_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[1]);
+
+                    List<int> list_s1 = new List<int>();
+                    for (int i = min_s1; i <= max_s1; i++)
+                    {
+                        list_s1.Add(i);
+                    }
+
+                    int min_s2 = int.Parse(entry_Drums_Sec2.Text.Split('.')[0]);
+                    int max_s2 = int.Parse(entry_Drums_Sec2.Text.Split('.')[1]);
+
+                    List<int> list_s2 = new List<int>();
+                    for (int i = min_s2; i <= max_s2; i++)
+                    {
+                        list_s2.Add(i);
+                    }
+
+                   //check S1 drums in S2
+                    if (checkDrumsInRange(min_s2, max_s2, list_s1))
+                    {
+                        DisplayAlert("Attention", "Section-1 drums are overlapping with Section-2 drums. Please check!!!", "Ok");
+                        return;
+                    }
+                }
+                else if (totalSections == 1)
+                {
+                    int min_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[0]);
+                    int max_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[1]);
+
+                    //check S1 drums aligned with total drums
+                    if (min_s1!=1 || max_s1!=int.Parse(entry_drumCount.Text))
+                    {
+                        DisplayAlert("Attention", "Section-1 drums are not aligned with total drums. Please check!!!", "Ok");
+                        return;
+                    }
+                }
+
+
+
                 if (picker_shiftCount.SelectedIndex == -1 || picker_shiftCount.SelectedItem.ToString() == "")
                 {
                     DisplayAlert("Attention", "Please select valid shift count to proceed!!!", "OK");
@@ -1199,6 +1292,22 @@ namespace TQM
             catch (Exception ex)
             {
                 DisplayAlert("Attention", "Error Occurred: " + ex.Message.ToString(), "OK");
+            }
+        }
+
+        private bool checkDrumsInRange(int min, int max, List<int> src)
+        {
+            try
+            {
+                for (int i = min; i <= max; i++)
+                {
+                    if (src.Contains(i)) { return true; }
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+                return true;
             }
         }
 

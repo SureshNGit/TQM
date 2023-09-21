@@ -21,6 +21,7 @@ using TQM.ModelView;
 using TQM.SfPdfViewer;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using static Android.Icu.Text.AlphabeticIndex;
 using Color = Xamarin.Forms.Color;
 using Exception = Java.Lang.Exception;
 using String = System.String;
@@ -68,6 +69,8 @@ namespace TQM
         private string CON_UF_VAL_4 = null;
         private bool isFinalAvgRowPresent = false;
         private TestedDrumsModelView tdmv = null;
+        private bool is_IncompleteTest = false;
+        private long inCompleteTestID = 0;
 
         private List<MissingDrumReportModelView> odl = new List<MissingDrumReportModelView>();
         private List<MaintenanceReportMV> oml = new List<MaintenanceReportMV>();
@@ -81,6 +84,8 @@ namespace TQM
         {
             InitializeComponent();
             isFinalAvgRowPresent = false;
+            is_IncompleteTest = false;
+            long inCompleteTestID = 0;
             consolidatedReport = isConsolidated;
             drumDetailsReport = drumDetails;
             maintenanceReport = is_maintenance;
@@ -674,13 +679,13 @@ namespace TQM
                             date = st.createdate.ToString(),
                             machineName = st.machineName,
                             speed = st.speed.ToString(),
-                            p1 = st.p1.ToString(),
+                            p1 = st.p1.ToString() + "\n" + st_config.p1.ToString() + "\u00B1" + st_config.p1Deviation.ToString(),
                             p1_bgcolor = p1_bgColor,
                             p1_textcolor = p1_textColor,
-                            p2 = st.p2.ToString(),
+                            p2 = st.p2.ToString() + "\n" + st_config.p2.ToString() + "\u00B1" + st_config.p2Deviation.ToString(),
                             p2_bgcolor = p2_bgColor,
                             p2_textcolor = p2_textColor,
-                            n1 = st.n1.ToString(),
+                            n1 = st.n1.ToString() + "\n" + st_config.n1.ToString() + "\u00B1" + st_config.n1Deviation.ToString(),
                             n1_bgcolor = n1_bgColor,
                             n1_textcolor = n1_textColor,
                             remark = ""
@@ -699,6 +704,28 @@ namespace TQM
             {
                 DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
             }
+        }
+
+        private string formatTime(DateTime startDateTime, DateTime endDateTime)
+        {
+            TimeSpan duration = (endDateTime - startDateTime).Duration();
+            string hrs = duration.Hours.ToString();
+            if (hrs.Length < 2)
+            {
+                hrs = "0" + hrs;
+            }
+            string mins = duration.Minutes.ToString();
+            if (mins.Length < 2)
+            {
+                mins = "0" + mins;
+            }
+            string sec = duration.Seconds.ToString();
+            if (sec.Length < 2)
+            {
+                sec = "0" + sec;
+            }
+            //return hrs + "h:" + mins + "m:" + sec + "s";
+            return hrs + ":" + mins + ":" + sec;
         }
 
 
@@ -775,6 +802,61 @@ namespace TQM
                                                         StrengthTestSummaryModel.testID == i).ToList());
                                     }
                                 }
+                            }
+                        }
+                        //Delete in-complete report
+                        if (deleteRequest && ycTestSummaryModels.Count == 0 && !testID.Contains("."))
+                        {
+                            long givenTestId = long.Parse(testID);
+                            List<StrengthTestModel> stm_incompleteTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
+                                                                    (StrengthTestModel.testID == givenTestId)).ToList();
+                            if (stm_incompleteTest.Count > 0)
+                            {
+                                OverallReportModelView report = new OverallReportModelView();
+                                string testDuration = formatTime(stm_incompleteTest[0].createdate, stm_incompleteTest[stm_incompleteTest.Count - 1].createdate);
+                                foreach (StrengthTestModel test in stm_incompleteTest)
+                                {
+                                    report.Add(test);
+                                }
+                                report.testID = stm_incompleteTest[0].testID;
+                                report.userName = stm_incompleteTest[0].userName;
+                                report.machineCategory = stm_incompleteTest[0].machineCategory;
+                                report.machineName = stm_incompleteTest[0].machineName;
+                                report.drumNumber = stm_incompleteTest[0].drumNumber;
+                                report.standardStrength = stm_incompleteTest[0].standardStrength;
+                                report.strengthDeviation = stm_incompleteTest[0].strengthDeviation;
+                                report.belowLimit = stm_incompleteTest[0].belowLimit;
+                                report.maxRollingCount = stm_incompleteTest[0].maxRollingCount;
+                                report.totalTestCount = stm_incompleteTest[0].totalTestCount;
+                                report.drumSelectionMethod = stm_incompleteTest[0].drumSelectionMethod;
+                                report.yarnStrength = 0.0m;
+                                report.scheduledStartDate = stm_incompleteTest[0].scheduledStartDate.ToShortDateString();
+                                report.scheduledEndDate = stm_incompleteTest[0].scheduledEndDate.ToShortDateString();
+                                report.settingsUpdatedDate = stm_incompleteTest[0].settingsUpdatedDate;
+                                report.shift = stm_incompleteTest[0].shift;
+                                report.createdate = stm_incompleteTest[0].createdate;
+                                report.testRemark = "In-Complete test - For deletion";
+                                report.testDuration = testDuration;
+                                report.isIndividualReport = true;
+                                report.isConsolidatedReport = false;
+                                report.deviationPercent = "\u00B1" + stm_incompleteTest[0].strengthDeviation;
+                                report.remark_1 = true;
+                                report.testResultColor = "red";
+
+
+                                OVS.Add(report);
+
+                                ListOfReport = OVS;
+                                listview_tcConsolidatedReport.IsVisible = false;
+                                listview_tcreport.IsVisible = true;
+                                listview_tcreport.ItemsSource = ListOfReport;
+
+                                deleteAll = true;
+                                is_IncompleteTest = true;
+                                inCompleteTestID = givenTestId;
+
+                                return;
+
                             }
                         }
                     }
@@ -1090,7 +1172,8 @@ namespace TQM
                                     consolItems.testIDColor_text = "black";
                                 }
                                 consolItems.machineName = testsummary.machineName;
-                                consolItems.testDate = testsummary.createdate.Day.ToString() + "-" + testsummary.createdate.Month.ToString() + "-" + testsummary.createdate.Year.ToString();
+                                //consolItems.testDate = testsummary.createdate.Day.ToString() + "-" + testsummary.createdate.Month.ToString() + "-" + testsummary.createdate.Year.ToString();
+                                consolItems.testDate = testsummary.createdate.ToString();
                                 consolItems.shift = testsummary.shift;
                                 consolItems.drumNumber = testsummary.drumNumber.ToString();
                                 consolItems.drumSelectionMethod = testsummary.drumSelectionMethod.ToString();
@@ -1101,7 +1184,7 @@ namespace TQM
                                 consolItems.deviation = "\u00B1" + testsummary.strengthDeviation.ToString();
                                 consolItems.actualStrength = testsummary.yarnStrength.ToString();
                                 consolItems.strength = testsummary.yarnStrength.ToString() + " \n"+ testsummary.standardStrength.ToString() + " " + "\u00B1" + testsummary.strengthDeviation.ToString();
-                                consolItems.testDuration = formatTime(testsummary.createdate);
+                                consolItems.testDuration = testsummary.testDuration;
                                 consolItems.remarks = testsummary.testRemark;
 
                                
@@ -1515,6 +1598,29 @@ namespace TQM
                                         TestConfigModel.testID == rec.testID).Delete();
                 }
             }
+        }
+
+        private void deleteRecords(long testID)
+        {
+            if (testID <= 0)
+            {
+                return;
+            }
+            
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                conn.Table<StrengthTestSummaryModel>().
+                                        Where(StrengthTestSummaryModel =>
+                                        StrengthTestSummaryModel.testID == testID).Delete();
+                conn.Table<StrengthTestModel>().
+                                    Where(StrengthTestModel =>
+                                    StrengthTestModel.testID == testID).Delete();
+
+                conn.Table<TestConfigModel>().
+                                    Where(TestConfigModel =>
+                                    TestConfigModel.testID == testID).Delete();
+            }
+       
         }
 
         private async Task resetBtn()
@@ -2643,7 +2749,7 @@ namespace TQM
                     writer.WriteField("Tot. Sample");
                     writer.WriteField("Qualified");
                     writer.WriteField("Strength");
-                    writer.WriteField("Test Time");
+                    writer.WriteField("Duration");
                     writer.WriteField("Remark");
                     //Actual Data
                     writer.NextRecord();
@@ -2773,7 +2879,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        pdfGrid.Rows[0].Cells[9].Value = "Test Time";
+                        pdfGrid.Rows[0].Cells[9].Value = "Duration";
                         pdfGrid.Rows[0].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[9].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -3063,6 +3169,12 @@ namespace TQM
                 else if (drumDetailsReport)
                 {
                     header.Graphics.DrawString("SVYA Drum Details Report (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                    header.Graphics.DrawString("Date: " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(200, 36));
+                }
+                else if (maintenanceReport)
+                {
+                    header.Graphics.DrawString("SVYA Maintenance Report (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                    header.Graphics.DrawString("Date: " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(200, 36));
                 }
                 else
                 {
@@ -3343,7 +3455,14 @@ namespace TQM
                         {
                             if (deleteAll)
                             {
-                                deleteRecords(deleteList);
+                                if (is_IncompleteTest)
+                                {
+                                    deleteRecords(inCompleteTestID);
+                                }
+                                else
+                                {
+                                    deleteRecords(deleteList);
+                                }
                                 showAlert("Report uploaded and deleted sucessfully!!!");
                             }
                             else
