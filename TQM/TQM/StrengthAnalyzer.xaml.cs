@@ -1871,7 +1871,7 @@ namespace TQM
                     return;
                 }
 
-                int selectedDrumNumber = int.Parse(picker_drumNumber.SelectedItem.ToString());
+                selectedDrumNumber = int.Parse(picker_drumNumber.SelectedItem.ToString());
                 DateTime startDate = DEFAULTDATE;
                 DateTime endDate = DEFAULTDATE;
 
@@ -2472,6 +2472,7 @@ namespace TQM
         {
             try
             {
+                if (picker_drumSelection.IsEnabled == false) { return; }
                 if (picker_drumNumber.SelectedIndex < 0) { picker_drumSelection.SelectedIndex = -1; return; }
                 if (picker_drumSelection.SelectedIndex > 0)
                 {
@@ -2511,6 +2512,7 @@ namespace TQM
                                 }
                                 else
                                 {
+                                    picker_drumSelection.IsEnabled = false;
                                     picker_machinename.SelectedIndex = -1;
                                 }
                             }

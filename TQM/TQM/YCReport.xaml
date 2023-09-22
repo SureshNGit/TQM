@@ -198,8 +198,11 @@
 
                                     <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" 
                                     Text="Yarn Strength" FontSize="14" TextColor="#0e0273"/>
-                                    <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" HorizontalTextAlignment="Start" Margin="85,0,0,0"
-                                     FontSize="14" TextColor="{Binding testResultColor}" FontAttributes="Bold">
+                                    <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Center" Margin="85,0,0,0"
+                                     FontSize="14"
+                                     BackgroundColor="{Binding testResult_BG_Color}"
+                                     TextColor="{Binding testResultColor}"
+                                     FontAttributes="Bold">
                                          <Label.Text>
                                             <MultiBinding Converter="{StaticResource StandardFormatter}">
                                                 <Binding Path="yarnStrength"/>

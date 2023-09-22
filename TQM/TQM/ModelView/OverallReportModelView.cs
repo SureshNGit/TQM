@@ -24,7 +24,8 @@ namespace TQM.ModelView
         public bool isConsolidatedReport { get; set; } = false;
         public string testDuration { get; set; }
         public string deviationPercent { get; set; }
-        public string testResultColor { get; set; } = "white";
+        public string testResult_BG_Color { get; set; } = "white";
+        public string testResultColor { get; set; } = "green";
         public bool DispUF_1 { get; set; } = false;
         public bool DispUF_2 { get; set; } = false;
         public bool DispUF_2_Col1 { get; set; } = false;

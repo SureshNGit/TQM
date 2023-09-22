@@ -999,7 +999,8 @@ namespace TQM
                                 report.isConsolidatedReport = false;
                                 report.deviationPercent = "\u00B1" + stm_incompleteTest[0].strengthDeviation;
                                 report.remark_1 = true;
-                                report.testResultColor = "red";
+                                report.testResultColor = "white";
+                                report.testResult_BG_Color = "red";
 
 
                                 OVS.Add(report);
@@ -1557,11 +1558,13 @@ namespace TQM
 
                                 if (testsummary.yarnStrength < minRangeVal || testsummary.yarnStrength > maxRangeVal)
                                 {
-                                    report.testResultColor = "red";
+                                    report.testResult_BG_Color = "red";
+                                    report.testResultColor = "white";
                                 }
                                 else
                                 {
-                                    report.testResultColor = "white";
+                                    report.testResult_BG_Color = "white";
+                                    report.testResultColor = "green";
                                 }
 
 
@@ -1943,7 +1946,7 @@ namespace TQM
                     pdfGridInfo.Rows[4].Cells[0].Value = "Yarn Strength: " + orl.yarnStrength.ToString() + " [STD: "+ orl.standardStrength.ToString()+" "+orl.deviationPercent.ToString()+"]" ;
                     pdfGridInfo.Rows[4].Cells[0].ColumnSpan = 2;
 
-                    if (orl.testResultColor == "red")
+                    if (orl.testResult_BG_Color == "red")
                     {
                         pdfGridInfo.Rows[4].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGridInfo.Rows[4].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
