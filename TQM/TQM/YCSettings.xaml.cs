@@ -30,6 +30,7 @@ namespace TQM
                 {
                     //conn.DropTable<ConfigModel>();
                     conn.CreateTable<ConfigModel>();
+                    conn.CreateTable<TestConfigModel>();
                 }
                 InitializeComponent();
                 picker_machinecategory.SelectedItem = "OE Auto Coner";
@@ -678,7 +679,7 @@ namespace TQM
                     scheduleStartDate_S1 = date_scheduledStartDate_Sec1.Date;
                     scheduleEndDate_S1 = date_scheduledEndDate_Sec1.Date;
                     maxRollingCount_S1 = int.Parse(entry_maxRollingCount_Sec1.Text);
-                    matCount_S1 = entry_matCount_Sec1.Text;
+                    matCount_S1 = entry_matCount_Sec1.Text.Trim();
                 }
 
                 decimal stdRollingStrength_S2 = 0.0m;
@@ -792,7 +793,7 @@ namespace TQM
                     scheduleStartDate_S2 = date_scheduledStartDate_Sec2.Date;
                     scheduleEndDate_S2 = date_scheduledEndDate_Sec2.Date;
                     maxRollingCount_S2 = int.Parse(entry_maxRollingCount_Sec2.Text);
-                    matCount_S2 = entry_matCount_Sec2.Text;
+                    matCount_S2 = entry_matCount_Sec2.Text.Trim();
                 }
 
                 decimal stdRollingStrength_S3 = 0.0m;
@@ -906,7 +907,7 @@ namespace TQM
                     scheduleStartDate_S3 = date_scheduledStartDate_Sec3.Date;
                     scheduleEndDate_S3 = date_scheduledEndDate_Sec3.Date;
                     maxRollingCount_S3 = int.Parse(entry_maxRollingCount_Sec3.Text);
-                    matCount_S3 = entry_matCount_Sec3.Text;
+                    matCount_S3 = entry_matCount_Sec3.Text.Trim();
                 }
 
                 int totalSections = int.Parse(picker_sectionCount.SelectedItem.ToString());
@@ -1166,8 +1167,8 @@ namespace TQM
                     scheduledDayLimit_s1 = scheduledDayLimit_S1,
                     scheduledStartDate_s1 = scheduleStartDate_S1,
                     scheduledEndDate_s1 = scheduleEndDate_S1,
-                    maxRollingCount_s1 = int.Parse(entry_maxRollingCount_Sec1.Text.ToString()),
-                    materialCount_s1 = entry_matCount_Sec1.Text,
+                    maxRollingCount_s1 = maxRollingCount_S1,
+                    materialCount_s1 = matCount_S1,
                     //Section-2
                     stdRollingStrength_s2 = stdRollingStrength_S2,
                     strengthDeviation_s2 = strengthDeviation_S2,
@@ -1178,8 +1179,8 @@ namespace TQM
                     scheduledDayLimit_s2 = scheduledDayLimit_S2,
                     scheduledStartDate_s2 = scheduleStartDate_S2,
                     scheduledEndDate_s2 = scheduleEndDate_S2,
-                    maxRollingCount_s2 = int.Parse(entry_maxRollingCount_Sec2.Text.ToString()),
-                    materialCount_s2 = entry_matCount_Sec2.Text,
+                    maxRollingCount_s2 = maxRollingCount_S2,
+                    materialCount_s2 = matCount_S2,
                     //Section-3
                     stdRollingStrength_s3 = stdRollingStrength_S3,
                     strengthDeviation_s3 = strengthDeviation_S3,
@@ -1190,8 +1191,8 @@ namespace TQM
                     scheduledDayLimit_s3 = scheduledDayLimit_S3,
                     scheduledStartDate_s3 = scheduleStartDate_S3,
                     scheduledEndDate_s3 = scheduleEndDate_S3,
-                    maxRollingCount_s3 = int.Parse(entry_maxRollingCount_Sec3.Text.ToString()),
-                    materialCount_s3 = entry_matCount_Sec3.Text,
+                    maxRollingCount_s3 = maxRollingCount_S3,
+                    materialCount_s3 = matCount_S3,
                     //Shift Details
                     shiftCount = int.Parse(picker_shiftCount.SelectedItem.ToString()),
                     shift1time = shift1.Hours.ToString() + ":" + shift1.Minutes.ToString(),
@@ -1225,6 +1226,11 @@ namespace TQM
                     }
                     if (row > 0)
                     {
+                        bool historyStatus = addHistory(selectedMachineID);
+                        if (!historyStatus)
+                        {
+                            DisplayAlert("Failure", "Settings failed to be " + msg + ". Try again!!!", "OK");
+                        }
                         int updatedRecCount = 0;
                         bool isShiftChanged = false;
                         List<ConfigModel> settingsList = conn.Table<ConfigModel>().ToList();
@@ -1294,6 +1300,97 @@ namespace TQM
                 DisplayAlert("Attention", "Error Occurred: " + ex.Message.ToString(), "OK");
             }
         }
+
+        private bool addHistory(Guid selectedMachineID)
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    ConfigModel cm = conn.Table<ConfigModel>().Where(ConfigModel =>
+                                    (ConfigModel.machineID == selectedMachineID)).FirstOrDefault();
+
+                    if (cm != null)
+                    {
+                        TestConfigModel tcm = new TestConfigModel()
+                        {
+                            ID = Guid.NewGuid(),
+                            testID = 0,
+                            machineID = cm.machineID,
+                            machineCategory = cm.machineCategory,
+                            machineName = cm.machineName,
+                            speed = cm.speed,
+                            p1 = cm.p1,
+                            p1Deviation = cm.p1Deviation,
+                            p2 = cm.p2,
+                            p2Deviation = cm.p2Deviation,
+                            n1 = cm.n1,
+                            n1Deviation = cm.n1Deviation,
+                            totalDrumCount = cm.totalDrumCount,
+                            totalSections = cm.totalSections,
+                            stdRollingStrength_s1 = cm.stdRollingStrength_s1,
+                            strengthDeviation_s1 = cm.strengthDeviation_s1,
+                            belowLimit_s1 = cm.belowLimit_s1,
+                            totalSamples_s1 = cm.totalSamples_s1,
+                            drumNumbers_s1 = cm.drumNumbers_s1,
+                            drumSelectionMethod_s1 = cm.drumSelectionMethod_s1,
+                            scheduledDayLimit_s1 = cm.scheduledDayLimit_s1,
+                            scheduledStartDate_s1 = cm.scheduledStartDate_s1,
+                            scheduledEndDate_s1 = cm.scheduledEndDate_s1,
+                            maxRollingCount_s1 = cm.maxRollingCount_s1,
+                            materialCount_s1 = cm.materialCount_s1,
+                            stdRollingStrength_s2 = cm.stdRollingStrength_s2,
+                            strengthDeviation_s2 = cm.strengthDeviation_s2,
+                            belowLimit_s2 = cm.belowLimit_s2,
+                            totalSamples_s2 = cm.totalSamples_s2,
+                            drumNumbers_s2 = cm.drumNumbers_s2,
+                            drumSelectionMethod_s2 = cm.drumSelectionMethod_s2,
+                            scheduledDayLimit_s2 = cm.scheduledDayLimit_s2,
+                            scheduledStartDate_s2 = cm.scheduledStartDate_s2,
+                            scheduledEndDate_s2 = cm.scheduledEndDate_s2,
+                            maxRollingCount_s2 = cm.maxRollingCount_s2,
+                            materialCount_s2 = cm.materialCount_s2,
+                            stdRollingStrength_s3 = cm.stdRollingStrength_s3,
+                            strengthDeviation_s3 = cm.strengthDeviation_s3,
+                            belowLimit_s3 = cm.belowLimit_s3,
+                            totalSamples_s3 = cm.totalSamples_s3,
+                            drumNumbers_s3 = cm.drumNumbers_s3,
+                            drumSelectionMethod_s3 = cm.drumSelectionMethod_s3,
+                            scheduledDayLimit_s3 = cm.scheduledDayLimit_s3,
+                            scheduledStartDate_s3 = cm.scheduledStartDate_s3,
+                            scheduledEndDate_s3 = cm.scheduledEndDate_s3,
+                            maxRollingCount_s3 = cm.maxRollingCount_s3,
+                            materialCount_s3 = cm.materialCount_s3,
+                            shiftCount = cm.shiftCount,
+                            shift1time = cm.shift1time,
+                            shift2time = cm.shift2time,
+                            shift3time = cm.shift3time,
+                            uf_name_1 = cm.uf_name_1,
+                            uf_value_1 = cm.uf_value_1,
+                            uf_name_2 = cm.uf_name_2,
+                            uf_value_2 = cm.uf_value_2,
+                            uf_name_3 = cm.uf_name_3,
+                            uf_value_3 = cm.uf_value_3,
+                            uf_name_4 = cm.uf_name_4,
+                            uf_value_4 = cm.uf_value_4,
+                            updateddate = cm.updateddate,
+                            createdate = cm.createdate,
+                        };
+                        int row_tcm = conn.Insert(tcm);
+                        if (row_tcm < 1)
+                        {
+                            return false;
+                        }
+                    }
+                    else { return false; }
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        } 
 
         private bool checkDrumsInRange(int min, int max, List<int> src)
         {

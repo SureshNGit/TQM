@@ -1697,6 +1697,7 @@ namespace TQM
         {
             try
             {
+                hideFrames();
                 picker_drumNumber.SelectedIndex = -1;
                 picker_drumNumber.Items.Clear();
                 selectedMachineCategory = "";
@@ -1850,6 +1851,24 @@ namespace TQM
                     picker_drumSelection.SelectedIndex = 0;
                     return;
                 }
+
+                if (entry_pressure.Text.Trim() == "")
+                {
+                    await DisplayAlert("Attention!!!", "Please add Speed, P1, P2 and N1 to proceed!!!", "Ok");
+                    picker_drumNumber.SelectedIndex = -1;
+                    selectedTotalDrumNumbers = "";
+                    selectedSectionNumber = 0;
+                    scheduledStartDate = DEFAULTDATE;
+                    scheduledEndDate = DEFAULTDATE;
+                    settingsUpdatedDate = DEFAULTDATE;
+                    entry_stdStrength.Text = "";
+                    entry_strengthDeviation.Text = "";
+                    entry_belowLimit.Text = "";
+                    entry_numberOfTest.Text = "";
+                    picker_drumSelection.SelectedIndex = 0;
+                    return;
+                }
+
                 int selectedDrumNumber = int.Parse(picker_drumNumber.SelectedItem.ToString());
                 DateTime startDate = DEFAULTDATE;
                 DateTime endDate = DEFAULTDATE;
@@ -1894,7 +1913,7 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s1;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount_s1;
 
-                                if(DateTime.Now> scheduledEndDate && isTestResume ==false)
+                                if(DateTime.Now.Date > scheduledEndDate && isTestResume ==false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -1945,7 +1964,7 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s2;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount_s2;
 
-                                if (DateTime.Now > scheduledEndDate && isTestResume == false)
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -1996,7 +2015,7 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s3;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount_s3;
 
-                                if (DateTime.Now > scheduledEndDate && isTestResume==false)
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume==false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -2055,7 +2074,7 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s1;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount_s1;
 
-                                if (DateTime.Now > scheduledEndDate && isTestResume==false)
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume==false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -2106,7 +2125,7 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s2;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount_s2;
 
-                                if (DateTime.Now > scheduledEndDate && isTestResume==false)
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume==false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -2162,7 +2181,7 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s1;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount_s1;
 
-                                if (DateTime.Now > scheduledEndDate && isTestResume==false)
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume==false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -2199,6 +2218,8 @@ namespace TQM
                             conn.CreateTable<StrengthTestModel>();
                             StrengthTestModel selectedDrumTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
                                                                 (StrengthTestModel.drumNumber == selectedDrumNumber
+                                                                && StrengthTestModel.machineID == selectedMachineID
+                                                                && StrengthTestModel.drumSelectionMethod == "Scheduled"
                                                                 && (StrengthTestModel.createdate >= startDate
                                                                 || StrengthTestModel.createdate <= endDate)))
                                                                 .OrderByDescending(StrengthTestModel=>StrengthTestModel.sampleNo)
