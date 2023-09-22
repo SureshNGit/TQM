@@ -6,6 +6,7 @@ using Android.Renderscripts;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
+using Foundation;
 using Java.IO;
 using Java.Util;
 using Javax.Crypto;
@@ -16,6 +17,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -2464,6 +2466,62 @@ namespace TQM
                 DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
                 return;
             } 
+        }
+
+        private async void picker_drumSelection_SelectedIndexChanged(System.Object sender, System.EventArgs e)
+        {
+            try
+            {
+                if (picker_drumNumber.SelectedIndex < 0) { picker_drumSelection.SelectedIndex = -1; return; }
+                if (picker_drumSelection.SelectedIndex > 0)
+                {
+                    if(scheduledStartDate==DEFAULTDATE || scheduledEndDate == DEFAULTDATE)
+                    {
+                        if (picker_drumSelection.SelectedItem == "Scheduled")
+                        {
+                            picker_drumSelection.SelectedItem = "Random";
+                        }
+                        return;
+                    }
+
+                    if (picker_drumSelection.SelectedItem == "Scheduled")
+                    {
+                        using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                        {
+                            conn.CreateTable<StrengthTestModel>();
+                            StrengthTestModel selectedDrumTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
+                                                                (StrengthTestModel.drumNumber == selectedDrumNumber
+                                                                && StrengthTestModel.machineID == selectedMachineID
+                                                                && StrengthTestModel.drumSelectionMethod == "Scheduled"
+                                                                && (StrengthTestModel.createdate >= scheduledStartDate
+                                                                || StrengthTestModel.createdate <= scheduledEndDate)))
+                                                                .OrderByDescending(StrengthTestModel => StrengthTestModel.sampleNo)
+                                                                .FirstOrDefault();
+                            if (selectedDrumTest != null
+                                && (selectedDrumTest.totalTestCount == selectedDrumTest.sampleNo)
+                                && isTestResume == false)
+                            {
+                                bool userDecision = await DisplayAlert("Attention",
+                                                                        "Already a scheduled test was taken for the selected Drum [" + selectedDrumNumber + "]. So do you want to continue test using random option?",
+                                                                        "Yes",
+                                                                        "No");
+                                if (userDecision)
+                                {
+                                    picker_drumSelection.SelectedItem = "Random";
+                                }
+                                else
+                                {
+                                    picker_machinename.SelectedIndex = -1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }catch(Exception ex)
+            {
+                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+                return;
+            }
         }
     }
 }
