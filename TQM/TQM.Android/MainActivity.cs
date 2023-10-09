@@ -41,20 +41,20 @@ namespace TQM.Droid
             string fullPath = Path.Combine(folderPath, dbName);
 
             //***********To copy database file from default folder to downloads folder********
-            //string downloadsFolder = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-            //if (File.Exists(fullPath))
-            //{
-            //    File.Copy(fullPath, downloadsFolder);
-            //}
+            string downloadsFolder = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+            if (File.Exists(fullPath))
+            {
+                File.Copy(fullPath, downloadsFolder);
+            }
             //***********End********
 
             //***********To read database file from other than default folder********
-            string testDbName = "tqm_db_test.sqlite";
-            string dataFiles = Android.App.Application.Context.GetExternalFilesDir("").AbsolutePath;
-            if (File.Exists(Path.Combine(dataFiles, testDbName)))
-            {
-                fullPath = Path.Combine(dataFiles, testDbName);
-            }
+            //string testDbName = "tqm_db_test.sqlite";
+            //string dataFiles = Android.App.Application.Context.GetExternalFilesDir("").AbsolutePath;
+            //if (File.Exists(Path.Combine(dataFiles, testDbName)))
+            //{
+            //    fullPath = Path.Combine(dataFiles, testDbName);
+            //}
             //***********End********
 
             LoadApplication(new App(fullPath));
