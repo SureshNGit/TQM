@@ -427,7 +427,8 @@ namespace TQM
                             report.stretchDeviation = stretchCalc.stretchDeviation;
 
                             decimal actual = stretchCalc.stretch;
-                            decimal expMin = decimal.Parse("-" + (stretchCalc.standardStretch-stretchCalc.stretchDeviation).ToString());
+                            //decimal expMin = decimal.Parse("-" + (stretchCalc.standardStretch-stretchCalc.stretchDeviation).ToString());
+                            decimal expMin = decimal.Parse("-" + (stretchCalc.standardStretch + stretchCalc.stretchDeviation).ToString());
                             decimal expMax = stretchCalc.standardStretch+ stretchCalc.stretchDeviation;
 
 
