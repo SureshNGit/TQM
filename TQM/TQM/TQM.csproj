@@ -124,5 +124,8 @@
     <Reference Include="System.Xml">
       <HintPath>..\..\..\..\..\..\..\..\Library\Frameworks\System\System.Xml.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Android">
+      <HintPath>..\..\..\..\..\..\..\..\Library\Frameworks\Xamarin.Android.framework\Versions\13.2.2.0\lib\xamarin.android\xbuild-frameworks\MonoAndroid\v12.0\Mono.Android.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
