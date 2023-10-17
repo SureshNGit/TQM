@@ -425,6 +425,8 @@ namespace TQM
 
                     TOT_TEST = ycTestSummaryModels.Count;
                     int counter = 0;
+                    string prev_macID = null;
+                    int macTestNo = 0;
                     foreach (YCTestSummaryModel testsummary in ycTestSummaryModels)
                     {
                         OverallReportModelView report = new OverallReportModelView();
@@ -531,6 +533,16 @@ namespace TQM
                                 }
 
 
+                                consolItems.uf_name_1 = CON_UF_NAME_1;
+                                consolItems.uf_name_2 = CON_UF_NAME_2;
+                                consolItems.uf_name_3 = CON_UF_NAME_3;
+                                consolItems.uf_name_4 = CON_UF_NAME_4;
+
+                                consolItems.uf_value_1 = CON_UF_VAL_1;
+                                consolItems.uf_value_2 = CON_UF_VAL_2;
+                                consolItems.uf_value_3 = CON_UF_VAL_3;
+                                consolItems.uf_value_4 = CON_UF_VAL_4;
+
                                 //decimal maxRangeVal = testsummary.standardHank + (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
                                 //decimal minRangeVal = testsummary.standardHank - (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
 
@@ -549,7 +561,26 @@ namespace TQM
                                     consolItems.isWhite = true;
                                 }
 
+                                if (prev_macID == null)
+                                {
+                                    prev_macID = testsummary.machineID.ToString();
+                                    macTestNo = 1;
+                                }
+                                else
+                                {
+                                    if (prev_macID != testsummary.machineID.ToString())
+                                    {
+                                        prev_macID = testsummary.machineID.ToString();
+                                        macTestNo = 1;
+                                    }
+                                    else
+                                    {
+                                        macTestNo = macTestNo + 1;
+                                    }
+                                }
+
                                 consolItems.serialNo = (counter + 1).ToString();
+                                consolItems.testNo = macTestNo.ToString();
                                 consolItems.testID = testsummary.testID.ToString();
                                 consolItems.machineName = testsummary.machineName;
                                 consolItems.testDate = testsummary.createdate.Day.ToString() + "-" + testsummary.createdate.Month.ToString() + "-" + testsummary.createdate.Year.ToString();
@@ -1503,21 +1534,25 @@ namespace TQM
                     //Header
                     writer.WriteField("S.No");
                     writer.WriteField("Date");
-                    writer.WriteField("ID");
+                    writer.WriteField("Test No");
                     writer.WriteField("Mac Name");
+                    writer.WriteField("Mix ID");
+                    writer.WriteField("Lot No");
+                    writer.WriteField("P Type");
                     writer.WriteField("Shift");
                     if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                     {
-                        writer.WriteField("Std. Count");
+                        //writer.WriteField("Std. Count");
                         writer.WriteField("Avg. Count");
                     }
-                    else { 
-                        writer.WriteField("Std. Hank");
+                    else
+                    {
+                        //writer.WriteField("Std. Hank");
                         writer.WriteField("Avg. Hank");
                     }
-                    writer.WriteField("SD");
+                    //writer.WriteField("SD");
                     writer.WriteField("CV");
-                    writer.WriteField("Test Time");
+                    //writer.WriteField("Test Time");
                     writer.WriteField("Remark");
                     //Actual Data
                     writer.NextRecord();
@@ -1526,10 +1561,34 @@ namespace TQM
                     {
                         writer.WriteField(orl.serialNo);
                         writer.WriteField(orl.testDate);
-                        writer.WriteField(orl.testID);
+                        writer.WriteField(orl.testNo);
                         writer.WriteField(orl.machineName);
+                        if (orl.uf_value_1 != null)
+                        {
+                            writer.WriteField(orl.uf_value_1);
+                        }
+                        else
+                        {
+                            writer.WriteField("");
+                        }
+                        if (orl.uf_value_2 != null)
+                        {
+                            writer.WriteField(orl.uf_value_2);
+                        }
+                        else
+                        {
+                            writer.WriteField("");
+                        }
+                        if (orl.uf_value_3 != null)
+                        {
+                            writer.WriteField(orl.uf_value_3);
+                        }
+                        else
+                        {
+                            writer.WriteField("");
+                        }
                         writer.WriteField(orl.shift);
-                        writer.WriteField(orl.standardValue);
+                        //writer.WriteField(orl.standardValue);
 
 
                         if (orl.testAverage != null && orl.testAverage != "")
@@ -1541,14 +1600,14 @@ namespace TQM
                             writer.WriteField(orl.testAverage);
                         }
 
-                        if (orl.standardDeviation != null && orl.standardDeviation != "")
-                        {
-                            writer.WriteField(formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString());
-                        }
-                        else
-                        {
-                            writer.WriteField(orl.standardDeviation);
-                        }
+                        //if (orl.standardDeviation != null && orl.standardDeviation != "")
+                        //{
+                        //    writer.WriteField(formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString());
+                        //}
+                        //else
+                        //{
+                        //    writer.WriteField(orl.standardDeviation);
+                        //}
 
                         if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
                         {
@@ -1559,7 +1618,7 @@ namespace TQM
                             writer.WriteField(orl.CoEfficientOfVariation);
                         }
 
-                        writer.WriteField(orl.testDuration);
+                        //writer.WriteField(orl.testDuration);
                         writer.WriteField(orl.remarks);
                         writer.NextRecord();
                     }
