@@ -752,7 +752,7 @@ namespace TQM
                     else if(impacted_N_TestID_ToCheck==true || lastSuccessfulTest_calc_check!=null)
                     {
                         long impacted_src_id = lastSuccessfulTest_summary.testID + 1;
-                        if (lastSuccessfulTest_calc_check != null) { impacted_src_id = lastSuccessfulTest_summary.testID; }
+                        if (impacted_N_TestID_ToCheck==false && lastSuccessfulTest_calc_check != null) { impacted_src_id = lastSuccessfulTest_summary.testID; }
                         YCTestApercentSummaryModel nMinus1Summary = conn.Table<YCTestApercentSummaryModel>().Where(
                                                            YCTestApercentSummaryModel => (
                                                            YCTestApercentSummaryModel.testType == "nMinus1"
