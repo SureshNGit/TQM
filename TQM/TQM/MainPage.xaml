@@ -40,7 +40,7 @@
                     x:Name="btn_newUser" Clicked="btn_newUser_Clicked" BackgroundColor="DarkSlateGray" TextColor="white" CornerRadius="0"/>
             <Button Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="4" Text="Login"  Margin="0,15" HorizontalOptions="Center" IsVisible="false"
                     x:Name="btn_login" Clicked="btn_login_Clicked" BackgroundColor="#0e0273" TextColor="white" CornerRadius="0"/>
-            <Label Grid.Row="6" Grid.Column="7" Grid.ColumnSpan="1" Text="Version: 1.2.2.1" FontSize="16" TextColor="#0e0273" Margin="0,15"/>
+            <Label Grid.Row="6" Grid.Column="7" Grid.ColumnSpan="1" Text="Version: 1.2.2.2" FontSize="16" TextColor="#0e0273" Margin="0,15"/>
         </Grid>
     </StackLayout>
 
