@@ -1573,17 +1573,17 @@ namespace TQM
                         writer.WriteField(orl.testDate);
                         writer.WriteField(orl.testNo);
                         writer.WriteField(orl.machineName);
-                        if (orl.uf_value_1 != null)
+                        if (orl.uf_value_2 != null)
                         {
-                            writer.WriteField(orl.uf_value_1);
+                            writer.WriteField(orl.uf_value_2);
                         }
                         else
                         {
                             writer.WriteField("");
                         }
-                        if (orl.uf_value_2 != null)
+                        if (orl.uf_value_1 != null)
                         {
-                            writer.WriteField(orl.uf_value_2);
+                            writer.WriteField(orl.uf_value_1);
                         }
                         else
                         {
