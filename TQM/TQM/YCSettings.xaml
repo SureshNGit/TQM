@@ -38,6 +38,8 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -61,6 +63,8 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <!--<RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>-->
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -496,10 +500,10 @@
                     <!--Section -4 -->
 
                     <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Section-4 &#x25BC;" x:Name="btn_section4"
-                            HorizontalOptions="Center" VerticalOptions="Center" IsVisible="False"
+                            HorizontalOptions="Center" VerticalOptions="Center" IsVisible="False" 
                         BackgroundColor="#0e0273" TextColor="White" CornerRadius="5" HeightRequest="35" Clicked="btn_section4_Clicked"/>
 
-                    <Frame Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="7" HorizontalOptions="Start" IsVisible="False"
+                    <Frame Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="7" HorizontalOptions="Start" IsVisible="False" 
                         BackgroundColor="AliceBlue" BorderColor="White" CornerRadius="0" HasShadow="False" x:Name="frame_sec4">
                        <StackLayout>
                             <Grid Margin="20,-20,0,-30">

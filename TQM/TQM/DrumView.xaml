@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="TQM.DrumView" xmlns:effects="clr-namespace:TQM.Effects" 
+             BackgroundColor="white" NavigationPage.HasBackButton="False">
+    <NavigationPage.TitleView>
+        <StackLayout BackgroundColor="White">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Row="0" Grid.Column="0" Source="SasthaLogo.jpg" Aspect="AspectFit" HeightRequest="40" WidthRequest="40"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="Sri Sastha" FontSize="30" TextColor="#0e0273" VerticalTextAlignment="Center" />
+            </Grid>
+        </StackLayout>
+    </NavigationPage.TitleView>
+    <ContentPage.Content>
+        <StackLayout Margin="10,10,10,10">
+            <ListView x:Name="listview_drums"  BackgroundColor="White" SeparatorColor="White"
+                      HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always" 
+                       IsVisible="false">
+                
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell Tapped="ViewCell_Tapped">
+                            <StackLayout Margin="0,0,0,0">
+                                <Grid ColumnSpacing="2"
+                                         RowSpacing="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" IsVisible="{Binding D1_Visible}" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" IsVisible="{Binding D2_Visible}" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="1" IsVisible="{Binding D3_Visible}" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="1" IsVisible="{Binding D4_Visible}" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="1" IsVisible="{Binding D5_Visible}" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="1" IsVisible="{Binding D6_Visible}" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="1" IsVisible="{Binding D7_Visible}" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="7" Grid.ColumnSpan="1" IsVisible="{Binding D8_Visible}" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="1" IsVisible="{Binding D9_Visible}" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="9" Grid.ColumnSpan="1" IsVisible="{Binding D10_Visible}" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+
+                                    <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D1_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D1_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                                    <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D2_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D2_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                                    <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D3_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D3_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                                    <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D4_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D4_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                                    <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D5_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D5_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                                    <BoxView Grid.Column="5" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D6_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="5" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D6_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                                    <BoxView Grid.Column="6" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D7_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D7_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D8_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D8_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                                    <BoxView Grid.Column="8" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D9_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="8" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D9_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                                    <BoxView Grid.Column="9" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D10_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="9" Grid.Row="0" Grid.RowSpan="1" IsVisible="{Binding D10_Visible}" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+
+                                     <StackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D1_Visible}">
+                                         <Button Text = "{Binding D1}" Margin="0,0,0,0"
+                                            BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
+                                            VerticalOptions="Center"  HorizontalOptions="Center" />
+                                     </StackLayout>
+
+                                    <StackLayout Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D2_Visible}">
+                                         <Button Text = "{Binding D2}" Margin="0,0,0,0"
+                                            BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
+                                            VerticalOptions="Center"  HorizontalOptions="Center" />
+                                     </StackLayout>
+
+                                    <StackLayout Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D3_Visible}">
+                                         <Button  Text = "{Binding D3}" Margin="0,0,0,0"
+                                            BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
+                                            VerticalOptions="Center"  HorizontalOptions="Center" />
+                                     </StackLayout>
+
+                                    <StackLayout Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D4_Visible}">
+                                         <Button  Text = "{Binding D4}" Margin="0,0,0,0"
+                                            BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
+                                            VerticalOptions="Center"  HorizontalOptions="Center" />
+                                     </StackLayout>
+
+                                    <StackLayout Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D5_Visible}">
+                                         <Button Text = "{Binding D5}" Margin="0,0,0,0"
+                                            BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
+                                            VerticalOptions="Center"  HorizontalOptions="Center" />
+                                     </StackLayout>
+
+                                    <StackLayout Grid.Column="5" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D6_Visible}">
+                                         <Button  Text = "{Binding D6}" Margin="0,0,0,0"
+                                            BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
+                                            VerticalOptions="Center"  HorizontalOptions="Center" />
+                                     </StackLayout>
+
+                                    <StackLayout Grid.Column="6" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D7_Visible}">
+                                         <Button  Text = "{Binding D7}" Margin="0,0,0,0"
+                                            BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
+                                            VerticalOptions="Center"  HorizontalOptions="Center" />
+                                     </StackLayout>
+
+                                    <StackLayout Grid.Column="7" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D8_Visible}">
+                                         <Button  Text = "{Binding D8}" Margin="0,0,0,0"
+                                            BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
+                                            VerticalOptions="Center"  HorizontalOptions="Center" />
+                                     </StackLayout>
+
+                                    <StackLayout Grid.Column="8" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D9_Visible}">
+                                         <Button  Text = "{Binding D9}" Margin="0,0,0,0"
+                                            BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
+                                            VerticalOptions="Center"  HorizontalOptions="Center" />
+                                     </StackLayout>
+
+                                    <StackLayout Grid.Column="9" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D10_Visible}">
+                                         <Button  Text = "{Binding D10}" Margin="0,0,0,0"
+                                            BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
+                                            VerticalOptions="Center"  HorizontalOptions="Center" />
+                                     </StackLayout>
+
+
+                                    <!--<Label Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding D1}" FontSize="14"/>
+                                    <Label Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding D2}" FontSize="14"/>
+                                    <Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding D3}" FontSize="14"/>
+                                    <Label Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding D4}" FontSize="14"/>
+                                    <Label Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding D5}" FontSize="14"/>
+                                    <Label Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding D6}" FontSize="14"/>
+                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding D7}" FontSize="14"/>
+                                    <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding D8}" FontSize="14"/>
+                                    <Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding D9}" FontSize="14"/>
+                                    <Label Grid.Column="9" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding D10}" FontSize="14"/>-->
+                                </Grid>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
+

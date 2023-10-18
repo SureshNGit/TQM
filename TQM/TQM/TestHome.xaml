@@ -65,20 +65,32 @@
                     x:Name="picker_machinename" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
                 <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text = "Section-1" Margin="0,50,0,0"
-                        x:Name="btn_section1" 
+                        x:Name="btn_section1" IsVisible="false" Clicked="btn_section1_Clicked"
                         BackgroundColor="#0e0273" TextColor="White" CornerRadius="5" />
+                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="Drums (1 to 3)" x:Name="lbl_section1"
+                       Margin="0,0,0,0" HorizontalTextAlignment="Center" IsVisible="false"
+                       FontSize="16" TextColor="red"/>
 
                 <Button Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2" Text = "Section-2" Margin="0,50,0,0"
-                        x:Name="btn_section2" 
+                        x:Name="btn_section2"  IsVisible="false" Clicked="btn_section2_Clicked"
                         BackgroundColor="#0e0273" TextColor="White" CornerRadius="5" />
+                 <Label Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="2" Text="Drums (1 to 3)" x:Name="lbl_section2"
+                       Margin="0,0,0,0" HorizontalTextAlignment="Center" IsVisible="false"
+                       FontSize="16" TextColor="red"/>
 
                 <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text = "Section-3" Margin="0,50,0,0"
-                        x:Name="btn_section3" 
+                        x:Name="btn_section3"  IsVisible="false" Clicked="btn_section3_Clicked"
                         BackgroundColor="#0e0273" TextColor="White" CornerRadius="5" />
+                 <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Drums (1 to 3)" x:Name="lbl_section3"
+                       Margin="0,0,0,0" HorizontalTextAlignment="Center" IsVisible="false"
+                       FontSize="16" TextColor="red"/>
 
                 <Button Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="2" Text = "Section-4" Margin="0,50,0,0"
-                        x:Name="btn_section4" 
+                        x:Name="btn_section4" IsVisible="false" Clicked="btn_section4_Clicked"
                         BackgroundColor="#0e0273" TextColor="White" CornerRadius="5" />
+                 <Label Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" Text="Drums (1 to 3)" x:Name="lbl_section4"
+                       Margin="0,0,0,0" HorizontalTextAlignment="Center" IsVisible="false"
+                       FontSize="16" TextColor="red"/>
 
             </Grid>
          </StackLayout>

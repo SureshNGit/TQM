@@ -129,7 +129,7 @@ namespace TQM
                     {
                         Title = "Strength Test",
                         ImageSource = "",
-                        TargetPage = typeof(StrengthAnalyzer)
+                        TargetPage = typeof(TestHome)
                     });
                     flyItems.Add(new MenuItem
                     {
@@ -163,7 +163,7 @@ namespace TQM
                     {
                         Title = "Strength Test",
                         ImageSource = "",
-                        TargetPage = typeof(StrengthAnalyzer)
+                        TargetPage = typeof(TestHome)
                     });
                     flyItems.Add(new MenuItem
                     {

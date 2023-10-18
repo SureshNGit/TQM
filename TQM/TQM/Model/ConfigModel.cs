@@ -93,6 +93,28 @@ namespace TQM.Model
 
         public string materialCount_s3 { get; set; }
 
+        public decimal stdRollingStrength_s4 { get; set; }
+
+        public decimal strengthDeviation_s4 { get; set; }
+
+        public int belowLimit_s4 { get; set; }
+
+        public int totalSamples_s4 { get; set; }
+
+        public string drumNumbers_s4 { get; set; }
+
+        public string drumSelectionMethod_s4 { get; set; }
+
+        public int scheduledDayLimit_s4 { get; set; }
+
+        public DateTime scheduledStartDate_s4 { get; set; }
+
+        public DateTime scheduledEndDate_s4 { get; set; }
+
+        public int maxRollingCount_s4 { get; set; }
+
+        public string materialCount_s4 { get; set; }
+
         public int shiftCount { get; set; }
 
         public string shift1time { get; set; }
