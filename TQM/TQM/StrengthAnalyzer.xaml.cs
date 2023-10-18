@@ -6,7 +6,7 @@ using Android.Renderscripts;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
-using Foundation;
+//using Foundation;
 using Java.IO;
 using Java.Util;
 using Javax.Crypto;
