@@ -13,7 +13,7 @@
     <FlyoutPage.Detail>
         <NavigationPage>
             <x:Arguments>
-                <local:StrengthAnalyzer/>
+                <local:TestHome/>
             </x:Arguments>
         </NavigationPage>
     </FlyoutPage.Detail>

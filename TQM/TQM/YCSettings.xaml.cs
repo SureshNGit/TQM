@@ -1694,6 +1694,13 @@ namespace TQM
             picker_drumSection_Sec3.SelectedItem = "Scheduled";
         }
 
+        private void btn_section4_Clicked(object sender, EventArgs e)
+        {
+            //toggleSectionFrames(frame_sec4, btn_section4, date_scheduledDayLimitDate_Sec4, entry_scheduledDayLimit_Sec4, picker_drumSection_Sec4);
+            toggleSectionFrames(frame_sec4, btn_section4, date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4, picker_drumSection_Sec4);
+            picker_drumSection_Sec4.SelectedItem = "Scheduled";
+        }
+
         private void picker_sectionCount_SelectedIndexChanged(object sender, EventArgs e)
         {
             calculateDrumNumbers();
@@ -1754,6 +1761,22 @@ namespace TQM
                         entry_Drums_Sec1.IsEnabled = true;
                         entry_Drums_Sec2.Text = (equalPortion + 1).ToString() + "." + (equalPortion * 2);
                         entry_Drums_Sec3.Text = ((equalPortion * 2) + 1).ToString() + "." + totalDrumCount;
+                    }
+                    if (picker_sectionCount.SelectedItem.ToString() == "4")
+                    {
+                        btn_section1.IsVisible = true;
+                        btn_section2.IsVisible = true;
+                        btn_section3.IsVisible = true;
+                        btn_section4.IsVisible = true;
+
+                        int reminder = totalDrumCount % 4;
+                        int equalPortion = (totalDrumCount - reminder) / 4;
+
+                        entry_Drums_Sec1.Text = "1." + equalPortion.ToString();//1.4
+                        entry_Drums_Sec1.IsEnabled = true;
+                        entry_Drums_Sec2.Text = (equalPortion + 1).ToString() + "." + (equalPortion * 2);//5.8
+                        entry_Drums_Sec3.Text = ((equalPortion * 2) + 1).ToString() + "." + (equalPortion * 3);//9.12
+                        entry_Drums_Sec3.Text = ((equalPortion * 3) + 1).ToString() + "." + totalDrumCount;//13.16
                     }
                 }
                 //else
@@ -1988,6 +2011,26 @@ namespace TQM
         void date_scheduledEndDate_Sec3_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
         {
             calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
+        }
+
+        void date_scheduledStartDate_Sec4_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
+        }
+
+        void date_scheduledStartDate_Sec4_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
+        }
+
+        void date_scheduledEndDate_Sec4_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
+        }
+
+        void date_scheduledEndDate_Sec4_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        {
+            calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
         }
     }
 }
