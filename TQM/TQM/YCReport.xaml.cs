@@ -532,16 +532,26 @@ namespace TQM
                                     }
                                 }
 
+                                YarnCountConfigModel ycConfig_uf_1 = conn.Table<YarnCountConfigModel>().
+                                                                                        Where(YarnCountConfigModel => (
+                                                                                        YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                        && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                        && YarnCountConfigModel.machineName == testsummary.machineName)).FirstOrDefault();
+                                if (ycConfig_uf_1 == null)
+                                {
+                                    DisplayAlert("Notice", "Unable to reterive user fields from settings!!!", "OK");
+                                    return;
+                                }
 
-                                consolItems.uf_name_1 = CON_UF_NAME_1;
-                                consolItems.uf_name_2 = CON_UF_NAME_2;
-                                consolItems.uf_name_3 = CON_UF_NAME_3;
-                                consolItems.uf_name_4 = CON_UF_NAME_4;
+                                consolItems.uf_name_1 = ycConfig_uf_1.uf_name_1;
+                                consolItems.uf_name_2 = ycConfig_uf_1.uf_name_2;
+                                consolItems.uf_name_3 = ycConfig_uf_1.uf_name_3;
+                                consolItems.uf_name_4 = ycConfig_uf_1.uf_name_4;
 
-                                consolItems.uf_value_1 = CON_UF_VAL_1;
-                                consolItems.uf_value_2 = CON_UF_VAL_2;
-                                consolItems.uf_value_3 = CON_UF_VAL_3;
-                                consolItems.uf_value_4 = CON_UF_VAL_4;
+                                consolItems.uf_value_1 = testsummary.uf_value_1;
+                                consolItems.uf_value_2 = testsummary.uf_value_2;
+                                consolItems.uf_value_3 = testsummary.uf_value_3;
+                                consolItems.uf_value_4 = testsummary.uf_value_4;
 
                                 //decimal maxRangeVal = testsummary.standardHank + (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
                                 //decimal minRangeVal = testsummary.standardHank - (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
@@ -1550,7 +1560,7 @@ namespace TQM
                         //writer.WriteField("Std. Hank");
                         writer.WriteField("Avg. Hank");
                     }
-                    //writer.WriteField("SD");
+                    writer.WriteField("SD");
                     writer.WriteField("CV");
                     //writer.WriteField("Test Time");
                     writer.WriteField("Remark");
@@ -1579,9 +1589,9 @@ namespace TQM
                         {
                             writer.WriteField("");
                         }
-                        if (orl.uf_value_3 != null)
+                        if (orl.uf_value_4 != null)
                         {
-                            writer.WriteField(orl.uf_value_3);
+                            writer.WriteField(orl.uf_value_4);
                         }
                         else
                         {
@@ -1600,14 +1610,14 @@ namespace TQM
                             writer.WriteField(orl.testAverage);
                         }
 
-                        //if (orl.standardDeviation != null && orl.standardDeviation != "")
-                        //{
-                        //    writer.WriteField(formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString());
-                        //}
-                        //else
-                        //{
-                        //    writer.WriteField(orl.standardDeviation);
-                        //}
+                        if (orl.standardDeviation != null && orl.standardDeviation != "")
+                        {
+                            writer.WriteField(formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString());
+                        }
+                        else
+                        {
+                            writer.WriteField(orl.standardDeviation);
+                        }
 
                         if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
                         {
