@@ -13,107 +13,50 @@ namespace TQM.Model
         public Guid machineID { get; set; }
 
         public string machineCategory { get; set; }
+
         public string machineName { get; set; }
 
         public int speed { get; set; }
+
         public decimal p1 { get; set; }
+
         public decimal p1Deviation { get; set; }
+
         public decimal p2 { get; set; }
+
         public decimal p2Deviation { get; set; }
+
         public decimal n1 { get; set; }
+
         public decimal n1Deviation { get; set; }
 
         public int totalDrumCount { get; set; }
 
         public int totalSections { get; set; }
 
-        public decimal stdRollingStrength_s1 { get; set; }
+        public decimal stdRollingStrength { get; set; }
 
-        public decimal strengthDeviation_s1 { get; set; }
+        public decimal strengthDeviation { get; set; }
 
-        public int belowLimit_s1 { get; set; }
+        public int belowLimit { get; set; }
 
-        public int totalSamples_s1 { get; set; }
+        public int maxLimit { get; set; }
+
+        public int totalSamples { get; set; }
+
+        public DateTime scheduledStartDate { get; set; }
+
+        public DateTime scheduledEndDate { get; set; }
+
+        public string materialCount { get; set; }
 
         public string drumNumbers_s1 { get; set; }
 
-        public string drumSelectionMethod_s1 { get; set; }
-
-        public int scheduledDayLimit_s1 { get; set; }
-
-        public DateTime scheduledStartDate_s1 { get; set; }
-
-        public DateTime scheduledEndDate_s1 { get; set; }
-
-        public int maxRollingCount_s1 { get; set; }
-
-        public string materialCount_s1 { get; set; }
-
-        public decimal stdRollingStrength_s2 { get; set; }
-
-        public decimal strengthDeviation_s2 { get; set; }
-
-        public int belowLimit_s2 { get; set; }
-
-        public int totalSamples_s2 { get; set; }
-
         public string drumNumbers_s2 { get; set; }
-
-        public string drumSelectionMethod_s2 { get; set; }
-
-        public int scheduledDayLimit_s2 { get; set; }
-
-        public DateTime scheduledStartDate_s2 { get; set; }
-
-        public DateTime scheduledEndDate_s2 { get; set; }
-
-        public int maxRollingCount_s2 { get; set; }
-
-        public string materialCount_s2 { get; set; }
-
-        public decimal stdRollingStrength_s3 { get; set; }
-
-        public decimal strengthDeviation_s3 { get; set; }
-
-        public int belowLimit_s3 { get; set; }
-
-        public int totalSamples_s3 { get; set; }
 
         public string drumNumbers_s3 { get; set; }
 
-        public string drumSelectionMethod_s3 { get; set; }
-
-        public int scheduledDayLimit_s3 { get; set; }
-
-        public DateTime scheduledStartDate_s3 { get; set; }
-
-        public DateTime scheduledEndDate_s3 { get; set; }
-
-        public int maxRollingCount_s3 { get; set; }
-
-        public string materialCount_s3 { get; set; }
-
-        public decimal stdRollingStrength_s4 { get; set; }
-
-        public decimal strengthDeviation_s4 { get; set; }
-
-        public int belowLimit_s4 { get; set; }
-
-        public int totalSamples_s4 { get; set; }
-
         public string drumNumbers_s4 { get; set; }
-
-        public string drumSelectionMethod_s4 { get; set; }
-
-        public int scheduledDayLimit_s4 { get; set; }
-
-        public DateTime scheduledStartDate_s4 { get; set; }
-
-        public DateTime scheduledEndDate_s4 { get; set; }
-
-        public int maxRollingCount_s4 { get; set; }
-
-        public string materialCount_s4 { get; set; }
 
         public int shiftCount { get; set; }
 
@@ -138,8 +81,11 @@ namespace TQM.Model
         public string uf_name_4 { get; set; }
 
         public string uf_value_4 { get; set; }
-        public DateTime updateddate { get; set; } 
-        public DateTime createdate { get; set; } 
+
+        public DateTime updateddate { get; set; }
+
+        public DateTime createdate { get; set; }
+
         public bool dataSyncStatus { get; set; } = false;
 
 

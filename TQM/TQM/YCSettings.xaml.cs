@@ -146,10 +146,10 @@ namespace TQM
                 btn_save.TextColor = Color.White;
                 currentID = Guid.Empty;
                 //currentUpdatedDate = DEFAULTDATE;
-                picker_drumSection_Sec1.SelectedIndex = -1;
-                picker_drumSection_Sec2.SelectedIndex = -1;
-                picker_drumSection_Sec3.SelectedIndex = -1;
-                picker_drumSection_Sec4.SelectedIndex = -1;
+                //picker_drumSection_Sec1.SelectedIndex = -1;
+                //picker_drumSection_Sec2.SelectedIndex = -1;
+                //picker_drumSection_Sec3.SelectedIndex = -1;
+                //picker_drumSection_Sec4.SelectedIndex = -1;
                 picker_shiftCount.SelectedIndex = 0;
                 currentShift = 0;
                 currentShift1 = TimeSpan.Zero;
@@ -225,10 +225,10 @@ namespace TQM
 
             if (isMacDiff == false)
             {
-                picker_drumSection_Sec1.SelectedItem = "Scheduled";
-                picker_drumSection_Sec2.SelectedItem = "Scheduled";
-                picker_drumSection_Sec3.SelectedItem = "Scheduled";
-                picker_drumSection_Sec4.SelectedItem = "Scheduled";
+                //picker_drumSection_Sec1.SelectedItem = "Scheduled";
+                //picker_drumSection_Sec2.SelectedItem = "Scheduled";
+                //picker_drumSection_Sec3.SelectedItem = "Scheduled";
+                //picker_drumSection_Sec4.SelectedItem = "Scheduled";
 
                 IList<string> machineCategorylist = picker_machinecategory.Items;
                 int machineCatindex = 0;
@@ -288,132 +288,132 @@ namespace TQM
             entry_n1.Text = ycConfig.n1.ToString();
             entry_n1Deviation.Text = ycConfig.n1Deviation.ToString();
             //Section-1
-            entry_stdRollingStrength_Sec1.Text = ycConfig.stdRollingStrength_s1.ToString();
-            entry_strengthDeviation_Sec1.Text = ycConfig.strengthDeviation_s1.ToString();
-            entry_belowLimit_Sec1.Text = ycConfig.belowLimit_s1.ToString();
-            entry_totalTestCount_Sec1.Text = ycConfig.totalSamples_s1.ToString();
-            if (ycConfig.drumNumbers_s1 != null)
-            {
-                entry_Drums_Sec1.Text = ycConfig.drumNumbers_s1.ToString();
+            //entry_stdRollingStrength_Sec1.Text = ycConfig.stdRollingStrength_s1.ToString();
+            //entry_strengthDeviation_Sec1.Text = ycConfig.strengthDeviation_s1.ToString();
+            //entry_belowLimit_Sec1.Text = ycConfig.belowLimit_s1.ToString();
+            //entry_totalTestCount_Sec1.Text = ycConfig.totalSamples_s1.ToString();
+            //if (ycConfig.drumNumbers_s1 != null)
+            //{
+            //    entry_Drums_Sec1.Text = ycConfig.drumNumbers_s1.ToString();
 
-                IList<string> drumSelectionMethodList = picker_drumSection_Sec1.Items;
-                int drumSelectionMethodIndex = 0;
-                foreach (string ds in drumSelectionMethodList)
-                {
-                    if (ds != ycConfig.drumSelectionMethod_s1.ToString())
-                    {
-                        drumSelectionMethodIndex++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                picker_drumSection_Sec1.SelectedIndex = drumSelectionMethodIndex;
+            //    IList<string> drumSelectionMethodList = picker_drumSection_Sec1.Items;
+            //    int drumSelectionMethodIndex = 0;
+            //    foreach (string ds in drumSelectionMethodList)
+            //    {
+            //        if (ds != ycConfig.drumSelectionMethod_s1.ToString())
+            //        {
+            //            drumSelectionMethodIndex++;
+            //        }
+            //        else
+            //        {
+            //            break;
+            //        }
+            //    }
+            //    picker_drumSection_Sec1.SelectedIndex = drumSelectionMethodIndex;
 
-                date_scheduledStartDate_Sec1.Date = ycConfig.scheduledStartDate_s1;
-                date_scheduledEndDate_Sec1.Date = ycConfig.scheduledEndDate_s1;
-                entry_scheduledDayLimit_Sec1.Text = ycConfig.scheduledDayLimit_s1.ToString();
+            //    date_scheduledStartDate_Sec1.Date = ycConfig.scheduledStartDate_s1;
+            //    date_scheduledEndDate_Sec1.Date = ycConfig.scheduledEndDate_s1;
+            //    entry_scheduledDayLimit_Sec1.Text = ycConfig.scheduledDayLimit_s1.ToString();
 
-                entry_maxRollingCount_Sec1.Text = ycConfig.maxRollingCount_s1.ToString();
-                entry_matCount_Sec1.Text = ycConfig.materialCount_s1;
-            }
+            //    entry_maxRollingCount_Sec1.Text = ycConfig.maxRollingCount_s1.ToString();
+            //    entry_matCount_Sec1.Text = ycConfig.materialCount_s1;
+            //}
 
-            //Section-2
-            entry_stdRollingStrength_Sec2.Text = ycConfig.stdRollingStrength_s2.ToString();
-            entry_strengthDeviation_Sec2.Text = ycConfig.strengthDeviation_s2.ToString();
-            entry_belowLimit_Sec2.Text = ycConfig.belowLimit_s2.ToString();
-            entry_totalTestCount_Sec2.Text = ycConfig.totalSamples_s2.ToString();
-            if (ycConfig.drumNumbers_s2 != null)
-            {
-                entry_Drums_Sec2.Text = ycConfig.drumNumbers_s2.ToString();
+            ////Section-2
+            //entry_stdRollingStrength_Sec2.Text = ycConfig.stdRollingStrength_s2.ToString();
+            //entry_strengthDeviation_Sec2.Text = ycConfig.strengthDeviation_s2.ToString();
+            //entry_belowLimit_Sec2.Text = ycConfig.belowLimit_s2.ToString();
+            //entry_totalTestCount_Sec2.Text = ycConfig.totalSamples_s2.ToString();
+            //if (ycConfig.drumNumbers_s2 != null)
+            //{
+            //    entry_Drums_Sec2.Text = ycConfig.drumNumbers_s2.ToString();
 
-                IList<string> drumSelectionMethodList_S2 = picker_drumSection_Sec2.Items;
-                int drumSelectionMethodIndex_S2 = 0;
-                foreach (string ds in drumSelectionMethodList_S2)
-                {
-                    if (ds != ycConfig.drumSelectionMethod_s2.ToString())
-                    {
-                        drumSelectionMethodIndex_S2++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                picker_drumSection_Sec2.SelectedIndex = drumSelectionMethodIndex_S2;
+            //    IList<string> drumSelectionMethodList_S2 = picker_drumSection_Sec2.Items;
+            //    int drumSelectionMethodIndex_S2 = 0;
+            //    foreach (string ds in drumSelectionMethodList_S2)
+            //    {
+            //        if (ds != ycConfig.drumSelectionMethod_s2.ToString())
+            //        {
+            //            drumSelectionMethodIndex_S2++;
+            //        }
+            //        else
+            //        {
+            //            break;
+            //        }
+            //    }
+            //    picker_drumSection_Sec2.SelectedIndex = drumSelectionMethodIndex_S2;
 
-                date_scheduledStartDate_Sec2.Date = ycConfig.scheduledStartDate_s2;
-                date_scheduledEndDate_Sec2.Date = ycConfig.scheduledEndDate_s2;
-                entry_scheduledDayLimit_Sec2.Text = ycConfig.scheduledDayLimit_s2.ToString();
+            //    date_scheduledStartDate_Sec2.Date = ycConfig.scheduledStartDate_s2;
+            //    date_scheduledEndDate_Sec2.Date = ycConfig.scheduledEndDate_s2;
+            //    entry_scheduledDayLimit_Sec2.Text = ycConfig.scheduledDayLimit_s2.ToString();
 
-                entry_maxRollingCount_Sec2.Text = ycConfig.maxRollingCount_s2.ToString();
-                entry_matCount_Sec2.Text = ycConfig.materialCount_s2;
-            }
+            //    entry_maxRollingCount_Sec2.Text = ycConfig.maxRollingCount_s2.ToString();
+            //    entry_matCount_Sec2.Text = ycConfig.materialCount_s2;
+            //}
 
-            //Section-3
-            entry_stdRollingStrength_Sec3.Text = ycConfig.stdRollingStrength_s3.ToString();
-            entry_strengthDeviation_Sec3.Text = ycConfig.strengthDeviation_s3.ToString();
-            entry_belowLimit_Sec3.Text = ycConfig.belowLimit_s3.ToString();
-            entry_totalTestCount_Sec3.Text = ycConfig.totalSamples_s3.ToString();
-            if (ycConfig.drumNumbers_s3 != null)
-            {
-                entry_Drums_Sec3.Text = ycConfig.drumNumbers_s3.ToString();
+            ////Section-3
+            //entry_stdRollingStrength_Sec3.Text = ycConfig.stdRollingStrength_s3.ToString();
+            //entry_strengthDeviation_Sec3.Text = ycConfig.strengthDeviation_s3.ToString();
+            //entry_belowLimit_Sec3.Text = ycConfig.belowLimit_s3.ToString();
+            //entry_totalTestCount_Sec3.Text = ycConfig.totalSamples_s3.ToString();
+            //if (ycConfig.drumNumbers_s3 != null)
+            //{
+            //    entry_Drums_Sec3.Text = ycConfig.drumNumbers_s3.ToString();
 
-                IList<string> drumSelectionMethodList_S3 = picker_drumSection_Sec3.Items;
-                int drumSelectionMethodIndex_S3 = 0;
-                foreach (string ds in drumSelectionMethodList_S3)
-                {
-                    if (ds != ycConfig.drumSelectionMethod_s3.ToString())
-                    {
-                        drumSelectionMethodIndex_S3++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                picker_drumSection_Sec3.SelectedIndex = drumSelectionMethodIndex_S3;
+            //    IList<string> drumSelectionMethodList_S3 = picker_drumSection_Sec3.Items;
+            //    int drumSelectionMethodIndex_S3 = 0;
+            //    foreach (string ds in drumSelectionMethodList_S3)
+            //    {
+            //        if (ds != ycConfig.drumSelectionMethod_s3.ToString())
+            //        {
+            //            drumSelectionMethodIndex_S3++;
+            //        }
+            //        else
+            //        {
+            //            break;
+            //        }
+            //    }
+            //    picker_drumSection_Sec3.SelectedIndex = drumSelectionMethodIndex_S3;
 
-                date_scheduledStartDate_Sec3.Date = ycConfig.scheduledStartDate_s3;
-                date_scheduledEndDate_Sec3.Date = ycConfig.scheduledEndDate_s3;
-                entry_scheduledDayLimit_Sec3.Text = ycConfig.scheduledDayLimit_s3.ToString();
+            //    date_scheduledStartDate_Sec3.Date = ycConfig.scheduledStartDate_s3;
+            //    date_scheduledEndDate_Sec3.Date = ycConfig.scheduledEndDate_s3;
+            //    entry_scheduledDayLimit_Sec3.Text = ycConfig.scheduledDayLimit_s3.ToString();
 
-                entry_maxRollingCount_Sec3.Text = ycConfig.maxRollingCount_s3.ToString();
-                entry_matCount_Sec3.Text = ycConfig.materialCount_s3;
-            }
+            //    entry_maxRollingCount_Sec3.Text = ycConfig.maxRollingCount_s3.ToString();
+            //    entry_matCount_Sec3.Text = ycConfig.materialCount_s3;
+            //}
 
-            //Section-4
-            entry_stdRollingStrength_Sec4.Text = ycConfig.stdRollingStrength_s4.ToString();
-            entry_strengthDeviation_Sec4.Text = ycConfig.strengthDeviation_s4.ToString();
-            entry_belowLimit_Sec4.Text = ycConfig.belowLimit_s4.ToString();
-            entry_totalTestCount_Sec4.Text = ycConfig.totalSamples_s4.ToString();
-            if (ycConfig.drumNumbers_s4 != null)
-            {
-                entry_Drums_Sec4.Text = ycConfig.drumNumbers_s4.ToString();
-                IList<string> drumSelectionMethodList_S4 = picker_drumSection_Sec4.Items;
-                int drumSelectionMethodIndex_S4 = 0;
-                foreach (string ds in drumSelectionMethodList_S4)
-                {
-                    if (ds != ycConfig.drumSelectionMethod_s4.ToString())
-                    {
-                        drumSelectionMethodIndex_S4++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                picker_drumSection_Sec4.SelectedIndex = drumSelectionMethodIndex_S4;
+            ////Section-4
+            //entry_stdRollingStrength_Sec4.Text = ycConfig.stdRollingStrength_s4.ToString();
+            //entry_strengthDeviation_Sec4.Text = ycConfig.strengthDeviation_s4.ToString();
+            //entry_belowLimit_Sec4.Text = ycConfig.belowLimit_s4.ToString();
+            //entry_totalTestCount_Sec4.Text = ycConfig.totalSamples_s4.ToString();
+            //if (ycConfig.drumNumbers_s4 != null)
+            //{
+            //    entry_Drums_Sec4.Text = ycConfig.drumNumbers_s4.ToString();
+            //    IList<string> drumSelectionMethodList_S4 = picker_drumSection_Sec4.Items;
+            //    int drumSelectionMethodIndex_S4 = 0;
+            //    foreach (string ds in drumSelectionMethodList_S4)
+            //    {
+            //        if (ds != ycConfig.drumSelectionMethod_s4.ToString())
+            //        {
+            //            drumSelectionMethodIndex_S4++;
+            //        }
+            //        else
+            //        {
+            //            break;
+            //        }
+            //    }
+            //    picker_drumSection_Sec4.SelectedIndex = drumSelectionMethodIndex_S4;
 
 
-                date_scheduledStartDate_Sec4.Date = ycConfig.scheduledStartDate_s4;
-                date_scheduledEndDate_Sec4.Date = ycConfig.scheduledEndDate_s4;
-                entry_scheduledDayLimit_Sec4.Text = ycConfig.scheduledDayLimit_s4.ToString();
+            //    date_scheduledStartDate_Sec4.Date = ycConfig.scheduledStartDate_s4;
+            //    date_scheduledEndDate_Sec4.Date = ycConfig.scheduledEndDate_s4;
+            //    entry_scheduledDayLimit_Sec4.Text = ycConfig.scheduledDayLimit_s4.ToString();
 
-                entry_maxRollingCount_Sec4.Text = ycConfig.maxRollingCount_s4.ToString();
-                entry_matCount_Sec4.Text = ycConfig.materialCount_s4;
-            }
+            //    entry_maxRollingCount_Sec4.Text = ycConfig.maxRollingCount_s4.ToString();
+            //    entry_matCount_Sec4.Text = ycConfig.materialCount_s4;
+            //}
 
            
             
@@ -422,20 +422,20 @@ namespace TQM
             if (btn_section1.IsVisible)
             {
                 frame_sec1.IsVisible = false;
-                toggleSectionFrames(frame_sec1, btn_section1, date_scheduledStartDate_Sec1,date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1, picker_drumSection_Sec1);
+                //toggleSectionFrames(frame_sec1, btn_section1, date_scheduledStartDate_Sec1,date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1, picker_drumSection_Sec1);
                 if (btn_section2.IsVisible)
                 {
                     frame_sec2.IsVisible = false;
-                    toggleSectionFrames(frame_sec2, btn_section2, date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2, picker_drumSection_Sec2);
+                    //toggleSectionFrames(frame_sec2, btn_section2, date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2, picker_drumSection_Sec2);
                     if (btn_section3.IsVisible)
                     {
                         frame_sec3.IsVisible = false;
-                        toggleSectionFrames(frame_sec3, btn_section3, date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3, picker_drumSection_Sec3);
+                        //toggleSectionFrames(frame_sec3, btn_section3, date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3, picker_drumSection_Sec3);
                     }
                     if (btn_section4.IsVisible)
                     {
                         frame_sec4.IsVisible = false;
-                        toggleSectionFrames(frame_sec4, btn_section4, date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4, picker_drumSection_Sec4);
+                        //toggleSectionFrames(frame_sec4, btn_section4, date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4, picker_drumSection_Sec4);
                     }
                 }
             }
@@ -619,461 +619,175 @@ namespace TQM
                     return;
                 }
 
-                decimal stdRollingStrength_S1 = 0.0m;
-                decimal strengthDeviation_S1 = 0.0m;
-                int belowLimit_S1 = 0;
-                int totalSampleCount_S1 = 0;
+                if (entry_stdRollingStrength.Text.Trim() == "-")
+                {
+                    DisplayAlert("Attention", "Standard Rolling Strength is invalid. Please check!!!", "Ok");
+                    return;
+                }
+                if (entry_stdRollingStrength.Text.Trim() == "" || decimal.Parse(entry_stdRollingStrength.Text.Trim()) <= 0m)
+                {
+                    DisplayAlert("Attention", "Standard Rolling Strength should not be blank or zero or negative!!!", "Ok");
+                    return;
+                }
+                if (entry_strengthDeviation.Text.Trim() == "-")
+                {
+                    DisplayAlert("Attention", "Strength Deviation is invalid. Please check!!!", "Ok");
+                    return;
+                }
+                if (entry_strengthDeviation.Text.Trim() == "" || decimal.Parse(entry_strengthDeviation.Text.Trim()) < 0m)
+                {
+                    DisplayAlert("Attention", "Strength Deviation should not be blank or negative!!!", "Ok");
+                    return;
+                }
+                if (entry_MinLimit.Text.Trim().Contains(".") || entry_MinLimit.Text.Trim().Contains("-"))
+                {
+                    DisplayAlert("Attention", "Minimum Limit should not be a decimal or negative value!!!", "Ok");
+                    return;
+                }
+                if (entry_MinLimit.Text.Trim() == "" || int.Parse(entry_MinLimit.Text.Trim()) == 0)
+                {
+                    DisplayAlert("Attention", "Minimum Limit should not be blank or zero!!!", "Ok");
+                    return;
+                }
+                if (entry_MaxLimit.Text.Trim().Contains(".") || entry_MaxLimit.Text.Trim().Contains("-"))
+                {
+                    DisplayAlert("Attention", "Maximum Limit should not be a decimal or negative value!!!", "Ok");
+                    return;
+                }
+                if (entry_MaxLimit.Text.Trim() == "" || int.Parse(entry_MaxLimit.Text.Trim()) == 0)
+                {
+                    DisplayAlert("Attention", "Maximum Limit should not be blank or zero!!!", "Ok");
+                    return;
+                }
+                if (entry_totalTestCount.Text.Trim().Contains(".") || entry_totalTestCount.Text.Trim().Contains("-"))
+                {
+                    DisplayAlert("Attention", "Total test count should not be a decimal or negative value!!!", "Ok");
+                    return;
+                }
+                if (entry_totalTestCount.Text.Trim() == "" || int.Parse(entry_totalTestCount.Text.Trim()) == 0)
+                {
+                    DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
+                    return;
+                }
+                if (date_scheduledStartDate.Date > date_scheduledEndDate.Date)
+                {
+                    DisplayAlert("Attention", "Scheduled Start date should be less than end date!!!", "Ok");
+                    return;
+                }
+                if (entry_matCount.Text.Trim() == "")
+                {
+                    DisplayAlert("Attention", "Material count is invalid. Please check!!!", "Ok");
+                    return;
+                }
+
+                decimal stdRollingStrength = 0.0m;
+                decimal strengthDeviation = 0.0m;
+                int minLimit = 0;
+                int maxLimit = 0;
+                DateTime scheduleStartDate = DateTime.Now;
+                DateTime scheduleEndDate = DateTime.Now;
+                int totalSampleCount = 0;
+                string matCount = "";
+
                 string drumNumbers_S1 = "0.0";
-                string drumSelectionMethod_S1 = "";
-                int scheduledDayLimit_S1 = 0;
-                DateTime scheduleStartDate_S1 = DateTime.Now;
-                DateTime scheduleEndDate_S1 = DateTime.Now;
-                int maxRollingCount_S1 = 0;
-                string matCount_S1 = "";
                 if (btn_section1.IsVisible)
                 {
-                    if (entry_stdRollingStrength_Sec1.Text.Trim() == "-")
+                    if (entry_Drums_from_s1.Text.Trim() == "-")
                     {
-                        DisplayAlert("Attention", "Standard Rolling Strength is invalid in section-1. Please check!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (From) is invalid in section-1. Please check!!!", "Ok");
                         return;
                     }
-                    if (entry_stdRollingStrength_Sec1.Text.Trim() == "" || decimal.Parse(entry_stdRollingStrength_Sec1.Text.Trim()) <= 0m)
+                    if (entry_Drums_from_s1.Text.Trim() == "" || decimal.Parse(entry_Drums_from_s1.Text.Trim()) < 0m)
                     {
-                        DisplayAlert("Attention", "Standard Rolling Strength should not be blank or zero or negative in section-1!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (From) should not be blank or negative in section-1!!!", "Ok");
                         return;
                     }
-                    if (entry_strengthDeviation_Sec1.Text.Trim() == "-")
+                    if (entry_Drums_to_s1.Text.Trim() == "-")
                     {
-                        DisplayAlert("Attention", "Strength Deviation is invalid in section-1. Please check!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (To) is invalid in section-1. Please check!!!", "Ok");
                         return;
                     }
-                    if (entry_strengthDeviation_Sec1.Text.Trim() == "" || decimal.Parse(entry_strengthDeviation_Sec1.Text.Trim()) < 0m)
+                    if (entry_Drums_to_s1.Text.Trim() == "" || decimal.Parse(entry_Drums_to_s1.Text.Trim()) < 0m)
                     {
-                        DisplayAlert("Attention", "Strength Deviation should not be blank or negative in section-1!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (To) should not be blank or negative in section-1!!!", "Ok");
                         return;
                     }
-                    if (entry_belowLimit_Sec1.Text.Trim().Contains(".") || entry_belowLimit_Sec1.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Below Limit should not be a decimal or negative value in section-1!!!", "Ok");
-                        return;
-                    }
-                    if (entry_belowLimit_Sec1.Text.Trim() == "" || int.Parse(entry_belowLimit_Sec1.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Below Limit should not be blank or zero in section-1!!!", "Ok");
-                        return;
-                    }
-                    if (entry_totalTestCount_Sec1.Text.Trim().Contains(".") || entry_totalTestCount_Sec1.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Total test count should not be a decimal or negative value in section-1!!!", "Ok");
-                        return;
-                    }
-                    if (entry_totalTestCount_Sec1.Text.Trim() == "" || int.Parse(entry_totalTestCount_Sec1.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Total test count should not be blank or zero in section-1!!!", "Ok");
-                        return;
-                    }
-                    if (entry_Drums_Sec1.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Section-1 drum numbers is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_Drums_Sec1.Text.Trim() == "" || decimal.Parse(entry_Drums_Sec1.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Section-1 drum numbers should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                    if (picker_drumSection_Sec1.SelectedIndex == -1 || picker_drumSection_Sec1.SelectedItem.ToString() == "")
-                    {
-                        DisplayAlert("Attention", "Please select valid drum selection method for section-1!!!", "OK");
-                        return;
-                    }
-                    if(date_scheduledStartDate_Sec1.Date > date_scheduledEndDate_Sec1.Date)
-                    {
-                        DisplayAlert("Attention", "Scheduled Start date should be less than end date in section-1!!!", "Ok");
-                        return;
-                    }
-                    if (entry_scheduledDayLimit_Sec1.Text.Trim().Contains(".") || entry_scheduledDayLimit_Sec1.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Scheduled Day Limit should not be a decimal or negative value in section-1!!!", "Ok");
-                        return;
-                    }
-                    if (entry_scheduledDayLimit_Sec1.Text.Trim() == "" || int.Parse(entry_scheduledDayLimit_Sec1.Text.Trim()) == 0)
-                    {
-                        if (picker_drumSection_Sec1.SelectedItem.ToString() == "Scheduled")
-                        {
-                            DisplayAlert("Attention", "Scheduled Day Limit should not be blank or zero in section-1!!!", "Ok");
-                            return;
-                        }
-                    }
-                    if (entry_maxRollingCount_Sec1.Text.Trim().Contains(".") || entry_maxRollingCount_Sec1.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Maximum rolling count should not be a decimal or negative value in section-1!!!", "Ok");
-                        return;
-                    }
-                    if (entry_maxRollingCount_Sec1.Text.Trim() == "" || int.Parse(entry_maxRollingCount_Sec1.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Maximum rolling count should not be blank or zero in section-1!!!", "Ok");
-                        return;
-                    }
-                    if (entry_matCount_Sec1.Text.Trim() == "")
-                    {
-                        DisplayAlert("Attention", "Section-1 material count is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    stdRollingStrength_S1 = decimal.Parse(entry_stdRollingStrength_Sec1.Text);
-                    strengthDeviation_S1 = decimal.Parse(entry_strengthDeviation_Sec1.Text);
-                    belowLimit_S1 = int.Parse(entry_belowLimit_Sec1.Text);
-                    totalSampleCount_S1 = int.Parse(entry_totalTestCount_Sec1.Text);
-                    drumNumbers_S1 = decimal.Parse(entry_Drums_Sec1.Text).ToString(); 
-                    drumSelectionMethod_S1 = picker_drumSection_Sec1.SelectedItem.ToString();
-                    scheduledDayLimit_S1 = int.Parse(entry_scheduledDayLimit_Sec1.Text);
-                    scheduleStartDate_S1 = date_scheduledStartDate_Sec1.Date;
-                    scheduleEndDate_S1 = date_scheduledEndDate_Sec1.Date;
-                    maxRollingCount_S1 = int.Parse(entry_maxRollingCount_Sec1.Text);
-                    matCount_S1 = entry_matCount_Sec1.Text.Trim();
                 }
 
-                decimal stdRollingStrength_S2 = 0.0m;
-                decimal strengthDeviation_S2 = 0.0m;
-                int belowLimit_S2 = 0;
-                int totalSampleCount_S2 = 0;
+
                 string drumNumbers_S2 = "0.0";
-                string drumSelectionMethod_S2 = "";
-                int scheduledDayLimit_S2 = 0;
-                DateTime scheduleStartDate_S2 = DateTime.Now;
-                DateTime scheduleEndDate_S2 = DateTime.Now;
-                int maxRollingCount_S2 = 0;
-                string matCount_S2 = "";
                 if (btn_section2.IsVisible)
                 {
-                    if (entry_stdRollingStrength_Sec2.Text.Trim() == "-")
+                    if (entry_Drums_from_s2.Text.Trim() == "-")
                     {
-                        DisplayAlert("Attention", "Standard Rolling Strength is invalid in section-2. Please check!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (From) is invalid in section-2. Please check!!!", "Ok");
                         return;
                     }
-                    if (entry_stdRollingStrength_Sec2.Text.Trim() == "" || decimal.Parse(entry_stdRollingStrength_Sec2.Text.Trim()) <= 0m)
+                    if (entry_Drums_from_s2.Text.Trim() == "" || decimal.Parse(entry_Drums_from_s2.Text.Trim()) < 0m)
                     {
-                        DisplayAlert("Attention", "Standard Rolling Strength should not be blank or zero or negative in section-2!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (From) should not be blank or negative in section-2!!!", "Ok");
                         return;
                     }
-                    if (entry_strengthDeviation_Sec2.Text.Trim() == "-")
+                    if (entry_Drums_to_s2.Text.Trim() == "-")
                     {
-                        DisplayAlert("Attention", "Strength Deviation is invalid in section-2. Please check!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (To) is invalid in section-2. Please check!!!", "Ok");
                         return;
                     }
-                    if (entry_strengthDeviation_Sec2.Text.Trim() == "" || decimal.Parse(entry_strengthDeviation_Sec2.Text.Trim()) < 0m)
+                    if (entry_Drums_to_s2.Text.Trim() == "" || decimal.Parse(entry_Drums_to_s2.Text.Trim()) < 0m)
                     {
-                        DisplayAlert("Attention", "Strength Deviation should not be blank or negative in section-2!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (To) should not be blank or negative in section-2!!!", "Ok");
                         return;
                     }
-                    if (entry_belowLimit_Sec2.Text.Trim().Contains(".") || entry_belowLimit_Sec2.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Below Limit should not be a decimal or negative value in section-2!!!", "Ok");
-                        return;
-                    }
-                    if (entry_belowLimit_Sec2.Text.Trim() == "" || int.Parse(entry_belowLimit_Sec2.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Below Limit should not be blank or zero in section-2!!!", "Ok");
-                        return;
-                    }
-                    if (entry_totalTestCount_Sec2.Text.Trim().Contains(".") || entry_totalTestCount_Sec2.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Total test count should not be a decimal or negative value in section-2!!!", "Ok");
-                        return;
-                    }
-                    if (entry_totalTestCount_Sec2.Text.Trim() == "" || int.Parse(entry_totalTestCount_Sec2.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Total test count should not be blank or zero in section-2!!!", "Ok");
-                        return;
-                    }
-                    if (entry_Drums_Sec2.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Section-2 drum numbers is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_Drums_Sec2.Text.Trim() == "" || decimal.Parse(entry_Drums_Sec2.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Section-2 drum numbers should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                    if (picker_drumSection_Sec2.SelectedIndex == -1 || picker_drumSection_Sec2.SelectedItem.ToString() == "")
-                    {
-                        DisplayAlert("Attention", "Please select valid drum selection method for section-2!!!", "OK");
-                        return;
-                    }
-                    if (date_scheduledStartDate_Sec2.Date > date_scheduledEndDate_Sec2.Date)
-                    {
-                        DisplayAlert("Attention", "Scheduled Start date should be less than end date in section-2!!!", "Ok");
-                        return;
-                    }
-                    if (entry_scheduledDayLimit_Sec2.Text.Trim().Contains(".") || entry_scheduledDayLimit_Sec2.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Scheduled Day Limit should not be a decimal or negative value in section-2!!!", "Ok");
-                        return;
-                    }
-                    if (entry_scheduledDayLimit_Sec2.Text.Trim() == "" || int.Parse(entry_scheduledDayLimit_Sec2.Text.Trim()) == 0)
-                    {
-                        if (picker_drumSection_Sec2.SelectedItem.ToString() == "Scheduled")
-                        {
-                            DisplayAlert("Attention", "Scheduled Day Limit should not be blank or zero in section-2!!!", "Ok");
-                            return;
-                        }
-                    }
-                    if (entry_maxRollingCount_Sec2.Text.Trim().Contains(".") || entry_maxRollingCount_Sec2.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Maximum rolling count should not be a decimal or negative value in section-2!!!", "Ok");
-                        return;
-                    }
-                    if (entry_maxRollingCount_Sec2.Text.Trim() == "" || int.Parse(entry_maxRollingCount_Sec2.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Maximum rolling count should not be blank or zero in section-2!!!", "Ok");
-                        return;
-                    }
-                    if (entry_matCount_Sec2.Text.Trim() == "")
-                    {
-                        DisplayAlert("Attention", "Section-2 material count is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    stdRollingStrength_S2 = decimal.Parse(entry_stdRollingStrength_Sec2.Text);
-                    strengthDeviation_S2 = decimal.Parse(entry_strengthDeviation_Sec2.Text);
-                    belowLimit_S2 = int.Parse(entry_belowLimit_Sec2.Text);
-                    totalSampleCount_S2 = int.Parse(entry_totalTestCount_Sec2.Text);
-                    drumNumbers_S2 = decimal.Parse(entry_Drums_Sec2.Text).ToString();
-                    drumSelectionMethod_S2 = picker_drumSection_Sec2.SelectedItem.ToString();
-                    scheduledDayLimit_S2 = int.Parse(entry_scheduledDayLimit_Sec2.Text);
-                    scheduleStartDate_S2 = date_scheduledStartDate_Sec2.Date;
-                    scheduleEndDate_S2 = date_scheduledEndDate_Sec2.Date;
-                    maxRollingCount_S2 = int.Parse(entry_maxRollingCount_Sec2.Text);
-                    matCount_S2 = entry_matCount_Sec2.Text.Trim();
                 }
 
-                decimal stdRollingStrength_S3 = 0.0m;
-                decimal strengthDeviation_S3 = 0.0m;
-                int belowLimit_S3 = 0;
-                int totalSampleCount_S3 = 0;
                 string drumNumbers_S3 = "0.0";
-                string drumSelectionMethod_S3 = "";
-                int scheduledDayLimit_S3 = 0;
-                DateTime scheduleStartDate_S3 = DateTime.Now;
-                DateTime scheduleEndDate_S3 = DateTime.Now;
-                int maxRollingCount_S3 = 0;
-                string matCount_S3 = "";
                 if (btn_section3.IsVisible)
                 {
-                    if (entry_stdRollingStrength_Sec3.Text.Trim() == "-")
+                    if (entry_Drums_from_s3.Text.Trim() == "-")
                     {
-                        DisplayAlert("Attention", "Standard Rolling Strength is invalid in section-3. Please check!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (From) is invalid in section-3. Please check!!!", "Ok");
                         return;
                     }
-                    if (entry_stdRollingStrength_Sec3.Text.Trim() == "" || decimal.Parse(entry_stdRollingStrength_Sec3.Text.Trim()) <= 0m)
+                    if (entry_Drums_from_s3.Text.Trim() == "" || decimal.Parse(entry_Drums_from_s3.Text.Trim()) < 0m)
                     {
-                        DisplayAlert("Attention", "Standard Rolling Strength should not be blank or zero or negative in section-3!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (From) should not be blank or negative in section-3!!!", "Ok");
                         return;
                     }
-                    if (entry_strengthDeviation_Sec3.Text.Trim() == "-")
+                    if (entry_Drums_to_s3.Text.Trim() == "-")
                     {
-                        DisplayAlert("Attention", "Strength Deviation is invalid in section-3. Please check!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (To) is invalid in section-3. Please check!!!", "Ok");
                         return;
                     }
-                    if (entry_strengthDeviation_Sec3.Text.Trim() == "" || decimal.Parse(entry_strengthDeviation_Sec3.Text.Trim()) < 0m)
+                    if (entry_Drums_to_s3.Text.Trim() == "" || decimal.Parse(entry_Drums_to_s3.Text.Trim()) < 0m)
                     {
-                        DisplayAlert("Attention", "Strength Deviation should not be blank or negative in section-3!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (To) should not be blank or negative in section-3!!!", "Ok");
                         return;
                     }
-                    if (entry_belowLimit_Sec3.Text.Trim().Contains(".") || entry_belowLimit_Sec3.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Below Limit should not be a decimal or negative value in section-3!!!", "Ok");
-                        return;
-                    }
-                    if (entry_belowLimit_Sec3.Text.Trim() == "" || int.Parse(entry_belowLimit_Sec3.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Below Limit should not be blank or zero in section-3!!!", "Ok");
-                        return;
-                    }
-                    if (entry_totalTestCount_Sec3.Text.Trim().Contains(".") || entry_totalTestCount_Sec3.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Total test count should not be a decimal or negative value in section-3!!!", "Ok");
-                        return;
-                    }
-                    if (entry_totalTestCount_Sec3.Text.Trim() == "" || int.Parse(entry_totalTestCount_Sec3.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Total test count should not be blank or zero in section-3!!!", "Ok");
-                        return;
-                    }
-                    if (entry_Drums_Sec3.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Section-3 drum numbers is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_Drums_Sec3.Text.Trim() == "" || decimal.Parse(entry_Drums_Sec3.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Section-3 drum numbers should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                    if (picker_drumSection_Sec3.SelectedIndex == -1 || picker_drumSection_Sec3.SelectedItem.ToString() == "")
-                    {
-                        DisplayAlert("Attention", "Please select valid drum selection method for section-3!!!", "OK");
-                        return;
-                    }
-                    if (date_scheduledStartDate_Sec3.Date > date_scheduledEndDate_Sec3.Date)
-                    {
-                        DisplayAlert("Attention", "Scheduled Start date should be less than end date in section-3!!!", "Ok");
-                        return;
-                    }
-                    if (entry_scheduledDayLimit_Sec3.Text.Trim().Contains(".") || entry_scheduledDayLimit_Sec3.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Scheduled Day Limit should not be a decimal or negative value in section-3!!!", "Ok");
-                        return;
-                    }
-                    if (entry_scheduledDayLimit_Sec3.Text.Trim() == "" || int.Parse(entry_scheduledDayLimit_Sec3.Text.Trim()) == 0)
-                    {
-                        if (picker_drumSection_Sec3.SelectedItem.ToString() == "Scheduled")
-                        {
-                            DisplayAlert("Attention", "Scheduled Day Limit should not be blank or zero in section-3!!!", "Ok");
-                            return;
-                        }
-                    }
-                    if (entry_maxRollingCount_Sec3.Text.Trim().Contains(".") || entry_maxRollingCount_Sec3.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Maximum rolling count should not be a decimal or negative value in section-3!!!", "Ok");
-                        return;
-                    }
-                    if (entry_maxRollingCount_Sec3.Text.Trim() == "" || int.Parse(entry_maxRollingCount_Sec3.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Maximum rolling count should not be blank or zero in section-3!!!", "Ok");
-                        return;
-                    }
-                    if (entry_matCount_Sec3.Text.Trim() == "")
-                    {
-                        DisplayAlert("Attention", "Section-3 material count is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    stdRollingStrength_S3 = decimal.Parse(entry_stdRollingStrength_Sec3.Text);
-                    strengthDeviation_S3 = decimal.Parse(entry_strengthDeviation_Sec3.Text);
-                    belowLimit_S3 = int.Parse(entry_belowLimit_Sec3.Text);
-                    totalSampleCount_S3 = int.Parse(entry_totalTestCount_Sec3.Text);
-                    drumNumbers_S3 = decimal.Parse(entry_Drums_Sec3.Text).ToString();
-                    drumSelectionMethod_S3 = picker_drumSection_Sec3.SelectedItem.ToString();
-                    scheduledDayLimit_S3 = int.Parse(entry_scheduledDayLimit_Sec3.Text);
-                    scheduleStartDate_S3 = date_scheduledStartDate_Sec3.Date;
-                    scheduleEndDate_S3 = date_scheduledEndDate_Sec3.Date;
-                    maxRollingCount_S3 = int.Parse(entry_maxRollingCount_Sec3.Text);
-                    matCount_S3 = entry_matCount_Sec3.Text.Trim();
                 }
 
-
-                decimal stdRollingStrength_S4 = 0.0m;
-                decimal strengthDeviation_S4 = 0.0m;
-                int belowLimit_S4 = 0;
-                int totalSampleCount_S4 = 0;
                 string drumNumbers_S4 = "0.0";
-                string drumSelectionMethod_S4 = "";
-                int scheduledDayLimit_S4 = 0;
-                DateTime scheduleStartDate_S4 = DateTime.Now;
-                DateTime scheduleEndDate_S4 = DateTime.Now;
-                int maxRollingCount_S4 = 0;
-                string matCount_S4 = "";
                 if (btn_section4.IsVisible)
                 {
-                    if (entry_stdRollingStrength_Sec4.Text.Trim() == "-")
+                    if (entry_Drums_from_s4.Text.Trim() == "-")
                     {
-                        DisplayAlert("Attention", "Standard Rolling Strength is invalid in section-4. Please check!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (From) is invalid in section-4. Please check!!!", "Ok");
                         return;
                     }
-                    if (entry_stdRollingStrength_Sec4.Text.Trim() == "" || decimal.Parse(entry_stdRollingStrength_Sec4.Text.Trim()) <= 0m)
+                    if (entry_Drums_from_s4.Text.Trim() == "" || decimal.Parse(entry_Drums_from_s4.Text.Trim()) < 0m)
                     {
-                        DisplayAlert("Attention", "Standard Rolling Strength should not be blank or zero or negative in section-4!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (From) should not be blank or negative in section-4!!!", "Ok");
                         return;
                     }
-                    if (entry_strengthDeviation_Sec4.Text.Trim() == "-")
+                    if (entry_Drums_to_s4.Text.Trim() == "-")
                     {
-                        DisplayAlert("Attention", "Strength Deviation is invalid in section-4. Please check!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (To) is invalid in section-4. Please check!!!", "Ok");
                         return;
                     }
-                    if (entry_strengthDeviation_Sec4.Text.Trim() == "" || decimal.Parse(entry_strengthDeviation_Sec4.Text.Trim()) < 0m)
+                    if (entry_Drums_to_s4.Text.Trim() == "" || decimal.Parse(entry_Drums_to_s4.Text.Trim()) < 0m)
                     {
-                        DisplayAlert("Attention", "Strength Deviation should not be blank or negative in section-4!!!", "Ok");
+                        DisplayAlert("Attention", "Drum Number (To) should not be blank or negative in section-4!!!", "Ok");
                         return;
                     }
-                    if (entry_belowLimit_Sec4.Text.Trim().Contains(".") || entry_belowLimit_Sec4.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Below Limit should not be a decimal or negative value in section-4!!!", "Ok");
-                        return;
-                    }
-                    if (entry_belowLimit_Sec4.Text.Trim() == "" || int.Parse(entry_belowLimit_Sec4.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Below Limit should not be blank or zero in section-4!!!", "Ok");
-                        return;
-                    }
-                    if (entry_totalTestCount_Sec4.Text.Trim().Contains(".") || entry_totalTestCount_Sec4.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Total test count should not be a decimal or negative value in section-4!!!", "Ok");
-                        return;
-                    }
-                    if (entry_totalTestCount_Sec4.Text.Trim() == "" || int.Parse(entry_totalTestCount_Sec4.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Total test count should not be blank or zero in section-4!!!", "Ok");
-                        return;
-                    }
-                    if (entry_Drums_Sec4.Text.Trim() == "-")
-                    {
-                        DisplayAlert("Attention", "Section-4 drum numbers is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    if (entry_Drums_Sec4.Text.Trim() == "" || decimal.Parse(entry_Drums_Sec4.Text.Trim()) <= 0m)
-                    {
-                        DisplayAlert("Attention", "Section-4 drum numbers should not be blank or zero or negative!!!", "Ok");
-                        return;
-                    }
-                    if (picker_drumSection_Sec4.SelectedIndex == -1 || picker_drumSection_Sec4.SelectedItem.ToString() == "")
-                    {
-                        DisplayAlert("Attention", "Please select valid drum selection method for section-4!!!", "OK");
-                        return;
-                    }
-                    if (date_scheduledStartDate_Sec4.Date > date_scheduledEndDate_Sec4.Date)
-                    {
-                        DisplayAlert("Attention", "Scheduled Start date should be less than end date in section-4!!!", "Ok");
-                        return;
-                    }
-                    if (entry_scheduledDayLimit_Sec4.Text.Trim().Contains(".") || entry_scheduledDayLimit_Sec4.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Scheduled Day Limit should not be a decimal or negative value in section-4!!!", "Ok");
-                        return;
-                    }
-                    if (entry_scheduledDayLimit_Sec4.Text.Trim() == "" || int.Parse(entry_scheduledDayLimit_Sec4.Text.Trim()) == 0)
-                    {
-                        if (picker_drumSection_Sec4.SelectedItem.ToString() == "Scheduled")
-                        {
-                            DisplayAlert("Attention", "Scheduled Day Limit should not be blank or zero in section-4!!!", "Ok");
-                            return;
-                        }
-                    }
-                    if (entry_maxRollingCount_Sec4.Text.Trim().Contains(".") || entry_maxRollingCount_Sec4.Text.Trim().Contains("-"))
-                    {
-                        DisplayAlert("Attention", "Maximum rolling count should not be a decimal or negative value in section-4!!!", "Ok");
-                        return;
-                    }
-                    if (entry_maxRollingCount_Sec4.Text.Trim() == "" || int.Parse(entry_maxRollingCount_Sec4.Text.Trim()) == 0)
-                    {
-                        DisplayAlert("Attention", "Maximum rolling count should not be blank or zero in section-4!!!", "Ok");
-                        return;
-                    }
-                    if (entry_matCount_Sec4.Text.Trim() == "")
-                    {
-                        DisplayAlert("Attention", "Section-3 material count is invalid. Please check!!!", "Ok");
-                        return;
-                    }
-                    stdRollingStrength_S4 = decimal.Parse(entry_stdRollingStrength_Sec4.Text);
-                    strengthDeviation_S4 = decimal.Parse(entry_strengthDeviation_Sec4.Text);
-                    belowLimit_S4 = int.Parse(entry_belowLimit_Sec4.Text);
-                    totalSampleCount_S4 = int.Parse(entry_totalTestCount_Sec4.Text);
-                    drumNumbers_S4 = decimal.Parse(entry_Drums_Sec4.Text).ToString();
-                    drumSelectionMethod_S4 = picker_drumSection_Sec4.SelectedItem.ToString();
-                    scheduledDayLimit_S4 = int.Parse(entry_scheduledDayLimit_Sec4.Text);
-                    scheduleStartDate_S4 = date_scheduledStartDate_Sec4.Date;
-                    scheduleEndDate_S4 = date_scheduledEndDate_Sec4.Date;
-                    maxRollingCount_S4 = int.Parse(entry_maxRollingCount_Sec4.Text);
-                    matCount_S4 = entry_matCount_Sec4.Text.Trim();
                 }
 
                 int totalSections = int.Parse(picker_sectionCount.SelectedItem.ToString());
@@ -1081,8 +795,8 @@ namespace TQM
 
                 if (totalSections == 4)
                 {
-                    int min_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[0]);
-                    int max_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[1]);
+                    int min_s1 = int.Parse(entry_Drums_from_s1.Text);
+                    int max_s1 = int.Parse(entry_Drums_to_s1.Text);
 
                     List<int> list_s1 = new List<int>();
                     for (int i = min_s1; i <= max_s1; i++)
@@ -1090,8 +804,8 @@ namespace TQM
                         list_s1.Add(i);
                     }
 
-                    int min_s2 = int.Parse(entry_Drums_Sec2.Text.Split('.')[0]);
-                    int max_s2 = int.Parse(entry_Drums_Sec2.Text.Split('.')[1]);
+                    int min_s2 = int.Parse(entry_Drums_from_s2.Text);
+                    int max_s2 = int.Parse(entry_Drums_to_s2.Text);
 
                     List<int> list_s2 = new List<int>();
                     for (int i = min_s2; i <= max_s2; i++)
@@ -1099,8 +813,8 @@ namespace TQM
                         list_s2.Add(i);
                     }
 
-                    int min_s3 = int.Parse(entry_Drums_Sec3.Text.Split('.')[0]);
-                    int max_s3 = int.Parse(entry_Drums_Sec3.Text.Split('.')[1]);
+                    int min_s3 = int.Parse(entry_Drums_from_s3.Text);
+                    int max_s3 = int.Parse(entry_Drums_to_s3.Text);
 
                     List<int> list_s3 = new List<int>();
                     for (int i = min_s3; i <= max_s3; i++)
@@ -1108,8 +822,8 @@ namespace TQM
                         list_s3.Add(i);
                     }
 
-                    int min_s4 = int.Parse(entry_Drums_Sec4.Text.Split('.')[0]);
-                    int max_s4 = int.Parse(entry_Drums_Sec4.Text.Split('.')[1]);
+                    int min_s4 = int.Parse(entry_Drums_from_s4.Text);
+                    int max_s4 = int.Parse(entry_Drums_to_s4.Text);
 
                     List<int> list_s4 = new List<int>();
                     for (int i = min_s4; i <= max_s4; i++)
@@ -1154,8 +868,8 @@ namespace TQM
                 }
                 else if (totalSections == 3)
                 {
-                    int min_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[0]);
-                    int max_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[1]);
+                    int min_s1 = int.Parse(entry_Drums_from_s1.Text);
+                    int max_s1 = int.Parse(entry_Drums_to_s1.Text);
 
                     List<int> list_s1 = new List<int>();
                     for (int i = min_s1; i <= max_s1; i++)
@@ -1163,8 +877,8 @@ namespace TQM
                         list_s1.Add(i);
                     }
 
-                    int min_s2 = int.Parse(entry_Drums_Sec2.Text.Split('.')[0]);
-                    int max_s2 = int.Parse(entry_Drums_Sec2.Text.Split('.')[1]);
+                    int min_s2 = int.Parse(entry_Drums_from_s2.Text);
+                    int max_s2 = int.Parse(entry_Drums_to_s2.Text);
 
                     List<int> list_s2 = new List<int>();
                     for (int i = min_s2; i <= max_s2; i++)
@@ -1172,8 +886,8 @@ namespace TQM
                         list_s2.Add(i);
                     }
 
-                    int min_s3 = int.Parse(entry_Drums_Sec3.Text.Split('.')[0]);
-                    int max_s3 = int.Parse(entry_Drums_Sec3.Text.Split('.')[1]);
+                    int min_s3 = int.Parse(entry_Drums_from_s3.Text);
+                    int max_s3 = int.Parse(entry_Drums_to_s3.Text);
 
                     List<int> list_s3 = new List<int>();
                     for (int i = min_s3; i <= max_s3; i++)
@@ -1201,10 +915,11 @@ namespace TQM
                         DisplayAlert("Attention", "Section-3 drums are overlapping with Section-1 drums. Please check!!!", "Ok");
                         return;
                     }
-                }else if (totalSections == 2)
+                }
+                else if (totalSections == 2)
                 {
-                    int min_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[0]);
-                    int max_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[1]);
+                    int min_s1 = int.Parse(entry_Drums_from_s1.Text);
+                    int max_s1 = int.Parse(entry_Drums_to_s1.Text);
 
                     List<int> list_s1 = new List<int>();
                     for (int i = min_s1; i <= max_s1; i++)
@@ -1212,8 +927,8 @@ namespace TQM
                         list_s1.Add(i);
                     }
 
-                    int min_s2 = int.Parse(entry_Drums_Sec2.Text.Split('.')[0]);
-                    int max_s2 = int.Parse(entry_Drums_Sec2.Text.Split('.')[1]);
+                    int min_s2 = int.Parse(entry_Drums_from_s2.Text);
+                    int max_s2 = int.Parse(entry_Drums_to_s2.Text);
 
                     List<int> list_s2 = new List<int>();
                     for (int i = min_s2; i <= max_s2; i++)
@@ -1221,7 +936,7 @@ namespace TQM
                         list_s2.Add(i);
                     }
 
-                   //check S1 drums in S2
+                    //check S1 drums in S2
                     if (checkDrumsInRange(min_s2, max_s2, list_s1))
                     {
                         DisplayAlert("Attention", "Section-1 drums are overlapping with Section-2 drums. Please check!!!", "Ok");
@@ -1230,11 +945,11 @@ namespace TQM
                 }
                 else if (totalSections == 1)
                 {
-                    int min_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[0]);
-                    int max_s1 = int.Parse(entry_Drums_Sec1.Text.Split('.')[1]);
+                    int min_s1 = int.Parse(entry_Drums_from_s1.Text);
+                    int max_s1 = int.Parse(entry_Drums_to_s1.Text);
 
                     //check S1 drums aligned with total drums
-                    if (min_s1!=1 || max_s1!=int.Parse(entry_drumCount.Text))
+                    if (min_s1 != 1 || max_s1 != int.Parse(entry_drumCount.Text))
                     {
                         DisplayAlert("Attention", "Section-1 drums are not aligned with total drums. Please check!!!", "Ok");
                         return;
@@ -1913,7 +1628,30 @@ namespace TQM
             }
         }
 
-        private void toggleSectionFrames(Frame frame,Button sectionButton, DatePicker scheduledStartDate , DatePicker scheduledEndDate,Entry scheduledDayLimit,Picker drumSelectionMethod)
+        //private void toggleSectionFrames(Frame frame,Button sectionButton, DatePicker scheduledStartDate , DatePicker scheduledEndDate,Entry scheduledDayLimit,Picker drumSelectionMethod)
+        //{
+        //    try
+        //    {
+        //        if (!frame.IsVisible)
+        //        {
+        //            frame.IsVisible = true;
+        //            sectionButton.BackgroundColor = Color.Red;
+        //        }
+        //        else
+        //        {
+        //            frame.IsVisible = false;
+        //            sectionButton.BackgroundColor = Color.FromHex("#0e0273");
+        //        }
+        //        //calculateDay(drumSelectionMethod,scheduledDayLimitDate, scheduledDayLimit);
+        //        calculateDay(scheduledStartDate, scheduledEndDate, scheduledDayLimit);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        //ignore
+        //    }
+        //}
+
+        private void toggleSectionFrames(Frame frame, Button sectionButton)
         {
             try
             {
@@ -1928,7 +1666,7 @@ namespace TQM
                     sectionButton.BackgroundColor = Color.FromHex("#0e0273");
                 }
                 //calculateDay(drumSelectionMethod,scheduledDayLimitDate, scheduledDayLimit);
-                calculateDay(scheduledStartDate, scheduledEndDate, scheduledDayLimit);
+                //calculateDay(scheduledStartDate, scheduledEndDate, scheduledDayLimit);
             }
             catch (Exception)
             {
@@ -1938,30 +1676,34 @@ namespace TQM
 
         private void btn_section1_Clicked(object sender, EventArgs e)
         {
-           //toggleSectionFrames(frame_sec1, btn_section1, date_scheduledDayLimitDate_Sec1, entry_scheduledDayLimit_Sec1, picker_drumSection_Sec1);
-            toggleSectionFrames(frame_sec1, btn_section1, date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1, picker_drumSection_Sec1);
-            picker_drumSection_Sec1.SelectedItem = "Scheduled";
+            //toggleSectionFrames(frame_sec1, btn_section1, date_scheduledDayLimitDate_Sec1, entry_scheduledDayLimit_Sec1, picker_drumSection_Sec1);
+            //toggleSectionFrames(frame_sec1, btn_section1, date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1, picker_drumSection_Sec1);
+            //picker_drumSection_Sec1.SelectedItem = "Scheduled";
+            toggleSectionFrames(frame_sec1, btn_section1);
         }
 
         private void btn_section2_Clicked(object sender, EventArgs e)
         {
             //toggleSectionFrames(frame_sec2, btn_section2, date_scheduledDayLimitDate_Sec2, entry_scheduledDayLimit_Sec2,picker_drumSection_Sec2);
-            toggleSectionFrames(frame_sec2, btn_section2, date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2, picker_drumSection_Sec2);
-            picker_drumSection_Sec2.SelectedItem = "Scheduled";
+            //toggleSectionFrames(frame_sec2, btn_section2, date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2, picker_drumSection_Sec2);
+            //picker_drumSection_Sec2.SelectedItem = "Scheduled";
+            toggleSectionFrames(frame_sec2, btn_section2);
         }
 
         private void btn_section3_Clicked(object sender, EventArgs e)
         {
             //toggleSectionFrames(frame_sec3, btn_section3, date_scheduledDayLimitDate_Sec3, entry_scheduledDayLimit_Sec3, picker_drumSection_Sec3);
-            toggleSectionFrames(frame_sec3, btn_section3, date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3, picker_drumSection_Sec3);
-            picker_drumSection_Sec3.SelectedItem = "Scheduled";
+            //toggleSectionFrames(frame_sec3, btn_section3, date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3, picker_drumSection_Sec3);
+            //picker_drumSection_Sec3.SelectedItem = "Scheduled";
+            toggleSectionFrames(frame_sec3, btn_section3);
         }
 
         private void btn_section4_Clicked(object sender, EventArgs e)
         {
             //toggleSectionFrames(frame_sec4, btn_section4, date_scheduledDayLimitDate_Sec4, entry_scheduledDayLimit_Sec4, picker_drumSection_Sec4);
-            toggleSectionFrames(frame_sec4, btn_section4, date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4, picker_drumSection_Sec4);
-            picker_drumSection_Sec4.SelectedItem = "Scheduled";
+            //toggleSectionFrames(frame_sec4, btn_section4, date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4, picker_drumSection_Sec4);
+            //picker_drumSection_Sec4.SelectedItem = "Scheduled";
+            toggleSectionFrames(frame_sec4, btn_section4);
         }
 
         private void picker_sectionCount_SelectedIndexChanged(object sender, EventArgs e)
@@ -1992,8 +1734,8 @@ namespace TQM
                         btn_section3.BackgroundColor = Color.FromHex("#0e0273");
                         frame_sec2.IsVisible = false;
                         frame_sec3.IsVisible = false;
-                        entry_Drums_Sec1.Text = "1." + totalDrumCount.ToString();
-                        entry_Drums_Sec1.IsEnabled = false;
+                        //entry_Drums_Sec1.Text = "1." + totalDrumCount.ToString();
+                        //entry_Drums_Sec1.IsEnabled = false;
                     }
                     if (picker_sectionCount.SelectedItem.ToString() == "2")
                     {
@@ -2006,9 +1748,9 @@ namespace TQM
                         int reminder = totalDrumCount % 2;
                         int equalPortion = (totalDrumCount - reminder) / 2;
 
-                        entry_Drums_Sec1.Text = "1." + equalPortion.ToString();
-                        entry_Drums_Sec1.IsEnabled = true;
-                        entry_Drums_Sec2.Text = (equalPortion + 1).ToString() + "." + totalDrumCount;
+                        //entry_Drums_Sec1.Text = "1." + equalPortion.ToString();
+                        //entry_Drums_Sec1.IsEnabled = true;
+                        //entry_Drums_Sec2.Text = (equalPortion + 1).ToString() + "." + totalDrumCount;
 
                     }
                     if (picker_sectionCount.SelectedItem.ToString() == "3")
@@ -2020,10 +1762,10 @@ namespace TQM
                         int reminder = totalDrumCount % 3;
                         int equalPortion = (totalDrumCount - reminder) / 3;
 
-                        entry_Drums_Sec1.Text = "1." + equalPortion.ToString();
-                        entry_Drums_Sec1.IsEnabled = true;
-                        entry_Drums_Sec2.Text = (equalPortion + 1).ToString() + "." + (equalPortion * 2);
-                        entry_Drums_Sec3.Text = ((equalPortion * 2) + 1).ToString() + "." + totalDrumCount;
+                        //entry_Drums_Sec1.Text = "1." + equalPortion.ToString();
+                        //entry_Drums_Sec1.IsEnabled = true;
+                        //entry_Drums_Sec2.Text = (equalPortion + 1).ToString() + "." + (equalPortion * 2);
+                        //entry_Drums_Sec3.Text = ((equalPortion * 2) + 1).ToString() + "." + totalDrumCount;
                     }
                     if (picker_sectionCount.SelectedItem.ToString() == "4")
                     {
@@ -2035,11 +1777,11 @@ namespace TQM
                         int reminder = totalDrumCount % 4;
                         int equalPortion = (totalDrumCount - reminder) / 4;
 
-                        entry_Drums_Sec1.Text = "1." + equalPortion.ToString();//1.4
-                        entry_Drums_Sec1.IsEnabled = true;
-                        entry_Drums_Sec2.Text = (equalPortion + 1).ToString() + "." + (equalPortion * 2);//5.8
-                        entry_Drums_Sec3.Text = ((equalPortion * 2) + 1).ToString() + "." + (equalPortion * 3);//9.12
-                        entry_Drums_Sec4.Text = ((equalPortion * 3) + 1).ToString() + "." + totalDrumCount;//13.16
+                        //entry_Drums_Sec1.Text = "1." + equalPortion.ToString();//1.4
+                        //entry_Drums_Sec1.IsEnabled = true;
+                        //entry_Drums_Sec2.Text = (equalPortion + 1).ToString() + "." + (equalPortion * 2);//5.8
+                        //entry_Drums_Sec3.Text = ((equalPortion * 2) + 1).ToString() + "." + (equalPortion * 3);//9.12
+                        //entry_Drums_Sec4.Text = ((equalPortion * 3) + 1).ToString() + "." + totalDrumCount;//13.16
                     }
                 }
                 //else
@@ -2216,84 +1958,84 @@ namespace TQM
             calculateDrumNumbers();
         }
 
-        void date_scheduledStartDate_Sec1_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
-        }
+        //void date_scheduledStartDate_Sec1_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
+        //}
 
-        void date_scheduledStartDate_Sec1_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
-        }
+        //void date_scheduledStartDate_Sec1_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
+        //}
 
-        void date_scheduledEndDate_Sec1_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
-        }
+        //void date_scheduledEndDate_Sec1_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
+        //}
 
-        void date_scheduledEndDate_Sec1_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
-        }
+        //void date_scheduledEndDate_Sec1_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec1, date_scheduledEndDate_Sec1, entry_scheduledDayLimit_Sec1);
+        //}
 
-        void date_scheduledStartDate_Sec2_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
-        }
+        //void date_scheduledStartDate_Sec2_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
+        //}
 
-        void date_scheduledStartDate_Sec2_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
-        }
+        //void date_scheduledStartDate_Sec2_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
+        //}
 
-        void date_scheduledEndDate_Sec2_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
-        }
+        //void date_scheduledEndDate_Sec2_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
+        //}
 
-        void date_scheduledEndDate_Sec2_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
-        }
+        //void date_scheduledEndDate_Sec2_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec2, date_scheduledEndDate_Sec2, entry_scheduledDayLimit_Sec2);
+        //}
 
-        void date_scheduledStartDate_Sec3_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
-        }
+        //void date_scheduledStartDate_Sec3_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
+        //}
 
-        void date_scheduledStartDate_Sec3_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
-        }
+        //void date_scheduledStartDate_Sec3_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
+        //}
 
-        void date_scheduledEndDate_Sec3_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
-        }
+        //void date_scheduledEndDate_Sec3_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
+        //}
 
-        void date_scheduledEndDate_Sec3_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
-        }
+        //void date_scheduledEndDate_Sec3_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec3, date_scheduledEndDate_Sec3, entry_scheduledDayLimit_Sec3);
+        //}
 
-        void date_scheduledStartDate_Sec4_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
-        }
+        //void date_scheduledStartDate_Sec4_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
+        //}
 
-        void date_scheduledStartDate_Sec4_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
-        }
+        //void date_scheduledStartDate_Sec4_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
+        //}
 
-        void date_scheduledEndDate_Sec4_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
-        }
+        //void date_scheduledEndDate_Sec4_DateSelected(System.Object sender, Xamarin.Forms.DateChangedEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
+        //}
 
-        void date_scheduledEndDate_Sec4_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
-        {
-            calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
-        }
+        //void date_scheduledEndDate_Sec4_Unfocused(System.Object sender, Xamarin.Forms.FocusEventArgs e)
+        //{
+        //    calculateDay(date_scheduledStartDate_Sec4, date_scheduledEndDate_Sec4, entry_scheduledDayLimit_Sec4);
+        //}
     }
 }
