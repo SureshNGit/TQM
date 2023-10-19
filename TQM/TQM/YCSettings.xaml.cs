@@ -287,6 +287,16 @@ namespace TQM
             entry_p2Deviation.Text = ycConfig.p2Deviation.ToString();
             entry_n1.Text = ycConfig.n1.ToString();
             entry_n1Deviation.Text = ycConfig.n1Deviation.ToString();
+            entry_strengthDeviation.Text = ycConfig.stdRollingStrength.ToString();
+            entry_strengthDeviation.Text = ycConfig.strengthDeviation.ToString();
+            entry_MinLimit.Text = ycConfig.belowLimit.ToString();
+            entry_MaxLimit.Text = ycConfig.maxLimit.ToString();
+            entry_totalTestCount.Text = ycConfig.totalSamples.ToString();
+            entry_matCount.Text = ycConfig.materialCount;
+            date_scheduledStartDate.Date = ycConfig.scheduledStartDate;
+            date_scheduledEndDate.Date = ycConfig.scheduledEndDate;
+
+
             //Section-1
             //entry_stdRollingStrength_Sec1.Text = ycConfig.stdRollingStrength_s1.ToString();
             //entry_strengthDeviation_Sec1.Text = ycConfig.strengthDeviation_s1.ToString();
@@ -680,14 +690,7 @@ namespace TQM
                     return;
                 }
 
-                decimal stdRollingStrength = 0.0m;
-                decimal strengthDeviation = 0.0m;
-                int minLimit = 0;
-                int maxLimit = 0;
-                DateTime scheduleStartDate = DateTime.Now;
-                DateTime scheduleEndDate = DateTime.Now;
-                int totalSampleCount = 0;
-                string matCount = "";
+                
 
                 string drumNumbers_S1 = "0.0";
                 if (btn_section1.IsVisible)
@@ -712,8 +715,8 @@ namespace TQM
                         DisplayAlert("Attention", "Drum Number (To) should not be blank or negative in section-1!!!", "Ok");
                         return;
                     }
+                    drumNumbers_S1 = decimal.Parse(entry_Drums_from_s1.Text + "." + entry_Drums_to_s1.Text).ToString();
                 }
-
 
                 string drumNumbers_S2 = "0.0";
                 if (btn_section2.IsVisible)
@@ -738,6 +741,7 @@ namespace TQM
                         DisplayAlert("Attention", "Drum Number (To) should not be blank or negative in section-2!!!", "Ok");
                         return;
                     }
+                    drumNumbers_S2 = decimal.Parse(entry_Drums_from_s2.Text + "." + entry_Drums_to_s2.Text).ToString();
                 }
 
                 string drumNumbers_S3 = "0.0";
@@ -763,6 +767,7 @@ namespace TQM
                         DisplayAlert("Attention", "Drum Number (To) should not be blank or negative in section-3!!!", "Ok");
                         return;
                     }
+                    drumNumbers_S3 = decimal.Parse(entry_Drums_from_s3.Text + "." + entry_Drums_to_s3.Text).ToString();
                 }
 
                 string drumNumbers_S4 = "0.0";
@@ -788,6 +793,7 @@ namespace TQM
                         DisplayAlert("Attention", "Drum Number (To) should not be blank or negative in section-4!!!", "Ok");
                         return;
                     }
+                    drumNumbers_S1 = decimal.Parse(entry_Drums_from_s4.Text + "." + entry_Drums_to_s4.Text).ToString();
                 }
 
                 int totalSections = int.Parse(picker_sectionCount.SelectedItem.ToString());
@@ -1112,54 +1118,31 @@ namespace TQM
                     n1Deviation = decimal.Parse(entry_n1Deviation.Text.ToString()),
                     totalDrumCount = int.Parse(entry_drumCount.Text),
                     totalSections = int.Parse(picker_sectionCount.SelectedItem.ToString()),
+                    stdRollingStrength = decimal.Parse(entry_stdRollingStrength.Text),
+                    strengthDeviation = decimal.Parse(entry_strengthDeviation.Text),
+                    belowLimit = int.Parse(entry_MinLimit.Text),
+                    maxLimit = int.Parse(entry_MaxLimit.Text),
+                    totalSamples = int.Parse(entry_totalTestCount.Text),
+                    materialCount = entry_matCount.Text,
+                    scheduledStartDate = date_scheduledStartDate.Date,
+                    scheduledEndDate = date_scheduledEndDate.Date,
                     //Section-1
-                    stdRollingStrength_s1 = stdRollingStrength_S1,
-                    strengthDeviation_s1 = strengthDeviation_S1,
-                    belowLimit_s1 = belowLimit_S1,
-                    totalSamples_s1 = totalSampleCount_S1,
+
                     drumNumbers_s1 = drumNumbers_S1,
-                    drumSelectionMethod_s1 = drumSelectionMethod_S1,
-                    scheduledDayLimit_s1 = scheduledDayLimit_S1,
-                    scheduledStartDate_s1 = scheduleStartDate_S1,
-                    scheduledEndDate_s1 = scheduleEndDate_S1,
-                    maxRollingCount_s1 = maxRollingCount_S1,
-                    materialCount_s1 = matCount_S1,
+                    
+                    
                     //Section-2
-                    stdRollingStrength_s2 = stdRollingStrength_S2,
-                    strengthDeviation_s2 = strengthDeviation_S2,
-                    belowLimit_s2 = belowLimit_S2,
-                    totalSamples_s2 = totalSampleCount_S2,
+                    
                     drumNumbers_s2 = drumNumbers_S2,
-                    drumSelectionMethod_s2 = drumSelectionMethod_S2,
-                    scheduledDayLimit_s2 = scheduledDayLimit_S2,
-                    scheduledStartDate_s2 = scheduleStartDate_S2,
-                    scheduledEndDate_s2 = scheduleEndDate_S2,
-                    maxRollingCount_s2 = maxRollingCount_S2,
-                    materialCount_s2 = matCount_S2,
+                   
                     //Section-3
-                    stdRollingStrength_s3 = stdRollingStrength_S3,
-                    strengthDeviation_s3 = strengthDeviation_S3,
-                    belowLimit_s3 = belowLimit_S3,
-                    totalSamples_s3 = totalSampleCount_S3,
+                    
                     drumNumbers_s3 = drumNumbers_S3,
-                    drumSelectionMethod_s3 = drumSelectionMethod_S3,
-                    scheduledDayLimit_s3 = scheduledDayLimit_S3,
-                    scheduledStartDate_s3 = scheduleStartDate_S3,
-                    scheduledEndDate_s3 = scheduleEndDate_S3,
-                    maxRollingCount_s3 = maxRollingCount_S3,
-                    materialCount_s3 = matCount_S3,
+                    
                     //Section-4
-                    stdRollingStrength_s4 = stdRollingStrength_S4,
-                    strengthDeviation_s4 = strengthDeviation_S4,
-                    belowLimit_s4 = belowLimit_S4,
-                    totalSamples_s4 = totalSampleCount_S4,
+                   
                     drumNumbers_s4 = drumNumbers_S4,
-                    drumSelectionMethod_s4 = drumSelectionMethod_S4,
-                    scheduledDayLimit_s4 = scheduledDayLimit_S4,
-                    scheduledStartDate_s4 = scheduleStartDate_S4,
-                    scheduledEndDate_s4 = scheduleEndDate_S4,
-                    maxRollingCount_s4 = maxRollingCount_S4,
-                    materialCount_s4 = matCount_S4,
+                    
                     //Shift Details
                     shiftCount = int.Parse(picker_shiftCount.SelectedItem.ToString()),
                     shift1time = shift1.Hours.ToString() + ":" + shift1.Minutes.ToString(),
@@ -1295,50 +1278,18 @@ namespace TQM
                             n1Deviation = cm.n1Deviation,
                             totalDrumCount = cm.totalDrumCount,
                             totalSections = cm.totalSections,
-                            stdRollingStrength_s1 = cm.stdRollingStrength_s1,
-                            strengthDeviation_s1 = cm.strengthDeviation_s1,
-                            belowLimit_s1 = cm.belowLimit_s1,
-                            totalSamples_s1 = cm.totalSamples_s1,
+                            stdRollingStrength = cm.stdRollingStrength,
+                            strengthDeviation = cm.strengthDeviation,
+                            belowLimit = cm.belowLimit,
+                            maxLimit = cm.maxLimit,
+                            totalSamples = cm.totalSamples,
+                            materialCount = cm.materialCount,
+                            scheduledStartDate = cm.scheduledStartDate,
+                            scheduledEndDate = cm.scheduledEndDate,
                             drumNumbers_s1 = cm.drumNumbers_s1,
-                            drumSelectionMethod_s1 = cm.drumSelectionMethod_s1,
-                            scheduledDayLimit_s1 = cm.scheduledDayLimit_s1,
-                            scheduledStartDate_s1 = cm.scheduledStartDate_s1,
-                            scheduledEndDate_s1 = cm.scheduledEndDate_s1,
-                            maxRollingCount_s1 = cm.maxRollingCount_s1,
-                            materialCount_s1 = cm.materialCount_s1,
-                            stdRollingStrength_s2 = cm.stdRollingStrength_s2,
-                            strengthDeviation_s2 = cm.strengthDeviation_s2,
-                            belowLimit_s2 = cm.belowLimit_s2,
-                            totalSamples_s2 = cm.totalSamples_s2,
                             drumNumbers_s2 = cm.drumNumbers_s2,
-                            drumSelectionMethod_s2 = cm.drumSelectionMethod_s2,
-                            scheduledDayLimit_s2 = cm.scheduledDayLimit_s2,
-                            scheduledStartDate_s2 = cm.scheduledStartDate_s2,
-                            scheduledEndDate_s2 = cm.scheduledEndDate_s2,
-                            maxRollingCount_s2 = cm.maxRollingCount_s2,
-                            materialCount_s2 = cm.materialCount_s2,
-                            stdRollingStrength_s3 = cm.stdRollingStrength_s3,
-                            strengthDeviation_s3 = cm.strengthDeviation_s3,
-                            belowLimit_s3 = cm.belowLimit_s3,
-                            totalSamples_s3 = cm.totalSamples_s3,
                             drumNumbers_s3 = cm.drumNumbers_s3,
-                            drumSelectionMethod_s3 = cm.drumSelectionMethod_s3,
-                            scheduledDayLimit_s3 = cm.scheduledDayLimit_s3,
-                            scheduledStartDate_s3 = cm.scheduledStartDate_s3,
-                            scheduledEndDate_s3 = cm.scheduledEndDate_s3,
-                            maxRollingCount_s3 = cm.maxRollingCount_s3,
-                            materialCount_s3 = cm.materialCount_s3,
-                            stdRollingStrength_s4 = cm.stdRollingStrength_s4,
-                            strengthDeviation_s4 = cm.strengthDeviation_s4,
-                            belowLimit_s4 = cm.belowLimit_s4,
-                            totalSamples_s4 = cm.totalSamples_s4,
                             drumNumbers_s4 = cm.drumNumbers_s4,
-                            drumSelectionMethod_s4 = cm.drumSelectionMethod_s4,
-                            scheduledDayLimit_s4 = cm.scheduledDayLimit_s4,
-                            scheduledStartDate_s4 = cm.scheduledStartDate_s4,
-                            scheduledEndDate_s4 = cm.scheduledEndDate_s4,
-                            maxRollingCount_s4 = cm.maxRollingCount_s4,
-                            materialCount_s4 = cm.materialCount_s4,
                             shiftCount = cm.shiftCount,
                             shift1time = cm.shift1time,
                             shift2time = cm.shift2time,
