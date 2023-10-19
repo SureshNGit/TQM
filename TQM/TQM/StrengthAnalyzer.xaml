@@ -114,7 +114,7 @@
             </Picker>
 
             <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding machineName}"
-                    SelectedIndexChanged="picker_machinename_SelectedIndexChanged" 
+                    SelectedIndexChanged="picker_machinename_SelectedIndexChanged" IsEnabled="False"
                     x:Name="picker_machinename" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Picker.Effects>
                     <effects:PlainEntry/>
@@ -130,7 +130,7 @@
             </Entry>
             
             <Picker Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding drumNumber}"
-                    SelectedIndexChanged="picker_drumNumber_SelectedIndexChanged" IsEnabled="True"
+                    SelectedIndexChanged="picker_drumNumber_SelectedIndexChanged" IsEnabled="False"
                     x:Name="picker_drumNumber" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
                 <Picker.Effects>
                     <effects:PlainEntry/>

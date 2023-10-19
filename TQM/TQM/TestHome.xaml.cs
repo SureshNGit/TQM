@@ -22,7 +22,15 @@ namespace TQM
         public TestHome ()
 		{
 			InitializeComponent ();
-		}
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                //conn.DropTable<StrengthTestModel>();
+                //conn.DropTable<StrengthTestSummaryModel>();
+
+                conn.CreateTable<StrengthTestModel>();
+                conn.CreateTable<StrengthTestSummaryModel>();
+            }
+        }
 
         private void picker_machinename_SelectedIndexChanged(object sender, EventArgs e)
         {

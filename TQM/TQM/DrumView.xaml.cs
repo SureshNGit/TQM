@@ -53,7 +53,7 @@ namespace TQM
                 if ((firstDrumNo + 10) <= selectedDrumEndNo) { dv.D10 = (firstDrumNo + 10).ToString(); dv.D10_Visible = true; } else { dv.D10 = ""; dv.D10_Visible = false; }
 				dv_list.Add(dv);
                 i += 9;
-                firstDrumNo += 9;
+                firstDrumNo += 10;
             }
 			listview_drums.ItemsSource = dv_list;
 			listview_drums.IsVisible = true;
@@ -64,8 +64,14 @@ namespace TQM
             var btn = (Button)sender;
             int selectedDrumNumber = 0;
             int.TryParse(btn.Text, out selectedDrumNumber);
-            DisplayAlert("Alert!!!", "Selected drum for test is " + selectedDrumNumber.ToString(), "Ok");
-            Navigation.PushAsync(new StrengthAnalyzer());
+            //DisplayAlert("Alert!!!", "Selected drum for test is " + selectedDrumNumber.ToString(), "Ok");
+            Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
+                                                        selectedMachineID,
+                                                        selectedMachineName,
+                                                        selectedSectionNo,
+                                                        selectedDrumNumber,
+                                                        selectedDrumStartNo,
+                                                        selectedDrumEndNo));
         }
 
         void ViewCell_Tapped(System.Object sender, System.EventArgs e)

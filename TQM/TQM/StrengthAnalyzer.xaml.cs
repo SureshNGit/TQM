@@ -64,6 +64,8 @@ namespace TQM
         private int selectedSectionNumber = 0;
         public string selectedTotalDrumNumbers = "";
         private int selectedDrumNumber = 0;
+        private int selectedDrumStartNo = 0;
+        private int selectedDrumEndNo = 0;
         private decimal selectedStandardStrength = 0.0m;
         private decimal selectedStrengthDeviation = 0.0m;
         private int selectedBelowLimit = 0;
@@ -96,14 +98,67 @@ namespace TQM
         public StrengthAnalyzer()
         {
             InitializeComponent();
+            initializer();
+        }
+
+        public StrengthAnalyzer(string machineCat, Guid machineID, string machineName, int sectionNo, int drumNo,int drumStartNo, int drumEndNo)
+        {   InitializeComponent();
+            initializer();
+            selectedMachineCategory = machineCat;
+            selectedMachineID = machineID;
+            selectedMachineName = machineName;
+            selectedSectionNumber = sectionNo;
+            selectedDrumNumber = drumNo;
+            selectedDrumStartNo = drumStartNo;
+            selectedDrumEndNo = drumEndNo;
+            IList<string> machineCategorylist = picker_machinecategory.Items;
+            int machineCatindex = 0;
+            foreach (string mCat in machineCategorylist)
+            {
+                if (mCat != machineCat)
+                {
+                    machineCatindex++;
+                }
+                else { break; }
+            }
+            picker_machinecategory.SelectedIndex = machineCatindex;
+
+            IList<string> machinelist = picker_machinename.Items;
+            int machineindex = 0;
+            foreach (string m in machinelist)
+            {
+                if (m != machineName)
+                {
+                    machineindex++;
+                }
+                else { break; }
+            }
+            picker_machinename.SelectedIndex = machineindex;
+
+            IList<string> drumNumberlist = picker_drumNumber.Items;
+            int drumNumberindex = 0;
+            foreach (string drum in drumNumberlist)
+            {
+                if (drum != drumNo.ToString())
+                {
+                    drumNumberindex++;
+                }
+                else { break; }
+            }
+            picker_drumNumber.SelectedIndex = drumNumberindex;
+        }
+
+
+        private void initializer()
+        {
             picker_machinecategory.SelectedItem = "OE Auto Coner";
             lbl_TestID.Text = "";
             //lbl_TestID.Text = "999999999";
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                //conn.DropTable<StrengthTestModel>();
-                //conn.DropTable<StrengthTestSummaryModel>();
+                conn.DropTable<StrengthTestModel>();
+                conn.DropTable<StrengthTestSummaryModel>();
                 //conn.DropTable<TestConfigModel>();
 
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
@@ -195,7 +250,8 @@ namespace TQM
                 //****************** Resume Test **********************
                 conn.CreateTable<StrengthTestModel>();
                 int totalRecords = conn.Table<StrengthTestModel>().Count();
-                if (totalRecords > 0) {
+                if (totalRecords > 0)
+                {
                     DateTime maxDate = conn.Table<StrengthTestModel>().Max(StrengthTestModel => StrengthTestModel.createdate);
                     if (DateTime.Now <= maxDate)
                     {
@@ -444,11 +500,9 @@ namespace TQM
                                             + yarncountconfigmodel.n1.ToString();
 
 
-                    List<string> drums = new List<string>();
-                    int totalDrums = yarncountconfigmodel.totalDrumCount;
-                    for (int d = 0; d < totalDrums; d++)
+                    for (int d = int.Parse(yarncountconfigmodel.drumNumbers_s1.Split('.')[0]); d <= int.Parse(yarncountconfigmodel.drumNumbers_s1.Split('.')[1]); d++)
                     {
-                        picker_drumNumber.Items.Add((d + 1).ToString());
+                        picker_drumNumber.Items.Add((d).ToString());
                     }
                     TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
@@ -783,39 +837,18 @@ namespace TQM
                             n1Deviation = cm.n1Deviation,
                             totalDrumCount = cm.totalDrumCount,
                             totalSections = cm.totalSections,
-                            stdRollingStrength_s1 = cm.stdRollingStrength_s1,
-                            strengthDeviation_s1 = cm.strengthDeviation_s1,
-                            belowLimit_s1 = cm.belowLimit_s1,
-                            totalSamples_s1 = cm.totalSamples_s1,
+                            stdRollingStrength = cm.stdRollingStrength,
+                            strengthDeviation = cm.strengthDeviation,
+                            belowLimit = cm.belowLimit,
+                            maxLimit = cm.maxLimit,
+                            totalSamples = cm.totalSamples,
+                            scheduledStartDate = cm.scheduledStartDate,
+                            scheduledEndDate = cm.scheduledEndDate,
+                            materialCount = cm.materialCount,
                             drumNumbers_s1 = cm.drumNumbers_s1,
-                            drumSelectionMethod_s1 = cm.drumSelectionMethod_s1,
-                            scheduledDayLimit_s1 = cm.scheduledDayLimit_s1,
-                            scheduledStartDate_s1 = cm.scheduledStartDate_s1,
-                            scheduledEndDate_s1 = cm.scheduledEndDate_s1,
-                            maxRollingCount_s1 = cm.maxRollingCount_s1,
-                            materialCount_s1 = cm.materialCount_s1,
-                            stdRollingStrength_s2 = cm.stdRollingStrength_s2,
-                            strengthDeviation_s2 = cm.strengthDeviation_s2,
-                            belowLimit_s2 = cm.belowLimit_s2,
-                            totalSamples_s2 = cm.totalSamples_s2,
                             drumNumbers_s2 = cm.drumNumbers_s2,
-                            drumSelectionMethod_s2 = cm.drumSelectionMethod_s2,
-                            scheduledDayLimit_s2 = cm.scheduledDayLimit_s2,
-                            scheduledStartDate_s2 = cm.scheduledStartDate_s2,
-                            scheduledEndDate_s2 = cm.scheduledEndDate_s2,
-                            maxRollingCount_s2 = cm.maxRollingCount_s2,
-                            materialCount_s2 = cm.materialCount_s2,
-                            stdRollingStrength_s3 = cm.stdRollingStrength_s3,
-                            strengthDeviation_s3 = cm.strengthDeviation_s3,
-                            belowLimit_s3 = cm.belowLimit_s3,
-                            totalSamples_s3 = cm.totalSamples_s3,
                             drumNumbers_s3 = cm.drumNumbers_s3,
-                            drumSelectionMethod_s3 = cm.drumSelectionMethod_s3,
-                            scheduledDayLimit_s3 = cm.scheduledDayLimit_s3,
-                            scheduledStartDate_s3 = cm.scheduledStartDate_s3,
-                            scheduledEndDate_s3 = cm.scheduledEndDate_s3,
-                            maxRollingCount_s3 = cm.maxRollingCount_s3,
-                            materialCount_s3 = cm.materialCount_s3,
+                            drumNumbers_s4 = cm.drumNumbers_s4,
                             shiftCount = cm.shiftCount,
                             shift1time = cm.shift1time,
                             shift2time = cm.shift2time,
@@ -1884,7 +1917,7 @@ namespace TQM
                                                                 ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
                     if (yarncountconfigmodel != null)
                     {
-                        if (yarncountconfigmodel.totalSections == 3)
+                        if (yarncountconfigmodel.totalSections == 4)
                         {
                             int sec1_lowerLimit =int.Parse(yarncountconfigmodel.drumNumbers_s1.ToString().Split('.')[0]);
                             int sec1_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s1.ToString().Split('.')[1]);
@@ -1895,12 +1928,15 @@ namespace TQM
                             int sec3_lowerLimit = int.Parse(yarncountconfigmodel.drumNumbers_s3.ToString().Split('.')[0]);
                             int sec3_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s3.ToString().Split('.')[1]);
 
-                            if(selectedDrumNumber>=sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
+                            int sec4_lowerLimit = int.Parse(yarncountconfigmodel.drumNumbers_s4.ToString().Split('.')[0]);
+                            int sec4_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s4.ToString().Split('.')[1]);
+
+                            if (selectedDrumNumber>=sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
                             {
                                 selectedSectionNumber = 1;
                                 selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s1;
-                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s1;
-                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
                                 selectedSpeed = yarncountconfigmodel.speed;
@@ -1911,9 +1947,9 @@ namespace TQM
                                 selectedN1 = yarncountconfigmodel.n1;
                                 selectedN1Deviation = yarncountconfigmodel.n1Deviation;
 
-                                selectedBelowLimit = yarncountconfigmodel.belowLimit_s1;
-                                selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s1;
-                                selectedMaterialCount = yarncountconfigmodel.materialCount_s1;
+                                selectedBelowLimit = yarncountconfigmodel.belowLimit;
+                                selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
+                                selectedMaterialCount = yarncountconfigmodel.materialCount;
 
                                 if(DateTime.Now.Date > scheduledEndDate && isTestResume ==false)
                                 {
@@ -1924,34 +1960,21 @@ namespace TQM
                                     return;
                                 }
 
-                                startDate = yarncountconfigmodel.scheduledStartDate_s1;
-                                endDate = yarncountconfigmodel.scheduledEndDate_s1;
-                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
-                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s1.ToString();
-                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s1.ToString() + " & " + yarncountconfigmodel.maxRollingCount_s1.ToString();
-                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s1.ToString();
-                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
-                                int drumSelectionMethodIndex = 0;
-                                foreach (string ds in drumSelectionMethodList)
-                                {
-                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s1.ToString())
-                                    {
-                                        drumSelectionMethodIndex++;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                                startDate = yarncountconfigmodel.scheduledStartDate;
+                                endDate = yarncountconfigmodel.scheduledEndDate;
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
+                                picker_drumSelection.SelectedItem = "Scheduled";
                             }
 
                             if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
                             {
                                 selectedSectionNumber = 2;
                                 selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s2;
-                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s2;
-                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s2;
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
                                 selectedSpeed = yarncountconfigmodel.speed;
@@ -1962,9 +1985,9 @@ namespace TQM
                                 selectedN1 = yarncountconfigmodel.n1;
                                 selectedN1Deviation = yarncountconfigmodel.n1Deviation;
 
-                                selectedBelowLimit = yarncountconfigmodel.belowLimit_s2;
-                                selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s2;
-                                selectedMaterialCount = yarncountconfigmodel.materialCount_s2;
+                                selectedBelowLimit = yarncountconfigmodel.belowLimit;
+                                selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
+                                selectedMaterialCount = yarncountconfigmodel.materialCount;
 
                                 if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
                                 {
@@ -1975,34 +1998,21 @@ namespace TQM
                                     return;
                                 }
 
-                                startDate = yarncountconfigmodel.scheduledStartDate_s2;
-                                endDate = yarncountconfigmodel.scheduledEndDate_s2;
-                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s2.ToString();
-                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s2.ToString();
-                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s2.ToString() + " & " + yarncountconfigmodel.maxRollingCount_s2.ToString();
-                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s2.ToString();
-                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
-                                int drumSelectionMethodIndex = 0;
-                                foreach (string ds in drumSelectionMethodList)
-                                {
-                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s2.ToString())
-                                    {
-                                        drumSelectionMethodIndex++;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                                startDate = yarncountconfigmodel.scheduledStartDate;
+                                endDate = yarncountconfigmodel.scheduledEndDate;
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
+                                picker_drumSelection.SelectedItem = "Scheduled";
                             }
 
                             if (selectedDrumNumber >= sec3_lowerLimit && selectedDrumNumber <= sec3_upperLimit)
                             {
                                 selectedSectionNumber = 3;
                                 selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s3;
-                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s3;
-                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s3;
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
                                 selectedSpeed = yarncountconfigmodel.speed;
@@ -2013,9 +2023,9 @@ namespace TQM
                                 selectedN1 = yarncountconfigmodel.n1;
                                 selectedN1Deviation = yarncountconfigmodel.n1Deviation;
 
-                                selectedBelowLimit = yarncountconfigmodel.belowLimit_s3;
-                                selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s3;
-                                selectedMaterialCount = yarncountconfigmodel.materialCount_s3;
+                                selectedBelowLimit = yarncountconfigmodel.belowLimit;
+                                selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
+                                selectedMaterialCount = yarncountconfigmodel.materialCount;
 
                                 if (DateTime.Now.Date > scheduledEndDate && isTestResume==false)
                                 {
@@ -2026,26 +2036,176 @@ namespace TQM
                                     return;
                                 }
 
-                                startDate = yarncountconfigmodel.scheduledStartDate_s3;
-                                endDate = yarncountconfigmodel.scheduledEndDate_s3;
-                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s3.ToString();
-                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s3.ToString();
-                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s3.ToString() + " & " + yarncountconfigmodel.maxRollingCount_s3.ToString();
-                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s3.ToString();
-                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
-                                int drumSelectionMethodIndex = 0;
-                                foreach (string ds in drumSelectionMethodList)
+                                startDate = yarncountconfigmodel.scheduledStartDate;
+                                endDate = yarncountconfigmodel.scheduledEndDate;
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
+                                picker_drumSelection.SelectedItem = "Scheduled";
+                            }
+
+                            if (selectedDrumNumber >= sec4_lowerLimit && selectedDrumNumber <= sec4_upperLimit)
+                            {
+                                selectedSectionNumber = 4;
+                                selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s4;
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate;
+                                settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
+                                selectedSpeed = yarncountconfigmodel.speed;
+                                selectedP1 = yarncountconfigmodel.p1;
+                                selectedP1Deviation = yarncountconfigmodel.p1Deviation;
+                                selectedP2 = yarncountconfigmodel.p2;
+                                selectedP2Deviation = yarncountconfigmodel.p2Deviation;
+                                selectedN1 = yarncountconfigmodel.n1;
+                                selectedN1Deviation = yarncountconfigmodel.n1Deviation;
+
+                                selectedBelowLimit = yarncountconfigmodel.belowLimit;
+                                selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
+                                selectedMaterialCount = yarncountconfigmodel.materialCount;
+
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
                                 {
-                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s3.ToString())
-                                    {
-                                        drumSelectionMethodIndex++;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
+                                    picker_drumNumber.SelectedIndex = -1;
+                                    picker_drumSelection.IsEnabled = false;
+                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                    return;
                                 }
-                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+
+                                startDate = yarncountconfigmodel.scheduledStartDate;
+                                endDate = yarncountconfigmodel.scheduledEndDate;
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
+                                picker_drumSelection.SelectedItem = "Scheduled";
+                            }
+                        }
+                        else if (yarncountconfigmodel.totalSections == 3)
+                        {
+                            int sec1_lowerLimit = int.Parse(yarncountconfigmodel.drumNumbers_s1.ToString().Split('.')[0]);
+                            int sec1_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s1.ToString().Split('.')[1]);
+
+                            int sec2_lowerLimit = int.Parse(yarncountconfigmodel.drumNumbers_s2.ToString().Split('.')[0]);
+                            int sec2_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s2.ToString().Split('.')[1]);
+
+                            int sec3_lowerLimit = int.Parse(yarncountconfigmodel.drumNumbers_s3.ToString().Split('.')[0]);
+                            int sec3_upperLimit = int.Parse(yarncountconfigmodel.drumNumbers_s3.ToString().Split('.')[1]);
+
+                            if (selectedDrumNumber >= sec1_lowerLimit && selectedDrumNumber <= sec1_upperLimit)
+                            {
+                                selectedSectionNumber = 1;
+                                selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s1;
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate;
+                                settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
+                                selectedSpeed = yarncountconfigmodel.speed;
+                                selectedP1 = yarncountconfigmodel.p1;
+                                selectedP1Deviation = yarncountconfigmodel.p1Deviation;
+                                selectedP2 = yarncountconfigmodel.p2;
+                                selectedP2Deviation = yarncountconfigmodel.p2Deviation;
+                                selectedN1 = yarncountconfigmodel.n1;
+                                selectedN1Deviation = yarncountconfigmodel.n1Deviation;
+
+                                selectedBelowLimit = yarncountconfigmodel.belowLimit;
+                                selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
+                                selectedMaterialCount = yarncountconfigmodel.materialCount;
+
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
+                                {
+                                    picker_drumNumber.SelectedIndex = -1;
+                                    picker_drumSelection.IsEnabled = false;
+                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                    return;
+                                }
+
+                                startDate = yarncountconfigmodel.scheduledStartDate;
+                                endDate = yarncountconfigmodel.scheduledEndDate;
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
+                                picker_drumSelection.SelectedItem = "Scheduled";
+                            }
+
+                            if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
+                            {
+                                selectedSectionNumber = 2;
+                                selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s2;
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate;
+                                settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
+                                selectedSpeed = yarncountconfigmodel.speed;
+                                selectedP1 = yarncountconfigmodel.p1;
+                                selectedP1Deviation = yarncountconfigmodel.p1Deviation;
+                                selectedP2 = yarncountconfigmodel.p2;
+                                selectedP2Deviation = yarncountconfigmodel.p2Deviation;
+                                selectedN1 = yarncountconfigmodel.n1;
+                                selectedN1Deviation = yarncountconfigmodel.n1Deviation;
+
+                                selectedBelowLimit = yarncountconfigmodel.belowLimit;
+                                selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
+                                selectedMaterialCount = yarncountconfigmodel.materialCount;
+
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
+                                {
+                                    picker_drumNumber.SelectedIndex = -1;
+                                    picker_drumSelection.IsEnabled = false;
+                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                    return;
+                                }
+
+                                startDate = yarncountconfigmodel.scheduledStartDate;
+                                endDate = yarncountconfigmodel.scheduledEndDate;
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
+                                picker_drumSelection.SelectedItem = "Scheduled";
+                            }
+
+                            if (selectedDrumNumber >= sec3_lowerLimit && selectedDrumNumber <= sec3_upperLimit)
+                            {
+                                selectedSectionNumber = 3;
+                                selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s3;
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate;
+                                settingsUpdatedDate = yarncountconfigmodel.updateddate;
+
+                                selectedSpeed = yarncountconfigmodel.speed;
+                                selectedP1 = yarncountconfigmodel.p1;
+                                selectedP1Deviation = yarncountconfigmodel.p1Deviation;
+                                selectedP2 = yarncountconfigmodel.p2;
+                                selectedP2Deviation = yarncountconfigmodel.p2Deviation;
+                                selectedN1 = yarncountconfigmodel.n1;
+                                selectedN1Deviation = yarncountconfigmodel.n1Deviation;
+
+                                selectedBelowLimit = yarncountconfigmodel.belowLimit;
+                                selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
+                                selectedMaterialCount = yarncountconfigmodel.materialCount;
+
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
+                                {
+                                    picker_drumNumber.SelectedIndex = -1;
+                                    picker_drumSelection.IsEnabled = false;
+                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                    return;
+                                }
+
+                                startDate = yarncountconfigmodel.scheduledStartDate;
+                                endDate = yarncountconfigmodel.scheduledEndDate;
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
+                                picker_drumSelection.SelectedItem = "Scheduled";
                             }
                         }
                         else if (yarncountconfigmodel.totalSections == 2)
@@ -2060,8 +2220,8 @@ namespace TQM
                             {
                                 selectedSectionNumber = 1;
                                 selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s1;
-                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s1;
-                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
                                 selectedSpeed = yarncountconfigmodel.speed;
@@ -2072,11 +2232,11 @@ namespace TQM
                                 selectedN1 = yarncountconfigmodel.n1;
                                 selectedN1Deviation = yarncountconfigmodel.n1Deviation;
 
-                                selectedBelowLimit = yarncountconfigmodel.belowLimit_s1;
-                                selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s1;
-                                selectedMaterialCount = yarncountconfigmodel.materialCount_s1;
+                                selectedBelowLimit = yarncountconfigmodel.belowLimit;
+                                selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
+                                selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume==false)
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -2085,34 +2245,21 @@ namespace TQM
                                     return;
                                 }
 
-                                startDate = yarncountconfigmodel.scheduledStartDate_s1;
-                                endDate = yarncountconfigmodel.scheduledEndDate_s1;
-                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
-                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s1.ToString();
-                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s1.ToString() + " & " + yarncountconfigmodel.maxRollingCount_s1.ToString();
-                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s1.ToString();
-                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
-                                int drumSelectionMethodIndex = 0;
-                                foreach (string ds in drumSelectionMethodList)
-                                {
-                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s1.ToString())
-                                    {
-                                        drumSelectionMethodIndex++;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                                startDate = yarncountconfigmodel.scheduledStartDate;
+                                endDate = yarncountconfigmodel.scheduledEndDate;
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
+                                picker_drumSelection.SelectedItem = "Scheduled";
                             }
 
                             if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
                             {
                                 selectedSectionNumber = 2;
                                 selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s2;
-                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s2;
-                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s2;
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
                                 selectedSpeed = yarncountconfigmodel.speed;
@@ -2123,11 +2270,11 @@ namespace TQM
                                 selectedN1 = yarncountconfigmodel.n1;
                                 selectedN1Deviation = yarncountconfigmodel.n1Deviation;
 
-                                selectedBelowLimit = yarncountconfigmodel.belowLimit_s2;
-                                selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s2;
-                                selectedMaterialCount = yarncountconfigmodel.materialCount_s2;
+                                selectedBelowLimit = yarncountconfigmodel.belowLimit;
+                                selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
+                                selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume==false)
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -2136,26 +2283,13 @@ namespace TQM
                                     return;
                                 }
 
-                                startDate = yarncountconfigmodel.scheduledStartDate_s2;
-                                endDate = yarncountconfigmodel.scheduledEndDate_s2;
-                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s2.ToString();
-                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s2.ToString();
-                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s2.ToString() + " & " + yarncountconfigmodel.maxRollingCount_s2.ToString();
-                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s2.ToString();
-                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
-                                int drumSelectionMethodIndex = 0;
-                                foreach (string ds in drumSelectionMethodList)
-                                {
-                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s2.ToString())
-                                    {
-                                        drumSelectionMethodIndex++;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                                startDate = yarncountconfigmodel.scheduledStartDate;
+                                endDate = yarncountconfigmodel.scheduledEndDate;
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
+                                picker_drumSelection.SelectedItem = "Scheduled";
                             }
                         }
                         else if (yarncountconfigmodel.totalSections == 1)
@@ -2167,8 +2301,8 @@ namespace TQM
                             {
                                 selectedSectionNumber = 1;
                                 selectedTotalDrumNumbers = yarncountconfigmodel.drumNumbers_s1;
-                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate_s1;
-                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate_s1;
+                                scheduledStartDate = yarncountconfigmodel.scheduledStartDate;
+                                scheduledEndDate = yarncountconfigmodel.scheduledEndDate;
                                 settingsUpdatedDate = yarncountconfigmodel.updateddate;
 
                                 selectedSpeed = yarncountconfigmodel.speed;
@@ -2179,11 +2313,11 @@ namespace TQM
                                 selectedN1 = yarncountconfigmodel.n1;
                                 selectedN1Deviation = yarncountconfigmodel.n1Deviation;
 
-                                selectedBelowLimit = yarncountconfigmodel.belowLimit_s1;
-                                selectedMaxRollingCount = yarncountconfigmodel.maxRollingCount_s1;
-                                selectedMaterialCount = yarncountconfigmodel.materialCount_s1;
+                                selectedBelowLimit = yarncountconfigmodel.belowLimit;
+                                selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
+                                selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume==false)
+                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
                                 {
                                     picker_drumNumber.SelectedIndex = -1;
                                     picker_drumSelection.IsEnabled = false;
@@ -2192,26 +2326,13 @@ namespace TQM
                                     return;
                                 }
 
-                                startDate = yarncountconfigmodel.scheduledStartDate_s1;
-                                endDate = yarncountconfigmodel.scheduledEndDate_s1;
-                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength_s1.ToString();
-                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation_s1.ToString();
-                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit_s1.ToString() + " & " + yarncountconfigmodel.maxRollingCount_s1.ToString();
-                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples_s1.ToString();
-                                IList<string> drumSelectionMethodList = picker_drumSelection.Items;
-                                int drumSelectionMethodIndex = 0;
-                                foreach (string ds in drumSelectionMethodList)
-                                {
-                                    if (ds != yarncountconfigmodel.drumSelectionMethod_s1.ToString())
-                                    {
-                                        drumSelectionMethodIndex++;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                                picker_drumSelection.SelectedIndex = drumSelectionMethodIndex;
+                                startDate = yarncountconfigmodel.scheduledStartDate;
+                                endDate = yarncountconfigmodel.scheduledEndDate;
+                                entry_stdStrength.Text = yarncountconfigmodel.stdRollingStrength.ToString();
+                                entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
+                                entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
+                                entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
+                                picker_drumSelection.SelectedItem = "Scheduled";
                             }
                         }
 

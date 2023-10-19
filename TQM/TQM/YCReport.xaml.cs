@@ -187,22 +187,28 @@ namespace TQM
                                 if (i == 1)
                                 {
                                     mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s1;
-                                    mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate_s1.ToShortDateString();
-                                    mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate_s1.ToShortDateString();
+                                    mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
+                                    mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
 
                                 }
                                 else if (i == 2)
                                 {
                                     mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s2;
-                                    mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate_s2.ToShortDateString();
-                                    mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate_s2.ToShortDateString();
+                                    mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
+                                    mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
 
                                 }
-                                else
+                                else if (i == 3)
                                 {
                                     mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s3;
-                                    mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate_s3.ToShortDateString();
-                                    mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate_s3.ToShortDateString();
+                                    mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
+                                    mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
+                                }
+                                else 
+                                {
+                                    mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s4;
+                                    mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
+                                    mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
                                 }
 
                                 mdd_temp.settingsUpdatedDate = tdmv.tcm.updateddate.ToShortDateString();
@@ -290,22 +296,28 @@ namespace TQM
                                     if (i == 1)
                                     {
                                         mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s1;
-                                        mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate_s1.ToShortDateString();
-                                        mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate_s1.ToShortDateString();
+                                        mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
+                                        mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
                                         
                                     }
                                     else if (i == 2)
                                     {
                                         mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s2;
-                                        mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate_s2.ToShortDateString();
-                                        mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate_s2.ToShortDateString();
+                                        mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
+                                        mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
                                         
                                     }
-                                    else
+                                    else if (i == 3)
                                     {
                                         mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s3;
-                                        mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate_s3.ToShortDateString();
-                                        mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate_s3.ToShortDateString();
+                                        mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
+                                        mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
+                                    }
+                                    else 
+                                    {
+                                        mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s4;
+                                        mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
+                                        mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
                                     }
 
                                     mdd_temp.settingsUpdatedDate = tdmv.tcm.updateddate.ToShortDateString();
@@ -478,12 +490,8 @@ namespace TQM
 
                         ConfigModel configModel = conn.Table<ConfigModel>().Where(ConfigModel =>
                                                     (ConfigModel.machineID == machineID
-                                                    && ((ConfigModel.scheduledStartDate_s1 >= startDate
-                                                    || ConfigModel.scheduledEndDate_s1 <= endDate)
-                                                    || (ConfigModel.scheduledStartDate_s2 >= startDate
-                                                    || ConfigModel.scheduledEndDate_s2 <= endDate)
-                                                    || (ConfigModel.scheduledStartDate_s3 >= startDate
-                                                    || ConfigModel.scheduledEndDate_s3 <= endDate)))).FirstOrDefault();
+                                                    && ((ConfigModel.scheduledStartDate >= startDate
+                                                    || ConfigModel.scheduledEndDate <= endDate)))).FirstOrDefault();
 
                         if (configModel == null)
                         {
@@ -520,39 +528,18 @@ namespace TQM
                             n1Deviation = configModel.n1Deviation,
                             totalDrumCount = configModel.totalDrumCount,
                             totalSections = configModel.totalSections,
-                            stdRollingStrength_s1 = configModel.stdRollingStrength_s1,
-                            strengthDeviation_s1 = configModel.strengthDeviation_s1,
-                            belowLimit_s1 = configModel.belowLimit_s1,
-                            totalSamples_s1 = configModel.totalSamples_s1,
+                            stdRollingStrength = configModel.stdRollingStrength,
+                            strengthDeviation = configModel.strengthDeviation,
+                            belowLimit = configModel.belowLimit,
+                            maxLimit = configModel.maxLimit,
+                            totalSamples = configModel.totalSamples,
+                            scheduledStartDate = configModel.scheduledStartDate,
+                            scheduledEndDate = configModel.scheduledEndDate,
+                            materialCount = configModel.materialCount,
                             drumNumbers_s1 = configModel.drumNumbers_s1,
-                            drumSelectionMethod_s1 = configModel.drumSelectionMethod_s1,
-                            scheduledDayLimit_s1 = configModel.scheduledDayLimit_s1,
-                            scheduledStartDate_s1 = configModel.scheduledStartDate_s1,
-                            scheduledEndDate_s1 = configModel.scheduledEndDate_s1,
-                            maxRollingCount_s1 = configModel.maxRollingCount_s1,
-                            materialCount_s1 = configModel.materialCount_s1,
-                            stdRollingStrength_s2 = configModel.stdRollingStrength_s2,
-                            strengthDeviation_s2 = configModel.strengthDeviation_s2,
-                            belowLimit_s2 = configModel.belowLimit_s2,
-                            totalSamples_s2 = configModel.totalSamples_s2,
                             drumNumbers_s2 = configModel.drumNumbers_s2,
-                            drumSelectionMethod_s2 = configModel.drumSelectionMethod_s2,
-                            scheduledDayLimit_s2 = configModel.scheduledDayLimit_s2,
-                            scheduledStartDate_s2 = configModel.scheduledStartDate_s2,
-                            scheduledEndDate_s2 = configModel.scheduledEndDate_s2,
-                            maxRollingCount_s2 = configModel.maxRollingCount_s2,
-                            materialCount_s2 = configModel.materialCount_s2,
-                            stdRollingStrength_s3 = configModel.stdRollingStrength_s3,
-                            strengthDeviation_s3 = configModel.strengthDeviation_s3,
-                            belowLimit_s3 = configModel.belowLimit_s3,
-                            totalSamples_s3 = configModel.totalSamples_s3,
                             drumNumbers_s3 = configModel.drumNumbers_s3,
-                            drumSelectionMethod_s3 = configModel.drumSelectionMethod_s3,
-                            scheduledDayLimit_s3 = configModel.scheduledDayLimit_s3,
-                            scheduledStartDate_s3 = configModel.scheduledStartDate_s3,
-                            scheduledEndDate_s3 = configModel.scheduledEndDate_s3,
-                            maxRollingCount_s3 = configModel.maxRollingCount_s3,
-                            materialCount_s3 = configModel.materialCount_s3,
+                            drumNumbers_s4 = configModel.drumNumbers_s4,
                             shiftCount = configModel.shiftCount,
                             shift1time = configModel.shift1time,
                             shift2time = configModel.shift2time,
@@ -576,8 +563,8 @@ namespace TQM
                                                 configModel.totalSections,
                                                 1,
                                                 configModel.drumNumbers_s1,
-                                                configModel.scheduledStartDate_s1.Date,
-                                                configModel.scheduledEndDate_s1.Date,
+                                                configModel.scheduledStartDate.Date,
+                                                configModel.scheduledEndDate.Date,
                                                 configModel.updateddate.Date,
                                                 minDrumNo,
                                                 maxDrumNo,
