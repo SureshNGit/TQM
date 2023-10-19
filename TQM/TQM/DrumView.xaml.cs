@@ -35,22 +35,25 @@ namespace TQM
 		public void generateDrumView()
 		{
 			int totalDrums = (selectedDrumEndNo - selectedDrumStartNo)+1;
-			List<DrumMV> dv_list = new List<DrumMV>();
+            int firstDrumNo = selectedDrumStartNo - 1;
+
+            List<DrumMV> dv_list = new List<DrumMV>();
 			for(int i = 0; i < totalDrums; i++)
 			{
 				DrumMV dv = new DrumMV();
-				if ((i + 1) <= totalDrums) { dv.D1 = (i + 1).ToString(); dv.D1_Visible = true; } else { dv.D1 = ""; dv.D1_Visible = false; }
-                if ((i + 2) <= totalDrums) { dv.D2 = (i + 2).ToString(); dv.D2_Visible = true; } else { dv.D2 = ""; dv.D2_Visible = false; }
-                if ((i + 3) <= totalDrums) { dv.D3 = (i + 3).ToString(); dv.D3_Visible = true; } else { dv.D3 = ""; dv.D3_Visible = false; }
-                if ((i + 4) <= totalDrums) { dv.D4 = (i + 4).ToString(); dv.D4_Visible = true; } else { dv.D4 = ""; dv.D4_Visible = false; }
-                if ((i + 5) <= totalDrums) { dv.D5 = (i + 5).ToString(); dv.D5_Visible = true; } else { dv.D5 = ""; dv.D5_Visible = false; }
-                if ((i + 6) <= totalDrums) { dv.D6 = (i + 6).ToString(); dv.D6_Visible = true; } else { dv.D6 = ""; dv.D6_Visible = false; }
-                if ((i + 7) <= totalDrums) { dv.D7 = (i + 7).ToString(); dv.D7_Visible = true; } else { dv.D7 = ""; dv.D7_Visible = false; }
-                if ((i + 8) <= totalDrums) { dv.D8 = (i + 8).ToString(); dv.D8_Visible = true; } else { dv.D8 = ""; dv.D8_Visible = false; }
-                if ((i + 9) <= totalDrums) { dv.D9 = (i + 9).ToString(); dv.D9_Visible = true; } else { dv.D9 = ""; dv.D9_Visible = false; }
-                if ((i + 10) <= totalDrums) { dv.D10 = (i + 10).ToString(); dv.D10_Visible = true; } else { dv.D10 = ""; dv.D10_Visible = false; }
+				if ((firstDrumNo + 1) <= selectedDrumEndNo) { dv.D1 = (firstDrumNo + 1).ToString(); dv.D1_Visible = true; } else { dv.D1 = ""; dv.D1_Visible = false; }
+                if ((firstDrumNo + 2) <= selectedDrumEndNo) { dv.D2 = (firstDrumNo + 2).ToString(); dv.D2_Visible = true; } else { dv.D2 = ""; dv.D2_Visible = false; }
+                if ((firstDrumNo + 3) <= selectedDrumEndNo) { dv.D3 = (firstDrumNo + 3).ToString(); dv.D3_Visible = true; } else { dv.D3 = ""; dv.D3_Visible = false; }
+                if ((firstDrumNo + 4) <= selectedDrumEndNo) { dv.D4 = (firstDrumNo + 4).ToString(); dv.D4_Visible = true; } else { dv.D4 = ""; dv.D4_Visible = false; }
+                if ((firstDrumNo + 5) <= selectedDrumEndNo) { dv.D5 = (firstDrumNo + 5).ToString(); dv.D5_Visible = true; } else { dv.D5 = ""; dv.D5_Visible = false; }
+                if ((firstDrumNo + 6) <= selectedDrumEndNo) { dv.D6 = (firstDrumNo + 6).ToString(); dv.D6_Visible = true; } else { dv.D6 = ""; dv.D6_Visible = false; }
+                if ((firstDrumNo + 7) <= selectedDrumEndNo) { dv.D7 = (firstDrumNo + 7).ToString(); dv.D7_Visible = true; } else { dv.D7 = ""; dv.D7_Visible = false; }
+                if ((firstDrumNo + 8) <= selectedDrumEndNo) { dv.D8 = (firstDrumNo + 8).ToString(); dv.D8_Visible = true; } else { dv.D8 = ""; dv.D8_Visible = false; }
+                if ((firstDrumNo + 9) <= selectedDrumEndNo) { dv.D9 = (firstDrumNo + 9).ToString(); dv.D9_Visible = true; } else { dv.D9 = ""; dv.D9_Visible = false; }
+                if ((firstDrumNo + 10) <= selectedDrumEndNo) { dv.D10 = (firstDrumNo + 10).ToString(); dv.D10_Visible = true; } else { dv.D10 = ""; dv.D10_Visible = false; }
 				dv_list.Add(dv);
                 i += 9;
+                firstDrumNo += 9;
             }
 			listview_drums.ItemsSource = dv_list;
 			listview_drums.IsVisible = true;
