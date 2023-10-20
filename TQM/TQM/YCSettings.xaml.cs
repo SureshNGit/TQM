@@ -11,15 +11,19 @@ namespace TQM
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class YCSettings : ContentPage
     {
+        private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
         private Guid currentID = Guid.Empty;
         private string selectedMachineCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
+        private DateTime selectedScheduledStartDate = DEFAULTDATE;
+        private DateTime selectedScheduledEndDate = DEFAULTDATE;
+        private bool is_ScheduledDateUpdateInTestRequired = false;
         private int currentShift = 0;
         private TimeSpan currentShift1 = TimeSpan.Zero;
         private TimeSpan currentShift2 = TimeSpan.Zero;
         private TimeSpan currentShift3 = TimeSpan.Zero;
-        //private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
+        
         //private DateTime currentUpdatedDate = DEFAULTDATE;
 
         public YCSettings()
@@ -140,6 +144,7 @@ namespace TQM
 
         private void populateSettingsField(ConfigModel ycConfig, bool shiftAlone = false, bool isMacDiff = false)
         {
+            is_ScheduledDateUpdateInTestRequired = false;
             toggleUserField();
             if (ycConfig == null)
             {
@@ -296,11 +301,14 @@ namespace TQM
             entry_totalTestCount.Text = ycConfig.totalSamples.ToString();
             entry_matCount.Text = ycConfig.materialCount;
             date_scheduledStartDate.Date = ycConfig.scheduledStartDate;
+            selectedScheduledStartDate = ycConfig.scheduledStartDate;
             date_scheduledEndDate.Date = ycConfig.scheduledEndDate;
+            selectedScheduledEndDate = ycConfig.scheduledEndDate;
+
 
 
             //Section-1
-            
+
             if (ycConfig.drumNumbers_s1 != null)
             {
                 entry_Drums_from_s1.Text = ycConfig.drumNumbers_s1.ToString().Split('.')[0];
@@ -435,10 +443,91 @@ namespace TQM
 
         }
 
+        private bool checkScheduleDateChange()
+        {
+            bool ret = true;
+            if (date_scheduledStartDate.Date > date_scheduledEndDate.Date)
+            {
+                DisplayAlert("Attention", "Scheduled Start date should be less than end date!!!", "Ok");
+                return false;
+            }
+            
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                
+                //Check if there is any entry for the given scheduled start and end date
+                DateTime sch_startDate = Convert.ToDateTime(selectedScheduledStartDate.Date);
+                DateTime sch_endDate = Convert.ToDateTime(selectedScheduledEndDate.Date);
+                List<StrengthTestSummaryModel> sts = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                                                        (StrengthTestSummaryModel.machineCategory==selectedMachineCategory
+                                                        && StrengthTestSummaryModel.machineID==selectedMachineID
+                                                        && StrengthTestSummaryModel.scheduledStartDate== sch_startDate
+                                                        && StrengthTestSummaryModel.scheduledEndDate==sch_endDate)).ToList();
+
+                if (sts.Count > 0)
+                {
+                    if(selectedScheduledStartDate.Date != date_scheduledStartDate.Date)
+                    {
+                        //Check if the previous schedule date is expired
+                        if (selectedScheduledEndDate.Date < DateTime.Today.Date)
+                        {
+                            if (date_scheduledStartDate.Date <= selectedScheduledEndDate.Date)
+                            {
+                                DisplayAlert("Attention", "The new scheduled date should not be within the than previous scheduled period ("
+                                                    + selectedScheduledStartDate.Date.ToShortDateString()
+                                                    + " - "
+                                                    + selectedScheduledEndDate.Date.ToShortDateString()
+                                                    + "), hence start date cannot be changed", "OK");
+                                ret = false;
+                            }
+                        }
+
+                        DisplayAlert("Attention", "Test started for the scheduled date ("
+                                                    + selectedScheduledStartDate.Date.ToShortDateString()
+                                                    + " - "
+                                                    + selectedScheduledEndDate.Date.ToShortDateString()
+                                                    +"), hence start date cannot be changed", "OK");
+                        ret= false;
+                    }
+                    
+                    if (selectedScheduledEndDate.Date != date_scheduledEndDate.Date)
+                    {
+
+                        //check if the new scheduled end date is less than the test taken date
+                        List<StrengthTestSummaryModel> sts_1 = conn.Table<StrengthTestSummaryModel>()
+                                                                .Where(StrengthTestSummaryModel =>
+                                                                (StrengthTestSummaryModel.machineCategory == selectedMachineCategory
+                                                                && StrengthTestSummaryModel.machineID == selectedMachineID
+                                                                && StrengthTestSummaryModel.scheduledStartDate == sch_startDate))
+                                                                .OrderByDescending(
+                                                                StrengthTestSummaryModel=>StrengthTestSummaryModel.createdate).ToList();
+                        if (sts_1.Count > 0)
+                        {
+                            if (sts_1[0].createdate.Date > date_scheduledEndDate.Date)
+                            {
+                                DisplayAlert("Attention", "Test started for the scheduled date ("
+                                                + selectedScheduledStartDate.Date.ToShortDateString()
+                                                + " - "
+                                                + selectedScheduledEndDate.Date.ToShortDateString()
+                                                + "), hence end date cannot be changed to less than last test taken date", "OK");
+                                ret = false;
+                            }
+                            else
+                            {
+                                is_ScheduledDateUpdateInTestRequired = true;
+                            }
+                        }
+                    }
+                }
+            }
+            return ret;
+        }
+
         private void btn_save_Clicked(object sender, EventArgs e)
         {
             try
             {
+                if (!checkScheduleDateChange()) { return; }
                 if (selectedMachineCategory == null || selectedMachineCategory == "")
                 {
                     DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
@@ -586,11 +675,7 @@ namespace TQM
                     DisplayAlert("Attention", "Total test count should not be blank or zero!!!", "Ok");
                     return;
                 }
-                if (date_scheduledStartDate.Date > date_scheduledEndDate.Date)
-                {
-                    DisplayAlert("Attention", "Scheduled Start date should be less than end date!!!", "Ok");
-                    return;
-                }
+               
                 if (entry_matCount.Text.Trim() == "")
                 {
                     DisplayAlert("Attention", "Material count is invalid. Please check!!!", "Ok");
@@ -1083,8 +1168,17 @@ namespace TQM
                     }
                     if (row > 0)
                     {
+                        bool modifyScheduleDateStatus = true;
+                        if (is_ScheduledDateUpdateInTestRequired)
+                        {
+                            modifyScheduleDateStatus = modifyScheduleDatesInTest();
+                            if (modifyScheduleDateStatus)
+                            {
+                                selectedScheduledEndDate = date_scheduledEndDate.Date;
+                            }
+                        }
                         bool historyStatus = addHistory(selectedMachineID);
-                        if (!historyStatus)
+                        if (!historyStatus || !modifyScheduleDateStatus)
                         {
                             DisplayAlert("Failure", "Settings failed to be " + msg + ". Try again!!!", "OK");
                         }
@@ -1155,6 +1249,41 @@ namespace TQM
             catch (Exception ex)
             {
                 DisplayAlert("Attention", "Error Occurred: " + ex.Message.ToString(), "OK");
+            }
+        }
+
+        private bool modifyScheduleDatesInTest()
+        {
+            try
+            {
+                DateTime sch_startDate = Convert.ToDateTime(selectedScheduledStartDate.Date);
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    List<StrengthTestSummaryModel> sts_list = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                                                              (StrengthTestSummaryModel.machineCategory == selectedMachineCategory
+                                                              && StrengthTestSummaryModel.machineID == selectedMachineID
+                                                              && StrengthTestSummaryModel.scheduledStartDate == sch_startDate)).ToList();
+                    if (sts_list.Count > 0)
+                    {
+                        int failCounter = 0;
+                        foreach(StrengthTestSummaryModel sts in sts_list)
+                        {
+                            sts.scheduledEndDate = date_scheduledEndDate.Date;
+                            int row = conn.Update(sts);
+                            if (row < 1) { failCounter += 1; }
+                        }
+                        if (failCounter > 0) { return false; }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 
