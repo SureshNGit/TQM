@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using SQLite;
+using TQM.Model;
 using TQM.ModelView;
 using Xamarin.Forms;
 
@@ -57,6 +59,26 @@ namespace TQM
             }
 			listview_drums.ItemsSource = dv_list;
 			listview_drums.IsVisible = true;
+        }
+
+        private bool getTestDetailsForDrum(int drumNo)
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    StrengthTestSummaryModel sts = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                                                        (StrengthTestSummaryModel.machineCategory == selectedMachineCategory
+                                                        && StrengthTestSummaryModel.machineID == selectedMachineID
+                                                        && StrengthTestSummaryModel.drumSelectionMethod == "Scheduled"
+                                                        && StrengthTestSummaryModel.drumNumber==drumNo)).FirstOrDefault();
+                    if (sts == null) { return false; } else { return true; }
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         void Btn_DrumSelection_Clicked(System.Object sender, System.EventArgs e)
