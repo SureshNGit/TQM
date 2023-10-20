@@ -33,6 +33,16 @@ namespace TQM.ModelView
         public string D8_BG_Color { get; set; } = "red";
         public string D9_BG_Color { get; set; } = "red";
         public string D10_BG_Color { get; set; } = "red";
+        public string D1_Strength { get; set; }
+        public string D2_Strength { get; set; }
+        public string D3_Strength { get; set; }
+        public string D4_Strength{ get; set; }
+        public string D5_Strength { get; set; }
+        public string D6_Strength { get; set; }
+        public string D7_Strength { get; set; }
+        public string D8_Strength { get; set; }
+        public string D9_Strength { get; set; }
+        public string D10_Strength { get; set; }
     }
 }
 
