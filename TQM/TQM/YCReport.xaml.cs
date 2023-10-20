@@ -186,27 +186,27 @@ namespace TQM
                                 mdd_temp.sectionNumber = i;
                                 if (i == 1)
                                 {
-                                    mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s1;
+                                    mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s1.Split('.')[0] + " to " + tdmv.tcm.drumNumbers_s1.Split('.')[1];
                                     mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
                                     mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
 
                                 }
                                 else if (i == 2)
                                 {
-                                    mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s2;
+                                    mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s2.Split('.')[0] + " to " + tdmv.tcm.drumNumbers_s2.Split('.')[1];
                                     mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
                                     mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
 
                                 }
                                 else if (i == 3)
                                 {
-                                    mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s3;
+                                    mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s3.Split('.')[0] + " to " + tdmv.tcm.drumNumbers_s3.Split('.')[1];
                                     mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
                                     mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
                                 }
                                 else 
                                 {
-                                    mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s4;
+                                    mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s4.Split('.')[0] + " to " + tdmv.tcm.drumNumbers_s4.Split('.')[1];
                                     mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
                                     mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
                                 }
@@ -217,8 +217,8 @@ namespace TQM
                                 int maxDrumNo_temp = 0;
                                 if (mdd_temp.totalDrumNumbers != null)
                                 {
-                                    minDrumNo_temp = int.Parse(mdd_temp.totalDrumNumbers.ToString().Split('.')[0]);
-                                    maxDrumNo_temp = int.Parse(mdd_temp.totalDrumNumbers.ToString().Split('.')[1]);
+                                    minDrumNo_temp = int.Parse(mdd_temp.totalDrumNumbers.ToString().Split(new string[] { " to " }, StringSplitOptions.None)[0]);
+                                    maxDrumNo_temp = int.Parse(mdd_temp.totalDrumNumbers.ToString().Split(new string[] { " to " }, StringSplitOptions.None)[1]);
                                 }
 
                                 string pendingTestDrums_temp = "";
@@ -295,27 +295,27 @@ namespace TQM
                                     mdd_temp.sectionNumber = i;
                                     if (i == 1)
                                     {
-                                        mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s1;
+                                        mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s1.Split('.')[0] + " to " + tdmv.tcm.drumNumbers_s1.Split('.')[1];
                                         mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
                                         mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
                                         
                                     }
                                     else if (i == 2)
                                     {
-                                        mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s2;
+                                        mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s2.Split('.')[0] + " to " + tdmv.tcm.drumNumbers_s2.Split('.')[1];
                                         mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
                                         mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
                                         
                                     }
                                     else if (i == 3)
                                     {
-                                        mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s3;
+                                        mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s3.Split('.')[0] + " to " + tdmv.tcm.drumNumbers_s3.Split('.')[1];
                                         mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
                                         mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
                                     }
                                     else 
                                     {
-                                        mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s4;
+                                        mdd_temp.totalDrumNumbers = tdmv.tcm.drumNumbers_s4.Split('.')[0] + " to " + tdmv.tcm.drumNumbers_s4.Split('.')[1];
                                         mdd_temp.scheduledStartDate = tdmv.tcm.scheduledStartDate.ToShortDateString();
                                         mdd_temp.scheduledEndDate = tdmv.tcm.scheduledEndDate.ToShortDateString();
                                     }
@@ -326,8 +326,8 @@ namespace TQM
                                     int maxDrumNo_temp = 0;
                                     if (mdd_temp.totalDrumNumbers != null)
                                     {
-                                        minDrumNo_temp = int.Parse(mdd_temp.totalDrumNumbers.ToString().Split('.')[0]);
-                                        maxDrumNo_temp = int.Parse(mdd_temp.totalDrumNumbers.ToString().Split('.')[1]);
+                                        minDrumNo_temp = int.Parse(mdd_temp.totalDrumNumbers.ToString().Split(new string[] { " to " }, StringSplitOptions.None)[0]);
+                                        maxDrumNo_temp = int.Parse(mdd_temp.totalDrumNumbers.ToString().Split(new string[] { " to " }, StringSplitOptions.None)[1]);
                                     }
 
                                     string pendingTestDrums_temp = "";
@@ -391,7 +391,7 @@ namespace TQM
                 mdd.totalDrumCount = totalDrums;
                 mdd.totalSections = totalSecs;
                 mdd.sectionNumber = secNo;
-                mdd.totalDrumNumbers = totDrumNos;
+                mdd.totalDrumNumbers = totDrumNos.Split('.')[0] + " to "+ totDrumNos.Split('.')[1];
                 mdd.scheduledStartDate = SSD.ToShortDateString();
                 mdd.scheduledEndDate = SED.ToShortDateString();
                 mdd.settingsUpdatedDate = SUD.ToShortDateString();
@@ -472,7 +472,7 @@ namespace TQM
                     List<StrengthTestSummaryModel> strengthTestSummaryList =
                         conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
                          ((StrengthTestSummaryModel.scheduledStartDate >= startDate
-                         || StrengthTestSummaryModel.scheduledEndDate <= endDate)
+                         && StrengthTestSummaryModel.scheduledEndDate <= endDate)
                          && StrengthTestSummaryModel.machineCategory == categoryName
                          && StrengthTestSummaryModel.machineID == machineID))
                         .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.machineID)
@@ -491,7 +491,7 @@ namespace TQM
                         ConfigModel configModel = conn.Table<ConfigModel>().Where(ConfigModel =>
                                                     (ConfigModel.machineID == machineID
                                                     && ((ConfigModel.scheduledStartDate >= startDate
-                                                    || ConfigModel.scheduledEndDate <= endDate)))).FirstOrDefault();
+                                                    && ConfigModel.scheduledEndDate <= endDate)))).FirstOrDefault();
 
                         if (configModel == null)
                         {
@@ -730,10 +730,11 @@ namespace TQM
             {
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
+                    DateTime updatedEndDate = endDate.AddDays(1);
                     List<StrengthTestSummaryModel> testSummary = conn.Table<StrengthTestSummaryModel>()
                                         .Where(StrengthTestSummaryModel =>
                                         ((StrengthTestSummaryModel.createdate >= startDate
-                                        || StrengthTestSummaryModel.createdate <= endDate)
+                                        && StrengthTestSummaryModel.createdate <= updatedEndDate)
                                         && StrengthTestSummaryModel.machineCategory == categoryName
                                         && StrengthTestSummaryModel.machineID == machineID))
                                         .OrderBy(StrengthTestSummaryModel=>StrengthTestSummaryModel.machineID)

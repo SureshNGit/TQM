@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SQLite;
 using TQM.Model;
 using TQM.ModelView;
+using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Forms;
 
 namespace TQM
@@ -36,29 +37,37 @@ namespace TQM
 
 		public void generateDrumView()
 		{
-			int totalDrums = (selectedDrumEndNo - selectedDrumStartNo)+1;
-            int firstDrumNo = selectedDrumStartNo - 1;
+            try
+            {
+                int totalDrums = (selectedDrumEndNo - selectedDrumStartNo) + 1;
+                int firstDrumNo = selectedDrumStartNo - 1;
 
-            List<DrumMV> dv_list = new List<DrumMV>();
-			for(int i = 0; i < totalDrums; i++)
-			{
-				DrumMV dv = new DrumMV();
-				if ((firstDrumNo + 1) <= selectedDrumEndNo) { dv.D1 = (firstDrumNo + 1).ToString(); dv.D1_Visible = true; } else { dv.D1 = ""; dv.D1_Visible = false; }
-                if ((firstDrumNo + 2) <= selectedDrumEndNo) { dv.D2 = (firstDrumNo + 2).ToString(); dv.D2_Visible = true; } else { dv.D2 = ""; dv.D2_Visible = false; }
-                if ((firstDrumNo + 3) <= selectedDrumEndNo) { dv.D3 = (firstDrumNo + 3).ToString(); dv.D3_Visible = true; } else { dv.D3 = ""; dv.D3_Visible = false; }
-                if ((firstDrumNo + 4) <= selectedDrumEndNo) { dv.D4 = (firstDrumNo + 4).ToString(); dv.D4_Visible = true; } else { dv.D4 = ""; dv.D4_Visible = false; }
-                if ((firstDrumNo + 5) <= selectedDrumEndNo) { dv.D5 = (firstDrumNo + 5).ToString(); dv.D5_Visible = true; } else { dv.D5 = ""; dv.D5_Visible = false; }
-                if ((firstDrumNo + 6) <= selectedDrumEndNo) { dv.D6 = (firstDrumNo + 6).ToString(); dv.D6_Visible = true; } else { dv.D6 = ""; dv.D6_Visible = false; }
-                if ((firstDrumNo + 7) <= selectedDrumEndNo) { dv.D7 = (firstDrumNo + 7).ToString(); dv.D7_Visible = true; } else { dv.D7 = ""; dv.D7_Visible = false; }
-                if ((firstDrumNo + 8) <= selectedDrumEndNo) { dv.D8 = (firstDrumNo + 8).ToString(); dv.D8_Visible = true; } else { dv.D8 = ""; dv.D8_Visible = false; }
-                if ((firstDrumNo + 9) <= selectedDrumEndNo) { dv.D9 = (firstDrumNo + 9).ToString(); dv.D9_Visible = true; } else { dv.D9 = ""; dv.D9_Visible = false; }
-                if ((firstDrumNo + 10) <= selectedDrumEndNo) { dv.D10 = (firstDrumNo + 10).ToString(); dv.D10_Visible = true; } else { dv.D10 = ""; dv.D10_Visible = false; }
-				dv_list.Add(dv);
-                i += 9;
-                firstDrumNo += 10;
+                List<DrumMV> dv_list = new List<DrumMV>();
+                for (int i = 0; i < totalDrums; i++)
+                {
+                    DrumMV dv = new DrumMV();
+                    if ((firstDrumNo + 1) <= selectedDrumEndNo) { dv.D1 = (firstDrumNo + 1).ToString(); if (getTestDetailsForDrum(firstDrumNo + 1)) { dv.D1_BG_Color = "red"; } else { dv.D1_BG_Color = "green"; }; dv.D1_Visible = true; } else { dv.D1 = ""; dv.D1_Visible = false; }
+                    if ((firstDrumNo + 2) <= selectedDrumEndNo) { dv.D2 = (firstDrumNo + 2).ToString(); if (getTestDetailsForDrum(firstDrumNo + 2)) { dv.D2_BG_Color = "red"; } else { dv.D2_BG_Color = "green"; }; dv.D2_Visible = true; } else { dv.D2 = ""; dv.D2_Visible = false; }
+                    if ((firstDrumNo + 3) <= selectedDrumEndNo) { dv.D3 = (firstDrumNo + 3).ToString(); if (getTestDetailsForDrum(firstDrumNo + 3)) { dv.D3_BG_Color = "red"; } else { dv.D3_BG_Color = "green"; }; dv.D3_Visible = true; } else { dv.D3 = ""; dv.D3_Visible = false; }
+                    if ((firstDrumNo + 4) <= selectedDrumEndNo) { dv.D4 = (firstDrumNo + 4).ToString(); if (getTestDetailsForDrum(firstDrumNo + 4)) { dv.D4_BG_Color = "red"; } else { dv.D4_BG_Color = "green"; }; dv.D4_Visible = true; } else { dv.D4 = ""; dv.D4_Visible = false; }
+                    if ((firstDrumNo + 5) <= selectedDrumEndNo) { dv.D5 = (firstDrumNo + 5).ToString(); if (getTestDetailsForDrum(firstDrumNo + 5)) { dv.D5_BG_Color = "red"; } else { dv.D5_BG_Color = "green"; }; dv.D5_Visible = true; } else { dv.D5 = ""; dv.D5_Visible = false; }
+                    if ((firstDrumNo + 6) <= selectedDrumEndNo) { dv.D6 = (firstDrumNo + 6).ToString(); if (getTestDetailsForDrum(firstDrumNo + 6)) { dv.D6_BG_Color = "red"; } else { dv.D6_BG_Color = "green"; }; dv.D6_Visible = true; } else { dv.D6 = ""; dv.D6_Visible = false; }
+                    if ((firstDrumNo + 7) <= selectedDrumEndNo) { dv.D7 = (firstDrumNo + 7).ToString(); if (getTestDetailsForDrum(firstDrumNo + 7)) { dv.D7_BG_Color = "red"; } else { dv.D7_BG_Color = "green"; }; dv.D7_Visible = true; } else { dv.D7 = ""; dv.D7_Visible = false; }
+                    if ((firstDrumNo + 8) <= selectedDrumEndNo) { dv.D8 = (firstDrumNo + 8).ToString(); if (getTestDetailsForDrum(firstDrumNo + 8)) { dv.D8_BG_Color = "red"; } else { dv.D8_BG_Color = "green"; }; dv.D8_Visible = true; } else { dv.D8 = ""; dv.D8_Visible = false; }
+                    if ((firstDrumNo + 9) <= selectedDrumEndNo) { dv.D9 = (firstDrumNo + 9).ToString(); if (getTestDetailsForDrum(firstDrumNo + 9)) { dv.D9_BG_Color = "red"; } else { dv.D9_BG_Color = "green"; }; dv.D9_Visible = true; } else { dv.D9 = ""; dv.D9_Visible = false; }
+                    if ((firstDrumNo + 10) <= selectedDrumEndNo) { dv.D10 = (firstDrumNo + 10).ToString(); if (getTestDetailsForDrum(firstDrumNo + 10)) { dv.D10_BG_Color = "red"; } else { dv.D10_BG_Color = "green"; }; dv.D10_Visible = true; } else { dv.D10 = ""; dv.D10_Visible = false; }
+                    dv_list.Add(dv);
+                    i += 9;
+                    firstDrumNo += 10;
+                }
+                listview_drums.ItemsSource = dv_list;
+                listview_drums.IsVisible = true;
             }
-			listview_drums.ItemsSource = dv_list;
-			listview_drums.IsVisible = true;
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "An error occurred.Error: " + ex.ToString(), "OK");
+                return;
+            }
         }
 
         private bool getTestDetailsForDrum(int drumNo)
@@ -81,31 +90,121 @@ namespace TQM
             }
         }
 
-        void Btn_DrumSelection_Clicked(System.Object sender, System.EventArgs e)
+       async void Btn_DrumSelection_Clicked(System.Object sender, System.EventArgs e)
         {
-            var btn = (Button)sender;
-            int selectedDrumNumber = 0;
-            int.TryParse(btn.Text, out selectedDrumNumber);
-            //DisplayAlert("Alert!!!", "Selected drum for test is " + selectedDrumNumber.ToString(), "Ok");
-            Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
-                                                        selectedMachineID,
-                                                        selectedMachineName,
-                                                        selectedSectionNo,
-                                                        selectedDrumNumber,
-                                                        selectedDrumStartNo,
-                                                        selectedDrumEndNo));
+            try
+            {
+                var btn = (Button)sender;
+                int selectedDrumNumber = 0;
+                int.TryParse(btn.Text, out selectedDrumNumber);
+                if (btn.BackgroundColor.ToHex() == "#FF008000")
+                {
+
+
+                    bool userDecision = await DisplayAlert("Attention",
+                                                   "Test already completed for Drum Number ["
+                                                   + selectedDrumNumber.ToString() + "]"
+                                                   + ". Still do you want to conduct test in Random method?",
+                                                   "Yes",
+                                                   "No");
+                    if (userDecision)
+                    {
+                        using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                        {
+                            UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                            if (loggedInUser == null)
+                            {
+                                await DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                                return;
+                            }
+                            else
+                            {
+                                if (!loggedInUser.isAdmin)
+                                {
+                                    var result = await Navigation.ShowPopupAsync(new AdminCredPopUp());
+                                    if (result != null)
+                                    {
+                                        if (result.ToString() == "Success")
+                                        {
+                                            _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
+                                                              selectedMachineID,
+                                                              selectedMachineName,
+                                                              selectedSectionNo,
+                                                              selectedDrumNumber,
+                                                              selectedDrumStartNo,
+                                                              selectedDrumEndNo,
+                                                              true));
+                                        }
+                                        else
+                                        {
+                                            await DisplayAlert("Attention", result.ToString(), "OK");
+                                            return;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        await DisplayAlert("Attention", "Invalid Admin Credentials. Please try again!!!", "OK");
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
+                                                              selectedMachineID,
+                                                              selectedMachineName,
+                                                              selectedSectionNo,
+                                                              selectedDrumNumber,
+                                                              selectedDrumStartNo,
+                                                              selectedDrumEndNo,
+                                                              true));
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+
+                    _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
+                                                                selectedMachineID,
+                                                                selectedMachineName,
+                                                                selectedSectionNo,
+                                                                selectedDrumNumber,
+                                                                selectedDrumStartNo,
+                                                                selectedDrumEndNo,
+                                                                false));
+                }
+            }
+            catch(Exception ex)
+            {
+                await DisplayAlert("Attention", "An error occurred.Error: "+ex.ToString(), "OK");
+                return;
+            }
         }
 
         void ViewCell_Tapped(System.Object sender, System.EventArgs e)
         {
-            if (lastCell != null)
-                lastCell.View.BackgroundColor = Color.White;
-            var viewCell = (ViewCell)sender;
-            if (viewCell.View != null)
+            try
             {
-                viewCell.View.BackgroundColor = Color.White;
-                lastCell = viewCell;
+                if (lastCell != null)
+                    lastCell.View.BackgroundColor = Color.White;
+                var viewCell = (ViewCell)sender;
+                if (viewCell.View != null)
+                {
+                    viewCell.View.BackgroundColor = Color.White;
+                    lastCell = viewCell;
+                }
             }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "An error occurred.Error: " + ex.ToString(), "OK");
+                return;
+            }
+        }
+
+        void btn_backToHome_Clicked(System.Object sender, System.EventArgs e)
+        {
+            Navigation.PushAsync(new TestHome());
         }
     }
 }

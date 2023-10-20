@@ -15,6 +15,7 @@ using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Entity.Core.Objects;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
@@ -77,6 +78,7 @@ namespace TQM
         private DateTime settingsUpdatedDate = DEFAULTDATE;
         private int selectedMaxRollingCount = 0;
         private string selectedMaterialCount = null;
+        private bool isRandomTestSelected = false;
         private string UFVAL1 = null;
         private string UFVAL2 = null;
         private string UFVAL3 = null;
@@ -94,6 +96,13 @@ namespace TQM
         private bool toastInitialize = false;
         private bool isTestCompleted = false;
         private bool isTestResume = false;
+        private string DV_selectedMachineCategory = null;
+        private Guid DV_selectedMachineID = Guid.Empty;
+        private string DV_selectedMachineName = null;
+        private int DV_selectedSectionNumber = 0;
+        private int DV_selectedDrumNumber = 0;
+        private int DV_selectedDrumStartNo = 0;
+        private int DV_selectedDrumEndNo = 0;
 
         public StrengthAnalyzer()
         {
@@ -101,16 +110,27 @@ namespace TQM
             initializer();
         }
 
-        public StrengthAnalyzer(string machineCat, Guid machineID, string machineName, int sectionNo, int drumNo,int drumStartNo, int drumEndNo)
+        public StrengthAnalyzer(string machineCat, Guid machineID, string machineName, int sectionNo, int drumNo,int drumStartNo, int drumEndNo, bool isRandomTest)
         {   InitializeComponent();
-            initializer();
+
+
             selectedMachineCategory = machineCat;
+            DV_selectedMachineCategory = machineCat;
             selectedMachineID = machineID;
+            DV_selectedMachineID = machineID;
             selectedMachineName = machineName;
+            DV_selectedMachineName = machineName;
             selectedSectionNumber = sectionNo;
+            DV_selectedSectionNumber = sectionNo;
             selectedDrumNumber = drumNo;
+            DV_selectedDrumNumber = drumEndNo;
             selectedDrumStartNo = drumStartNo;
+            DV_selectedDrumStartNo = drumStartNo;
             selectedDrumEndNo = drumEndNo;
+            DV_selectedDrumEndNo = drumEndNo;
+            isRandomTestSelected = isRandomTest;
+
+            if (isRandomTestSelected) { btn_drumSelectionMethod.IsEnabled = false; }
             IList<string> machineCategorylist = picker_machinecategory.Items;
             int machineCatindex = 0;
             foreach (string mCat in machineCategorylist)
@@ -146,6 +166,10 @@ namespace TQM
                 else { break; }
             }
             picker_drumNumber.SelectedIndex = drumNumberindex;
+
+            
+
+            initializer();
         }
 
 
@@ -157,8 +181,8 @@ namespace TQM
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                conn.DropTable<StrengthTestModel>();
-                conn.DropTable<StrengthTestSummaryModel>();
+                //conn.DropTable<StrengthTestModel>();
+                //conn.DropTable<StrengthTestSummaryModel>();
                 //conn.DropTable<TestConfigModel>();
 
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
@@ -260,7 +284,10 @@ namespace TQM
                     }
                     StrengthTestModel lastTestRecord = conn.Table<StrengthTestModel>()
                         .Where(StrengthTestModel => StrengthTestModel.createdate == maxDate).FirstOrDefault();
-                    if (lastTestRecord.totalTestCount != lastTestRecord.sampleNo)
+                    if ((lastTestRecord.totalTestCount != lastTestRecord.sampleNo) &&
+                        (lastTestRecord.machineCategory == selectedMachineCategory &&
+                        lastTestRecord.machineID == selectedMachineID &&
+                        lastTestRecord.drumNumber == selectedDrumNumber))
                     {
                         isTestResume = true;
                         testYCButton.Text = "Resume";
@@ -369,6 +396,7 @@ namespace TQM
                         entry_belowLimit.IsEnabled = false;
                         entry_numberOfTest.IsEnabled = false;
                         picker_shift.IsEnabled = false;
+                        btn_drumSelectionMethod.IsEnabled = false;
 
 
                         List<StrengthTestModel> allIncompleteTests = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
@@ -499,11 +527,36 @@ namespace TQM
                                             + yarncountconfigmodel.p2.ToString() + ", "
                                             + yarncountconfigmodel.n1.ToString();
 
-
-                    for (int d = int.Parse(yarncountconfigmodel.drumNumbers_s1.Split('.')[0]); d <= int.Parse(yarncountconfigmodel.drumNumbers_s1.Split('.')[1]); d++)
+                    if (DV_selectedSectionNumber == 1)
                     {
-                        picker_drumNumber.Items.Add((d).ToString());
+                        for (int d = int.Parse(yarncountconfigmodel.drumNumbers_s1.Split('.')[0]); d <= int.Parse(yarncountconfigmodel.drumNumbers_s1.Split('.')[1]); d++)
+                        {
+                            picker_drumNumber.Items.Add((d).ToString());
+                        }
                     }
+                    else if (DV_selectedSectionNumber == 2)
+                    {
+                        for (int d = int.Parse(yarncountconfigmodel.drumNumbers_s2.Split('.')[0]); d <= int.Parse(yarncountconfigmodel.drumNumbers_s2.Split('.')[1]); d++)
+                        {
+                            picker_drumNumber.Items.Add((d).ToString());
+                        }
+                    }
+                    else if (DV_selectedSectionNumber == 3)
+                    {
+                        for (int d = int.Parse(yarncountconfigmodel.drumNumbers_s3.Split('.')[0]); d <= int.Parse(yarncountconfigmodel.drumNumbers_s3.Split('.')[1]); d++)
+                        {
+                            picker_drumNumber.Items.Add((d).ToString());
+                        }
+                    }
+                    else if (DV_selectedSectionNumber == 4)
+                    {
+                        for (int d = int.Parse(yarncountconfigmodel.drumNumbers_s4.Split('.')[0]); d <= int.Parse(yarncountconfigmodel.drumNumbers_s4.Split('.')[1]); d++)
+                        {
+                            picker_drumNumber.Items.Add((d).ToString());
+                        }
+                    }
+
+
                     TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
                     TimeSpan shit3time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift3time).TotalHours);
@@ -931,7 +984,7 @@ namespace TQM
                                 individualTestResultFrame.IsVisible = false;
                                 currentTestID = 0;
                                 currentTestStartTime = null;
-                                showAlert("Test Completed!!! Start new test");
+                                if (StrengthTestModelViewlist.Count() > 0) { showAlert("Test Completed!!! Start new test"); }
                                 picker_drumSelection.IsEnabled = false;
                                 testYCButton.Text = "Start";
                                 testYCButton.IsEnabled = true;
@@ -993,6 +1046,7 @@ namespace TQM
 
             if (!isTestResume)
             {
+                StrengthTestModelViewlist = new List<StrengthTestModelView>();
                 hideFrames();
                 await refListView(false);
                 await refOverallSummary(0.0000m, 0.0000m, false);
@@ -1966,7 +2020,10 @@ namespace TQM
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
                                 entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
-                                picker_drumSelection.SelectedItem = "Scheduled";
+                                if (isRandomTestSelected)
+                                { picker_drumSelection.SelectedItem = "Random"; }
+                                else { picker_drumSelection.SelectedItem = "Scheduled"; }
+                                
                             }
 
                             if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
@@ -2004,7 +2061,9 @@ namespace TQM
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
                                 entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
-                                picker_drumSelection.SelectedItem = "Scheduled";
+                                if (isRandomTestSelected)
+                                { picker_drumSelection.SelectedItem = "Random"; }
+                                else { picker_drumSelection.SelectedItem = "Scheduled"; }
                             }
 
                             if (selectedDrumNumber >= sec3_lowerLimit && selectedDrumNumber <= sec3_upperLimit)
@@ -2042,7 +2101,9 @@ namespace TQM
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
                                 entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
-                                picker_drumSelection.SelectedItem = "Scheduled";
+                                if (isRandomTestSelected)
+                                { picker_drumSelection.SelectedItem = "Random"; }
+                                else { picker_drumSelection.SelectedItem = "Scheduled"; }
                             }
 
                             if (selectedDrumNumber >= sec4_lowerLimit && selectedDrumNumber <= sec4_upperLimit)
@@ -2080,7 +2141,9 @@ namespace TQM
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
                                 entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
-                                picker_drumSelection.SelectedItem = "Scheduled";
+                                if (isRandomTestSelected)
+                                { picker_drumSelection.SelectedItem = "Random"; }
+                                else { picker_drumSelection.SelectedItem = "Scheduled"; }
                             }
                         }
                         else if (yarncountconfigmodel.totalSections == 3)
@@ -2129,7 +2192,9 @@ namespace TQM
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
                                 entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
-                                picker_drumSelection.SelectedItem = "Scheduled";
+                                if (isRandomTestSelected)
+                                { picker_drumSelection.SelectedItem = "Random"; }
+                                else { picker_drumSelection.SelectedItem = "Scheduled"; }
                             }
 
                             if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
@@ -2167,7 +2232,9 @@ namespace TQM
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
                                 entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
-                                picker_drumSelection.SelectedItem = "Scheduled";
+                                if (isRandomTestSelected)
+                                { picker_drumSelection.SelectedItem = "Random"; }
+                                else { picker_drumSelection.SelectedItem = "Scheduled"; }
                             }
 
                             if (selectedDrumNumber >= sec3_lowerLimit && selectedDrumNumber <= sec3_upperLimit)
@@ -2205,7 +2272,9 @@ namespace TQM
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
                                 entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
-                                picker_drumSelection.SelectedItem = "Scheduled";
+                                if (isRandomTestSelected)
+                                { picker_drumSelection.SelectedItem = "Random"; }
+                                else { picker_drumSelection.SelectedItem = "Scheduled"; }
                             }
                         }
                         else if (yarncountconfigmodel.totalSections == 2)
@@ -2251,7 +2320,9 @@ namespace TQM
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
                                 entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
-                                picker_drumSelection.SelectedItem = "Scheduled";
+                                if (isRandomTestSelected)
+                                { picker_drumSelection.SelectedItem = "Random"; }
+                                else { picker_drumSelection.SelectedItem = "Scheduled"; }
                             }
 
                             if (selectedDrumNumber >= sec2_lowerLimit && selectedDrumNumber <= sec2_upperLimit)
@@ -2289,7 +2360,9 @@ namespace TQM
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
                                 entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
-                                picker_drumSelection.SelectedItem = "Scheduled";
+                                if (isRandomTestSelected)
+                                { picker_drumSelection.SelectedItem = "Random"; }
+                                else { picker_drumSelection.SelectedItem = "Scheduled"; }
                             }
                         }
                         else if (yarncountconfigmodel.totalSections == 1)
@@ -2332,94 +2405,96 @@ namespace TQM
                                 entry_strengthDeviation.Text = yarncountconfigmodel.strengthDeviation.ToString();
                                 entry_belowLimit.Text = yarncountconfigmodel.belowLimit.ToString() + " & " + yarncountconfigmodel.maxLimit.ToString();
                                 entry_numberOfTest.Text = yarncountconfigmodel.totalSamples.ToString();
-                                picker_drumSelection.SelectedItem = "Scheduled";
+                                if (isRandomTestSelected)
+                                { picker_drumSelection.SelectedItem = "Random"; }
+                                else { picker_drumSelection.SelectedItem = "Scheduled"; }
                             }
                         }
 
-                        if(startDate!=DEFAULTDATE && endDate != DEFAULTDATE)
-                        {
-                            conn.CreateTable<StrengthTestModel>();
-                            StrengthTestModel selectedDrumTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
-                                                                (StrengthTestModel.drumNumber == selectedDrumNumber
-                                                                && StrengthTestModel.machineID == selectedMachineID
-                                                                && StrengthTestModel.drumSelectionMethod == "Scheduled"
-                                                                && (StrengthTestModel.createdate >= startDate
-                                                                || StrengthTestModel.createdate <= endDate)))
-                                                                .OrderByDescending(StrengthTestModel=>StrengthTestModel.sampleNo)
-                                                                .FirstOrDefault();
-                            if (selectedDrumTest != null && (selectedDrumTest.totalTestCount== selectedDrumTest.sampleNo) && isTestResume==false)
-                            {
-                                //DisplayAlert("Attention", "Test already completed for Drum Number ("
-                                //                + selectedDrumNumber.ToString() + ") on "
-                                //                + selectedDrumTest.createdate.ToShortDateString()
-                                //                + ". Still want to conduct test for this drum ?", "OK");
-                                bool userDecision = await DisplayAlert("Attention",
-                                                "Test already completed for Drum Number ("
-                                                + selectedDrumNumber.ToString() + ") on "
-                                                + selectedDrumTest.createdate.ToShortDateString()
-                                                + ". Still do you want to conduct test for this drum in Random method?",
-                                                "Yes",
-                                                "No");
-                                if (userDecision)
-                                {
-                                    //using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-                                    //{
-                                    UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
-                                        if (loggedInUser == null)
-                                        {
-                                            DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
-                                            return;
-                                        }
-                                        else
-                                        {
-                                            if (loggedInUser.isAdmin)
-                                            {
-                                                picker_drumSelection.SelectedItem = "Random";
-                                                picker_drumSelection.IsEnabled = false;
-                                            }
-                                            else
-                                            {
-                                                Environment.SetEnvironmentVariable("DrumSelectionMethodChange", null);
-                                                var result = await Navigation.ShowPopupAsync(new AdminCredPopUp());
-                                                if (result != null)
-                                                {
-                                                    if (result.ToString() == "Success")
-                                                    {
-                                                        picker_drumSelection.SelectedItem = "Random";
-                                                        picker_drumSelection.IsEnabled = false;
-                                                    }
-                                                    else
-                                                    {
-                                                        //reset test params;
-                                                        picker_drumNumber.SelectedIndex = -1;
-                                                        picker_drumSelection.IsEnabled = false;
-                                                        DisplayAlert("Attention", result.ToString(), "OK");
-                                                        return;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    //reset test params;
-                                                    picker_drumNumber.SelectedIndex = -1;
-                                                    picker_drumSelection.IsEnabled = false;
-                                                    return;
-                                                }
-                                            }
-                                        }
-                                    //}
-                                }
-                                else
-                                {
-                                    //reset test params;
-                                    picker_drumNumber.SelectedIndex = -1;
-                                    picker_drumSelection.IsEnabled = false;
-                                }
-                            }
-                            else
-                            {
-                                picker_drumSelection.IsEnabled = false;
-                            }
-                        }
+                        //if(startDate!=DEFAULTDATE && endDate != DEFAULTDATE)
+                        //{
+                        //    conn.CreateTable<StrengthTestModel>();
+                        //    StrengthTestModel selectedDrumTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
+                        //                                        (StrengthTestModel.drumNumber == selectedDrumNumber
+                        //                                        && StrengthTestModel.machineID == selectedMachineID
+                        //                                        && StrengthTestModel.drumSelectionMethod == "Scheduled"
+                        //                                        && (StrengthTestModel.createdate >= startDate
+                        //                                        || StrengthTestModel.createdate <= endDate)))
+                        //                                        .OrderByDescending(StrengthTestModel=>StrengthTestModel.sampleNo)
+                        //                                        .FirstOrDefault();
+                        //    if (selectedDrumTest != null && (selectedDrumTest.totalTestCount== selectedDrumTest.sampleNo) && isTestResume==false)
+                        //    {
+                        //        //DisplayAlert("Attention", "Test already completed for Drum Number ("
+                        //        //                + selectedDrumNumber.ToString() + ") on "
+                        //        //                + selectedDrumTest.createdate.ToShortDateString()
+                        //        //                + ". Still want to conduct test for this drum ?", "OK");
+                        //        bool userDecision = await DisplayAlert("Attention",
+                        //                        "Test already completed for Drum Number ("
+                        //                        + selectedDrumNumber.ToString() + ") on "
+                        //                        + selectedDrumTest.createdate.ToShortDateString()
+                        //                        + ". Still do you want to conduct test for this drum in Random method?",
+                        //                        "Yes",
+                        //                        "No");
+                        //        if (userDecision)
+                        //        {
+                        //            //using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                        //            //{
+                        //            UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                        //                if (loggedInUser == null)
+                        //                {
+                        //                    DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                        //                    return;
+                        //                }
+                        //                else
+                        //                {
+                        //                    if (loggedInUser.isAdmin)
+                        //                    {
+                        //                        picker_drumSelection.SelectedItem = "Random";
+                        //                        picker_drumSelection.IsEnabled = false;
+                        //                    }
+                        //                    else
+                        //                    {
+                        //                        Environment.SetEnvironmentVariable("DrumSelectionMethodChange", null);
+                        //                        var result = await Navigation.ShowPopupAsync(new AdminCredPopUp());
+                        //                        if (result != null)
+                        //                        {
+                        //                            if (result.ToString() == "Success")
+                        //                            {
+                        //                                picker_drumSelection.SelectedItem = "Random";
+                        //                                picker_drumSelection.IsEnabled = false;
+                        //                            }
+                        //                            else
+                        //                            {
+                        //                                //reset test params;
+                        //                                picker_drumNumber.SelectedIndex = -1;
+                        //                                picker_drumSelection.IsEnabled = false;
+                        //                                DisplayAlert("Attention", result.ToString(), "OK");
+                        //                                return;
+                        //                            }
+                        //                        }
+                        //                        else
+                        //                        {
+                        //                            //reset test params;
+                        //                            picker_drumNumber.SelectedIndex = -1;
+                        //                            picker_drumSelection.IsEnabled = false;
+                        //                            return;
+                        //                        }
+                        //                    }
+                        //                }
+                        //            //}
+                        //        }
+                        //        else
+                        //        {
+                        //            //reset test params;
+                        //            picker_drumNumber.SelectedIndex = -1;
+                        //            picker_drumSelection.IsEnabled = false;
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        picker_drumSelection.IsEnabled = false;
+                        //    }
+                        //}
                     }
                 }
             }
@@ -2591,60 +2666,69 @@ namespace TQM
 
         private async void picker_drumSelection_SelectedIndexChanged(System.Object sender, System.EventArgs e)
         {
-            try
-            {
-                if (picker_drumSelection.IsEnabled == false) { return; }
-                if (picker_drumNumber.SelectedIndex < 0) { picker_drumSelection.SelectedIndex = -1; return; }
-                if (picker_drumSelection.SelectedIndex > 0)
-                {
-                    if(scheduledStartDate==DEFAULTDATE || scheduledEndDate == DEFAULTDATE)
-                    {
-                        if (picker_drumSelection.SelectedItem == "Scheduled")
-                        {
-                            picker_drumSelection.SelectedItem = "Random";
-                        }
-                        return;
-                    }
+            //try
+            //{
+            //    if (picker_drumSelection.IsEnabled == false) { return; }
+            //    if (picker_drumNumber.SelectedIndex < 0) { picker_drumSelection.SelectedIndex = -1; return; }
+            //    if (picker_drumSelection.SelectedIndex > 0)
+            //    {
+            //        if(scheduledStartDate==DEFAULTDATE || scheduledEndDate == DEFAULTDATE)
+            //        {
+            //            if (picker_drumSelection.SelectedItem == "Scheduled")
+            //            {
+            //                picker_drumSelection.SelectedItem = "Random";
+            //            }
+            //            return;
+            //        }
 
-                    if (picker_drumSelection.SelectedItem == "Scheduled")
-                    {
-                        using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-                        {
-                            conn.CreateTable<StrengthTestModel>();
-                            StrengthTestModel selectedDrumTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
-                                                                (StrengthTestModel.drumNumber == selectedDrumNumber
-                                                                && StrengthTestModel.machineID == selectedMachineID
-                                                                && StrengthTestModel.drumSelectionMethod == "Scheduled"
-                                                                && (StrengthTestModel.createdate >= scheduledStartDate
-                                                                || StrengthTestModel.createdate <= scheduledEndDate)))
-                                                                .OrderByDescending(StrengthTestModel => StrengthTestModel.sampleNo)
-                                                                .FirstOrDefault();
-                            if (selectedDrumTest != null
-                                && (selectedDrumTest.totalTestCount == selectedDrumTest.sampleNo)
-                                && isTestResume == false)
-                            {
-                                bool userDecision = await DisplayAlert("Attention",
-                                                                        "Already a scheduled test was taken for the selected Drum [" + selectedDrumNumber + "]. So do you want to continue test using random option?",
-                                                                        "Yes",
-                                                                        "No");
-                                if (userDecision)
-                                {
-                                    picker_drumSelection.SelectedItem = "Random";
-                                }
-                                else
-                                {
-                                    picker_drumSelection.IsEnabled = false;
-                                    picker_machinename.SelectedIndex = -1;
-                                }
-                            }
-                        }
-                    }
-                }
-            }catch(Exception ex)
-            {
-                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
-                return;
-            }
+            //        if (picker_drumSelection.SelectedItem == "Scheduled")
+            //        {
+            //            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            //            {
+            //                conn.CreateTable<StrengthTestModel>();
+            //                StrengthTestModel selectedDrumTest = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
+            //                                                    (StrengthTestModel.drumNumber == selectedDrumNumber
+            //                                                    && StrengthTestModel.machineID == selectedMachineID
+            //                                                    && StrengthTestModel.drumSelectionMethod == "Scheduled"
+            //                                                    && EntityFunctions.TruncateTime(StrengthTestModel.createdate) == EntityFunctions.TruncateTime(scheduledStartDate)))
+            //                                                    .OrderByDescending(StrengthTestModel => StrengthTestModel.sampleNo)
+            //                                                    .FirstOrDefault();
+            //                if (selectedDrumTest != null
+            //                    && (selectedDrumTest.totalTestCount == selectedDrumTest.sampleNo)
+            //                    && isTestResume == false)
+            //                {
+            //                    bool userDecision = await DisplayAlert("Attention",
+            //                                                            "Already a scheduled test was taken for the selected Drum [" + selectedDrumNumber + "]. So do you want to continue test using random option?",
+            //                                                            "Yes",
+            //                                                            "No");
+            //                    if (userDecision)
+            //                    {
+            //                        picker_drumSelection.SelectedItem = "Random";
+            //                    }
+            //                    else
+            //                    {
+            //                        picker_drumSelection.IsEnabled = false;
+            //                        picker_machinename.SelectedIndex = -1;
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}catch(Exception ex)
+            //{
+            //    DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+            //    return;
+            //}
+        }
+
+        void btn_backToHome_Clicked(System.Object sender, System.EventArgs e)
+        {
+            Navigation.PushAsync(new DrumView(DV_selectedMachineCategory,
+                                                DV_selectedMachineID,
+                                                DV_selectedMachineName,
+                                                DV_selectedSectionNumber,
+                                                DV_selectedDrumStartNo,
+                                                DV_selectedDrumEndNo));
         }
     }
 }

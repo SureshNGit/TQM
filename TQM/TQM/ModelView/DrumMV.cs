@@ -23,26 +23,16 @@ namespace TQM.ModelView
         public bool D8_Visible { get; set; } = false;
         public bool D9_Visible { get; set; } = false;
         public bool D10_Visible { get; set; } = false;
-        public bool D1_Enable { get; set; } = false;
-        public bool D2_Enable { get; set; } = false;
-        public bool D3_Enable { get; set; } = false;
-        public bool D4_Enable { get; set; } = false;
-        public bool D5_Enable { get; set; } = false;
-        public bool D6_Enable { get; set; } = false;
-        public bool D7_Enable { get; set; } = false;
-        public bool D8_Enable { get; set; } = false;
-        public bool D9_Enable { get; set; } = false;
-        public bool D10_Enable { get; set; } = false;
-        public bool D1_BG_Color { get; set; } = false;
-        public bool D2_BG_Color { get; set; } = false;
-        public bool D3_BG_Color { get; set; } = false;
-        public bool D4_BG_Color { get; set; } = false;
-        public bool D5_BG_Color { get; set; } = false;
-        public bool D6_BG_Color { get; set; } = false;
-        public bool D7_BG_Color { get; set; } = false;
-        public bool D8_BG_Color { get; set; } = false;
-        public bool D9_BG_Color { get; set; } = false;
-        public bool D10_BG_Color { get; set; } = false;
+        public string D1_BG_Color { get; set; } = "red";
+        public string D2_BG_Color { get; set; } = "red";
+        public string D3_BG_Color { get; set; } = "red";
+        public string D4_BG_Color { get; set; } = "red";
+        public string D5_BG_Color { get; set; } = "red";
+        public string D6_BG_Color { get; set; } = "red";
+        public string D7_BG_Color { get; set; } = "red";
+        public string D8_BG_Color { get; set; } = "red";
+        public string D9_BG_Color { get; set; } = "red";
+        public string D10_BG_Color { get; set; } = "red";
     }
 }
 
