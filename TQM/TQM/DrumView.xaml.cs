@@ -72,7 +72,7 @@ namespace TQM
                                                         && StrengthTestSummaryModel.machineID == selectedMachineID
                                                         && StrengthTestSummaryModel.drumSelectionMethod == "Scheduled"
                                                         && StrengthTestSummaryModel.drumNumber==drumNo)).FirstOrDefault();
-                    if (sts == null) { return false; } else { return true; }
+                    if (sts == null) { return true; } else { return false; }
                 }
             }
             catch (Exception)

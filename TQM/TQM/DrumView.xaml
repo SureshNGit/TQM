@@ -89,61 +89,61 @@
 
 
                                      <StackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D1_Visible}">
-                                         <Button Text = "{Binding D1}" Margin="0,0,0,0"
-                                            BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
+                                         <Button Text = "{Binding D1}" Margin="0,0,0,0" IsEnabled="{Binding D1_Enable}"
+                                            BackgroundColor="{Binding D1_BG_Color}" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
                                             VerticalOptions="Center"  HorizontalOptions="Center" />
                                      </StackLayout>
 
                                     <StackLayout Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D2_Visible}">
-                                         <Button Text = "{Binding D2}" Margin="0,0,0,0"
+                                         <Button Text = "{Binding D2}" Margin="0,0,0,0" IsEnabled="{Binding D2_Enable}"
                                             BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
                                             VerticalOptions="Center"  HorizontalOptions="Center" />
                                      </StackLayout>
 
                                     <StackLayout Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D3_Visible}">
-                                         <Button  Text = "{Binding D3}" Margin="0,0,0,0"
+                                         <Button  Text = "{Binding D3}" Margin="0,0,0,0" IsEnabled="{Binding D3_Enable}"
                                             BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
                                             VerticalOptions="Center"  HorizontalOptions="Center" />
                                      </StackLayout>
 
                                     <StackLayout Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D4_Visible}">
-                                         <Button  Text = "{Binding D4}" Margin="0,0,0,0"
+                                         <Button  Text = "{Binding D4}" Margin="0,0,0,0" IsEnabled="{Binding D4_Enable}"
                                             BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
                                             VerticalOptions="Center"  HorizontalOptions="Center" />
                                      </StackLayout>
 
                                     <StackLayout Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D5_Visible}">
-                                         <Button Text = "{Binding D5}" Margin="0,0,0,0"
+                                         <Button Text = "{Binding D5}" Margin="0,0,0,0" IsEnabled="{Binding D5_Enable}"
                                             BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
                                             VerticalOptions="Center"  HorizontalOptions="Center" />
                                      </StackLayout>
 
                                     <StackLayout Grid.Column="5" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D6_Visible}">
-                                         <Button  Text = "{Binding D6}" Margin="0,0,0,0"
+                                         <Button  Text = "{Binding D6}" Margin="0,0,0,0" IsEnabled="{Binding D6_Enable}"
                                             BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
                                             VerticalOptions="Center"  HorizontalOptions="Center" />
                                      </StackLayout>
 
                                     <StackLayout Grid.Column="6" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D7_Visible}">
-                                         <Button  Text = "{Binding D7}" Margin="0,0,0,0"
+                                         <Button  Text = "{Binding D7}" Margin="0,0,0,0" IsEnabled="{Binding D7_Enable}"
                                             BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
                                             VerticalOptions="Center"  HorizontalOptions="Center" />
                                      </StackLayout>
 
                                     <StackLayout Grid.Column="7" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D8_Visible}">
-                                         <Button  Text = "{Binding D8}" Margin="0,0,0,0"
+                                         <Button  Text = "{Binding D8}" Margin="0,0,0,0" IsEnabled="{Binding D8_Enable}"
                                             BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
                                             VerticalOptions="Center"  HorizontalOptions="Center" />
                                      </StackLayout>
 
                                     <StackLayout Grid.Column="8" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D9_Visible}">
-                                         <Button  Text = "{Binding D9}" Margin="0,0,0,0"
+                                         <Button  Text = "{Binding D9}" Margin="0,0,0,0" IsEnabled="{Binding D9_Enable}"
                                             BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
                                             VerticalOptions="Center"  HorizontalOptions="Center" />
                                      </StackLayout>
 
                                     <StackLayout Grid.Column="9" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D10_Visible}">
-                                         <Button  Text = "{Binding D10}" Margin="0,0,0,0"
+                                         <Button  Text = "{Binding D10}" Margin="0,0,0,0" IsEnabled="{Binding D10_Enable}"
                                             BackgroundColor="green" TextColor="White" CornerRadius="5" Clicked="Btn_DrumSelection_Clicked"
                                             VerticalOptions="Center"  HorizontalOptions="Center" />
                                      </StackLayout>
