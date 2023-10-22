@@ -486,7 +486,8 @@ namespace TQM
                          ((StrengthTestSummaryModel.scheduledStartDate >= startDate
                          && StrengthTestSummaryModel.scheduledEndDate <= endDate)
                          && StrengthTestSummaryModel.machineCategory == categoryName
-                         && StrengthTestSummaryModel.machineID == machineID))
+                         && StrengthTestSummaryModel.machineID == machineID
+                         && StrengthTestSummaryModel.drumSelectionMethod == "Scheduled"))
                         .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.machineID)
                         .ThenBy(StrengthTestSummaryModel => StrengthTestSummaryModel.sectionNumber)
                         .ThenBy(StrengthTestSummaryModel => StrengthTestSummaryModel.totalDrumNumbers)
@@ -627,8 +628,7 @@ namespace TQM
                         //    prev_totalSections = prev_tcm.totalSections;
                         //}
 
-                        prev_totalDrumCount = S_Test.overallDrumCount;
-                        prev_totalSections = S_Test.overallSections;
+                        
 
                         int minDrumNo = 0;
                         int maxDrumNo = 0;
@@ -651,6 +651,8 @@ namespace TQM
                             prev_SUD = S_Test.settingsUpdatedDate.Date;
                             prev_MinDrumNo = minDrumNo;
                             prev_MaxDrumNo = maxDrumNo;
+                            prev_totalDrumCount = S_Test.overallDrumCount;
+                            prev_totalSections = S_Test.overallSections;
 
 
                             for (int i= minDrumNo; i <= maxDrumNo; i++)
@@ -697,6 +699,8 @@ namespace TQM
                                 prev_SUD = S_Test.settingsUpdatedDate.Date;
                                 prev_MinDrumNo = minDrumNo;
                                 prev_MaxDrumNo = maxDrumNo;
+                                prev_totalDrumCount = S_Test.overallDrumCount;
+                                prev_totalSections = S_Test.overallSections;
                                 for (int i = minDrumNo; i <= maxDrumNo; i++)
                                 {
                                     drumList.Add(i);

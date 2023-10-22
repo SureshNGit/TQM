@@ -17,6 +17,8 @@ namespace TQM.ModelView
         public decimal p2Deviation { get; set; }
         public decimal n1 { get; set; }
         public decimal n1Deviation { get; set; }
+        public int overallDrumCount { get; set; }
+        public int overallSections { get; set; }
         public int sectionNumber { get; set; }
         public string totalDrumNumbers { get; set; }
         public int drumNumber { get; set; }

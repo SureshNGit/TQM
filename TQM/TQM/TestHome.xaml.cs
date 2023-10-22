@@ -11,6 +11,8 @@ namespace TQM
         private string selectedCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
+        private int selectedOverallDrumNos = 0;
+        private int selectedOverallSections = 0;
         private int sec1_lowerLimit = 0;
         private int sec1_upperLimit = 0;
         private int sec2_lowerLimit = 0;
@@ -26,9 +28,11 @@ namespace TQM
             {
                 //conn.DropTable<StrengthTestModel>();
                 //conn.DropTable<StrengthTestSummaryModel>();
+                //conn.DropTable<TestConfigModel>();
 
                 conn.CreateTable<StrengthTestModel>();
                 conn.CreateTable<StrengthTestSummaryModel>();
+                conn.CreateTable<TestConfigModel>();
             }
         }
 
@@ -66,6 +70,8 @@ namespace TQM
                                                                 ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
                     if (yarncountconfigmodel != null)
                     {
+                        selectedOverallDrumNos = yarncountconfigmodel.totalDrumCount;
+                        selectedOverallSections = yarncountconfigmodel.totalSections;
                         if (yarncountconfigmodel.drumNumbers_s1 != null
                             && yarncountconfigmodel.drumNumbers_s1.Trim() != ""
                             && yarncountconfigmodel.drumNumbers_s1.Trim() != "0.0")
@@ -167,22 +173,50 @@ namespace TQM
 
         void btn_section1_Clicked(System.Object sender, System.EventArgs e)
         {
-            Navigation.PushAsync(new DrumView(selectedCategory,selectedMachineID,selectedMachineName,1,sec1_lowerLimit,sec1_upperLimit));
+            Navigation.PushAsync(new DrumView(selectedCategory,
+                                                selectedMachineID,
+                                                selectedMachineName,
+                                                selectedOverallDrumNos,
+                                                selectedOverallSections,
+                                                1,
+                                                sec1_lowerLimit,
+                                                sec1_upperLimit));
         }
 
         void btn_section2_Clicked(System.Object sender, System.EventArgs e)
         {
-            Navigation.PushAsync(new DrumView(selectedCategory, selectedMachineID, selectedMachineName, 2, sec2_lowerLimit, sec2_upperLimit));
+            Navigation.PushAsync(new DrumView(selectedCategory,
+                                                selectedMachineID,
+                                                selectedMachineName,
+                                                selectedOverallDrumNos,
+                                                selectedOverallSections,
+                                                2,
+                                                sec2_lowerLimit,
+                                                sec2_upperLimit));
         }
 
         void btn_section3_Clicked(System.Object sender, System.EventArgs e)
         {
-            Navigation.PushAsync(new DrumView(selectedCategory, selectedMachineID, selectedMachineName, 3, sec3_lowerLimit, sec3_upperLimit));
+            Navigation.PushAsync(new DrumView(selectedCategory,
+                                                selectedMachineID,
+                                                selectedMachineName,
+                                                selectedOverallDrumNos,
+                                                selectedOverallSections,
+                                                3,
+                                                sec3_lowerLimit,
+                                                sec3_upperLimit));
         }
 
         void btn_section4_Clicked(System.Object sender, System.EventArgs e)
         {
-            Navigation.PushAsync(new DrumView(selectedCategory, selectedMachineID, selectedMachineName, 4, sec4_lowerLimit, sec4_upperLimit));
+            Navigation.PushAsync(new DrumView(selectedCategory,
+                                                selectedMachineID,
+                                                selectedMachineName,
+                                                selectedOverallDrumNos,
+                                                selectedOverallSections,
+                                                4,
+                                                sec4_lowerLimit,
+                                                sec4_upperLimit));
         }
     }
 }

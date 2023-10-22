@@ -160,8 +160,8 @@
                                             VerticalOptions="Center"  HorizontalOptions="Center" >
                                              <Button.Text>
                                                 <MultiBinding Converter="{StaticResource StandardFormatter}">
-                                                    <Binding Path="D4"/>
-                                                    <Binding Path="D4_Strength"/>
+                                                    <Binding Path="D5"/>
+                                                    <Binding Path="D5_Strength"/>
                                                 </MultiBinding>
                                             </Button.Text>
                                          </Button>

@@ -62,6 +62,8 @@ namespace TQM
         private decimal selectedP2Deviation = 0.0m;
         private decimal selectedN1 = 0.0m;
         private decimal selectedN1Deviation = 0.0m;
+        private int selectedOverallDrumNos = 0;
+        private int selectedOverallSections = 0;
         private int selectedSectionNumber = 0;
         public string selectedTotalDrumNumbers = "";
         private int selectedDrumNumber = 0;
@@ -110,7 +112,7 @@ namespace TQM
             initializer();
         }
 
-        public StrengthAnalyzer(string machineCat, Guid machineID, string machineName, int sectionNo, int drumNo,int drumStartNo, int drumEndNo, bool isRandomTest)
+        public StrengthAnalyzer(string machineCat, Guid machineID, string machineName, int overallDrums, int overallSections, int sectionNo, int drumNo,int drumStartNo, int drumEndNo, bool isRandomTest)
         {   InitializeComponent();
 
 
@@ -123,12 +125,14 @@ namespace TQM
             selectedSectionNumber = sectionNo;
             DV_selectedSectionNumber = sectionNo;
             selectedDrumNumber = drumNo;
-            DV_selectedDrumNumber = drumEndNo;
+            DV_selectedDrumNumber = drumNo;
             selectedDrumStartNo = drumStartNo;
             DV_selectedDrumStartNo = drumStartNo;
             selectedDrumEndNo = drumEndNo;
             DV_selectedDrumEndNo = drumEndNo;
             isRandomTestSelected = isRandomTest;
+            selectedOverallDrumNos = overallDrums;
+            selectedOverallSections = overallSections;
 
             if (isRandomTestSelected) { btn_drumSelectionMethod.IsEnabled = false; }
             IList<string> machineCategorylist = picker_machinecategory.Items;
@@ -283,11 +287,13 @@ namespace TQM
                         return;
                     }
                     StrengthTestModel lastTestRecord = conn.Table<StrengthTestModel>()
-                        .Where(StrengthTestModel => StrengthTestModel.createdate == maxDate).FirstOrDefault();
-                    if ((lastTestRecord.totalTestCount != lastTestRecord.sampleNo) &&
-                        (lastTestRecord.machineCategory == selectedMachineCategory &&
-                        lastTestRecord.machineID == selectedMachineID &&
-                        lastTestRecord.drumNumber == selectedDrumNumber))
+                        .Where(StrengthTestModel =>
+                        (StrengthTestModel.machineCategory ==selectedMachineCategory
+                        && StrengthTestModel.machineID == selectedMachineID
+                        && StrengthTestModel.drumNumber == selectedDrumNumber))
+                        .OrderByDescending(StrengthTestModel=>StrengthTestModel.createdate).FirstOrDefault();
+
+                    if (lastTestRecord !=null && lastTestRecord.totalTestCount != lastTestRecord.sampleNo)
                     {
                         isTestResume = true;
                         testYCButton.Text = "Resume";
@@ -301,6 +307,9 @@ namespace TQM
                         scheduledStartDate = lastTestRecord.scheduledStartDate;
                         scheduledEndDate = lastTestRecord.scheduledEndDate;
                         settingsUpdatedDate = lastTestRecord.settingsUpdatedDate;
+
+                        selectedOverallDrumNos = lastTestRecord.overallDrumCount;
+                        selectedOverallSections = lastTestRecord.overallSections;
 
                         IList<string> machineCategorylist = picker_machinecategory.Items;
                         int machineCatindex = 0;
@@ -837,6 +846,8 @@ namespace TQM
                     p2Deviation = StrengthTestModelViewlist[0].p2Deviation,
                     n1 = StrengthTestModelViewlist[0].n1,
                     n1Deviation = StrengthTestModelViewlist[0].n1Deviation,
+                    overallDrumCount = StrengthTestModelViewlist[0].overallDrumCount,
+                    overallSections = StrengthTestModelViewlist[0].overallSections,
                     sectionNumber = StrengthTestModelViewlist[0].sectionNumber,
                     totalDrumNumbers = StrengthTestModelViewlist[0].totalDrumNumbers,
                     drumNumber = StrengthTestModelViewlist[0].drumNumber,
@@ -1232,9 +1243,9 @@ namespace TQM
                 _ = showProgress(false);
                 return;
             }
-            if (entry_numberOfTest.Text.Trim() == "" || int.Parse(entry_numberOfTest.Text.Trim()) == 0)
+            if (entry_numberOfTest.Text.Trim() == "" || int.Parse(entry_numberOfTest.Text.Trim()) < 2)
             {
-                await DisplayAlert("Attention", "No. Of Test should not be blank or zero!!!", "Ok");
+                await DisplayAlert("Attention", "No. Of Test should not be blank or zero or less than 2!!!", "Ok");
                 _ = showProgress(false);
                 return;
             }
@@ -1428,6 +1439,8 @@ namespace TQM
                             p2Deviation=selectedP2Deviation,
                             n1 = selectedN1,
                             n1Deviation=selectedN1Deviation,
+                            overallDrumCount=selectedOverallDrumNos,
+                            overallSections=selectedOverallSections,
                             sectionNumber = selectedSectionNumber,
                             totalDrumNumbers = selectedTotalDrumNumbers,
                             drumNumber = selectedDrumNumber,
@@ -1477,6 +1490,8 @@ namespace TQM
                             p2Deviation=selectedP2Deviation,
                             n1 = selectedN1,
                             n1Deviation=selectedN1Deviation,
+                            overallDrumCount = selectedOverallDrumNos,
+                            overallSections = selectedOverallSections,
                             sectionNumber = selectedSectionNumber,
                             totalDrumNumbers = selectedTotalDrumNumbers,
                             drumNumber = selectedDrumNumber,
@@ -2005,14 +2020,14 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if(DateTime.Now.Date > scheduledEndDate && isTestResume ==false)
-                                {
-                                    picker_drumNumber.SelectedIndex = -1;
-                                    picker_drumSelection.IsEnabled = false;
-                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum ["+
-                                        selectedDrumNumber.ToString()+"]. Please reach admin to change the machine settings", "OK");
-                                    return;
-                                }
+                                //if(DateTime.Now.Date > scheduledEndDate && isTestResume ==false)
+                                //{
+                                //    picker_drumNumber.SelectedIndex = -1;
+                                //    picker_drumSelection.IsEnabled = false;
+                                //    DisplayAlert("Attention", "The scheduled date is expired for the selected drum ["+
+                                //        selectedDrumNumber.ToString()+"]. Please reach admin to change the machine settings", "OK");
+                                //    return;
+                                //}
 
                                 startDate = yarncountconfigmodel.scheduledStartDate;
                                 endDate = yarncountconfigmodel.scheduledEndDate;
@@ -2046,14 +2061,14 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
-                                {
-                                    picker_drumNumber.SelectedIndex = -1;
-                                    picker_drumSelection.IsEnabled = false;
-                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
-                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
-                                    return;
-                                }
+                                //if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
+                                //{
+                                //    picker_drumNumber.SelectedIndex = -1;
+                                //    picker_drumSelection.IsEnabled = false;
+                                //    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                //        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                //    return;
+                                //}
 
                                 startDate = yarncountconfigmodel.scheduledStartDate;
                                 endDate = yarncountconfigmodel.scheduledEndDate;
@@ -2086,14 +2101,14 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume==false)
-                                {
-                                    picker_drumNumber.SelectedIndex = -1;
-                                    picker_drumSelection.IsEnabled = false;
-                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
-                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
-                                    return;
-                                }
+                                //if (DateTime.Now.Date > scheduledEndDate && isTestResume==false)
+                                //{
+                                //    picker_drumNumber.SelectedIndex = -1;
+                                //    picker_drumSelection.IsEnabled = false;
+                                //    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                //        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                //    return;
+                                //}
 
                                 startDate = yarncountconfigmodel.scheduledStartDate;
                                 endDate = yarncountconfigmodel.scheduledEndDate;
@@ -2126,14 +2141,14 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
-                                {
-                                    picker_drumNumber.SelectedIndex = -1;
-                                    picker_drumSelection.IsEnabled = false;
-                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
-                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
-                                    return;
-                                }
+                                //if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
+                                //{
+                                //    picker_drumNumber.SelectedIndex = -1;
+                                //    picker_drumSelection.IsEnabled = false;
+                                //    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                //        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                //    return;
+                                //}
 
                                 startDate = yarncountconfigmodel.scheduledStartDate;
                                 endDate = yarncountconfigmodel.scheduledEndDate;
@@ -2177,14 +2192,14 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
-                                {
-                                    picker_drumNumber.SelectedIndex = -1;
-                                    picker_drumSelection.IsEnabled = false;
-                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
-                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
-                                    return;
-                                }
+                                //if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
+                                //{
+                                //    picker_drumNumber.SelectedIndex = -1;
+                                //    picker_drumSelection.IsEnabled = false;
+                                //    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                //        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                //    return;
+                                //}
 
                                 startDate = yarncountconfigmodel.scheduledStartDate;
                                 endDate = yarncountconfigmodel.scheduledEndDate;
@@ -2217,14 +2232,14 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
-                                {
-                                    picker_drumNumber.SelectedIndex = -1;
-                                    picker_drumSelection.IsEnabled = false;
-                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
-                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
-                                    return;
-                                }
+                                //if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
+                                //{
+                                //    picker_drumNumber.SelectedIndex = -1;
+                                //    picker_drumSelection.IsEnabled = false;
+                                //    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                //        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                //    return;
+                                //}
 
                                 startDate = yarncountconfigmodel.scheduledStartDate;
                                 endDate = yarncountconfigmodel.scheduledEndDate;
@@ -2257,14 +2272,14 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
-                                {
-                                    picker_drumNumber.SelectedIndex = -1;
-                                    picker_drumSelection.IsEnabled = false;
-                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
-                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
-                                    return;
-                                }
+                                //if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
+                                //{
+                                //    picker_drumNumber.SelectedIndex = -1;
+                                //    picker_drumSelection.IsEnabled = false;
+                                //    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                //        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                //    return;
+                                //}
 
                                 startDate = yarncountconfigmodel.scheduledStartDate;
                                 endDate = yarncountconfigmodel.scheduledEndDate;
@@ -2305,14 +2320,14 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
-                                {
-                                    picker_drumNumber.SelectedIndex = -1;
-                                    picker_drumSelection.IsEnabled = false;
-                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
-                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
-                                    return;
-                                }
+                                //if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
+                                //{
+                                //    picker_drumNumber.SelectedIndex = -1;
+                                //    picker_drumSelection.IsEnabled = false;
+                                //    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                //        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                //    return;
+                                //}
 
                                 startDate = yarncountconfigmodel.scheduledStartDate;
                                 endDate = yarncountconfigmodel.scheduledEndDate;
@@ -2345,14 +2360,14 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
-                                {
-                                    picker_drumNumber.SelectedIndex = -1;
-                                    picker_drumSelection.IsEnabled = false;
-                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
-                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
-                                    return;
-                                }
+                                //if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
+                                //{
+                                //    picker_drumNumber.SelectedIndex = -1;
+                                //    picker_drumSelection.IsEnabled = false;
+                                //    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                //        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                //    return;
+                                //}
 
                                 startDate = yarncountconfigmodel.scheduledStartDate;
                                 endDate = yarncountconfigmodel.scheduledEndDate;
@@ -2390,14 +2405,14 @@ namespace TQM
                                 selectedMaxRollingCount = yarncountconfigmodel.maxLimit;
                                 selectedMaterialCount = yarncountconfigmodel.materialCount;
 
-                                if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
-                                {
-                                    picker_drumNumber.SelectedIndex = -1;
-                                    picker_drumSelection.IsEnabled = false;
-                                    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
-                                        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
-                                    return;
-                                }
+                                //if (DateTime.Now.Date > scheduledEndDate && isTestResume == false)
+                                //{
+                                //    picker_drumNumber.SelectedIndex = -1;
+                                //    picker_drumSelection.IsEnabled = false;
+                                //    DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                                //        selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                                //    return;
+                                //}
 
                                 startDate = yarncountconfigmodel.scheduledStartDate;
                                 endDate = yarncountconfigmodel.scheduledEndDate;
@@ -2500,7 +2515,7 @@ namespace TQM
             }
             catch (Exception ex)
             {
-                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+                await DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
             }
         }
 
@@ -2518,7 +2533,7 @@ namespace TQM
                     UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                     if (loggedInUser == null)
                     {
-                        DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                        await DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
                         return;
                     }
                     else
@@ -2539,7 +2554,7 @@ namespace TQM
                                 else
                                 {
                                     picker_drumSelection.IsEnabled = false;
-                                    DisplayAlert("Attention", result.ToString(), "OK");
+                                    await DisplayAlert("Attention", result.ToString(), "OK");
                                     return;
                                 }
                             }
@@ -2555,7 +2570,7 @@ namespace TQM
             }
             catch(Exception ex)
             {
-                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+                await DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
             }
         }
 
@@ -2578,7 +2593,7 @@ namespace TQM
                         if (!result.ToString().Contains('~'))
                         {
                             entry_pressure.Text = "";
-                            DisplayAlert("Attention", result.ToString(), "OK");
+                            await DisplayAlert("Attention", result.ToString(), "OK");
                             return;
                         }
 
@@ -2624,7 +2639,7 @@ namespace TQM
                                     selectedP2Deviation = 0.0m;
                                     selectedN1 = 0.0m;
                                     selectedN1Deviation = 0.0m;
-                                    DisplayAlert("Attention", "Unable to reterive machine details. Please try again", "OK");
+                                    await DisplayAlert("Attention", "Unable to reterive machine details. Please try again", "OK");
                                     return;
                                 }
                             }
@@ -2638,14 +2653,14 @@ namespace TQM
                                 selectedP2Deviation = 0.0m;
                                 selectedN1 = 0.0m;
                                 selectedN1Deviation = 0.0m;
-                                DisplayAlert("Attention", "Unable to reterive machine details. Please try again", "OK");
+                                await DisplayAlert("Attention", "Unable to reterive machine details. Please try again", "OK");
                                 return;
                             }
                         }
                         else
                         {
                             entry_pressure.Text = "";
-                            DisplayAlert("Attention", result.ToString(), "OK");
+                            await DisplayAlert("Attention", result.ToString(), "OK");
                             return;
                         }
                     }
@@ -2659,13 +2674,13 @@ namespace TQM
             }
             catch (Exception ex)
             {
-                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+                await DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
                 return;
             } 
         }
 
-        private async void picker_drumSelection_SelectedIndexChanged(System.Object sender, System.EventArgs e)
-        {
+        //private async void picker_drumSelection_SelectedIndexChanged(System.Object sender, System.EventArgs e)
+        //{
             //try
             //{
             //    if (picker_drumSelection.IsEnabled == false) { return; }
@@ -2719,13 +2734,15 @@ namespace TQM
             //    DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
             //    return;
             //}
-        }
+        //}
 
         void btn_backToHome_Clicked(System.Object sender, System.EventArgs e)
         {
             Navigation.PushAsync(new DrumView(DV_selectedMachineCategory,
                                                 DV_selectedMachineID,
                                                 DV_selectedMachineName,
+                                                selectedOverallDrumNos,
+                                                selectedOverallSections,
                                                 DV_selectedSectionNumber,
                                                 DV_selectedDrumStartNo,
                                                 DV_selectedDrumEndNo));

@@ -13,6 +13,8 @@ namespace TQM
 		private string selectedMachineCategory = null;
 		private Guid selectedMachineID = Guid.Empty;
 		private string selectedMachineName = null;
+        private int selectedOverallDrumNos = 0;
+        private int selectedOverallSections = 0;
 		private int selectedSectionNo = 0;
 		private int selectedDrumStartNo = 0;
 		private int selectedDrumEndNo = 0;
@@ -24,13 +26,15 @@ namespace TQM
 			InitializeComponent ();
 		}
 
-        public DrumView(string macCat, Guid macID, string macName, int sectionNo, int startDrumNo, int endDrumNo)
+        public DrumView(string macCat, Guid macID, string macName,int overallDrums, int overallSections, int sectionNo, int startDrumNo, int endDrumNo)
         {
             InitializeComponent();
             drumDict = new Dictionary<int, decimal>();
             selectedMachineCategory = macCat;
 			selectedMachineID = macID;
 			selectedMachineName = macName;
+            selectedOverallDrumNos = overallDrums;
+            selectedOverallSections = overallSections;
 			selectedSectionNo = sectionNo;
 			selectedDrumStartNo = startDrumNo;
 			selectedDrumEndNo = endDrumNo;
@@ -99,82 +103,109 @@ namespace TQM
                 var btn = (Button)sender;
                 int selectedDrumNumber = 0;
                 int.TryParse(btn.Text.Split(new string[] { "\nST" }, StringSplitOptions.None)[0], out selectedDrumNumber);
-                if (btn.BackgroundColor.ToHex() == "#FF008000")
+
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
 
+                    ConfigModel cm = conn.Table<ConfigModel>().Where(ConfigModel =>
+                                    (ConfigModel.machineID == selectedMachineID)).FirstOrDefault();
 
-                    bool userDecision = await DisplayAlert("Attention",
-                                                   "Test already completed for Drum Number ["
-                                                   + selectedDrumNumber.ToString() + "]"
-                                                   + ". Still do you want to conduct test in Random method?",
-                                                   "Yes",
-                                                   "No");
-                    if (userDecision)
+                    if (cm == null)
                     {
-                        using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                        await DisplayAlert("Attention", "Unable to read machine settings!!! Please try again", "OK");
+                        return;
+                    }
+
+                    if (DateTime.Now.Date > cm.scheduledEndDate)
+                    {
+                        await DisplayAlert("Attention", "The scheduled date is expired for the selected drum [" +
+                            selectedDrumNumber.ToString() + "]. Please reach admin to change the machine settings", "OK");
+                        return;
+                    }
+
+                    if (btn.BackgroundColor.ToHex() == "#FF008000")
+                    {
+
+
+                        bool userDecision = await DisplayAlert("Attention",
+                                                       "Test already completed for Drum Number ["
+                                                       + selectedDrumNumber.ToString() + "]"
+                                                       + ". Still do you want to conduct test in Random method?",
+                                                       "Yes",
+                                                       "No");
+                        if (userDecision)
                         {
-                            UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
-                            if (loggedInUser == null)
-                            {
-                                await DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
-                                return;
-                            }
-                            else
-                            {
-                                if (!loggedInUser.isAdmin)
+                            //using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                            //{
+                                UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
+                                if (loggedInUser == null)
                                 {
-                                    var result = await Navigation.ShowPopupAsync(new AdminCredPopUp());
-                                    if (result != null)
+                                    await DisplayAlert("Attention", "Unable to get logged user information!!!", "OK");
+                                    return;
+                                }
+                                else
+                                {
+                                    if (!loggedInUser.isAdmin)
                                     {
-                                        if (result.ToString() == "Success")
+                                        var result = await Navigation.ShowPopupAsync(new AdminCredPopUp());
+                                        if (result != null)
                                         {
-                                            _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
-                                                              selectedMachineID,
-                                                              selectedMachineName,
-                                                              selectedSectionNo,
-                                                              selectedDrumNumber,
-                                                              selectedDrumStartNo,
-                                                              selectedDrumEndNo,
-                                                              true));
+                                            if (result.ToString() == "Success")
+                                            {
+                                                _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
+                                                                  selectedMachineID,
+                                                                  selectedMachineName,
+                                                                  selectedOverallDrumNos,
+                                                                  selectedOverallSections,
+                                                                  selectedSectionNo,
+                                                                  selectedDrumNumber,
+                                                                  selectedDrumStartNo,
+                                                                  selectedDrumEndNo,
+                                                                  true));
+                                            }
+                                            else
+                                            {
+                                                await DisplayAlert("Attention", result.ToString(), "OK");
+                                                return;
+                                            }
                                         }
                                         else
                                         {
-                                            await DisplayAlert("Attention", result.ToString(), "OK");
+                                            await DisplayAlert("Attention", "Invalid Admin Credentials. Please try again!!!", "OK");
                                             return;
                                         }
                                     }
                                     else
                                     {
-                                        await DisplayAlert("Attention", "Invalid Admin Credentials. Please try again!!!", "OK");
-                                        return;
+                                        _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
+                                                                  selectedMachineID,
+                                                                  selectedMachineName,
+                                                                  selectedOverallDrumNos,
+                                                                  selectedOverallSections,
+                                                                  selectedSectionNo,
+                                                                  selectedDrumNumber,
+                                                                  selectedDrumStartNo,
+                                                                  selectedDrumEndNo,
+                                                                  true));
                                     }
                                 }
-                                else
-                                {
-                                    _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
-                                                              selectedMachineID,
-                                                              selectedMachineName,
-                                                              selectedSectionNo,
-                                                              selectedDrumNumber,
-                                                              selectedDrumStartNo,
-                                                              selectedDrumEndNo,
-                                                              true));
-                                }
-                            }
+                            //}
                         }
                     }
-                }
-                else
-                {
+                    else
+                    {
 
-                    _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
-                                                                selectedMachineID,
-                                                                selectedMachineName,
-                                                                selectedSectionNo,
-                                                                selectedDrumNumber,
-                                                                selectedDrumStartNo,
-                                                                selectedDrumEndNo,
-                                                                false));
+                        _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
+                                                                    selectedMachineID,
+                                                                    selectedMachineName,
+                                                                    selectedOverallDrumNos,
+                                                                    selectedOverallSections,
+                                                                    selectedSectionNo,
+                                                                    selectedDrumNumber,
+                                                                    selectedDrumStartNo,
+                                                                    selectedDrumEndNo,
+                                                                    false));
+                    }
                 }
             }
             catch(Exception ex)
