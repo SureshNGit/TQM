@@ -466,6 +466,48 @@ namespace TQM
 
                 if (sts.Count > 0)
                 {
+                    int overallDrumCount = 0;
+                    int.TryParse(entry_drumCount.Text, out overallDrumCount);
+
+                    if (overallDrumCount != sts[0].overallDrumCount)
+                    {
+                        //Check if the previous schedule date is expired
+                        if ((selectedScheduledEndDate.Date < DateTime.Today.Date) == false)
+                        {
+                            DisplayAlert("Attention", "Test already started for the scheduled period ("
+                                                + selectedScheduledStartDate.Date.ToShortDateString()
+                                                + " - "
+                                                + selectedScheduledEndDate.Date.ToShortDateString()
+                                                + "), hence total drum count cannot be changed until scheduled date is expired", "OK");
+                            ret = false;
+                        }
+                    }
+
+                    int noOfSections = 0;
+                    int.TryParse(picker_sectionCount.SelectedItem.ToString(), out noOfSections);
+
+                    if (noOfSections == 0)
+                    {
+                        DisplayAlert("Attention", "Invalid number of sections selected!!!", "Ok");
+                        return false;
+                    }
+                    else
+                    {
+                        if (noOfSections != sts[0].overallSections)
+                        {
+                            //Check if the previous schedule date is expired
+                            if ((selectedScheduledEndDate.Date < DateTime.Today.Date)==false)
+                            {
+                                DisplayAlert("Attention", "Test already started for the scheduled period ("
+                                                    + selectedScheduledStartDate.Date.ToShortDateString()
+                                                    + " - "
+                                                    + selectedScheduledEndDate.Date.ToShortDateString()
+                                                    + "), hence number of sections cannot be changed until scheduled date is expired", "OK");
+                                ret = false;
+                            }
+                        }
+                    }
+
                     if(selectedScheduledStartDate.Date != date_scheduledStartDate.Date)
                     {
                         //Check if the previous schedule date is expired
@@ -527,6 +569,21 @@ namespace TQM
         {
             try
             {
+                if (entry_drumCount.Text.Trim().Contains(".") || entry_drumCount.Text.Trim().Contains("-"))
+                {
+                    DisplayAlert("Attention", "Total Drum Count should not be a decimal or negative value!!!", "Ok");
+                    return;
+                }
+                if (entry_drumCount.Text.Trim() == "" || int.Parse(entry_drumCount.Text.Trim()) == 0)
+                {
+                    DisplayAlert("Attention", "Total Drum Count should not be blank or zero!!!", "Ok");
+                    return;
+                }
+                if (picker_sectionCount.SelectedIndex == -1 || picker_sectionCount.SelectedItem.ToString() == "")
+                {
+                    DisplayAlert("Attention", "Please select valid No.Of Sections!!!", "OK");
+                    return;
+                }
                 if (!checkScheduleDateChange()) { return; }
                 if (selectedMachineCategory == null || selectedMachineCategory == "")
                 {
@@ -609,22 +666,6 @@ namespace TQM
                     DisplayAlert("Attention", "N1 Deviation should not be blank or negative!!!", "Ok");
                     return;
                 }
-                if (entry_drumCount.Text.Trim().Contains(".") || entry_drumCount.Text.Trim().Contains("-"))
-                {
-                    DisplayAlert("Attention", "Total Drum Count should not be a decimal or negative value!!!", "Ok");
-                    return;
-                }
-                if (entry_drumCount.Text.Trim() == "" || int.Parse(entry_drumCount.Text.Trim()) == 0)
-                {
-                    DisplayAlert("Attention", "Total Drum Count should not be blank or zero!!!", "Ok");
-                    return;
-                }
-                if (picker_sectionCount.SelectedIndex == -1 || picker_sectionCount.SelectedItem.ToString() == "")
-                {
-                    DisplayAlert("Attention", "Please select valid No.Of Sections!!!", "OK");
-                    return;
-                }
-
                 if (entry_stdRollingStrength.Text.Trim() == "-")
                 {
                     DisplayAlert("Attention", "Standard Rolling Strength is invalid. Please check!!!", "Ok");
