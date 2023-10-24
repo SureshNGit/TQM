@@ -115,6 +115,12 @@ namespace TQM
                     });
                     flyItems.Add(new MenuItem
                     {
+                        Title = "Add Category",
+                        ImageSource = "",
+                        TargetPage = typeof(categoryPage)
+                    });
+                    flyItems.Add(new MenuItem
+                    {
                         Title = "Add Machine",
                         ImageSource = "",
                         TargetPage = typeof(machinePage)

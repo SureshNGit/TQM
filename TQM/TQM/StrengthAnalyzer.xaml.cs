@@ -181,6 +181,7 @@ namespace TQM
         {
             picker_machinecategory.SelectedItem = "OE Auto Coner";
             lbl_TestID.Text = "";
+            currentTestID = 0;
             //lbl_TestID.Text = "999999999";
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -432,6 +433,8 @@ namespace TQM
                                     p2Deviation = test.p2Deviation,
                                     n1 = test.n1,
                                     n1Deviation = test.n1Deviation,
+                                    overallDrumCount = test.overallDrumCount,
+                                    overallSections = test.overallSections,
                                     sectionNumber = test.sectionNumber,
                                     totalDrumNumbers = test.totalDrumNumbers,
                                     drumNumber = test.drumNumber,
@@ -1109,6 +1112,7 @@ namespace TQM
                 currentTestStartTime = null;
                 currentTestStartTime = DateTime.Now;
                 lbl_TestID.Text = "";
+                currentTestID = 0;
             }
 
             isTestStarted = true;
@@ -1305,7 +1309,7 @@ namespace TQM
                             return;
                         }
                         lastTestRecord = conn.Table<StrengthTestModel>()
-                            .Where(StrengthTestModel => StrengthTestModel.createdate == maxDate).FirstOrDefault();
+                            .OrderByDescending(StrengthTestModel => StrengthTestModel.testID).FirstOrDefault();
                         if (lastTestRecord != null)
                         {
                             if (currentTestID == 0)
