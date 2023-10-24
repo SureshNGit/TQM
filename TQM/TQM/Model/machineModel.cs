@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using SQLiteNetExtensions.Attributes;
 using System;
 
 namespace TQM.Model
@@ -7,6 +8,8 @@ namespace TQM.Model
     {
         [PrimaryKey]
         public Guid ID { get; set; }
+        [ForeignKey(typeof(CategoryModel))]
+        public Guid categoryID { get; set; }
         [MaxLength(50)]
         public string machineCategory { get; set; }
         public string machineName { get; set; }

@@ -9,6 +9,9 @@ namespace TQM.Model
         [PrimaryKey]
         public Guid ID { get; set; }
 
+        [ForeignKey(typeof(CategoryModel))]
+        public Guid categoryID { get; set; }
+
         [ForeignKey(typeof(MachineModel))]
         public Guid machineID { get; set; }
 

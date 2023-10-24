@@ -52,6 +52,7 @@ namespace TQM
         private List<StrengthTestModelView> StrengthTestModelViewlist;
         private long currentTestID = 0;
         private UserModel currentloggedInUser = null;
+        private Guid selectedCategoryID = Guid.Empty;
         private string selectedMachineCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
@@ -98,6 +99,7 @@ namespace TQM
         private bool toastInitialize = false;
         private bool isTestCompleted = false;
         private bool isTestResume = false;
+        private Guid DV_selectedCategoryID = Guid.Empty;
         private string DV_selectedMachineCategory = null;
         private Guid DV_selectedMachineID = Guid.Empty;
         private string DV_selectedMachineName = null;
@@ -112,10 +114,20 @@ namespace TQM
             initializer();
         }
 
-        public StrengthAnalyzer(string machineCat, Guid machineID, string machineName, int overallDrums, int overallSections, int sectionNo, int drumNo,int drumStartNo, int drumEndNo, bool isRandomTest)
+        public StrengthAnalyzer(Guid categoryID,string machineCat, Guid machineID, string machineName, int overallDrums, int overallSections, int sectionNo, int drumNo,int drumStartNo, int drumEndNo, bool isRandomTest)
         {   InitializeComponent();
 
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
 
+                conn.CreateTable<CategoryModel>();
+
+                List<CategoryModel> cm = conn.Table<CategoryModel>().ToList();
+                picker_machinecategory.ItemsSource = cm;
+            }
+
+            selectedCategoryID = categoryID;
+            DV_selectedCategoryID = categoryID;
             selectedMachineCategory = machineCat;
             DV_selectedMachineCategory = machineCat;
             selectedMachineID = machineID;
@@ -179,7 +191,7 @@ namespace TQM
 
         private void initializer()
         {
-            picker_machinecategory.SelectedItem = "OE Auto Coner";
+            //picker_machinecategory.SelectedItem = "OE Auto Coner";
             lbl_TestID.Text = "";
             currentTestID = 0;
             //lbl_TestID.Text = "999999999";
@@ -289,7 +301,7 @@ namespace TQM
                     }
                     StrengthTestModel lastTestRecord = conn.Table<StrengthTestModel>()
                         .Where(StrengthTestModel =>
-                        (StrengthTestModel.machineCategory ==selectedMachineCategory
+                        (StrengthTestModel.categoryID ==selectedCategoryID
                         && StrengthTestModel.machineID == selectedMachineID
                         && StrengthTestModel.drumNumber == selectedDrumNumber))
                         .OrderByDescending(StrengthTestModel=>StrengthTestModel.createdate).FirstOrDefault();
@@ -322,6 +334,7 @@ namespace TQM
                             }
                             else
                             {
+                                selectedCategoryID = lastTestRecord.categoryID;
                                 selectedMachineCategory = lastTestRecord.machineCategory.ToString();
                                 break;
                             }
@@ -424,6 +437,7 @@ namespace TQM
                                     userID = test.userID,
                                     userName = test.userName,
                                     machineID = test.machineID,
+                                    categoryID = test.categoryID,
                                     machineCategory = test.machineCategory,
                                     machineName = test.machineName,
                                     speed = test.speed,
@@ -468,9 +482,9 @@ namespace TQM
             }
         }
 
-        private void getUserfieldConfig(string mCat, Guid mid, string mac)
+        private void getUserfieldConfig(Guid mCat, Guid mid, string mac)
         {
-            if (mCat == "" && mid == Guid.Empty && mac == "")
+            if (mCat == Guid.Empty && mid == Guid.Empty && mac == "")
             {
                 UFVAL1 = null;
                 UFVAL2 = null;
@@ -484,7 +498,7 @@ namespace TQM
                 {
                     ycConfig_uf = conn.Table<ConfigModel>().
                                 Where(ConfigModel => (ConfigModel.uf_name_1 != null ||
-                                ConfigModel.uf_name_1 != "") && ConfigModel.machineCategory == mCat
+                                ConfigModel.uf_name_1 != "") && ConfigModel.categoryID == mCat
                                 && ConfigModel.machineID == mid && ConfigModel.machineName == mac).FirstOrDefault();
                 }
                 if (ycConfig_uf != null)
@@ -497,10 +511,10 @@ namespace TQM
             }
         }
 
-        private void populateTestParams(string mCat, Guid mid, string mac)
+        private void populateTestParams(Guid mCat, Guid mid, string mac)
         {
             if (!isTestCompleted) { hideFrames(); }
-            if (mCat == "" && mid == Guid.Empty && mac == "")
+            if (mCat == Guid.Empty && mid == Guid.Empty && mac == "")
             {
                 selectedSpeed = 0;
                 selectedP1 = 0.0m;
@@ -528,7 +542,7 @@ namespace TQM
             {
                 conn.CreateTable<ConfigModel>();
                 ConfigModel yarncountconfigmodel = conn.Table<ConfigModel>().Where(ConfigModel =>
-                                                            (ConfigModel.machineCategory == mCat &&
+                                                            (ConfigModel.categoryID == mCat &&
                                                             ConfigModel.machineID == mid &&
                                                             ConfigModel.machineName == mac)).FirstOrDefault();
                 if (yarncountconfigmodel != null)
@@ -805,7 +819,7 @@ namespace TQM
 
                 List<StrengthTestModel> st_list = conn.Table<StrengthTestModel>().Where(
                                                     StrengthTestModel => (StrengthTestModel.testID == currentTestID
-                                                    && StrengthTestModel.machineCategory == selectedMachineCategory
+                                                    && StrengthTestModel.categoryID == selectedCategoryID
                                                     && StrengthTestModel.machineID == selectedMachineID)).ToList();
                 if (st_list.Count == 0)
                 {
@@ -839,6 +853,7 @@ namespace TQM
                     testID = StrengthTestModelViewlist[0].testID,
                     userID = StrengthTestModelViewlist[0].userID,
                     userName = StrengthTestModelViewlist[0].userName,
+                    categoryID = StrengthTestModelViewlist[0].categoryID,
                     machineID = StrengthTestModelViewlist[0].machineID,
                     machineCategory = StrengthTestModelViewlist[0].machineCategory,
                     machineName = StrengthTestModelViewlist[0].machineName,
@@ -892,6 +907,7 @@ namespace TQM
                         {
                             ID = Guid.NewGuid(),
                             testID = StrengthTestSummaryModel.testID,
+                            categoryID = cm.categoryID,
                             machineID = cm.machineID,
                             machineCategory = cm.machineCategory,
                             machineName = cm.machineName,
@@ -1118,7 +1134,7 @@ namespace TQM
             isTestStarted = true;
             isTestCompleted = false;
 
-            if (selectedMachineID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
+            if (selectedMachineID == Guid.Empty || selectedCategoryID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
             {
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
                 _ = showProgress(false);
@@ -1433,6 +1449,7 @@ namespace TQM
                             testID = currentTestID,
                             userID = currentloggedInUser.ID,
                             userName = displayusername,
+                            categoryID = selectedCategoryID,
                             machineID = selectedMachineID,
                             machineCategory = selectedMachineCategory,
                             machineName = selectedMachineName,
@@ -1484,6 +1501,7 @@ namespace TQM
                             testID = currentTestID,
                             userID = currentloggedInUser.ID,
                             userName = displayusername,
+                            categoryID = selectedCategoryID,
                             machineID = selectedMachineID,
                             machineCategory = selectedMachineCategory,
                             machineName = selectedMachineName,
@@ -1808,10 +1826,14 @@ namespace TQM
                 hideFrames();
                 picker_drumNumber.SelectedIndex = -1;
                 picker_drumNumber.Items.Clear();
+                selectedCategoryID = Guid.Empty;
                 selectedMachineCategory = "";
-                if (picker_machinecategory.SelectedIndex > 0)
+                if (picker_machinecategory.SelectedIndex >=0)
                 {
-                    selectedMachineCategory = picker_machinecategory.SelectedItem.ToString();
+                    List<CategoryModel> source = (List<CategoryModel>)picker_machinecategory.ItemsSource;
+                    selectedCategoryID = (Guid)source[picker_machinecategory.SelectedIndex].ID;
+                    CategoryModel selectedMachine = (CategoryModel)picker_machinecategory.SelectedItem;
+                    selectedMachineCategory = selectedMachine.category;
                 }
                 if (selectedMachineCategory == "" || selectedMachineCategory == null)
                 {
@@ -1820,11 +1842,11 @@ namespace TQM
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     conn.CreateTable<MachineModel>();
-                    List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
+                    List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.categoryID == selectedCategoryID).ToList();
                     picker_machinename.ItemsSource = machineModelList;
                 }
-                populateTestParams("", Guid.Empty, "");
-                getUserfieldConfig("", Guid.Empty, "");
+                populateTestParams(Guid.Empty, Guid.Empty, "");
+                getUserfieldConfig(Guid.Empty, Guid.Empty, "");
             }
             catch (Exception ex)
             {
@@ -1845,15 +1867,15 @@ namespace TQM
                 {
                     selectedMachineID = Guid.Empty;
                     selectedMachineName = null;
-                    populateTestParams("", Guid.Empty, "");
+                    populateTestParams(Guid.Empty, Guid.Empty, "");
                     return;
                 }
                 List<MachineModel> source = (List<MachineModel>)picker_machinename.ItemsSource;
                 selectedMachineID = (Guid)source[picker_machinename.SelectedIndex].ID;
                 MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
                 selectedMachineName = selectedMachine.machineName;
-                populateTestParams(selectedMachineCategory, selectedMachineID, selectedMachineName);
-                getUserfieldConfig(selectedMachineCategory, selectedMachineID, selectedMachineName);
+                populateTestParams(selectedCategoryID, selectedMachineID, selectedMachineName);
+                getUserfieldConfig(selectedCategoryID, selectedMachineID, selectedMachineName);
                 if (!isTestResume)
                 {
                     using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -1985,7 +2007,7 @@ namespace TQM
                 {
                     conn.CreateTable<ConfigModel>();
                     ConfigModel yarncountconfigmodel = conn.Table<ConfigModel>().Where(ConfigModel =>
-                                                                (ConfigModel.machineCategory == selectedMachineCategory &&
+                                                                (ConfigModel.categoryID == selectedCategoryID &&
                                                                 ConfigModel.machineID == selectedMachineID &&
                                                                 ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
                     if (yarncountconfigmodel != null)
@@ -2742,7 +2764,8 @@ namespace TQM
 
         void btn_backToHome_Clicked(System.Object sender, System.EventArgs e)
         {
-            Navigation.PushAsync(new DrumView(DV_selectedMachineCategory,
+            Navigation.PushAsync(new DrumView(DV_selectedCategoryID,
+                                                DV_selectedMachineCategory,
                                                 DV_selectedMachineID,
                                                 DV_selectedMachineName,
                                                 selectedOverallDrumNos,

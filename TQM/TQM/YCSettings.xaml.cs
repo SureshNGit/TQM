@@ -13,6 +13,7 @@ namespace TQM
     {
         private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
         private Guid currentID = Guid.Empty;
+        private Guid selectedCategoryID = Guid.Empty;
         private string selectedMachineCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
@@ -23,13 +24,14 @@ namespace TQM
         private TimeSpan currentShift1 = TimeSpan.Zero;
         private TimeSpan currentShift2 = TimeSpan.Zero;
         private TimeSpan currentShift3 = TimeSpan.Zero;
-        
-        //private DateTime currentUpdatedDate = DEFAULTDATE;
+
+        private DateTime currentCreatedDate = DEFAULTDATE;
 
         public YCSettings()
         {
             try
             {
+                InitializeComponent();
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     //conn.DropTable<ConfigModel>();
@@ -37,9 +39,16 @@ namespace TQM
 
                     conn.CreateTable<ConfigModel>();
                     conn.CreateTable<TestConfigModel>();
+
+                    conn.CreateTable<CategoryModel>();
+                    conn.CreateTable<MachineModel>();
+
+                    List<CategoryModel> cm = conn.Table<CategoryModel>().ToList();
+                    picker_machinecategory.ItemsSource = cm;
                 }
-                InitializeComponent();
-                picker_machinecategory.SelectedItem = "OE Auto Coner";
+               
+                //picker_machinecategory.SelectedItem = "OE Auto Coner";
+
                 fetchConfig();
             }
             catch (Exception ex)
@@ -152,11 +161,8 @@ namespace TQM
                 btn_save.BackgroundColor = Color.Red;
                 btn_save.TextColor = Color.White;
                 currentID = Guid.Empty;
-                //currentUpdatedDate = DEFAULTDATE;
-                //picker_drumSection_Sec1.SelectedIndex = -1;
-                //picker_drumSection_Sec2.SelectedIndex = -1;
-                //picker_drumSection_Sec3.SelectedIndex = -1;
-                //picker_drumSection_Sec4.SelectedIndex = -1;
+                currentCreatedDate = DEFAULTDATE;
+                reset();
                 picker_shiftCount.SelectedIndex = 0;
                 currentShift = 0;
                 currentShift1 = TimeSpan.Zero;
@@ -172,6 +178,7 @@ namespace TQM
                 btn_save.BackgroundColor = Color.Red;
                 btn_save.TextColor = Color.White;
                 currentID = Guid.Empty;
+                currentCreatedDate = DEFAULTDATE;
                 if (ycConfig.shiftCount > 0)
                 {
 
@@ -220,6 +227,7 @@ namespace TQM
                 btn_save.BackgroundColor = Color.FromHex("#0e0273");
                 btn_save.TextColor = Color.White;
                 currentID = ycConfig.ID;
+                currentCreatedDate = ycConfig.createdate;
                 //currentUpdatedDate = ycConfig.updateddate;
             }
             else
@@ -228,6 +236,7 @@ namespace TQM
                 btn_save.BackgroundColor = Color.Red;
                 btn_save.TextColor = Color.White;
                 currentID = Guid.Empty;
+                currentCreatedDate = DEFAULTDATE;
             }
 
             if (isMacDiff == false)
@@ -1138,6 +1147,7 @@ namespace TQM
                 ConfigModel configModel = new ConfigModel()
                 {
                     ID = guid,
+                    categoryID = selectedCategoryID,
                     machineCategory = selectedMachineCategory,
                     machineID = selectedMachineID,
                     machineName = selectedMachineName,
@@ -1204,6 +1214,7 @@ namespace TQM
                     else
                     {
                         msg = "updated";
+                        configModel.createdate = currentCreatedDate;
                         configModel.updateddate = DateTime.Now;
                         row = conn.Update(configModel);
                     }
@@ -1301,7 +1312,7 @@ namespace TQM
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     List<StrengthTestSummaryModel> sts_list = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
-                                                              (StrengthTestSummaryModel.machineCategory == selectedMachineCategory
+                                                              (StrengthTestSummaryModel.categoryID == selectedCategoryID
                                                               && StrengthTestSummaryModel.machineID == selectedMachineID
                                                               && StrengthTestSummaryModel.scheduledStartDate == sch_startDate)).ToList();
                     if (sts_list.Count > 0)
@@ -1343,6 +1354,7 @@ namespace TQM
                         {
                             ID = Guid.NewGuid(),
                             testID = 0,
+                            categoryID = cm.categoryID,
                             machineID = cm.machineID,
                             machineCategory = cm.machineCategory,
                             machineName = cm.machineName,
@@ -1463,11 +1475,60 @@ namespace TQM
 
         }
 
+        private void reset()
+        {
+            entry_macSpeed.Text = "";
+            entry_p1.Text = "";
+            entry_p1Deviation.Text = "";
+            entry_p2.Text = "";
+            entry_p2Deviation.Text = "";
+            entry_n1.Text = "";
+            entry_n1Deviation.Text = "";
+            entry_drumCount.Text = "";
+            picker_sectionCount.SelectedItem = -1;
+            entry_stdRollingStrength.Text = "";
+            entry_strengthDeviation.Text = "";
+            entry_MinLimit.Text = "";
+            entry_MaxLimit.Text = "";
+            entry_totalTestCount.Text = "";
+            entry_matCount.Text = "";
+            date_scheduledStartDate.Date = DateTime.Today.Date;
+            date_scheduledEndDate.Date = DateTime.Today.Date;
+            frame_sec1.IsVisible = false;
+            btn_section1.BackgroundColor =  Color.FromHex("#0e0273");
+            entry_Drums_from_s1.Text = "";
+            entry_Drums_to_s1.Text = "";
+            frame_sec2.IsVisible = false;
+            btn_section2.BackgroundColor = Color.FromHex("#0e0273");
+            entry_Drums_from_s2.Text = "";
+            entry_Drums_to_s2.Text = "";
+            frame_sec3.IsVisible = false;
+            btn_section3.BackgroundColor = Color.FromHex("#0e0273");
+            entry_Drums_from_s3.Text = "";
+            entry_Drums_to_s3.Text = "";
+            frame_sec4.IsVisible = false;
+            btn_section4.BackgroundColor = Color.FromHex("#0e0273");
+            entry_Drums_from_s4.Text = "";
+            entry_Drums_to_s4.Text = "";
+        }
+       
         private void picker_machinecategory_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
-                selectedMachineCategory = picker_machinecategory.SelectedItem.ToString();
+                List<CategoryModel> source = (List<CategoryModel>)picker_machinecategory.ItemsSource;
+                if (picker_machinecategory.SelectedIndex < 0)
+                {
+                    selectedCategoryID = Guid.Empty;
+                    selectedMachineCategory = null;
+                    selectedMachineID = Guid.Empty;
+                    selectedMachineName = null;
+                    return;
+                }
+                selectedCategoryID = (Guid)source[picker_machinecategory.SelectedIndex].ID;
+                CategoryModel selectedMachine = (CategoryModel)picker_machinecategory.SelectedItem;
+                selectedMachineCategory = selectedMachine.category;
+
                 if (selectedMachineCategory == "" || selectedMachineCategory == null)
                 {
                     picker_machinename.ItemsSource = null;
@@ -1477,7 +1538,7 @@ namespace TQM
                     using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                     {
                         conn.CreateTable<MachineModel>();
-                        List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineCategory == selectedMachineCategory).ToList();
+                        List<MachineModel> machineModelList = conn.Table<MachineModel>().Where(MachineModel => MachineModel.categoryID == selectedCategoryID).ToList();
                         picker_machinename.ItemsSource = machineModelList;
                     }
                 }
@@ -1510,7 +1571,7 @@ namespace TQM
                     if (ycConfigList.Count > 0)
                     {
                         ConfigModel machineSetting = ycConfigList.Where(ConfigModel =>
-                                                    (ConfigModel.machineCategory == selectedMachineCategory &&
+                                                    (ConfigModel.categoryID == selectedCategoryID &&
                                                     ConfigModel.machineID == selectedMachineID &&
                                                     ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
                         if (machineSetting != null)
@@ -1520,7 +1581,7 @@ namespace TQM
                         else
                         {
                             machineSetting = ycConfigList.Where(ConfigModel =>
-                                                    (ConfigModel.machineCategory == selectedMachineCategory))
+                                                    (ConfigModel.categoryID == selectedCategoryID))
                                                      .OrderByDescending(ConfigModel =>
                                                     (ConfigModel.createdate)).FirstOrDefault();
                             if (machineSetting != null)

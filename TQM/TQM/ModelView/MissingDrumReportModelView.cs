@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using TQM.Model;
 
 namespace TQM.ModelView
 {
 	//public class MissingDrumReportModelView: List<DrumDetailsModelView>
     public class MissingDrumReportModelView
     {
-        public string machineCategory { get; set; }
+        public Guid categoryID { get; set; }
+        //public string machineCategory { get; set; }
         public Guid machineID { get; set; }
         public string machineName { get; set; }
         public int totalDrumCount { get; set; }

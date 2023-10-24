@@ -7,6 +7,7 @@ namespace TQM.ModelView
         public long testID { get; set; }
         public Guid userID { get; set; }
         public string userName { get; set; }
+        public Guid categoryID { get; set; }
         public Guid machineID { get; set; }
         public string machineCategory { get; set; }
         public string machineName { get; set; }

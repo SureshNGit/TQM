@@ -13,15 +13,24 @@ namespace TQM
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class machinePage : ContentPage
     {
+        private Guid selectedCategoryID = Guid.Empty;
+        private string selectedCategory = null;
         private Guid currentMachineID = Guid.Empty;
         private ViewCell lastCell;
         public machinePage()
         {
             InitializeComponent();
-            //using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-            //{
-            //    conn.DropTable<MachineModel>();
-            //}
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+                //conn.DropTable<CategoryModel>();
+                //conn.DropTable<MachineModel>();
+
+                conn.CreateTable<CategoryModel>();
+                conn.CreateTable<MachineModel>();
+
+                List<CategoryModel> cm = conn.Table<CategoryModel>().ToList();
+                picker_machinecategory.ItemsSource = cm;
+            }
         }
 
         private void machineSearchResultView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
@@ -92,7 +101,8 @@ namespace TQM
                 }
                 MachineModel machinemodel = new MachineModel()
                 {
-                    machineCategory = picker_machinecategory.SelectedItem.ToString(),
+                    categoryID = selectedCategoryID,
+                    machineCategory = selectedCategory,
                     machineName = machinename,
                     createdate = DateTime.Now
                 };
@@ -139,6 +149,8 @@ namespace TQM
             entry_machinesearch.Text = "";
             machineSearchResultView.ItemsSource = null;
             this.currentMachineID = Guid.Empty;
+            this.selectedCategoryID = Guid.Empty;
+            this.selectedCategory = null;
         }
 
         private void btn_viewall_Clicked(object sender, EventArgs e)
@@ -209,6 +221,25 @@ namespace TQM
             {
                 viewCell.View.BackgroundColor = Color.FromHex("#FCF3CF");
                 lastCell = viewCell;
+            }
+        }
+
+        void picker_machinecategory_SelectedIndexChanged(System.Object sender, System.EventArgs e)
+        {
+            try
+            {
+                List<CategoryModel> source = (List<CategoryModel>)picker_machinecategory.ItemsSource;
+                if (picker_machinecategory.SelectedIndex < 0)
+                {
+                    return;
+                }
+                selectedCategoryID = (Guid)source[picker_machinecategory.SelectedIndex].ID;
+                CategoryModel selectedMachine = (CategoryModel)picker_machinecategory.SelectedItem;
+                selectedCategory = selectedMachine.category;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Error", "Erro Occurred!!! " + ex.Message.ToString(), "OK");
             }
         }
     }

@@ -10,6 +10,7 @@ namespace TQM
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Report : ContentPage
     {
+        private Guid selectedCategoryID = Guid.Empty;
         private string selectedCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
@@ -17,7 +18,14 @@ namespace TQM
         {
             InitializeComponent();
             getUserfieldConfig();
-            picker_machinecategory.SelectedItem = "OE Auto Coner";
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            {
+
+                conn.CreateTable<CategoryModel>();
+
+                List<CategoryModel> cm = conn.Table<CategoryModel>().ToList();
+                picker_machinecategory.ItemsSource = cm;
+            }
         }
 
         private void getUserfieldConfig()
@@ -91,11 +99,13 @@ namespace TQM
             try
             {
                 //picker_reportName.SelectedIndex = 0;
+                selectedCategory = null;
+                selectedCategoryID = Guid.Empty;
                 selectedMachineID = Guid.Empty;
                 selectedMachineName = null;
                 date_fromdate.Date = DateTime.Now;
                 date_enddate.Date = DateTime.Now;
-                picker_machinecategory.SelectedItem = "OE Auto Coner";
+                picker_machinecategory.SelectedIndex = -1;
             }
             catch (Exception ex)
             {
@@ -161,7 +171,7 @@ namespace TQM
                         DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
                         return;
                     }
-                    if (picker_machinecategory.SelectedIndex <= 0)
+                    if (picker_machinecategory.SelectedIndex < 0)
                     {
                         DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
                         return;
@@ -200,7 +210,7 @@ namespace TQM
                         standardStrength = entry_stdStrength.Text.Trim();
                     }
 
-                    if (selectedCategory == null || selectedCategory == "")
+                    if (selectedCategory == null || selectedCategory == "" || selectedCategoryID==Guid.Empty)
                     {
                         DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
                         return;
@@ -266,7 +276,7 @@ namespace TQM
                 
 
                 Navigation.PushAsync(new YCReport
-                    (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength , false, is_consolidated, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
+                    (date_fromdate.Date, date_enddate.Date, selectedCategoryID, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength , false, is_consolidated, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
             catch (Exception ex)
             {
@@ -289,7 +299,7 @@ namespace TQM
                 {
                     conn.CreateTable<ConfigModel>();
                     ConfigModel yarncountconfigmodel = conn.Table<ConfigModel>().Where(ConfigModel =>
-                                                                (ConfigModel.machineCategory == selectedCategory &&
+                                                                (ConfigModel.categoryID == selectedCategoryID &&
                                                                 ConfigModel.machineID == selectedMachineID &&
                                                                 ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
                     if (yarncountconfigmodel != null)
@@ -319,10 +329,18 @@ namespace TQM
                 if (picker_machinecategory.SelectedItem == null) { return; }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    selectedCategory = picker_machinecategory.SelectedItem.ToString();
+
+                    List<CategoryModel> source = (List<CategoryModel>)picker_machinecategory.ItemsSource;
+                    if (picker_machinecategory.SelectedIndex < 0)
+                    {
+                        return;
+                    }
+                    selectedCategoryID = (Guid)source[picker_machinecategory.SelectedIndex].ID;
+                    CategoryModel selectedMachine = (CategoryModel)picker_machinecategory.SelectedItem;
+                    selectedCategory = selectedMachine.category;
                     conn.CreateTable<MachineModel>();
                     List<MachineModel> machines = conn.Table<MachineModel>().Where(
-                        MachineModel => MachineModel.machineCategory == selectedCategory).ToList();
+                        MachineModel => MachineModel.categoryID == selectedCategoryID).ToList();
                     picker_machinename.ItemsSource = machines;
                 }
             }
@@ -399,7 +417,7 @@ namespace TQM
                         DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
                         return;
                     }
-                    if (picker_machinecategory.SelectedIndex <= 0)
+                    if (picker_machinecategory.SelectedIndex < 0)
                     {
                         DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
                         return;
@@ -438,7 +456,7 @@ namespace TQM
                         standardStrength = entry_stdStrength.Text.Trim();
                     }
 
-                    if (selectedCategory == null || selectedCategory == "")
+                    if (selectedCategory == null || selectedCategory == "" || selectedCategoryID==Guid.Empty)
                     {
                         DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
                         return;
@@ -492,7 +510,7 @@ namespace TQM
                 }
 
                Navigation.PushAsync(new YCReport
-                    (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength, true, is_consolidated, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
+                    (date_fromdate.Date, date_enddate.Date,selectedCategoryID, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength, true, is_consolidated, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
             catch (Exception ex)
             {

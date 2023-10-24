@@ -104,17 +104,8 @@
              
              <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
                     x:Name="picker_machinecategory" TextColor="Green" FontSize="16" IsVisible="false"
-                    SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged">
-                <Picker.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String></x:String>
-                        <x:String>OE Auto Coner</x:String>
-                    </x:Array>
-                </Picker.ItemsSource>
-                <Picker.Effects>
-                    <effects:PlainEntry/>
-                </Picker.Effects>
-            </Picker>
+                     ItemDisplayBinding="{Binding category}"
+                    SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged"/>
 
             <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" ItemDisplayBinding="{Binding machineName}"
                     SelectedIndexChanged="picker_machinename_SelectedIndexChanged" IsEnabled="False"

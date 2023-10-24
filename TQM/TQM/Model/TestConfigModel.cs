@@ -10,6 +10,8 @@ namespace TQM.Model
         public Guid ID { get; set; }
 
         public long testID { get; set; }
+        [ForeignKey(typeof(CategoryModel))]
+        public Guid categoryID { get; set; }
         [ForeignKey(typeof(MachineModel))]
         public Guid machineID { get; set; }
 

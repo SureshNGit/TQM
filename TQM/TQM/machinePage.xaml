@@ -67,14 +67,9 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Label Grid.Row="0" Grid.Column="0" Text="Machine Category" TextColor="#0e0273" FontSize="25" Margin="0,25"/>
-                            <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_machinecategory" TextColor="Green" FontSize="25" >
-                                <Picker.ItemsSource>
-                                    <x:Array Type="{x:Type x:String}">
-                                        <x:String></x:String>
-                                        <x:String>OE Auto Coner</x:String>
-                                    </x:Array>
-                                </Picker.ItemsSource>
-                            </Picker>
+                            <Picker Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" x:Name="picker_machinecategory"
+                                    SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged"
+                                    ItemDisplayBinding="{Binding category}" TextColor="Green" FontSize="25" />
                             <Label Grid.Row="1" Grid.Column="0" Text="Machine Name" TextColor="#0e0273" FontSize="25" Margin="0,25"/>
                             <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Placeholder="Enter machine name to add" PlaceholderColor="#E5E8E8"
                                    x:Name="entry_machinename" TextColor="Green" FontSize="25" Margin="5" Keyboard="Chat"/>

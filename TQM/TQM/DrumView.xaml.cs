@@ -10,7 +10,8 @@ namespace TQM
 {	
 	public partial class DrumView : ContentPage
 	{
-		private string selectedMachineCategory = null;
+        private Guid selectedCategoryID = Guid.Empty;
+        private string selectedMachineCategory = null;
 		private Guid selectedMachineID = Guid.Empty;
 		private string selectedMachineName = null;
         private int selectedOverallDrumNos = 0;
@@ -27,11 +28,12 @@ namespace TQM
 			InitializeComponent ();
 		}
 
-        public DrumView(string macCat, Guid macID, string macName,int overallDrums, int overallSections, int sectionNo, int startDrumNo, int endDrumNo)
+        public DrumView(Guid catID, string macCat, Guid macID, string macName,int overallDrums, int overallSections, int sectionNo, int startDrumNo, int endDrumNo)
         {
             InitializeComponent();
             drumDict = new Dictionary<int, decimal>();
             drumDictRandomTest = new Dictionary<int, Boolean>();
+            selectedCategoryID = catID;
             selectedMachineCategory = macCat;
 			selectedMachineID = macID;
 			selectedMachineName = macName;
@@ -86,13 +88,13 @@ namespace TQM
                 {
                     bool ret = false;
                     StrengthTestSummaryModel sts = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
-                                                        (StrengthTestSummaryModel.machineCategory == selectedMachineCategory
+                                                        (StrengthTestSummaryModel.categoryID == selectedCategoryID
                                                         && StrengthTestSummaryModel.machineID == selectedMachineID
                                                         && StrengthTestSummaryModel.sectionNumber == selectedSectionNo
                                                         && StrengthTestSummaryModel.drumSelectionMethod == "Scheduled"
                                                         && StrengthTestSummaryModel.drumNumber==drumNo)).FirstOrDefault();
                     StrengthTestModel stm = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
-                                                        (StrengthTestModel.machineCategory == selectedMachineCategory
+                                                        (StrengthTestModel.categoryID == selectedCategoryID
                                                         && StrengthTestModel.machineID == selectedMachineID
                                                         && StrengthTestModel.sectionNumber == selectedSectionNo
                                                         && StrengthTestModel.drumNumber == drumNo))
@@ -181,7 +183,8 @@ namespace TQM
                                         {
                                             if (result.ToString() == "Success")
                                             {
-                                                _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
+                                                _ = Navigation.PushAsync(new StrengthAnalyzer(selectedCategoryID,
+                                                                  selectedMachineCategory,
                                                                   selectedMachineID,
                                                                   selectedMachineName,
                                                                   selectedOverallDrumNos,
@@ -206,7 +209,8 @@ namespace TQM
                                     }
                                     else
                                     {
-                                        _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
+                                        _ = Navigation.PushAsync(new StrengthAnalyzer(selectedCategoryID,
+                                                                  selectedMachineCategory,
                                                                   selectedMachineID,
                                                                   selectedMachineName,
                                                                   selectedOverallDrumNos,
@@ -224,7 +228,8 @@ namespace TQM
                     else
                     {
 
-                        _ = Navigation.PushAsync(new StrengthAnalyzer(selectedMachineCategory,
+                        _ = Navigation.PushAsync(new StrengthAnalyzer(selectedCategoryID,
+                                                                    selectedMachineCategory,
                                                                     selectedMachineID,
                                                                     selectedMachineName,
                                                                     selectedOverallDrumNos,

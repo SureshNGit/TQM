@@ -49,7 +49,9 @@ namespace TQM
         public List<MaintenanceReportMV> ListOfMaintenanceReports { get { return _listOfMaintenanceReports; } set { _listOfMaintenanceReports = value; base.OnPropertyChanged(); } }
 
         private string selectedCompanyName = null;
+
         private string selectedMachineCategory = null;
+        private Guid selectedCategoryID = Guid.Empty;
         private const string BLUE = "#0e0273";
         private RunConfiguration runConfiguration = new RunConfiguration();
         private List<StrengthTestSummaryModel> deleteList = null;
@@ -84,7 +86,7 @@ namespace TQM
             InitializeComponent();
         }
 
-        public YCReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string testID, string drumNumber,string standardStrength, bool deleteRequest, bool isConsolidated, bool drumDetails, bool is_maintenance, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
+        public YCReport(DateTime startDate, DateTime endDate, Guid catID, string categoryName, Guid machineID, string shift, string testID, string drumNumber,string standardStrength, bool deleteRequest, bool isConsolidated, bool drumDetails, bool is_maintenance, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             InitializeComponent();
             isFinalAvgRowPresent = false;
@@ -131,16 +133,17 @@ namespace TQM
                 btn_saveToPDF.BackgroundColor = Color.Red;
                 btn_saveToPDF.TextColor = Color.White;
             }
-            if (categoryName != null && categoryName != "")
+            if (categoryName != null && categoryName != "" && catID!=Guid.Empty)
             {
+                selectedCategoryID = catID;
                 selectedMachineCategory = categoryName;
             }
             reportStartDate = startDate;
             reportEndDate = endDate;
-            getReport(startDate, endDate, categoryName, machineID, shift, testID, drumNumber, standardStrength, deleteRequest, UFVAL1, UFVAL2, UFVAL3, UFVAL4);
+            getReport(startDate, endDate, catID, categoryName, machineID, shift, testID, drumNumber, standardStrength, deleteRequest, UFVAL1, UFVAL2, UFVAL3, UFVAL4);
         }
 
-        private void updateDrumReportModel(String machineCat,
+        private void updateDrumReportModel(Guid categoryID,
                                             Guid macID,
                                             String macName,
                                             int totalDrums,
@@ -199,7 +202,7 @@ namespace TQM
                                                                             (TestConfigModel.createdate)).FirstOrDefault();
 
                                     if (tcm == null) { return; }
-                                    mdd_temp.machineCategory = tcm.machineCategory;
+                                    mdd_temp.categoryID = tcm.categoryID;
                                     mdd_temp.machineName = tcm.machineName;
                                     if (i == 1)
                                     {
@@ -312,7 +315,7 @@ namespace TQM
                                                                                 (TestConfigModel.createdate)).FirstOrDefault();
 
                                         if (tcm == null) { return; }
-                                        mdd_temp.machineCategory = tcm.machineCategory;
+                                        mdd_temp.categoryID = tcm.categoryID;
                                         mdd_temp.machineName = tcm.machineName;
                                         if (i == 1)
                                         {
@@ -398,7 +401,7 @@ namespace TQM
                 MissingDrumReportModelView mdd = new MissingDrumReportModelView();
 
                 mdd.machineID = macID;
-                mdd.machineCategory = machineCat;
+                mdd.categoryID = categoryID;
                 mdd.machineName = macName;
                 mdd.totalDrumCount = totalDrums;
                 mdd.totalSections = totalSecs;
@@ -470,7 +473,7 @@ namespace TQM
             }
         }
 
-        private void getDrumReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        private void getDrumReport(DateTime startDate, DateTime endDate,Guid categoryID, Guid machineID)
         {
             try
             {
@@ -485,7 +488,7 @@ namespace TQM
                         conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
                          ((StrengthTestSummaryModel.scheduledStartDate >= startDate
                          && StrengthTestSummaryModel.scheduledEndDate <= endDate)
-                         && StrengthTestSummaryModel.machineCategory == categoryName
+                         && StrengthTestSummaryModel.categoryID == categoryID
                          && StrengthTestSummaryModel.machineID == machineID
                          && StrengthTestSummaryModel.drumSelectionMethod == "Scheduled"))
                         .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.machineID)
@@ -569,7 +572,7 @@ namespace TQM
                         //    createdate = configModel.createdate,
                         //};
 
-                        updateDrumReportModel(categoryName,
+                        updateDrumReportModel(categoryID,
                                                 machineID,
                                                 configModel.machineName,
                                                 configModel.totalDrumCount,
@@ -598,7 +601,7 @@ namespace TQM
                     
 
                     Guid prev_machineID = Guid.Empty;
-                    string prev_MachineCategory = null;
+                    Guid prev_MachineCategoryID = Guid.Empty;
                     string prev_MachineName = null;
                     int prev_totalDrumCount = 0;
                     int prev_totalSections = 0;
@@ -641,7 +644,7 @@ namespace TQM
                             && prev_SSD == DEFAULTDATE && prev_SED == DEFAULTDATE)
                         {
                             drumList = new List<int>();
-                            prev_MachineCategory = S_Test.machineCategory;
+                            prev_MachineCategoryID = S_Test.categoryID;
                             prev_machineID = S_Test.machineID;
                             prev_MachineName = S_Test.machineName;
                             prev_SectionNumber = S_Test.sectionNumber;
@@ -673,7 +676,7 @@ namespace TQM
                             }
                             else
                             {
-                                updateDrumReportModel(prev_MachineCategory,
+                                updateDrumReportModel(prev_MachineCategoryID,
                                                         prev_machineID,
                                                         prev_MachineName,
                                                         prev_totalDrumCount,
@@ -689,7 +692,7 @@ namespace TQM
                                                         //prev_tcm,
                                                         false);
                                 drumList = new List<int>();
-                                prev_MachineCategory = S_Test.machineCategory;
+                                prev_MachineCategoryID = S_Test.categoryID;
                                 prev_machineID = S_Test.machineID;
                                 prev_MachineName = S_Test.machineName;
                                 prev_SectionNumber = S_Test.sectionNumber;
@@ -712,7 +715,7 @@ namespace TQM
 
                     if (drumList != null)
                     {
-                        updateDrumReportModel(prev_MachineCategory,
+                        updateDrumReportModel(prev_MachineCategoryID,
                                                             prev_machineID,
                                                             prev_MachineName,
                                                             prev_totalDrumCount,
@@ -743,7 +746,7 @@ namespace TQM
         }
 
 
-        private void getMaintenanceReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID)
+        private void getMaintenanceReport(DateTime startDate, DateTime endDate, Guid categoryID, Guid machineID)
         {
             try
             {
@@ -754,7 +757,7 @@ namespace TQM
                                         .Where(StrengthTestSummaryModel =>
                                         ((StrengthTestSummaryModel.createdate >= startDate
                                         && StrengthTestSummaryModel.createdate <= updatedEndDate)
-                                        && StrengthTestSummaryModel.machineCategory == categoryName
+                                        && StrengthTestSummaryModel.categoryID == categoryID
                                         && StrengthTestSummaryModel.machineID == machineID))
                                         .OrderBy(StrengthTestSummaryModel=>StrengthTestSummaryModel.machineID)
                                         .ThenBy(StrengthTestSummaryModel => StrengthTestSummaryModel.machineName)
@@ -894,7 +897,7 @@ namespace TQM
         }
 
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string testID, string drumNumber, string standardStrength, bool deleteRequest, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
+        private void getReport(DateTime startDate, DateTime endDate, Guid catID, string categoryName, Guid machineID, string shift, string testID, string drumNumber, string standardStrength, bool deleteRequest, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             try
             {
@@ -902,13 +905,13 @@ namespace TQM
 
                 if (drumDetailsReport)
                 {
-                    getDrumReport( startDate,  endDate,  categoryName,  machineID);
+                    getDrumReport( startDate,  endDate,  catID,  machineID);
                     return;
                 }
 
                 if (maintenanceReport)
                 {
-                    getMaintenanceReport(startDate, endDate, categoryName, machineID);
+                    getMaintenanceReport(startDate, endDate, catID, machineID);
                     return;
                 }
 
@@ -3681,10 +3684,10 @@ namespace TQM
 
         private decimal formatDecimal(decimal inputVal, int afterDecimalCount = 4)
         {
-            if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
-            {
-                afterDecimalCount = 2;
-            }
+            //if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
+            //{
+            //    afterDecimalCount = 2;
+            //}
             inputVal = Math.Round(inputVal, afterDecimalCount);
             string inputString = inputVal.ToString();
             string[] ipStringArray = inputString.Split('.');

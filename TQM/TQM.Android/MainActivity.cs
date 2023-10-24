@@ -43,12 +43,12 @@ namespace TQM.Droid
             string fullPath = Path.Combine(folderPath, dbName);
 
             //***********To copy database file from default folder to downloads folder********
-            string downloadsFolder = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-            if (File.Exists(fullPath))
-            {
-                if (File.Exists(Path.Combine(downloadsFolder, dbName))) { File.Delete(Path.Combine(downloadsFolder, dbName)); }
-                File.Copy(fullPath, downloadsFolder);
-            }
+            //string downloadsFolder = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+            //if (File.Exists(fullPath))
+            //{
+            //    if (File.Exists(Path.Combine(downloadsFolder, dbName))) { File.Delete(Path.Combine(downloadsFolder, dbName)); }
+            //    File.Copy(fullPath, downloadsFolder);
+            //}
             //***********End********
 
             //***********To read database file from other than default folder********

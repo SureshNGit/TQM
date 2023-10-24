@@ -12,6 +12,8 @@ namespace TQM.Model
         [ForeignKey(typeof(UserModel))]
         public Guid userID { get; set; }
         public string userName { get; set; }
+        [ForeignKey(typeof(CategoryModel))]
+        public Guid categoryID { get; set; }
         [ForeignKey(typeof(MachineModel))]
         public Guid machineID { get; set; }
         public string machineCategory { get; set; }

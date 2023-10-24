@@ -8,6 +8,7 @@ namespace TQM
 {	
 	public partial class TestHome : ContentPage
 	{
+        private Guid selectedCategoryID = Guid.Empty;
         private string selectedCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
@@ -33,6 +34,12 @@ namespace TQM
                 conn.CreateTable<StrengthTestModel>();
                 conn.CreateTable<StrengthTestSummaryModel>();
                 conn.CreateTable<TestConfigModel>();
+
+                conn.CreateTable<CategoryModel>();
+                conn.CreateTable<MachineModel>();
+
+                List<CategoryModel> cm = conn.Table<CategoryModel>().ToList();
+                picker_machinecategory.ItemsSource = cm;
             }
         }
 
@@ -65,7 +72,7 @@ namespace TQM
                 {
                     conn.CreateTable<ConfigModel>();
                     ConfigModel yarncountconfigmodel = conn.Table<ConfigModel>().Where(ConfigModel =>
-                                                                (ConfigModel.machineCategory == selectedCategory &&
+                                                                (ConfigModel.categoryID == selectedCategoryID &&
                                                                 ConfigModel.machineID == selectedMachineID &&
                                                                 ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
                     if (yarncountconfigmodel != null)
@@ -154,14 +161,30 @@ namespace TQM
                 lbl_section4.Text = "";
                 if (picker_machinecategory.SelectedItem == null)
                 {
+                    selectedCategoryID = Guid.Empty;
+                    selectedCategory = null;
+                    selectedMachineID = Guid.Empty;
+                    selectedMachineName = null;
                     return;
                 }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
-                    selectedCategory = picker_machinecategory.SelectedItem.ToString();
-                    conn.CreateTable<MachineModel>();
+
+                    List<CategoryModel> source = (List<CategoryModel>)picker_machinecategory.ItemsSource;
+                    if (picker_machinecategory.SelectedIndex < 0)
+                    {
+                        selectedCategoryID = Guid.Empty;
+                        selectedCategory = null;
+                        selectedMachineID = Guid.Empty;
+                        selectedMachineName = null;
+                        return;
+                    }
+                    selectedCategoryID = (Guid)source[picker_machinecategory.SelectedIndex].ID;
+                    CategoryModel selectedMachine = (CategoryModel)picker_machinecategory.SelectedItem;
+                    selectedCategory = selectedMachine.category;
+
                     List<MachineModel> machines = conn.Table<MachineModel>().Where(
-                        MachineModel => MachineModel.machineCategory == selectedCategory).ToList();
+                        MachineModel => MachineModel.categoryID == selectedCategoryID).ToList();
                     picker_machinename.ItemsSource = machines;
                 }
             }
@@ -173,7 +196,8 @@ namespace TQM
 
         void btn_section1_Clicked(System.Object sender, System.EventArgs e)
         {
-            Navigation.PushAsync(new DrumView(selectedCategory,
+            Navigation.PushAsync(new DrumView(selectedCategoryID,
+                                                selectedCategory,
                                                 selectedMachineID,
                                                 selectedMachineName,
                                                 selectedOverallDrumNos,
@@ -185,7 +209,8 @@ namespace TQM
 
         void btn_section2_Clicked(System.Object sender, System.EventArgs e)
         {
-            Navigation.PushAsync(new DrumView(selectedCategory,
+            Navigation.PushAsync(new DrumView(selectedCategoryID,
+                                                selectedCategory,
                                                 selectedMachineID,
                                                 selectedMachineName,
                                                 selectedOverallDrumNos,
@@ -197,7 +222,8 @@ namespace TQM
 
         void btn_section3_Clicked(System.Object sender, System.EventArgs e)
         {
-            Navigation.PushAsync(new DrumView(selectedCategory,
+            Navigation.PushAsync(new DrumView(selectedCategoryID,
+                                                selectedCategory,
                                                 selectedMachineID,
                                                 selectedMachineName,
                                                 selectedOverallDrumNos,
@@ -209,7 +235,8 @@ namespace TQM
 
         void btn_section4_Clicked(System.Object sender, System.EventArgs e)
         {
-            Navigation.PushAsync(new DrumView(selectedCategory,
+            Navigation.PushAsync(new DrumView(selectedCategoryID,
+                                                selectedCategory,
                                                 selectedMachineID,
                                                 selectedMachineName,
                                                 selectedOverallDrumNos,
