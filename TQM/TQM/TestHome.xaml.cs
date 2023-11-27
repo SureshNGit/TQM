@@ -48,6 +48,24 @@ namespace TQM
         {
             try
             {
+                InitializeComponent();
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    //conn.DropTable<StrengthTestModel>();
+                    //conn.DropTable<StrengthTestSummaryModel>();
+                    //conn.DropTable<TestConfigModel>();
+
+                    conn.CreateTable<StrengthTestModel>();
+                    conn.CreateTable<StrengthTestSummaryModel>();
+                    conn.CreateTable<TestConfigModel>();
+
+                    conn.CreateTable<CategoryModel>();
+                    conn.CreateTable<MachineModel>();
+
+                    List<CategoryModel> cm = conn.Table<CategoryModel>().ToList();
+                    picker_machinecategory.ItemsSource = cm;
+                }
+
                 IList<string> machineCategorylist = picker_machinecategory.Items;
                 int machineCatindex = 0;
                 foreach (string mCat in machineCategorylist)
