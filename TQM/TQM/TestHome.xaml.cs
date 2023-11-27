@@ -43,6 +43,49 @@ namespace TQM
             }
         }
 
+
+        public TestHome(string macCat, Guid macID, string macName)
+        {
+            try
+            {
+                IList<string> machineCategorylist = picker_machinecategory.Items;
+                int machineCatindex = 0;
+                foreach (string mCat in machineCategorylist)
+                {
+                    if (mCat != macCat)
+                    {
+                        machineCatindex++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                picker_machinecategory.SelectedIndex = machineCatindex;
+
+                
+
+                IList<string> machinelist = picker_machinename.Items;
+                int machineindex = 0;
+                foreach (string m in machinelist)
+                {
+                    if (m != macName)
+                    {
+                        machineindex++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                picker_machinename.SelectedIndex = machineindex;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice-Home", ex.Message.ToString(), "Ok");
+            }
+        }
+
         private void picker_machinename_SelectedIndexChanged(object sender, EventArgs e)
         {
             try

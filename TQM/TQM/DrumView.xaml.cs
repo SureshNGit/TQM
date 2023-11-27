@@ -271,7 +271,7 @@ namespace TQM
 
         void btn_backToHome_Clicked(System.Object sender, System.EventArgs e)
         {
-            Navigation.PushAsync(new TestHome());
+            Navigation.PushAsync(new TestHome(selectedMachineCategory,selectedMachineID,selectedMachineName));
         }
     }
 }
