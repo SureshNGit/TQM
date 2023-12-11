@@ -35,14 +35,17 @@ namespace TQM
         private bool deleteAll = false;
         private DateTime reportStartDate;
         private DateTime reportEndDate;
+        private bool consolidatedReport = false;
+
         public StretchReport()
         {
             InitializeComponent();
         }
 
-        public StretchReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest)
+        public StretchReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest, bool isConsolidated)
         {
             InitializeComponent();
+            consolidatedReport = isConsolidated;
             if (deleteRequest)
             {
                 btn_saveToPDF.Text = "Send & Delete Records";

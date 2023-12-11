@@ -35,14 +35,25 @@ namespace TQM
         private bool deleteAll = false;
         private DateTime reportStartDate;
         private DateTime reportEndDate;
+        private bool consolidatedReport = false;
+        private string CON_UF_NAME_1 = null;
+        private string CON_UF_NAME_2 = null;
+        private string CON_UF_NAME_3 = null;
+        private string CON_UF_NAME_4 = null;
+        private string CON_UF_VAL_1 = null;
+        private string CON_UF_VAL_2 = null;
+        private string CON_UF_VAL_3 = null;
+        private string CON_UF_VAL_4 = null;
+
         public YCApercentReport()
         {
             InitializeComponent();
         }
 
-        public YCApercentReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest)
+        public YCApercentReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest, bool isConsolidated, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             InitializeComponent();
+            consolidatedReport = isConsolidated;
             if (deleteRequest)
             {
                 btn_saveToPDF.Text = "Send & Delete Records";
@@ -51,10 +62,10 @@ namespace TQM
             }
             reportStartDate = startDate;
             reportEndDate = endDate;
-            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, matType, materialLength, deleteRequest);
+            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, matType, materialLength, deleteRequest, UFVAL1, UFVAL2, UFVAL3, UFVAL4);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest,string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             try
             {
@@ -303,217 +314,417 @@ namespace TQM
                         }
                     }
 
+                    int counter = 0;
+
                     foreach (YCTestApercentCalculatedModel apercentCalc in apercentCalcList)
                     {
                         OverallApercentReportModelView report = new OverallApercentReportModelView();
-                        List<YCTestApercentModel> yctestApercentlist_nMinus1 = conn.Table<YCTestApercentModel>().Where(
+                        YCTestConsolidatedReportMV consolItems = new YCTestConsolidatedReportMV();
+
+                        if (consolidatedReport)
+                        {
+                            if (counter == 0)
+                            {
+                                if (apercentCalc.machineCategory == "Spinning" || apercentCalc.machineCategory == "Winding")
+                                {
+                                    //lbl_con_Hank.Text = "Avg. COUNT : ";
+                                    lbl_conStdHank.Text = "Std. Count";
+                                    lbl_conAvgHank.Text = "Avg. Count";
+                                }
+                                else
+                                {
+                                    //lbl_con_Hank.Text = "Avg. HANK : ";
+                                    lbl_conStdHank.Text = "Std. Hank";
+                                    lbl_conAvgHank.Text = "Avg. Hank";
+                                }
+
+                                if (UFVAL1 != "" && UFVAL1 != null)
+                                {
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                    Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
+                                                                                    YarnCountConfigModel.uf_name_1 != "")
+                                                                                    && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                    && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        CON_UF_NAME_1 = ycConfig_uf.uf_name_1;
+                                        CON_UF_VAL_1 = UFVAL1;
+                                    }
+                                    else
+                                    {
+                                        CON_UF_NAME_1 = null;
+                                        CON_UF_VAL_1 = null;
+                                    }
+                                }
+                                if (UFVAL2 != "" && UFVAL2 != null)
+                                {
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                    Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_2 != null ||
+                                                                                    YarnCountConfigModel.uf_name_2 != "")
+                                                                                    && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                    && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        CON_UF_NAME_2 = ycConfig_uf.uf_name_2;
+                                        CON_UF_VAL_2 = UFVAL2;
+                                    }
+                                    else
+                                    {
+                                        CON_UF_NAME_2 = null;
+                                        CON_UF_VAL_2 = null;
+                                    }
+                                }
+                                if (UFVAL3 != "" && UFVAL3 != null)
+                                {
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                    Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_3 != null ||
+                                                                                    YarnCountConfigModel.uf_name_3 != "")
+                                                                                    && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                    && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        CON_UF_NAME_3 = ycConfig_uf.uf_name_3;
+                                        CON_UF_VAL_3 = UFVAL3;
+                                    }
+                                    else
+                                    {
+                                        CON_UF_NAME_3 = null;
+                                        CON_UF_VAL_3 = null;
+                                    }
+                                }
+                                if (UFVAL4 != "" && UFVAL4 != null)
+                                {
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                    Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_4 != null ||
+                                                                                    YarnCountConfigModel.uf_name_4 != "")
+                                                                                    && YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                    && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        CON_UF_NAME_4 = ycConfig_uf.uf_name_4;
+                                        CON_UF_VAL_4 = UFVAL4;
+                                    }
+                                    else
+                                    {
+                                        CON_UF_NAME_4 = null;
+                                        CON_UF_VAL_4 = null;
+                                    }
+                                }
+                            }
+
+                            YarnCountConfigModel ycConfig_uf_1 = conn.Table<YarnCountConfigModel>().
+                                                                                    Where(YarnCountConfigModel => (
+                                                                                    YarnCountConfigModel.machineCategory == testsummary.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == testsummary.machineID
+                                                                                    && YarnCountConfigModel.machineName == testsummary.machineName)).FirstOrDefault();
+                            if (ycConfig_uf_1 == null)
+                            {
+                                DisplayAlert("Notice", "Unable to reterive user fields from settings!!!", "OK");
+                                return;
+                            }
+
+                            consolItems.uf_name_1 = ycConfig_uf_1.uf_name_1;
+                            consolItems.uf_name_2 = ycConfig_uf_1.uf_name_2;
+                            consolItems.uf_name_3 = ycConfig_uf_1.uf_name_3;
+                            consolItems.uf_name_4 = ycConfig_uf_1.uf_name_4;
+
+                            consolItems.uf_value_1 = testsummary.uf_value_1;
+                            consolItems.uf_value_2 = testsummary.uf_value_2;
+                            consolItems.uf_value_3 = testsummary.uf_value_3;
+                            consolItems.uf_value_4 = testsummary.uf_value_4;
+
+                            //decimal maxRangeVal = testsummary.standardHank + (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
+                            //decimal minRangeVal = testsummary.standardHank - (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
+
+                            decimal maxRangeVal = testsummary.standardHank + testsummary.deviationPercent;
+                            decimal minRangeVal = testsummary.standardHank - testsummary.deviationPercent;
+
+
+                            if (testsummary.testaverage < minRangeVal || testsummary.testaverage > maxRangeVal)
+                            {
+                                consolItems.isRed = true;
+                                consolItems.isWhite = false;
+                            }
+                            else
+                            {
+                                consolItems.isRed = false;
+                                consolItems.isWhite = true;
+                            }
+
+                            if (prev_macID == null)
+                            {
+                                prev_macID = testsummary.machineID.ToString();
+                                macTestNo = 1;
+                            }
+                            else
+                            {
+                                if (prev_macID != testsummary.machineID.ToString())
+                                {
+                                    prev_macID = testsummary.machineID.ToString();
+                                    macTestNo = 1;
+                                }
+                                else
+                                {
+                                    macTestNo = macTestNo + 1;
+                                }
+                            }
+
+                            consolItems.serialNo = (counter + 1).ToString();
+                            consolItems.testNo = macTestNo.ToString();
+                            consolItems.testID = testsummary.testID.ToString();
+                            consolItems.machineName = testsummary.machineName;
+                            consolItems.testDate = testsummary.createdate.Day.ToString() + "-" + testsummary.createdate.Month.ToString() + "-" + testsummary.createdate.Year.ToString();
+                            consolItems.shift = testsummary.shift;
+                            if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
+                            {
+                                consolItems.standardValue = formatDecimal(testsummary.standardHank, 2).ToString() + " " + "\u00B1" + formatDecimal(testsummary.deviationPercent, 2).ToString();
+
+                            }
+                            else
+                            {
+                                consolItems.standardValue = formatDecimal(testsummary.standardHank, 4).ToString() + " " + "\u00B1" + formatDecimal(testsummary.deviationPercent, 4).ToString();
+                            }
+                            consolItems.testAverage = formatDecimal(testsummary.testaverage).ToString();
+                            consolItems.standardDeviation = formatDecimal(testsummary.testsd).ToString();
+                            consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
+                            //consolItems.testDuration = testsummary.testDuration;
+                            consolItems.testDuration = formatTime(testsummary.createdate);
+                            consolItems.remarks = testsummary.testRemark;
+
+                            if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
+                            {
+                                consolItems.isSpinning = true;
+                                consolItems.otherThanSpinning = false;
+                            }
+                            else
+                            {
+                                consolItems.isSpinning = false;
+                                consolItems.otherThanSpinning = true;
+                            }
+
+                            //YCTestModel firstTest = yctestlist.Where(YCTestModel => YCTestModel.testcount == 1).FirstOrDefault();
+                            //TimeSpan duration = (firstTest.createdate - testsummary.createdate).Duration();
+                            //consolItems.testDuration = duration.Hours.ToString() + ":" + duration.Minutes.ToString() + ":" + duration.Seconds.ToString();
+
+
+                            counter++;
+                        }
+                        else
+                        {
+                            List<YCTestApercentModel> yctestApercentlist_nMinus1 = conn.Table<YCTestApercentModel>().Where(
                             YCTestApercentModel =>
                             (YCTestApercentModel.testType == "nMinus1"
                             //&& YCTestApercentModel.status == true
                             && YCTestApercentModel.testID == apercentCalc.testID)).ToList();
-                        List<YCTestApercentModel> yctestApercentlist_N = conn.Table<YCTestApercentModel>().Where(
-                            YCTestApercentModel =>
-                            (YCTestApercentModel.testType == "N"
-                            //&& YCTestApercentModel.status == true
-                            && YCTestApercentModel.testID == apercentCalc.testID)).ToList();
-                        List<YCTestApercentModel> yctestApercentlist_nPlus1 = conn.Table<YCTestApercentModel>().Where(
-                            YCTestApercentModel =>
-                            (YCTestApercentModel.testType == "nPlus1"
-                            //&& YCTestApercentModel.status == true
-                            && YCTestApercentModel.testID == apercentCalc.testID)).ToList();
-                        if (yctestApercentlist_nMinus1 != null && yctestApercentlist_N != null && yctestApercentlist_nPlus1 != null)
-                        {
-
-                            int loopCount = 0;
-                            foreach (YCTestApercentModel test in yctestApercentlist_nMinus1)
+                            List<YCTestApercentModel> yctestApercentlist_N = conn.Table<YCTestApercentModel>().Where(
+                                YCTestApercentModel =>
+                                (YCTestApercentModel.testType == "N"
+                                //&& YCTestApercentModel.status == true
+                                && YCTestApercentModel.testID == apercentCalc.testID)).ToList();
+                            List<YCTestApercentModel> yctestApercentlist_nPlus1 = conn.Table<YCTestApercentModel>().Where(
+                                YCTestApercentModel =>
+                                (YCTestApercentModel.testType == "nPlus1"
+                                //&& YCTestApercentModel.status == true
+                                && YCTestApercentModel.testID == apercentCalc.testID)).ToList();
+                            if (yctestApercentlist_nMinus1 != null && yctestApercentlist_N != null && yctestApercentlist_nPlus1 != null)
                             {
-                                ApercentReportModelView apercentReportMV = new ApercentReportModelView()
+
+                                int loopCount = 0;
+                                foreach (YCTestApercentModel test in yctestApercentlist_nMinus1)
                                 {
-                                    testID = test.testID,
-                                    description = test.testcount.ToString(),
-                                    nMinus1 = formatDecimal(test.yarnweight),
-                                    N = formatDecimal(yctestApercentlist_N[loopCount].yarnweight),
-                                    nPlus1 = formatDecimal(yctestApercentlist_nPlus1[loopCount].yarnweight),
+                                    ApercentReportModelView apercentReportMV = new ApercentReportModelView()
+                                    {
+                                        testID = test.testID,
+                                        description = test.testcount.ToString(),
+                                        nMinus1 = formatDecimal(test.yarnweight),
+                                        N = formatDecimal(yctestApercentlist_N[loopCount].yarnweight),
+                                        nPlus1 = formatDecimal(yctestApercentlist_nPlus1[loopCount].yarnweight),
+                                    };
+                                    report.Add(apercentReportMV);
+                                    loopCount += 1;
+                                }
+
+                                ApercentReportModelView apercentReportModelView = new ApercentReportModelView()
+                                {
+                                    testID = apercentCalc.testID,
+                                    description = "Average Weight",
+                                    nMinus1 = formatDecimal(apercentCalc.avg_weight_nMinus1),
+                                    N = formatDecimal(apercentCalc.avg_weight_N),
+                                    nPlus1 = formatDecimal(apercentCalc.avg_weight_nPlus1),
                                 };
-                                report.Add(apercentReportMV);
-                                loopCount += 1;
-                            }
+                                report.Add(apercentReportModelView);
 
-                            ApercentReportModelView apercentReportModelView = new ApercentReportModelView()
-                            {
-                                testID = apercentCalc.testID,
-                                description = "Average Weight",
-                                nMinus1 = formatDecimal(apercentCalc.avg_weight_nMinus1),
-                                N = formatDecimal(apercentCalc.avg_weight_N),
-                                nPlus1 = formatDecimal(apercentCalc.avg_weight_nPlus1),
-                            };
-                            report.Add(apercentReportModelView);
-
-                            apercentReportModelView = new ApercentReportModelView()
-                            {
-                                testID = apercentCalc.testID,
-                                description = "Weight (Max)",
-                                nMinus1 = formatDecimal(apercentCalc.max_nMinus1),
-                                N = formatDecimal(apercentCalc.max_N),
-                                nPlus1 = formatDecimal(apercentCalc.max_nPlus1),
-                            };
-                            report.Add(apercentReportModelView);
-
-                            apercentReportModelView = new ApercentReportModelView()
-                            {
-                                testID = apercentCalc.testID,
-                                description = "Weight (Min)",
-                                nMinus1 = formatDecimal(apercentCalc.min_nMinus1),
-                                N = formatDecimal(apercentCalc.min_N),
-                                nPlus1 = formatDecimal(apercentCalc.min_nPlus1),
-                            };
-                            report.Add(apercentReportModelView);
-
-                            apercentReportModelView = new ApercentReportModelView()
-                            {
-                                testID = apercentCalc.testID,
-                                description = "Range",
-                                nMinus1 = formatDecimal(apercentCalc.range_nMinus1),
-                                N = formatDecimal(apercentCalc.range_N),
-                                nPlus1 = formatDecimal(apercentCalc.range_nPlus1),
-                            };
-                            report.Add(apercentReportModelView);
-
-                            if (apercentCalc.machineCategory == "Spinning")
-                            {
                                 apercentReportModelView = new ApercentReportModelView()
                                 {
                                     testID = apercentCalc.testID,
-                                    description = "Count",
-                                    nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
-                                    N = formatDecimal(apercentCalc.testaverage_N),
-                                    nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
+                                    description = "Weight (Max)",
+                                    nMinus1 = formatDecimal(apercentCalc.max_nMinus1),
+                                    N = formatDecimal(apercentCalc.max_N),
+                                    nPlus1 = formatDecimal(apercentCalc.max_nPlus1),
                                 };
                                 report.Add(apercentReportModelView);
-                            }
-                            else
-                            {
+
                                 apercentReportModelView = new ApercentReportModelView()
                                 {
                                     testID = apercentCalc.testID,
-                                    description = "Hank",
-                                    nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
-                                    N = formatDecimal(apercentCalc.testaverage_N),
-                                    nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
+                                    description = "Weight (Min)",
+                                    nMinus1 = formatDecimal(apercentCalc.min_nMinus1),
+                                    N = formatDecimal(apercentCalc.min_N),
+                                    nPlus1 = formatDecimal(apercentCalc.min_nPlus1),
                                 };
                                 report.Add(apercentReportModelView);
-                            }
 
-                            apercentReportModelView = new ApercentReportModelView()
-                            {
-                                testID = apercentCalc.testID,
-                                description = "SD",
-                                nMinus1 = formatDecimal(apercentCalc.testsd_nMinus1),
-                                N = formatDecimal(apercentCalc.testsd_N),
-                                nPlus1 = formatDecimal(apercentCalc.testsd_nPlus1),
-                            };
-                            report.Add(apercentReportModelView);
-
-                            apercentReportModelView = new ApercentReportModelView()
-                            {
-                                testID = apercentCalc.testID,
-                                description = "CV",
-                                nMinus1 = formatDecimal(apercentCalc.testcv_nMinus1),
-                                N = formatDecimal(apercentCalc.testcv_N),
-                                nPlus1 = formatDecimal(apercentCalc.testcv_nPlus1),
-                            };
-                            report.Add(apercentReportModelView);
-
-
-                            report.testID = apercentCalc.testID;
-                            report.userName = apercentCalc.userName;
-                            report.machineCategory = apercentCalc.machineCategory;
-                            report.machineName = apercentCalc.machineName;
-                            report.shift = apercentCalc.shift;
-                            report.process = apercentCalc.process;
-                            report.countsysname = apercentCalc.countsysname;
-                            report.yarnlenunit = apercentCalc.yarnlenunit;
-                            report.yarnlength = apercentCalc.yarnlength;
-                            report.totaltestcount = apercentCalc.totaltestcount;
-                            report.standardApercent = apercentCalc.standardApercent;
-
-
-                            decimal actual_Nminus1 = apercentCalc.apercent_nMinus1;
-                            decimal actual_nPlus1 = apercentCalc.apercent_nPlus1;
-
-                            decimal expMin = decimal.Parse("-" + apercentCalc.standardApercent.ToString());
-                            decimal expMax = apercentCalc.standardApercent;
-
-                            if (actual_Nminus1 < expMin || actual_Nminus1 > expMax)
-                            {
-                                report.isGREEN_NM1 = false;
-                                report.isRED_NM1 = true;
-                                if(actual_Nminus1 < expMin)
+                                apercentReportModelView = new ApercentReportModelView()
                                 {
-                                    report.correctionRemark_NM1 = "Under Correction";
-                                }else if (actual_Nminus1 > expMax)
+                                    testID = apercentCalc.testID,
+                                    description = "Range",
+                                    nMinus1 = formatDecimal(apercentCalc.range_nMinus1),
+                                    N = formatDecimal(apercentCalc.range_N),
+                                    nPlus1 = formatDecimal(apercentCalc.range_nPlus1),
+                                };
+                                report.Add(apercentReportModelView);
+
+                                if (apercentCalc.machineCategory == "Spinning")
                                 {
-                                    report.correctionRemark_NM1 = "Over Correction";
+                                    apercentReportModelView = new ApercentReportModelView()
+                                    {
+                                        testID = apercentCalc.testID,
+                                        description = "Count",
+                                        nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
+                                        N = formatDecimal(apercentCalc.testaverage_N),
+                                        nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
+                                    };
+                                    report.Add(apercentReportModelView);
                                 }
                                 else
                                 {
-                                    report.correctionRemark_NM1 = "";
+                                    apercentReportModelView = new ApercentReportModelView()
+                                    {
+                                        testID = apercentCalc.testID,
+                                        description = "Hank",
+                                        nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1),
+                                        N = formatDecimal(apercentCalc.testaverage_N),
+                                        nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1),
+                                    };
+                                    report.Add(apercentReportModelView);
                                 }
-                            }
-                            else
-                            {
-                                report.isGREEN_NM1 = true;
-                                report.isRED_NM1 = false;
-                            }
 
-                            if (actual_nPlus1 < expMin || actual_nPlus1 > expMax)
-                            {
-                                report.isGREEN_NP1 = false;
-                                report.isRED_NP1 = true;
+                                apercentReportModelView = new ApercentReportModelView()
+                                {
+                                    testID = apercentCalc.testID,
+                                    description = "SD",
+                                    nMinus1 = formatDecimal(apercentCalc.testsd_nMinus1),
+                                    N = formatDecimal(apercentCalc.testsd_N),
+                                    nPlus1 = formatDecimal(apercentCalc.testsd_nPlus1),
+                                };
+                                report.Add(apercentReportModelView);
 
-                                if (actual_nPlus1 < expMin)
+                                apercentReportModelView = new ApercentReportModelView()
                                 {
-                                    report.correctionRemark_NP1 = "Under Correction";
-                                }
-                                else if (actual_nPlus1 > expMax)
+                                    testID = apercentCalc.testID,
+                                    description = "CV",
+                                    nMinus1 = formatDecimal(apercentCalc.testcv_nMinus1),
+                                    N = formatDecimal(apercentCalc.testcv_N),
+                                    nPlus1 = formatDecimal(apercentCalc.testcv_nPlus1),
+                                };
+                                report.Add(apercentReportModelView);
+
+
+                                report.testID = apercentCalc.testID;
+                                report.userName = apercentCalc.userName;
+                                report.machineCategory = apercentCalc.machineCategory;
+                                report.machineName = apercentCalc.machineName;
+                                report.shift = apercentCalc.shift;
+                                report.process = apercentCalc.process;
+                                report.countsysname = apercentCalc.countsysname;
+                                report.yarnlenunit = apercentCalc.yarnlenunit;
+                                report.yarnlength = apercentCalc.yarnlength;
+                                report.totaltestcount = apercentCalc.totaltestcount;
+                                report.standardApercent = apercentCalc.standardApercent;
+
+
+                                decimal actual_Nminus1 = apercentCalc.apercent_nMinus1;
+                                decimal actual_nPlus1 = apercentCalc.apercent_nPlus1;
+
+                                decimal expMin = decimal.Parse("-" + apercentCalc.standardApercent.ToString());
+                                decimal expMax = apercentCalc.standardApercent;
+
+                                if (actual_Nminus1 < expMin || actual_Nminus1 > expMax)
                                 {
-                                    report.correctionRemark_NP1 = "Over Correction";
+                                    report.isGREEN_NM1 = false;
+                                    report.isRED_NM1 = true;
+                                    if (actual_Nminus1 < expMin)
+                                    {
+                                        report.correctionRemark_NM1 = "Under Correction";
+                                    }
+                                    else if (actual_Nminus1 > expMax)
+                                    {
+                                        report.correctionRemark_NM1 = "Over Correction";
+                                    }
+                                    else
+                                    {
+                                        report.correctionRemark_NM1 = "";
+                                    }
                                 }
                                 else
                                 {
-                                    report.correctionRemark_NP1 = "";
+                                    report.isGREEN_NM1 = true;
+                                    report.isRED_NM1 = false;
                                 }
-                            }
-                            else
-                            {
-                                report.isGREEN_NP1 = true;
-                                report.isRED_NP1 = false;
-                            }
 
-                            report.testaverage_nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1);
-                            report.testsd_nMinus1 = formatDecimal(apercentCalc.testsd_nMinus1);
-                            report.testcv_nMinus1 = formatDecimal(apercentCalc.testcv_nMinus1);
-                            //report.max_nMinus1 = apercentCalc.max_nMinus1;
-                            //report.min_nMinus1 = apercentCalc.min_nMinus1;
-                            //report.range_nMinus1 = apercentCalc.range_nMinus1;
-                            report.apercent_nMinus1 = formatDecimal(apercentCalc.apercent_nMinus1);
-                            report.testaverage_N = formatDecimal(apercentCalc.testaverage_N);
-                            report.testsd_N = formatDecimal(apercentCalc.testsd_N);
-                            report.testcv_N = formatDecimal(apercentCalc.testcv_N);
-                            //report.max_N = apercentCalc.max_N;
-                            //report.min_N = apercentCalc.min_N;
-                            //report.range_N = apercentCalc.range_N;
-                            report.testaverage_nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1);
-                            report.testsd_nPlus1 = formatDecimal(apercentCalc.testsd_nPlus1);
-                            report.testcv_nPlus1 = formatDecimal(apercentCalc.testcv_nPlus1);
-                            //report.max_nPlus1 = apercentCalc.max_nPlus1;
-                            //report.min_nPlus1 = apercentCalc.min_nPlus1;
-                            //report.range_nPlus1 = apercentCalc.range_nPlus1;
-                            report.apercent_nPlus1 = formatDecimal(apercentCalc.apercent_nPlus1);
-                            report.testRemark = apercentCalc.testRemark;
-                            report.createdate = apercentCalc.createdate;
+                                if (actual_nPlus1 < expMin || actual_nPlus1 > expMax)
+                                {
+                                    report.isGREEN_NP1 = false;
+                                    report.isRED_NP1 = true;
+
+                                    if (actual_nPlus1 < expMin)
+                                    {
+                                        report.correctionRemark_NP1 = "Under Correction";
+                                    }
+                                    else if (actual_nPlus1 > expMax)
+                                    {
+                                        report.correctionRemark_NP1 = "Over Correction";
+                                    }
+                                    else
+                                    {
+                                        report.correctionRemark_NP1 = "";
+                                    }
+                                }
+                                else
+                                {
+                                    report.isGREEN_NP1 = true;
+                                    report.isRED_NP1 = false;
+                                }
+
+                                report.testaverage_nMinus1 = formatDecimal(apercentCalc.testaverage_nMinus1);
+                                report.testsd_nMinus1 = formatDecimal(apercentCalc.testsd_nMinus1);
+                                report.testcv_nMinus1 = formatDecimal(apercentCalc.testcv_nMinus1);
+                                //report.max_nMinus1 = apercentCalc.max_nMinus1;
+                                //report.min_nMinus1 = apercentCalc.min_nMinus1;
+                                //report.range_nMinus1 = apercentCalc.range_nMinus1;
+                                report.apercent_nMinus1 = formatDecimal(apercentCalc.apercent_nMinus1);
+                                report.testaverage_N = formatDecimal(apercentCalc.testaverage_N);
+                                report.testsd_N = formatDecimal(apercentCalc.testsd_N);
+                                report.testcv_N = formatDecimal(apercentCalc.testcv_N);
+                                //report.max_N = apercentCalc.max_N;
+                                //report.min_N = apercentCalc.min_N;
+                                //report.range_N = apercentCalc.range_N;
+                                report.testaverage_nPlus1 = formatDecimal(apercentCalc.testaverage_nPlus1);
+                                report.testsd_nPlus1 = formatDecimal(apercentCalc.testsd_nPlus1);
+                                report.testcv_nPlus1 = formatDecimal(apercentCalc.testcv_nPlus1);
+                                //report.max_nPlus1 = apercentCalc.max_nPlus1;
+                                //report.min_nPlus1 = apercentCalc.min_nPlus1;
+                                //report.range_nPlus1 = apercentCalc.range_nPlus1;
+                                report.apercent_nPlus1 = formatDecimal(apercentCalc.apercent_nPlus1);
+                                report.testRemark = apercentCalc.testRemark;
+                                report.createdate = apercentCalc.createdate;
+                            }
+                            OVS.Add(report);
                         }
-                        OVS.Add(report);
                     }
                     ListOfReport = OVS;
                 }
