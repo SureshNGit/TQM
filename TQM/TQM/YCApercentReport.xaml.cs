@@ -44,6 +44,7 @@ namespace TQM
         private string CON_UF_VAL_2 = null;
         private string CON_UF_VAL_3 = null;
         private string CON_UF_VAL_4 = null;
+        private string selectedMachineCategory = null;
 
         public YCApercentReport()
         {
@@ -59,6 +60,10 @@ namespace TQM
                 btn_saveToPDF.Text = "Send & Delete Records";
                 btn_saveToPDF.BackgroundColor = Color.Red;
                 btn_saveToPDF.TextColor = Color.White;
+            }
+            if (categoryName != null && categoryName != "")
+            {
+                selectedMachineCategory = categoryName;
             }
             reportStartDate = startDate;
             reportEndDate = endDate;
@@ -315,11 +320,13 @@ namespace TQM
                     }
 
                     int counter = 0;
+                    string prev_macID = null;
+                    int macTestNo = 0;
 
                     foreach (YCTestApercentCalculatedModel apercentCalc in apercentCalcList)
                     {
                         OverallApercentReportModelView report = new OverallApercentReportModelView();
-                        YCTestConsolidatedReportMV consolItems = new YCTestConsolidatedReportMV();
+                        YCTestConsolidatedApercentReportMV consolItems = new YCTestConsolidatedApercentReportMV();
 
                         if (consolidatedReport)
                         {
@@ -343,9 +350,9 @@ namespace TQM
                                     YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
                                                                                     Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
                                                                                     YarnCountConfigModel.uf_name_1 != "")
-                                                                                    && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                    && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                    && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                                                                    && YarnCountConfigModel.machineCategory == apercentCalc.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == apercentCalc.machineID
+                                                                                    && YarnCountConfigModel.machineName == apercentCalc.machineName).FirstOrDefault();
                                     if (ycConfig_uf != null)
                                     {
                                         CON_UF_NAME_1 = ycConfig_uf.uf_name_1;
@@ -362,9 +369,9 @@ namespace TQM
                                     YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
                                                                                     Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_2 != null ||
                                                                                     YarnCountConfigModel.uf_name_2 != "")
-                                                                                    && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                    && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                    && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                                                                    && YarnCountConfigModel.machineCategory == apercentCalc.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == apercentCalc.machineID
+                                                                                    && YarnCountConfigModel.machineName == apercentCalc.machineName).FirstOrDefault();
                                     if (ycConfig_uf != null)
                                     {
                                         CON_UF_NAME_2 = ycConfig_uf.uf_name_2;
@@ -381,9 +388,9 @@ namespace TQM
                                     YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
                                                                                     Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_3 != null ||
                                                                                     YarnCountConfigModel.uf_name_3 != "")
-                                                                                    && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                    && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                    && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                                                                    && YarnCountConfigModel.machineCategory == apercentCalc.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == apercentCalc.machineID
+                                                                                    && YarnCountConfigModel.machineName == apercentCalc.machineName).FirstOrDefault();
                                     if (ycConfig_uf != null)
                                     {
                                         CON_UF_NAME_3 = ycConfig_uf.uf_name_3;
@@ -400,9 +407,9 @@ namespace TQM
                                     YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
                                                                                     Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_4 != null ||
                                                                                     YarnCountConfigModel.uf_name_4 != "")
-                                                                                    && YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                    && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                    && YarnCountConfigModel.machineName == testsummary.machineName).FirstOrDefault();
+                                                                                    && YarnCountConfigModel.machineCategory == apercentCalc.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == apercentCalc.machineID
+                                                                                    && YarnCountConfigModel.machineName == apercentCalc.machineName).FirstOrDefault();
                                     if (ycConfig_uf != null)
                                     {
                                         CON_UF_NAME_4 = ycConfig_uf.uf_name_4;
@@ -418,9 +425,9 @@ namespace TQM
 
                             YarnCountConfigModel ycConfig_uf_1 = conn.Table<YarnCountConfigModel>().
                                                                                     Where(YarnCountConfigModel => (
-                                                                                    YarnCountConfigModel.machineCategory == testsummary.machineCategory
-                                                                                    && YarnCountConfigModel.machineID == testsummary.machineID
-                                                                                    && YarnCountConfigModel.machineName == testsummary.machineName)).FirstOrDefault();
+                                                                                    YarnCountConfigModel.machineCategory == apercentCalc.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == apercentCalc.machineID
+                                                                                    && YarnCountConfigModel.machineName == apercentCalc.machineName)).FirstOrDefault();
                             if (ycConfig_uf_1 == null)
                             {
                                 DisplayAlert("Notice", "Unable to reterive user fields from settings!!!", "OK");
@@ -432,39 +439,50 @@ namespace TQM
                             consolItems.uf_name_3 = ycConfig_uf_1.uf_name_3;
                             consolItems.uf_name_4 = ycConfig_uf_1.uf_name_4;
 
-                            consolItems.uf_value_1 = testsummary.uf_value_1;
-                            consolItems.uf_value_2 = testsummary.uf_value_2;
-                            consolItems.uf_value_3 = testsummary.uf_value_3;
-                            consolItems.uf_value_4 = testsummary.uf_value_4;
+                            consolItems.uf_value_1 = apercentCalc.uf_value_1;
+                            consolItems.uf_value_2 = apercentCalc.uf_value_2;
+                            consolItems.uf_value_3 = apercentCalc.uf_value_3;
+                            consolItems.uf_value_4 = apercentCalc.uf_value_4;
 
                             //decimal maxRangeVal = testsummary.standardHank + (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
                             //decimal minRangeVal = testsummary.standardHank - (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
 
-                            decimal maxRangeVal = testsummary.standardHank + testsummary.deviationPercent;
-                            decimal minRangeVal = testsummary.standardHank - testsummary.deviationPercent;
+                            decimal maxRangeVal = apercentCalc.standardApercent;
+                            decimal minRangeVal = Decimal.Parse("-"+apercentCalc.standardApercent.ToString());
 
 
-                            if (testsummary.testaverage < minRangeVal || testsummary.testaverage > maxRangeVal)
+                            if (apercentCalc.apercent_nMinus1 < minRangeVal || apercentCalc.apercent_nMinus1 > maxRangeVal)
                             {
-                                consolItems.isRed = true;
-                                consolItems.isWhite = false;
+                                consolItems.isRed_Nminus1 = true;
+                                consolItems.isWhite_Nminus1 = false;
                             }
                             else
                             {
-                                consolItems.isRed = false;
-                                consolItems.isWhite = true;
+                                consolItems.isRed_Nminus1 = false;
+                                consolItems.isWhite_Nminus1 = true;
+                            }
+
+                            if (apercentCalc.apercent_nPlus1 < minRangeVal || apercentCalc.apercent_nPlus1 > maxRangeVal)
+                            {
+                                consolItems.isRed_Nplus1 = true;
+                                consolItems.isWhite_Nplus1 = false;
+                            }
+                            else
+                            {
+                                consolItems.isRed_Nplus1 = false;
+                                consolItems.isRed_Nplus1 = true;
                             }
 
                             if (prev_macID == null)
                             {
-                                prev_macID = testsummary.machineID.ToString();
+                                prev_macID = apercentCalc.machineID.ToString();
                                 macTestNo = 1;
                             }
                             else
                             {
-                                if (prev_macID != testsummary.machineID.ToString())
+                                if (prev_macID != apercentCalc.machineID.ToString())
                                 {
-                                    prev_macID = testsummary.machineID.ToString();
+                                    prev_macID = apercentCalc.machineID.ToString();
                                     macTestNo = 1;
                                 }
                                 else
@@ -475,27 +493,21 @@ namespace TQM
 
                             consolItems.serialNo = (counter + 1).ToString();
                             consolItems.testNo = macTestNo.ToString();
-                            consolItems.testID = testsummary.testID.ToString();
-                            consolItems.machineName = testsummary.machineName;
-                            consolItems.testDate = testsummary.createdate.Day.ToString() + "-" + testsummary.createdate.Month.ToString() + "-" + testsummary.createdate.Year.ToString();
-                            consolItems.shift = testsummary.shift;
-                            if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
-                            {
-                                consolItems.standardValue = formatDecimal(testsummary.standardHank, 2).ToString() + " " + "\u00B1" + formatDecimal(testsummary.deviationPercent, 2).ToString();
+                            consolItems.testID = apercentCalc.testID.ToString();
+                            consolItems.machineName = apercentCalc.machineName;
+                            consolItems.testDate = apercentCalc.createdate.Day.ToString() + "-" + apercentCalc.createdate.Month.ToString() + "-" + apercentCalc.createdate.Year.ToString();
+                            consolItems.shift = apercentCalc.shift;
+                            consolItems.standardValue = "\u00B1" + formatDecimal(apercentCalc.standardApercent, 2).ToString() ;
 
-                            }
-                            else
-                            {
-                                consolItems.standardValue = formatDecimal(testsummary.standardHank, 4).ToString() + " " + "\u00B1" + formatDecimal(testsummary.deviationPercent, 4).ToString();
-                            }
-                            consolItems.testAverage = formatDecimal(testsummary.testaverage).ToString();
-                            consolItems.standardDeviation = formatDecimal(testsummary.testsd).ToString();
-                            consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
+                            consolItems.Nminus1 = formatDecimal(apercentCalc.apercent_nMinus1).ToString();
+                            consolItems.Nplus1 = formatDecimal(apercentCalc.apercent_nPlus1).ToString();
+                            
                             //consolItems.testDuration = testsummary.testDuration;
-                            consolItems.testDuration = formatTime(testsummary.createdate);
-                            consolItems.remarks = testsummary.testRemark;
+                            consolItems.testDuration = formatTime(apercentCalc.createdate);
 
-                            if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
+                            consolItems.remarks = apercentCalc.testRemark;
+
+                            if (apercentCalc.machineCategory == "Spinning" || apercentCalc.machineCategory == "Winding")
                             {
                                 consolItems.isSpinning = true;
                                 consolItems.otherThanSpinning = false;
@@ -1259,16 +1271,20 @@ namespace TQM
             });
         }
 
-        private decimal formatDecimal(decimal inputVal)
+        private decimal formatDecimal(decimal inputVal, int afterDecimalCount = 4)
         {
-            inputVal = Math.Round(inputVal, 4);
+            if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
+            {
+                afterDecimalCount = 2;
+            }
+            inputVal = Math.Round(inputVal, afterDecimalCount);
             string inputString = inputVal.ToString();
             string[] ipStringArray = inputString.Split('.');
             if (ipStringArray.Length > 1)
             {
                 string beforeDecimal = ipStringArray[0];
                 string afterDecimal = ipStringArray[1];
-                for (int i = ipStringArray[1].Length; i < 4; i++)
+                for (int i = ipStringArray[1].Length; i < afterDecimalCount; i++)
                 {
                     afterDecimal = afterDecimal + "0";
                 }
@@ -1276,8 +1292,34 @@ namespace TQM
             }
             else
             {
-                return decimal.Parse(inputString + ".0000");
+                inputString = inputString + ".";
+                for (int i = 0; i < afterDecimalCount; i++)
+                {
+                    inputString = inputString + "0";
+                }
+                return decimal.Parse(inputString);
             }
+        }
+
+        private string formatTime(DateTime startDateTime)
+        {
+            string hrs = startDateTime.Hour.ToString();
+            if (hrs.Length < 2)
+            {
+                hrs = "0" + hrs;
+            }
+            string mins = startDateTime.Minute.ToString();
+            if (mins.Length < 2)
+            {
+                mins = "0" + mins;
+            }
+            string sec = startDateTime.Second.ToString();
+            if (sec.Length < 2)
+            {
+                sec = "0" + sec;
+            }
+            //return hrs + "h:" + mins + "m:" + sec + "s";
+            return hrs + ":" + mins + ":" + sec;
         }
 
         private void btn_backToReport_Clicked(object sender, EventArgs e)

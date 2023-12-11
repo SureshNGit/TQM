@@ -1,6 +1,6 @@
 ﻿namespace TQM.ModelView
 {
-    public class YCTestConsolidatedReportMV
+    public class YCTestConsolidatedApercentReportMV
     {
         public string serialNo { get; set; }
         public string testID { get; set; }
@@ -13,8 +13,10 @@
         public string Nplus1 { get; set; }
         public string testDuration { get; set; }
         public string remarks { get; set; }
-        public bool isWhite { get; set; } = true;
-        public bool isRed { get; set; } = false;
+        public bool isWhite_Nminus1 { get; set; } = true;
+        public bool isRed_Nminus1 { get; set; } = false;
+        public bool isWhite_Nplus1 { get; set; } = true;
+        public bool isRed_Nplus1 { get; set; } = false;
         public bool isSpinning { get; set; } = false;
         public bool otherThanSpinning { get; set; } = false;
         public string uf_name_1 { get; set; } = null;
