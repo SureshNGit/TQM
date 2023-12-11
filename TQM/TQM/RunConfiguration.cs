@@ -6,7 +6,7 @@
         //Test balance serail no: DS85222849198
         private string balanceSerialNo = "G85223874667";
         private string tqmAppUserID = "lsmillsunit1";
-        private bool requireCSV = false;
+        private bool requireCSV = true;
 
         public string getBalanceSerialNo()
         {
