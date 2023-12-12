@@ -1,7 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:TQM"
              x:Class="TQM.YCApercentReport" NavigationPage.HasBackButton="False">
+
+     <ContentPage.Resources>
+        <local:AllTrueMultiConverter x:Key="AllTrueConverter" />
+        <local:TextFormatterBaedOnMacCat x:Key="MacCategoryTestValueConverter" />
+        <local:TextFormatterStandardValue x:Key="MacCategoryStdConverter" />
+    </ContentPage.Resources>
+
     <NavigationPage.TitleView>
         <StackLayout BackgroundColor="White">
             <Grid>
@@ -390,12 +397,12 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <!--<ColumnDefinition Width="*"/>-->
                             </Grid.ColumnDefinitions>
 
 
-                            <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="11" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
-                            <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="11" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                            <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+                            <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
 
 
                             <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
@@ -408,8 +415,8 @@
                             <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                             <BoxView Grid.Column="8" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                             <BoxView Grid.Column="9" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-                            <BoxView Grid.Column="10" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-                            <BoxView Grid.Column="10" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+                            <!--<BoxView Grid.Column="10" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>-->
+                            <BoxView Grid.Column="9" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
 
                             <Label  Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                             Text="S.No"  TextColor="#0e0273" FontSize="14" FontAttributes="Bold"/>
@@ -422,16 +429,16 @@
                             <Label  Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="Shift"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                                Text="Std. Hank" x:Name="lbl_conStdHank" TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                                                Text="Std. A%"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                                Text="Avg. Hank" x:Name="lbl_conAvgHank" TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                                                Text="N-1" TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                                Text="SD"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                                                Text="N+1"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <!--<Label  Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="CV"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>-->
                             <Label  Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                                Text="CV"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
-                            <Label  Grid.Column="9" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="Test Time"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
-                            <Label  Grid.Column="10" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                            <Label  Grid.Column="9" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                     Text="Remark"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                         </Grid>
                         </StackLayout>
@@ -454,10 +461,10 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
+                                        <!--<ColumnDefinition Width="*"/>-->
                                     </Grid.ColumnDefinitions>
 
-                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="11" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
 
                                     <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
@@ -469,8 +476,8 @@
                                     <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="8" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
                                     <BoxView Grid.Column="9" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-                                    <BoxView Grid.Column="10" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
-                                    <BoxView Grid.Column="10" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+                                    <!--<BoxView Grid.Column="10" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>-->
+                                    <BoxView Grid.Column="9" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
 
 
                                     <Label Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
@@ -488,90 +495,96 @@
                                     <Label Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                Text="{Binding standardValue}" FontSize="14"/>
 
-                                    <!--< Test Average >-->
+                                    <!--< Test Nminus1 >-->
 
                                     <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                            Text="{Binding testAverage,StringFormat='{0:N2}'}" 
+                                            Text="{Binding Nminus1,StringFormat='{0:N2}'}" 
                                         FontSize="14">
 
                                         <Label.IsVisible>
                                             <MultiBinding Converter="{StaticResource AllTrueConverter}">
-                                                <Binding Path="isWhite" />
-                                                <Binding Path="isSpinning" />
+                                                <Binding Path="isWhite_Nminus1" />
+                                                <!--<Binding Path="isSpinning" />-->
                                              </MultiBinding>
                                         </Label.IsVisible>
 
                                     </Label>
 
                                      <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding testAverage,StringFormat='{0:N2}'}" 
+                                               Text="{Binding Nminus1,StringFormat='{0:N2}'}" 
                                            FontSize="14" BackgroundColor="Red" TextColor="White">
 
                                         <Label.IsVisible>
                                             <MultiBinding Converter="{StaticResource AllTrueConverter}">
-                                                <Binding Path="isRed" />
-                                                <Binding Path="isSpinning" />
+                                                <Binding Path="isRed_Nminus1" />
+                                                <!--<Binding Path="isSpinning" />-->
                                             </MultiBinding>
                                         </Label.IsVisible>
 
                                     </Label>
 
-                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding testAverage,StringFormat='{0:N4}'}" 
-                                           FontSize="14">
+                                   
+
+                                    <!--< End of Test Nminus1 >-->
+
+                                    <!--< Test Nplus1 >-->
+
+                                    <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="{Binding Nplus1,StringFormat='{0:N2}'}" 
+                                        FontSize="14">
 
                                         <Label.IsVisible>
                                             <MultiBinding Converter="{StaticResource AllTrueConverter}">
-                                                <Binding Path="isWhite" />
-                                                <Binding Path="otherThanSpinning" />
-                                            </MultiBinding>
+                                                <Binding Path="isWhite_Nplus1" />
+                                                <!--<Binding Path="isSpinning" />-->
+                                             </MultiBinding>
                                         </Label.IsVisible>
 
                                     </Label>
 
-                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                               Text="{Binding testAverage,StringFormat='{0:N4}'}" 
+                                     <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding Nplus1,StringFormat='{0:N2}'}" 
                                            FontSize="14" BackgroundColor="Red" TextColor="White">
 
                                         <Label.IsVisible>
                                             <MultiBinding Converter="{StaticResource AllTrueConverter}">
-                                                <Binding Path="isRed" />
-                                                <Binding Path="otherThanSpinning" />
+                                                <Binding Path="isRed_Nplus1" />
+                                                <!--<Binding Path="isSpinning" />-->
                                             </MultiBinding>
                                         </Label.IsVisible>
 
                                     </Label>
 
-                                    <!--< End of Test Average >-->
+                                    <!--< End of Test Nplus1 >-->
                                     
                                     <!--< Standard Deviation >-->
 
 
-                                    <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                    <!--<Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            IsVisible="{Binding isSpinning}"
                                                Text="{Binding standardDeviation,StringFormat='{0:N2}'}" FontSize="14"/>
                                     
                                     <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            IsVisible="{Binding otherThanSpinning}"
-                                               Text="{Binding standardDeviation,StringFormat='{0:N4}'}" FontSize="14"/>
+                                               Text="{Binding standardDeviation,StringFormat='{0:N4}'}" FontSize="14"/>-->
 
                                     <!--< End of Standard Deviation >-->
 
                                     <!--< Co-Efficient of Variation >-->
 
-                                    <Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                    <!--<Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            IsVisible="{Binding isSpinning}"
                                                Text="{Binding CoEfficientOfVariation,StringFormat='{0:N2}'}" FontSize="14"/>
 
                                     <Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            IsVisible="{Binding otherThanSpinning}"
-                                               Text="{Binding CoEfficientOfVariation,StringFormat='{0:N4}'}" FontSize="14"/>
+                                               Text="{Binding CoEfficientOfVariation,StringFormat='{0:N4}'}" FontSize="14"/>-->
 
                                     <!--< End of Co-Efficient of Variation >-->
                                     
-                                    <Label Grid.Column="9" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                    <Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            Text="{Binding testDuration}" FontSize="14"/>
-                                    <Label Grid.Column="10" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                    <Label Grid.Column="9" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                            Text="{Binding remarks}" FontSize="14"/>
                                 </Grid>
                             </StackLayout>

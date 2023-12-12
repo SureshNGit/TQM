@@ -258,7 +258,7 @@ namespace TQM
                 else if (picker_reportName.SelectedItem.ToString() == "A%")
                 {
                     Navigation.PushAsync(new YCApercentReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, false, is_consolidated));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, false, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
                 }
                 else if (picker_reportName.SelectedItem.ToString() == "Stretch")
                 {
@@ -497,12 +497,14 @@ namespace TQM
                     var lst_reportName = new List<string>();
                     lst_reportName.Add("");
                     lst_reportName.Add("Wrapping");
+                    lst_reportName.Add("A%");
+                    lst_reportName.Add("Stretch");
+                    lst_reportName.Add("Noils");
                     picker_reportName.ItemsSource = lst_reportName;
-                    picker_reportName.SelectedItem = "Wrapping";
                     lbl_testID.IsVisible = false;
                     entry_testID.IsVisible = false;
                     btn_deleteRecords.IsVisible = false;
-                    picker_reportName.IsEnabled = false;
+                    picker_reportName.IsEnabled = true;
                     //lbl_stadHank.IsVisible = true;
                     //entry_standHank.IsVisible = true;
                 }

@@ -1,4 +1,6 @@
-﻿using RestSharp;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using RestSharp;
 using SQLite;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
@@ -7,6 +9,7 @@ using Syncfusion.Pdf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -28,6 +31,10 @@ namespace TQM
 
         private List<OverallApercentReportModelView> _listOfReports;
         public List<OverallApercentReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
+
+        private List<YCTestConsolidatedApercentReportMV> _listOfConsolidatedReports;
+        public List<YCTestConsolidatedApercentReportMV> ListOfConsolidatedReports { get { return _listOfConsolidatedReports; } set { _listOfConsolidatedReports = value; base.OnPropertyChanged(); } }
+
         private string selectedCompanyName = null;
         private const string BLUE = "#0e0273";
         private RunConfiguration runConfiguration = new RunConfiguration();
@@ -45,6 +52,7 @@ namespace TQM
         private string CON_UF_VAL_3 = null;
         private string CON_UF_VAL_4 = null;
         private string selectedMachineCategory = null;
+        private bool isFinalAvgRowPresent = false;
 
         public YCApercentReport()
         {
@@ -54,6 +62,7 @@ namespace TQM
         public YCApercentReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest, bool isConsolidated, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             InitializeComponent();
+            isFinalAvgRowPresent = false;
             consolidatedReport = isConsolidated;
             if (deleteRequest)
             {
@@ -75,6 +84,7 @@ namespace TQM
             try
             {
                 List<OverallApercentReportModelView> OVS = new List<OverallApercentReportModelView>();
+                List<YCTestConsolidatedApercentReportMV> OverallConsolidatedReports = new List<YCTestConsolidatedApercentReportMV>();
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
 
@@ -319,6 +329,12 @@ namespace TQM
                         }
                     }
 
+
+                    if (consolidatedReport)
+                    {
+                        apercentCalcList = apercentCalcList.OrderBy(YCTestApercentCalculatedModel => YCTestApercentCalculatedModel.machineName).ToList();
+                    }
+
                     int counter = 0;
                     string prev_macID = null;
                     int macTestNo = 0;
@@ -332,18 +348,18 @@ namespace TQM
                         {
                             if (counter == 0)
                             {
-                                if (apercentCalc.machineCategory == "Spinning" || apercentCalc.machineCategory == "Winding")
-                                {
-                                    //lbl_con_Hank.Text = "Avg. COUNT : ";
-                                    lbl_conStdHank.Text = "Std. Count";
-                                    lbl_conAvgHank.Text = "Avg. Count";
-                                }
-                                else
-                                {
-                                    //lbl_con_Hank.Text = "Avg. HANK : ";
-                                    lbl_conStdHank.Text = "Std. Hank";
-                                    lbl_conAvgHank.Text = "Avg. Hank";
-                                }
+                                //if (apercentCalc.machineCategory == "Spinning" || apercentCalc.machineCategory == "Winding")
+                                //{
+                                //    //lbl_con_Hank.Text = "Avg. COUNT : ";
+                                //    lbl_conStdHank.Text = "Std. Count";
+                                //    lbl_conAvgHank.Text = "Avg. Count";
+                                //}
+                                //else
+                                //{
+                                //    //lbl_con_Hank.Text = "Avg. HANK : ";
+                                //    lbl_conStdHank.Text = "Std. Hank";
+                                //    lbl_conAvgHank.Text = "Avg. Hank";
+                                //}
 
                                 if (UFVAL1 != "" && UFVAL1 != null)
                                 {
@@ -470,7 +486,7 @@ namespace TQM
                             else
                             {
                                 consolItems.isRed_Nplus1 = false;
-                                consolItems.isRed_Nplus1 = true;
+                                consolItems.isWhite_Nplus1 = true;
                             }
 
                             if (prev_macID == null)
@@ -507,16 +523,16 @@ namespace TQM
 
                             consolItems.remarks = apercentCalc.testRemark;
 
-                            if (apercentCalc.machineCategory == "Spinning" || apercentCalc.machineCategory == "Winding")
-                            {
-                                consolItems.isSpinning = true;
-                                consolItems.otherThanSpinning = false;
-                            }
-                            else
-                            {
-                                consolItems.isSpinning = false;
-                                consolItems.otherThanSpinning = true;
-                            }
+                            //if (apercentCalc.machineCategory == "Spinning" || apercentCalc.machineCategory == "Winding")
+                            //{
+                            //    consolItems.isSpinning = true;
+                            //    consolItems.otherThanSpinning = false;
+                            //}
+                            //else
+                            //{
+                            //    consolItems.isSpinning = false;
+                            //    consolItems.otherThanSpinning = true;
+                            //}
 
                             //YCTestModel firstTest = yctestlist.Where(YCTestModel => YCTestModel.testcount == 1).FirstOrDefault();
                             //TimeSpan duration = (firstTest.createdate - testsummary.createdate).Duration();
@@ -735,13 +751,198 @@ namespace TQM
                                 report.testRemark = apercentCalc.testRemark;
                                 report.createdate = apercentCalc.createdate;
                             }
+                            //OVS.Add(report);
+                        }
+                        if (consolidatedReport)
+                        {
+                            OverallConsolidatedReports.Add(consolItems);
+                        }
+                        else
+                        {
                             OVS.Add(report);
                         }
                     }
-                    ListOfReport = OVS;
+                    if (consolidatedReport)
+                    {
+                        YCTestConsolidatedApercentReportMV consolItems = new YCTestConsolidatedApercentReportMV()
+                        {
+                            serialNo = "Average",
+                            testID = "",
+                            machineName = "",
+                            testDate = "",
+                            shift = "",
+                            standardValue = "",
+                            Nminus1 = "",
+                            Nplus1 = "",
+                            testDuration = "",
+                            remarks = "",
+                            isWhite_Nminus1 = true,
+                            isRed_Nminus1 = false,
+                            isWhite_Nplus1 = true,
+                            isRed_Nplus1 = false,
+                        };
+
+                        //if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
+                        //{
+                        //    consolItems.isSpinning = true;
+                        //    consolItems.otherThanSpinning = false;
+                        //}
+                        //else
+                        //{
+                        //    consolItems.isSpinning = false;
+                        //    consolItems.otherThanSpinning = true;
+                        //}
+
+                        if (machineID != Guid.Empty)
+                        {
+                            isFinalAvgRowPresent = true;
+                            OverallConsolidatedReports.Add(consolItems);
+                        }
+
+                        ListOfConsolidatedReports = OverallConsolidatedReports;
+                    }
+                    else
+                    {
+                        //CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
+                        //CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
+                        //CON_CV = formatDecimal(CON_CV / TOT_TEST);
+                        ListOfReport = OVS;
+                    }
                 }
+                
+
                 listview_tcreport.ItemsSource = null;
-                listview_tcreport.ItemsSource = ListOfReport;
+                listview_tcConsolidatedReport.ItemsSource = null;
+                if (consolidatedReport)
+                {
+                    //lbl_totalTest.Text = TOT_TEST.ToString();
+                    //lbl_AvgHank.Text = CON_HANK.ToString();
+                    //lbl_AvgSD.Text = CON_STD_DEV.ToString();
+                    //lbl_AvgCV.Text = CON_CV.ToString();
+
+                    if (((CON_UF_NAME_1 != null && CON_UF_NAME_1 != "") && (CON_UF_VAL_1 != null && CON_UF_VAL_1 != "")) ||
+                        ((CON_UF_NAME_2 != null && CON_UF_NAME_2 != "") && (CON_UF_VAL_2 != null && CON_UF_VAL_2 != "")) ||
+                        ((CON_UF_NAME_3 != null && CON_UF_NAME_3 != "") && (CON_UF_VAL_3 != null && CON_UF_VAL_3 != "")) ||
+                        ((CON_UF_NAME_4 != null && CON_UF_NAME_4 != "") && (CON_UF_VAL_4 != null && CON_UF_VAL_4 != "")))
+                    {
+                        grid_consolidated.IsVisible = true;
+                    }
+
+                    if (CON_UF_VAL_1 != null)
+                    {
+                        lbl_uf_name_1.IsVisible = true;
+                        lbl_uf_value_1.IsVisible = true;
+                        lbl_uf_name_1.Text = CON_UF_NAME_1;
+                        lbl_uf_value_1.Text = CON_UF_VAL_1;
+                    }
+                    if (CON_UF_VAL_1 == null)
+                    {
+                        lbl_uf_name_1.IsVisible = false;
+                        lbl_uf_value_1.IsVisible = false;
+                        if (CON_UF_VAL_2 != null)
+                        {
+                            lbl_uf_name_2_col1.IsVisible = true;
+                            lbl_uf_value_2_col1.IsVisible = true;
+                            lbl_uf_name_2_col1.Text = CON_UF_NAME_2;
+                            lbl_uf_value_2_col1.Text = CON_UF_VAL_2;
+                            lbl_uf_name_2_col2.IsVisible = false;
+                            lbl_uf_value_2_col2.IsVisible = false;
+                        }
+                    }
+                    else
+                    {
+                        if (CON_UF_VAL_2 != null)
+                        {
+                            lbl_uf_name_2_col2.IsVisible = true;
+                            lbl_uf_value_2_col2.IsVisible = true;
+                            lbl_uf_name_2_col2.Text = CON_UF_NAME_2;
+                            lbl_uf_value_2_col2.Text = CON_UF_VAL_2;
+                            lbl_uf_name_2_col1.IsVisible = false;
+                            lbl_uf_value_2_col1.IsVisible = false;
+                        }
+                        else
+                        {
+                            lbl_uf_name_2_col2.IsVisible = false;
+                            lbl_uf_value_2_col2.IsVisible = false;
+                            lbl_uf_name_2_col1.IsVisible = false;
+                            lbl_uf_value_2_col1.IsVisible = false;
+                        }
+                    }
+
+                    if (CON_UF_VAL_1 == null && CON_UF_VAL_2 == null)
+                    {
+                        if (CON_UF_VAL_3 != null)
+                        {
+                            lbl_uf_name_3_row1.IsVisible = true;
+                            lbl_uf_value_3_row1.IsVisible = true;
+                            lbl_uf_name_3_row1.Text = CON_UF_NAME_3;
+                            lbl_uf_value_3_row1.Text = CON_UF_VAL_3;
+                            lbl_uf_name_3_row2.IsVisible = false;
+                            lbl_uf_value_3_row2.IsVisible = false;
+                            if (CON_UF_VAL_4 != null)
+                            {
+                                lbl_uf_name_4_row1_col2.IsVisible = true;
+                                lbl_uf_value_4_row1_col2.IsVisible = true;
+                                lbl_uf_name_4_row1_col2.Text = CON_UF_NAME_3;
+                                lbl_uf_value_4_row1_col2.Text = CON_UF_VAL_3;
+                                lbl_uf_name_4_row2_col2.IsVisible = false;
+                                lbl_uf_value_4_row2_col2.IsVisible = false;
+                            }
+                            else
+                            {
+                                lbl_uf_name_4_row1_col2.IsVisible = false;
+                                lbl_uf_value_4_row1_col2.IsVisible = false;
+                                lbl_uf_name_4_row2_col2.IsVisible = false;
+                                lbl_uf_value_4_row2_col2.IsVisible = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (CON_UF_VAL_3 != null)
+                        {
+                            lbl_uf_name_3_row2.IsVisible = true;
+                            lbl_uf_value_3_row2.IsVisible = true;
+                            lbl_uf_name_3_row2.Text = CON_UF_NAME_3;
+                            lbl_uf_value_3_row2.Text = CON_UF_VAL_3;
+                            lbl_uf_name_3_row1.IsVisible = false;
+                            lbl_uf_value_3_row1.IsVisible = false;
+                            if (CON_UF_VAL_4 != null)
+                            {
+                                lbl_uf_name_4_row2_col2.IsVisible = true;
+                                lbl_uf_value_4_row2_col2.IsVisible = true;
+                                lbl_uf_name_4_row2_col2.Text = CON_UF_NAME_3;
+                                lbl_uf_value_4_row2_col2.Text = CON_UF_VAL_3;
+                                lbl_uf_name_4_row1_col2.IsVisible = false;
+                                lbl_uf_value_4_row1_col2.IsVisible = false;
+                            }
+                            else
+                            {
+                                lbl_uf_name_4_row2_col2.IsVisible = false;
+                                lbl_uf_value_4_row2_col2.IsVisible = false;
+                                lbl_uf_name_4_row1_col2.IsVisible = false;
+                                lbl_uf_value_4_row1_col2.IsVisible = false;
+                            }
+                        }
+                        else
+                        {
+                            lbl_uf_name_3_row2.IsVisible = false;
+                            lbl_uf_value_3_row2.IsVisible = false;
+                        }
+                    }
+
+                    listview_tcreport.IsVisible = false;
+                    listview_tcConsolidatedReport.IsVisible = true;
+                    listview_tcConsolidatedReport.ItemsSource = ListOfConsolidatedReports;
+                }
+                else
+                {
+                    listview_tcConsolidatedReport.IsVisible = false;
+                    listview_tcreport.IsVisible = true;
+                    listview_tcreport.ItemsSource = ListOfReport;
+                }
+
+
             }
             catch (Exception ex)
             {
@@ -789,10 +990,21 @@ namespace TQM
         [Obsolete]
         private async void btn_saveToPDF_Clicked(object sender, EventArgs e)
         {
-            if (listview_tcreport.ItemsSource == null)
+            if (consolidatedReport)
             {
-                await DisplayAlert("Notice", "No records to generate PDF!!!", "OK");
-                return;
+                if (listview_tcConsolidatedReport.ItemsSource == null)
+                {
+                    await DisplayAlert("Notice", "No records to generate PDF!!!", "OK");
+                    return;
+                }
+            }
+            else
+            {
+                if (listview_tcreport.ItemsSource == null)
+                {
+                    await DisplayAlert("Notice", "No records to generate PDF!!!", "OK");
+                    return;
+                }
             }
             if (deleteAll)
             {
@@ -1149,6 +1361,387 @@ namespace TQM
             }
         }
 
+        private bool generatePDFConsolidatedReport()
+        {
+            try
+            {
+                PdfDocument pdfDocument = new PdfDocument();
+
+
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<CompanyModel>();
+                    List<CompanyModel> companieslist = conn.Table<CompanyModel>().ToList();
+                    selectedCompanyName = companieslist[0].Name;
+                };
+
+
+                PdfPage pdfPage = pdfDocument.Pages.Add();
+                PdfGrid pdfGrid = null;
+                PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
+                layoutFormat.Layout = PdfLayoutType.Paginate;
+                List<YCTestConsolidatedApercentReportMV> overallReportList = (List<YCTestConsolidatedApercentReportMV>)listview_tcConsolidatedReport.ItemsSource;
+                PdfLayoutResult result = null;
+                float overallHeight = 0;
+                int tableNo = 1;
+                //bool newPageAdded_Header = false;
+                //bool newPageAdded_Body = false;
+
+                PdfGrid pdfGridInfo = new PdfGrid();
+                pdfGridInfo.RepeatHeader = true;
+
+
+                int totalRow_header = 1;
+                int totalRow_header_height = totalRow_header * 18;
+
+                int rowCount = 1;
+                int pageRecordCount = 1;
+                float rowHeights = 0;
+                bool includeHeader = true;
+                //PdfGrid pdfGridBody = null;
+                PdfGridRow row = null;
+                foreach (YCTestConsolidatedApercentReportMV orl in overallReportList)
+                {
+                    if (includeHeader)
+                    {
+                        includeHeader = false;
+                        pdfGrid = new PdfGrid();
+
+                        pdfGrid.Columns.Add(10);
+                        row = new PdfGridRow(pdfGrid);
+                        pdfGrid.Rows.Add(row);
+
+                        pdfGrid.Rows[0].Cells[0].Value = "S.No";
+                        pdfGrid.Rows[0].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[1].Value = "Date";
+                        pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[2].Value = "ID";
+                        pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[3].Value = "Mac Name";
+                        pdfGrid.Rows[0].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[4].Value = "Shift";
+                        pdfGrid.Rows[0].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[4].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+                       
+                        pdfGrid.Rows[0].Cells[5].Value = "Std. A%";
+                        pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[6].Value = "N-1";
+                        pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                       
+
+                        pdfGrid.Rows[0].Cells[7].Value = "N+1";
+                        pdfGrid.Rows[0].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[7].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        
+                        pdfGrid.Rows[0].Cells[8].Value = "Test Time";
+                        pdfGrid.Rows[0].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[9].Value = "Remark";
+                        pdfGrid.Rows[0].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[9].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        row = new PdfGridRow(pdfGrid);
+                        pdfGrid.Rows.Add(row);
+                        rowHeights = rowHeights + pdfGrid.Rows[0].Height;
+                    }
+
+
+                    pdfGrid.Rows.Add();
+
+                    pdfGrid.Rows[pageRecordCount].Cells[0].Value = orl.serialNo;
+                    pdfGrid.Rows[pageRecordCount].Cells[1].Value = orl.testDate;
+                    pdfGrid.Rows[pageRecordCount].Cells[2].Value = orl.testID;
+                    pdfGrid.Rows[pageRecordCount].Cells[3].Value = orl.machineName;
+                    pdfGrid.Rows[pageRecordCount].Cells[4].Value = orl.shift;
+                    pdfGrid.Rows[pageRecordCount].Cells[5].Value = orl.standardValue;
+
+
+
+                    if (orl.Nminus1 != null && orl.Nminus1 != "")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Value = formatDecimal(Decimal.Parse(orl.Nminus1)).ToString();
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.Nminus1;
+                    }
+                    if (orl.Nplus1 != null && orl.Nplus1 != "")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = formatDecimal(Decimal.Parse(orl.Nplus1)).ToString();
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.Nplus1;
+                    }
+                   
+                    pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.testDuration;
+                    pdfGrid.Rows[pageRecordCount].Cells[9].Value = orl.remarks;
+
+                    if (orl.remarks != null || orl.standardValue != null)
+                    {
+                        //if (orl.testID == "82")
+                        //{
+                        //    decimal a = 1 / 9;
+                        //}
+                        PdfStringFormat format = new PdfStringFormat();
+                        format.WordWrap = PdfWordWrapType.Word;
+                        pdfGrid.Rows[pageRecordCount].Cells[9].Style.StringFormat = format;
+                        float currentRowHeight = pdfGrid.Rows[pageRecordCount].Height;
+                        int contentLength = 0;
+                        if (orl.remarks != null)
+                        {
+                            contentLength = orl.remarks.Length;
+                        }
+                        if (orl.standardValue != null && orl.remarks != null)
+                        {
+                            if (orl.standardValue.Length > orl.remarks.Length)
+                            {
+                                contentLength = orl.standardValue.Length;
+                            }
+                        }
+                        else if (orl.standardValue != null && orl.remarks == null)
+                        {
+                            contentLength = orl.standardValue.Length;
+                        }
+                        if (contentLength >= 9)
+                        {
+                            pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 9) + 1);
+                        }
+                    }
+
+                    pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+                    if (orl.isWhite_Nminus1)
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.BackgroundBrush = PdfBrushes.White;
+                        //pdfGrid.Rows[pageRecordCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.BackgroundBrush = PdfBrushes.Red;
+                        //pdfGrid.Rows[pageRecordCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.TextBrush = brush_con;
+                    }
+
+                    if (orl.isWhite_Nplus1)
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.BackgroundBrush = PdfBrushes.White;
+                        //pdfGrid.Rows[pageRecordCount].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.BackgroundBrush = PdfBrushes.Red;
+                        //pdfGrid.Rows[pageRecordCount].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.TextBrush = brush_con;
+                    }
+
+                    pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    
+
+                    //**************************** Overall total ****************************
+
+                    if (rowCount == overallReportList.Count && isFinalAvgRowPresent)
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[9].Style.Borders.All = PdfPens.Transparent;
+
+                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    }
+
+                    //**************************** End of Overall total *****************************
+
+                    rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
+                    if (rowHeights <= 700 && rowCount == overallReportList.Count)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, 75), layoutFormat);
+                    }
+                    else if ((rowHeights >= 670 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, 75), layoutFormat);
+                        pdfPage = pdfDocument.Pages.Add();
+                        pageRecordCount = 0;
+                        rowHeights = 0;
+                        includeHeader = true;
+                    }
+                    Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
+                    pageRecordCount++;
+                    rowCount++;
+                }
+
+
+
+
+                //Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
+                Debug.WriteLine("Table NO==>" + tableNo + " ,tableHeigth ===>" + overallHeight);
+                tableNo++;
+                //};
+
+
+                addPageHeaderAndFooter(pdfDocument);
+                MemoryStream stream = new MemoryStream();
+                pdfDocument.Save(stream);
+                pdfDocument.Close(true);
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "TQM_Report_Consolidated(Apercent).pdf");
+                //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
+                //Process.Start(pdfPath);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                return false;
+            }
+        }
+
+        [Obsolete]
+        private bool generateCSVConsolidatedReport()
+        {
+            try
+            {
+                string downloadsFolder = Path.Combine(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads), "TQMDownloads");
+                using (var textWriter = new StreamWriter(Path.Combine(downloadsFolder, "TQM_Report_Consolidated(Apercent).csv")))
+                {
+
+                    var writer = new CsvWriter(textWriter, CultureInfo.InvariantCulture);
+                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        Delimiter = ",",
+                        HasHeaderRecord = false
+                    };
+                    //Header
+                    writer.WriteField("S.No");
+                    writer.WriteField("Date");
+                    writer.WriteField("Test No");
+                    writer.WriteField("Mac Name");
+                    writer.WriteField("Shift");
+                    writer.WriteField("Std. A%");
+                    writer.WriteField("N-1");
+                  
+                    writer.WriteField("N+1");
+                    writer.WriteField("Test Time");
+                    writer.WriteField("Remark");
+                    //Actual Data
+                    writer.NextRecord();
+                    List<YCTestConsolidatedApercentReportMV> overallReportList = (List<YCTestConsolidatedApercentReportMV>)listview_tcConsolidatedReport.ItemsSource;
+                    foreach (YCTestConsolidatedApercentReportMV orl in overallReportList)
+                    {
+                        writer.WriteField(orl.serialNo);
+                        writer.WriteField(orl.testDate);
+                        writer.WriteField(orl.testNo);
+                        writer.WriteField(orl.machineName);
+                       
+                        writer.WriteField(orl.shift);
+                        writer.WriteField(orl.standardValue);
+
+
+                        if (orl.Nminus1 != null && orl.Nminus1 != "")
+                        {
+                            writer.WriteField(formatDecimal(Decimal.Parse(orl.Nminus1)).ToString());
+                        }
+                        else
+                        {
+                            writer.WriteField(orl.Nminus1);
+                        }
+
+                        if (orl.Nplus1 != null && orl.Nplus1 != "")
+                        {
+                            writer.WriteField(formatDecimal(Decimal.Parse(orl.Nplus1)).ToString());
+                        }
+                        else
+                        {
+                            writer.WriteField(orl.Nplus1);
+                        }
+
+                        
+
+                        writer.WriteField(orl.testDuration);
+                        writer.WriteField(orl.remarks);
+                        writer.NextRecord();
+                    }
+                    writer.Flush();
+
+
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                return false;
+            }
+        }
+
         private void addPageHeaderAndFooter(PdfDocument pdfDocument)
         {
             String companyName = null;
@@ -1182,8 +1775,66 @@ namespace TQM
                 //Title Starts
                 PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
-                //header.Graphics.DrawString("A% Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
-                header.Graphics.DrawString("A% Report - (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+
+                if (consolidatedReport)
+                {
+                    header.Graphics.DrawString("Con. A% Report - " + selectedMachineCategory + " (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(135, 20));
+                    header.Graphics.DrawString("Date: " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(200, 36));
+                    if (CON_UF_NAME_1 != null && CON_UF_NAME_1 != "")
+                    {
+                        //header.Graphics.DrawString("Lot Number" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(10, 48));
+                        //header.Graphics.DrawString("Material" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(285, 48));
+                        //header.Graphics.DrawString("Lot Number" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(10, 58));
+                        //header.Graphics.DrawString("Material" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(285, 58));
+
+                        header.Graphics.DrawString(CON_UF_NAME_1 + ": " + CON_UF_VAL_1, font_rn, brush_rn, new PointF(10, 48));
+                        if (CON_UF_NAME_2 != null && CON_UF_NAME_2 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_2 + ": " + CON_UF_VAL_2, font_rn, brush_rn, new PointF(285, 48));
+                        }
+                    }
+                    if ((CON_UF_NAME_1 == null || CON_UF_NAME_1 == "") && CON_UF_NAME_2 != null && CON_UF_NAME_2 != "")
+                    {
+                        header.Graphics.DrawString(CON_UF_NAME_2 + ": " + CON_UF_VAL_2, font_rn, brush_rn, new PointF(10, 48));
+                    }
+                    if ((CON_UF_NAME_1 != null && CON_UF_NAME_1 != "") || (CON_UF_NAME_2 != null && CON_UF_NAME_2 != ""))
+                    {
+                        if (CON_UF_NAME_3 != null && CON_UF_NAME_3 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_3 + ": " + CON_UF_VAL_3, font_rn, brush_rn, new PointF(10, 58));
+                            if (CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                            {
+                                header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(285, 58));
+                            }
+                        }
+                        if ((CON_UF_NAME_3 == null || CON_UF_NAME_3 == "") && CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(10, 58));
+                        }
+                    }
+                    else
+                    {
+                        if (CON_UF_NAME_3 != null && CON_UF_NAME_3 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_3 + ": " + CON_UF_VAL_3, font_rn, brush_rn, new PointF(10, 48));
+                            if (CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                            {
+                                header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(285, 48));
+                            }
+                        }
+                        if ((CON_UF_NAME_3 == null || CON_UF_NAME_3 == "") && CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(10, 48));
+                        }
+                    }
+                }
+                else
+                {
+
+                    //header.Graphics.DrawString("A% Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
+                    header.Graphics.DrawString("A% Report - (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                    
+                }
                 //Title Ends
                 pdfDocument.Template.Top = header;
                 PdfPageTemplateElement footer = new PdfPageTemplateElement(bounds);
@@ -1204,56 +1855,167 @@ namespace TQM
         {
             try
             {
-                if (!generatePDFreport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
-                else
+                if (consolidatedReport)
                 {
-                    String companyName = null;
-                    try
+
+                    if (!generatePDFConsolidatedReport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+                    else
                     {
-                        SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
-                        conn.CreateTable<CompanyModel>();
-                        var company = conn.Table<CompanyModel>().FirstOrDefault();
-                        if (company != null)
+                        String companyName = null;
+                        try
                         {
-                            companyName = company.Name;
+                            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                            conn.CreateTable<CompanyModel>();
+                            var company = conn.Table<CompanyModel>().FirstOrDefault();
+                            if (company != null)
+                            {
+                                companyName = company.Name;
+                            }
+                            conn.Close();
                         }
-                        conn.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
-                    }
-                    string fileName = "TQM_Report(A Percent).pdf";
-                    string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                    Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
-                    Java.IO.File file = new Java.IO.File(myDir, fileName);
-                    string filePath = file.Path;
-                    var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
-                    var request = new RestRequest();
-                    request.Method = Method.Post;
-                    //request.Timeout = Timeout.Infinite;
-                    request.AddParameter("userName", runConfiguration.getTQMAppUserID());
-                    request.AddParameter("uploadedby", companyName);
-                    request.AddParameter("title", "TQMReports(A Percent)-" + DateTime.Now.ToString());
-                    request.AddFile("reportpath", filePath);
-                    RestResponse response = client.Execute(request);
-                    if (response.IsSuccessful)
-                    {
-                        if (deleteAll)
+                        catch (Exception ex)
                         {
-                            deleteRecords(deleteList);
-                            showAlert("Report uploaded and deleted sucessfully!!!");
+                            showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                        }
+                        string fileName = "TQM_Report_Consolidated(Apercent).pdf";
+                        string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                        Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                        Java.IO.File file = new Java.IO.File(myDir, fileName);
+                        string filePath = file.Path;
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        //request.Timeout = Timeout.Infinite;
+                        request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                        request.AddParameter("uploadedby", companyName);
+                        if (selectedMachineCategory != null)
+                        {
+                            request.AddParameter("title", "TQMReportsConsolidated(A%-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
                         }
                         else
                         {
-                            showAlert("Report upload is sucessful!!!");
+                            request.AddParameter("title", "TQMReportsConsolidated(A%-All)-" + DateTime.Now.ToString());
                         }
+                        request.AddFile("reportpath", filePath);
+                        RestResponse response = client.Execute(request);
+                        if (response.IsSuccessful)
+                        {
+                            if (runConfiguration.getCSVReportStatus())
+                            {
+                                if (!generateCSVConsolidatedReport()) { showAlert("Error occurred in CSV report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+                                fileName = "TQM_Report_Consolidated(Apercent).csv";
+                                root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                                myDir = new Java.IO.File(root + "/TQMDownloads");
+                                file = new Java.IO.File(myDir, fileName);
+                                filePath = file.Path;
+                                client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                                request = new RestRequest();
+                                request.Method = Method.Post;
+                                //request.Timeout = Timeout.Infinite;
+                                request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                                request.AddParameter("uploadedby", companyName);
+                                if (selectedMachineCategory != null)
+                                {
+                                    request.AddParameter("title", "TQMReportsConsolidated-CSV-(A%-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                                }
+                                else
+                                {
+                                    request.AddParameter("title", "TQMReportsConsolidated-CSV-(A%-All)-" + DateTime.Now.ToString());
+                                }
+                                request.AddFile("reportpath", filePath);
+                                response = client.Execute(request);
+                                if (response.IsSuccessful)
+                                {
+                                    if (deleteAll)
+                                    {
+                                        deleteRecords(deleteList);
+                                        showAlert("Report uploaded and deleted sucessfully!!!");
+                                    }
+                                    else
+                                    {
+                                        showAlert("Report upload is sucessful!!!");
+                                    }
+                                }
+                                else
+                                {
+                                    showAlert("Upload Failed. Please try again!!!", "Error");
+                                }
+                            }
+                            else
+                            {
+                                if (deleteAll)
+                                {
+                                    deleteRecords(deleteList);
+                                    showAlert("Report uploaded and deleted sucessfully!!!");
+                                }
+                                else
+                                {
+                                    showAlert("Report upload is sucessful!!!");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            showAlert("Upload Failed. Please try again!!!", "Error");
+                        }
+                        await resetBtn();
                     }
+
+                }
+                else
+                {
+
+                    if (!generatePDFreport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
                     else
                     {
-                        showAlert("Upload Failed. Please try again!!!", "Error");
+                        String companyName = null;
+                        try
+                        {
+                            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                            conn.CreateTable<CompanyModel>();
+                            var company = conn.Table<CompanyModel>().FirstOrDefault();
+                            if (company != null)
+                            {
+                                companyName = company.Name;
+                            }
+                            conn.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                        }
+                        string fileName = "TQM_Report(A Percent).pdf";
+                        string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                        Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                        Java.IO.File file = new Java.IO.File(myDir, fileName);
+                        string filePath = file.Path;
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        //request.Timeout = Timeout.Infinite;
+                        request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                        request.AddParameter("uploadedby", companyName);
+                        request.AddParameter("title", "TQMReports(A Percent)-" + DateTime.Now.ToString());
+                        request.AddFile("reportpath", filePath);
+                        RestResponse response = client.Execute(request);
+                        if (response.IsSuccessful)
+                        {
+                            if (deleteAll)
+                            {
+                                deleteRecords(deleteList);
+                                showAlert("Report uploaded and deleted sucessfully!!!");
+                            }
+                            else
+                            {
+                                showAlert("Report upload is sucessful!!!");
+                            }
+                        }
+                        else
+                        {
+                            showAlert("Upload Failed. Please try again!!!", "Error");
+                        }
+                        await resetBtn();
                     }
-                    await resetBtn();
                 }
             }
             catch (Exception ex)

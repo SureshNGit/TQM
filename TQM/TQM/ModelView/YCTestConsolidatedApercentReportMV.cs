@@ -17,8 +17,8 @@
         public bool isRed_Nminus1 { get; set; } = false;
         public bool isWhite_Nplus1 { get; set; } = true;
         public bool isRed_Nplus1 { get; set; } = false;
-        public bool isSpinning { get; set; } = false;
-        public bool otherThanSpinning { get; set; } = false;
+        //public bool isSpinning { get; set; } = false;
+        //public bool otherThanSpinning { get; set; } = false;
         public string uf_name_1 { get; set; } = null;
         public string uf_name_2 { get; set; } = null;
         public string uf_name_3 { get; set; } = null;
