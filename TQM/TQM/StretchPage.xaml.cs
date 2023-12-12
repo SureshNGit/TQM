@@ -52,6 +52,10 @@ namespace TQM
         private bool isTestStarted = false;
         private StretchTestCalculatedModel stretchCalcList_finalOut = null;
         private RunConfiguration runConfiguration = new RunConfiguration();
+        private string UFVAL1 = null;
+        private string UFVAL2 = null;
+        private string UFVAL3 = null;
+        private string UFVAL4 = null;
 
         public StretchPage()
         {
@@ -269,6 +273,35 @@ namespace TQM
 
 
 
+            }
+        }
+
+        private void getUserfieldConfig(string mCat, Guid mid, string mac)
+        {
+            if (mCat == "" && mid == Guid.Empty && mac == "")
+            {
+                UFVAL1 = null;
+                UFVAL2 = null;
+                UFVAL3 = null;
+                UFVAL4 = null;
+            }
+            else
+            {
+                YarnCountConfigModel ycConfig_uf = null;
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
+                                YarnCountConfigModel.uf_name_1 != "") && YarnCountConfigModel.machineCategory == mCat
+                                && YarnCountConfigModel.machineID == mid && YarnCountConfigModel.machineName == mac).FirstOrDefault();
+                }
+                if (ycConfig_uf != null)
+                {
+                    UFVAL1 = ycConfig_uf.uf_value_1;
+                    UFVAL2 = ycConfig_uf.uf_value_2;
+                    UFVAL3 = ycConfig_uf.uf_value_3;
+                    UFVAL4 = ycConfig_uf.uf_value_4;
+                }
             }
         }
 
@@ -784,6 +817,10 @@ namespace TQM
                         testaverage = mean,
                         testsd = sd,
                         testcv = cv,
+                        uf_value_1 = UFVAL1,
+                        uf_value_2 = UFVAL2,
+                        uf_value_3 = UFVAL3,
+                        uf_value_4 = UFVAL4,
                         status = true,
                         createdate = DateTime.Now
                     };
@@ -892,6 +929,10 @@ namespace TQM
                                         min_FB = Min_FB.yarnweight,
                                         range_FB = range_FB,
                                         stretch = stretch,
+                                        uf_value_1 = UFVAL1,
+                                        uf_value_2 = UFVAL2,
+                                        uf_value_3 = UFVAL3,
+                                        uf_value_4 = UFVAL4,
                                         status = true,
                                         createdate = DateTime.Now
                                     };
@@ -1867,6 +1908,7 @@ namespace TQM
                     //}
                 }
                 populateTestParams("", Guid.Empty, "");
+                getUserfieldConfig("", Guid.Empty, "");
             }
             catch (Exception ex)
             {
@@ -1890,6 +1932,7 @@ namespace TQM
                 MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
                 selectedMachineName = selectedMachine.machineName;
                 populateTestParams(selectedMachineCategory, selectedMachineID, selectedMachineName);
+                getUserfieldConfig(selectedMachineCategory, selectedMachineID, selectedMachineName);
             }
             catch (Exception ex)
             {

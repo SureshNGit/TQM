@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:TQM"
              x:Class="TQM.YCApercentReport" NavigationPage.HasBackButton="False">
 
-     <ContentPage.Resources>
+    <ContentPage.Resources>
         <local:AllTrueMultiConverter x:Key="AllTrueConverter" />
         <local:TextFormatterBaedOnMacCat x:Key="MacCategoryTestValueConverter" />
         <local:TextFormatterStandardValue x:Key="MacCategoryStdConverter" />

@@ -47,6 +47,11 @@ namespace TQM.Model
 
         public decimal testcv { get; set; }
 
+        public string uf_value_1 { get; set; }
+        public string uf_value_2 { get; set; }
+        public string uf_value_3 { get; set; }
+        public string uf_value_4 { get; set; }
+
         public bool status { get; set; }
 
         public DateTime createdate { get; set; }
