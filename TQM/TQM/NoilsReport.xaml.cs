@@ -1,4 +1,6 @@
-﻿using RestSharp;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using RestSharp;
 using SQLite;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
@@ -7,6 +9,7 @@ using Syncfusion.Pdf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -28,6 +31,10 @@ namespace TQM
 
         private List<OverallNoilsReportModelView> _listOfReports;
         public List<OverallNoilsReportModelView> ListOfReport { get { return _listOfReports; } set { _listOfReports = value; base.OnPropertyChanged(); } }
+
+        private List<YCTestConsolidatedNoilsReportMV> _listOfConsolidatedReports;
+        public List<YCTestConsolidatedNoilsReportMV> ListOfConsolidatedReports { get { return _listOfConsolidatedReports; } set { _listOfConsolidatedReports = value; base.OnPropertyChanged(); } }
+
         private string selectedCompanyName = null;
         private const string BLUE = "#0e0273";
         private RunConfiguration runConfiguration = new RunConfiguration();
@@ -36,15 +43,26 @@ namespace TQM
         private DateTime reportStartDate;
         private DateTime reportEndDate;
         private bool consolidatedReport = false;
+        private string CON_UF_NAME_1 = null;
+        private string CON_UF_NAME_2 = null;
+        private string CON_UF_NAME_3 = null;
+        private string CON_UF_NAME_4 = null;
+        private string CON_UF_VAL_1 = null;
+        private string CON_UF_VAL_2 = null;
+        private string CON_UF_VAL_3 = null;
+        private string CON_UF_VAL_4 = null;
+        private string selectedMachineCategory = null;
+        private bool isFinalAvgRowPresent = false;
 
         public NoilsReport()
         {
             InitializeComponent();
         }
 
-        public NoilsReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest, bool isConsolidated)
+        public NoilsReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest, bool isConsolidated, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             InitializeComponent();
+            isFinalAvgRowPresent = false;
             consolidatedReport = isConsolidated;
             if (deleteRequest)
             {
@@ -52,16 +70,22 @@ namespace TQM
                 btn_saveToPDF.BackgroundColor = Color.Red;
                 btn_saveToPDF.TextColor = Color.White;
             }
+            if (categoryName != null && categoryName != "")
+            {
+                selectedMachineCategory = categoryName;
+            }
             reportStartDate = startDate;
             reportEndDate = endDate;
-            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, matType, materialLength, deleteRequest);
+            getReport(startDate, endDate, categoryName, machineID, shift, process, testID, matType, materialLength, deleteRequest, UFVAL1, UFVAL2, UFVAL3, UFVAL4);
         }
 
-        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest)
+        private void getReport(DateTime startDate, DateTime endDate, string categoryName, Guid machineID, string shift, string process, string testID, string matType, string materialLength, bool deleteRequest, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             try
             {
                 List<OverallNoilsReportModelView> OVS = new List<OverallNoilsReportModelView>();
+                List<YCTestConsolidatedNoilsReportMV> OverallConsolidatedReports = new List<YCTestConsolidatedNoilsReportMV>();
+
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
 
@@ -301,139 +325,522 @@ namespace TQM
                         }
                     }
 
+                    if (consolidatedReport)
+                    {
+                        noilsCalcList = noilsCalcList.OrderBy(NoilsTestCalculatedModel => NoilsTestCalculatedModel.machineName).ToList();
+                    }
+
+                    int counter = 0;
+                    string prev_macID = null;
+                    int macTestNo = 0;
+
+
                     foreach (NoilsTestCalculatedModel noilsCalc in noilsCalcList)
                     {
                         OverallNoilsReportModelView report = new OverallNoilsReportModelView();
-                        List<NoilsTestFinalModel> list_finalNoils = conn.Table<NoilsTestFinalModel>().Where(
-                            NoilsTestFinalModel =>
-                            (NoilsTestFinalModel.testID == noilsCalc.testID
-                            //&& NoilsTestFinalModel.status == true
-                            )).ToList();
+                        YCTestConsolidatedNoilsReportMV consolItems = new YCTestConsolidatedNoilsReportMV();
 
-
-                        if (list_finalNoils != null)
+                        if (consolidatedReport)
                         {
-
-                            int loopCount = 0;
-                            foreach (NoilsTestFinalModel test in list_finalNoils)
+                            if (counter == 0)
                             {
-                                NoilsReportModelView noilsReportMV = new NoilsReportModelView()
+                                //if (apercentCalc.machineCategory == "Spinning" || apercentCalc.machineCategory == "Winding")
+                                //{
+                                //    //lbl_con_Hank.Text = "Avg. COUNT : ";
+                                //    lbl_conStdHank.Text = "Std. Count";
+                                //    lbl_conAvgHank.Text = "Avg. Count";
+                                //}
+                                //else
+                                //{
+                                //    //lbl_con_Hank.Text = "Avg. HANK : ";
+                                //    lbl_conStdHank.Text = "Std. Hank";
+                                //    lbl_conAvgHank.Text = "Avg. Hank";
+                                //}
+
+                                if (UFVAL1 != "" && UFVAL1 != null)
                                 {
-                                    testID = test.testID,
-                                    description = test.testcount.ToString(),
-                                    silver_wt = formatDecimal(test.weigth_sliver),
-                                    noils_wt = formatDecimal(test.weigth_noils),
-                                    noils = formatDecimal(test.noils)
-                                };
-                                report.Add(noilsReportMV);
-                                loopCount += 1;
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                    Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_1 != null ||
+                                                                                    YarnCountConfigModel.uf_name_1 != "")
+                                                                                    && YarnCountConfigModel.machineCategory == noilsCalc.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == noilsCalc.machineID
+                                                                                    && YarnCountConfigModel.machineName == noilsCalc.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        CON_UF_NAME_1 = ycConfig_uf.uf_name_1;
+                                        CON_UF_VAL_1 = UFVAL1;
+                                    }
+                                    else
+                                    {
+                                        CON_UF_NAME_1 = null;
+                                        CON_UF_VAL_1 = null;
+                                    }
+                                }
+                                if (UFVAL2 != "" && UFVAL2 != null)
+                                {
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                    Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_2 != null ||
+                                                                                    YarnCountConfigModel.uf_name_2 != "")
+                                                                                    && YarnCountConfigModel.machineCategory == noilsCalc.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == noilsCalc.machineID
+                                                                                    && YarnCountConfigModel.machineName == noilsCalc.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        CON_UF_NAME_2 = ycConfig_uf.uf_name_2;
+                                        CON_UF_VAL_2 = UFVAL2;
+                                    }
+                                    else
+                                    {
+                                        CON_UF_NAME_2 = null;
+                                        CON_UF_VAL_2 = null;
+                                    }
+                                }
+                                if (UFVAL3 != "" && UFVAL3 != null)
+                                {
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                    Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_3 != null ||
+                                                                                    YarnCountConfigModel.uf_name_3 != "")
+                                                                                    && YarnCountConfigModel.machineCategory == noilsCalc.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == noilsCalc.machineID
+                                                                                    && YarnCountConfigModel.machineName == noilsCalc.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        CON_UF_NAME_3 = ycConfig_uf.uf_name_3;
+                                        CON_UF_VAL_3 = UFVAL3;
+                                    }
+                                    else
+                                    {
+                                        CON_UF_NAME_3 = null;
+                                        CON_UF_VAL_3 = null;
+                                    }
+                                }
+                                if (UFVAL4 != "" && UFVAL4 != null)
+                                {
+                                    YarnCountConfigModel ycConfig_uf = conn.Table<YarnCountConfigModel>().
+                                                                                    Where(YarnCountConfigModel => (YarnCountConfigModel.uf_name_4 != null ||
+                                                                                    YarnCountConfigModel.uf_name_4 != "")
+                                                                                    && YarnCountConfigModel.machineCategory == noilsCalc.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == noilsCalc.machineID
+                                                                                    && YarnCountConfigModel.machineName == noilsCalc.machineName).FirstOrDefault();
+                                    if (ycConfig_uf != null)
+                                    {
+                                        CON_UF_NAME_4 = ycConfig_uf.uf_name_4;
+                                        CON_UF_VAL_4 = UFVAL4;
+                                    }
+                                    else
+                                    {
+                                        CON_UF_NAME_4 = null;
+                                        CON_UF_VAL_4 = null;
+                                    }
+                                }
                             }
 
-                            NoilsReportModelView noilsReportModelView = new NoilsReportModelView()
+                            YarnCountConfigModel ycConfig_uf_1 = conn.Table<YarnCountConfigModel>().
+                                                                                    Where(YarnCountConfigModel => (
+                                                                                    YarnCountConfigModel.machineCategory == noilsCalc.machineCategory
+                                                                                    && YarnCountConfigModel.machineID == noilsCalc.machineID
+                                                                                    && YarnCountConfigModel.machineName == noilsCalc.machineName)).FirstOrDefault();
+                            if (ycConfig_uf_1 == null)
                             {
-                                testID = noilsCalc.testID,
-                                description = "Average Weight",
-                                silver_wt = formatDecimal(noilsCalc.average_wt_sliverwt),
-                                noils_wt = formatDecimal(noilsCalc.average_wt_noilswt),
-                                noils = formatDecimal(noilsCalc.average_wt_noils)
-                            };
-                            report.Add(noilsReportModelView);
+                                DisplayAlert("Notice", "Unable to reterive user fields from settings!!!", "OK");
+                                return;
+                            }
 
-                            noilsReportModelView = new NoilsReportModelView()
+                            consolItems.uf_name_1 = ycConfig_uf_1.uf_name_1;
+                            consolItems.uf_name_2 = ycConfig_uf_1.uf_name_2;
+                            consolItems.uf_name_3 = ycConfig_uf_1.uf_name_3;
+                            consolItems.uf_name_4 = ycConfig_uf_1.uf_name_4;
+
+                            consolItems.uf_value_1 = noilsCalc.uf_value_1;
+                            consolItems.uf_value_2 = noilsCalc.uf_value_2;
+                            consolItems.uf_value_3 = noilsCalc.uf_value_3;
+                            consolItems.uf_value_4 = noilsCalc.uf_value_4;
+
+                            //decimal maxRangeVal = testsummary.standardHank + (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
+                            //decimal minRangeVal = testsummary.standardHank - (testsummary.standardHank * (Convert.ToDecimal(testsummary.deviationPercent) / 100));
+
+                            decimal maxRangeVal = noilsCalc.standardNoils + noilsCalc.noilsRange;
+                            decimal minRangeVal = noilsCalc.standardNoils - noilsCalc.noilsRange;
+
+
+                            if (noilsCalc.average_wt_noils < minRangeVal || noilsCalc.average_wt_noils > maxRangeVal)
                             {
-                                testID = noilsCalc.testID,
-                                description = "Weight (Max)",
-                                silver_wt = formatDecimal(noilsCalc.max_sliverwt),
-                                noils_wt = formatDecimal(noilsCalc.max_noilswt),
-                                noils = formatDecimal(noilsCalc.max_noils)
-                            };
-                            report.Add(noilsReportModelView);
-
-                            noilsReportModelView = new NoilsReportModelView()
-                            {
-                                testID = noilsCalc.testID,
-                                description = "Weight (Min)",
-                                silver_wt = formatDecimal(noilsCalc.min_sliverwt),
-                                noils_wt = formatDecimal(noilsCalc.min_noilswt),
-                                noils = formatDecimal(noilsCalc.min_noils)
-                            };
-                            report.Add(noilsReportModelView);
-
-                            noilsReportModelView = new NoilsReportModelView()
-                            {
-                                testID = noilsCalc.testID,
-                                description = "Range",
-                                silver_wt = formatDecimal(noilsCalc.range_sliverwt),
-                                noils_wt = formatDecimal(noilsCalc.range_noilswt),
-                                noils = formatDecimal(noilsCalc.range_noils)
-                            };
-                            report.Add(noilsReportModelView);
-
-                            //noilsReportModelView = new NoilsReportModelView()
-                            //{
-                            //    testID = noilsCalc.testID,
-                            //    description = "HANK",
-                            //    silver_wt = noilsCalc.testaverage_sliverwt,
-                            //    noils_wt = noilsCalc.testaverage_noilswt,
-                            //    noils = 0.00m
-                            //};
-                            //report.Add(noilsReportModelView);
-
-                            noilsReportModelView = new NoilsReportModelView()
-                            {
-                                testID = noilsCalc.testID,
-                                description = "SD",
-                                silver_wt = formatDecimal(noilsCalc.testsd_sliverwt),
-                                noils_wt = formatDecimal(noilsCalc.testsd_noilswt),
-                                noils = formatDecimal(noilsCalc.testsd_noils)
-                            };
-                            report.Add(noilsReportModelView);
-
-                            noilsReportModelView = new NoilsReportModelView()
-                            {
-                                testID = noilsCalc.testID,
-                                description = "CV",
-                                silver_wt = formatDecimal(noilsCalc.testcv_sliverwt),
-                                noils_wt = formatDecimal(noilsCalc.testcv_noilswt),
-                                noils = formatDecimal(noilsCalc.testcv_noils)
-                            };
-                            report.Add(noilsReportModelView);
-
-                            report.average_wt_noils = noilsCalc.average_wt_noils;
-                            report.standardNoils = noilsCalc.standardNoils;
-                            report.noilsRange = noilsCalc.noilsRange;
-
-                            if (noilsCalc.average_wt_noils < (noilsCalc.standardNoils - noilsCalc.noilsRange) ||
-                                noilsCalc.average_wt_noils > (noilsCalc.standardNoils + noilsCalc.noilsRange))
-                            {
-                                report.isGREEN = false;
-                                report.isRED = true;
+                                consolItems.isRed = true;
+                                consolItems.isWhite = false;
                             }
                             else
                             {
-                                report.isGREEN = true;
-                                report.isRED = false;
+                                consolItems.isRed = false;
+                                consolItems.isWhite = true;
                             }
 
-                            report.testID = noilsCalc.testID;
-                            report.userName = noilsCalc.userName;
-                            report.machineCategory = noilsCalc.machineCategory;
-                            report.machineName = noilsCalc.machineName;
-                            report.shift = noilsCalc.shift;
-                            report.process = noilsCalc.process;
-                            report.countsysname = noilsCalc.countsysname;
-                            report.yarnlenunit = noilsCalc.yarnlenunit;
-                            report.yarnlength = noilsCalc.yarnlength;
-                            report.totaltestcount = noilsCalc.totaltestcount;
-                            report.testRemark = noilsCalc.testRemark;
-                            report.createdate = noilsCalc.createdate;
+                            if (prev_macID == null)
+                            {
+                                prev_macID = noilsCalc.machineID.ToString();
+                                macTestNo = 1;
+                            }
+                            else
+                            {
+                                if (prev_macID != noilsCalc.machineID.ToString())
+                                {
+                                    prev_macID = noilsCalc.machineID.ToString();
+                                    macTestNo = 1;
+                                }
+                                else
+                                {
+                                    macTestNo = macTestNo + 1;
+                                }
+                            }
+
+                            consolItems.serialNo = (counter + 1).ToString();
+                            consolItems.testNo = macTestNo.ToString();
+                            consolItems.testID = noilsCalc.testID.ToString();
+                            consolItems.machineName = noilsCalc.machineName;
+                            consolItems.testDate = noilsCalc.createdate.Day.ToString() + "-" + noilsCalc.createdate.Month.ToString() + "-" + noilsCalc.createdate.Year.ToString();
+                            consolItems.shift = noilsCalc.shift;
+                            consolItems.standardValue = formatDecimal(noilsCalc.standardNoils, 2).ToString() + " "+  "\u00B1" + formatDecimal(noilsCalc.noilsRange, 2).ToString();
+                            consolItems.noilsAvgWeight = formatDecimal(noilsCalc.average_wt_noils, 2).ToString();
+                            consolItems.standardDeviation = formatDecimal(noilsCalc.testsd_noils, 2).ToString();
+                            consolItems.CoEfficientOfVariation = formatDecimal(noilsCalc.testcv_noils, 2).ToString();
+                            //consolItems.testDuration = testsummary.testDuration;
+                            consolItems.testDuration = formatTime(noilsCalc.createdate);
+
+                            consolItems.remarks = noilsCalc.testRemark;
+
+                            //if (apercentCalc.machineCategory == "Spinning" || apercentCalc.machineCategory == "Winding")
+                            //{
+                            //    consolItems.isSpinning = true;
+                            //    consolItems.otherThanSpinning = false;
+                            //}
+                            //else
+                            //{
+                            //    consolItems.isSpinning = false;
+                            //    consolItems.otherThanSpinning = true;
+                            //}
+
+                            //YCTestModel firstTest = yctestlist.Where(YCTestModel => YCTestModel.testcount == 1).FirstOrDefault();
+                            //TimeSpan duration = (firstTest.createdate - testsummary.createdate).Duration();
+                            //consolItems.testDuration = duration.Hours.ToString() + ":" + duration.Minutes.ToString() + ":" + duration.Seconds.ToString();
+
+
+                            counter++;
                         }
-                        OVS.Add(report);
+                        else
+                        {
+
+                            List<NoilsTestFinalModel> list_finalNoils = conn.Table<NoilsTestFinalModel>().Where(
+                                NoilsTestFinalModel =>
+                                (NoilsTestFinalModel.testID == noilsCalc.testID
+                                //&& NoilsTestFinalModel.status == true
+                                )).ToList();
+
+
+                            if (list_finalNoils != null)
+                            {
+
+                                int loopCount = 0;
+                                foreach (NoilsTestFinalModel test in list_finalNoils)
+                                {
+                                    NoilsReportModelView noilsReportMV = new NoilsReportModelView()
+                                    {
+                                        testID = test.testID,
+                                        description = test.testcount.ToString(),
+                                        silver_wt = formatDecimal(test.weigth_sliver),
+                                        noils_wt = formatDecimal(test.weigth_noils),
+                                        noils = formatDecimal(test.noils)
+                                    };
+                                    report.Add(noilsReportMV);
+                                    loopCount += 1;
+                                }
+
+                                NoilsReportModelView noilsReportModelView = new NoilsReportModelView()
+                                {
+                                    testID = noilsCalc.testID,
+                                    description = "Average Weight",
+                                    silver_wt = formatDecimal(noilsCalc.average_wt_sliverwt),
+                                    noils_wt = formatDecimal(noilsCalc.average_wt_noilswt),
+                                    noils = formatDecimal(noilsCalc.average_wt_noils)
+                                };
+                                report.Add(noilsReportModelView);
+
+                                noilsReportModelView = new NoilsReportModelView()
+                                {
+                                    testID = noilsCalc.testID,
+                                    description = "Weight (Max)",
+                                    silver_wt = formatDecimal(noilsCalc.max_sliverwt),
+                                    noils_wt = formatDecimal(noilsCalc.max_noilswt),
+                                    noils = formatDecimal(noilsCalc.max_noils)
+                                };
+                                report.Add(noilsReportModelView);
+
+                                noilsReportModelView = new NoilsReportModelView()
+                                {
+                                    testID = noilsCalc.testID,
+                                    description = "Weight (Min)",
+                                    silver_wt = formatDecimal(noilsCalc.min_sliverwt),
+                                    noils_wt = formatDecimal(noilsCalc.min_noilswt),
+                                    noils = formatDecimal(noilsCalc.min_noils)
+                                };
+                                report.Add(noilsReportModelView);
+
+                                noilsReportModelView = new NoilsReportModelView()
+                                {
+                                    testID = noilsCalc.testID,
+                                    description = "Range",
+                                    silver_wt = formatDecimal(noilsCalc.range_sliverwt),
+                                    noils_wt = formatDecimal(noilsCalc.range_noilswt),
+                                    noils = formatDecimal(noilsCalc.range_noils)
+                                };
+                                report.Add(noilsReportModelView);
+
+                                //noilsReportModelView = new NoilsReportModelView()
+                                //{
+                                //    testID = noilsCalc.testID,
+                                //    description = "HANK",
+                                //    silver_wt = noilsCalc.testaverage_sliverwt,
+                                //    noils_wt = noilsCalc.testaverage_noilswt,
+                                //    noils = 0.00m
+                                //};
+                                //report.Add(noilsReportModelView);
+
+                                noilsReportModelView = new NoilsReportModelView()
+                                {
+                                    testID = noilsCalc.testID,
+                                    description = "SD",
+                                    silver_wt = formatDecimal(noilsCalc.testsd_sliverwt),
+                                    noils_wt = formatDecimal(noilsCalc.testsd_noilswt),
+                                    noils = formatDecimal(noilsCalc.testsd_noils)
+                                };
+                                report.Add(noilsReportModelView);
+
+                                noilsReportModelView = new NoilsReportModelView()
+                                {
+                                    testID = noilsCalc.testID,
+                                    description = "CV",
+                                    silver_wt = formatDecimal(noilsCalc.testcv_sliverwt),
+                                    noils_wt = formatDecimal(noilsCalc.testcv_noilswt),
+                                    noils = formatDecimal(noilsCalc.testcv_noils)
+                                };
+                                report.Add(noilsReportModelView);
+
+                                report.average_wt_noils = noilsCalc.average_wt_noils;
+                                report.standardNoils = noilsCalc.standardNoils;
+                                report.noilsRange = noilsCalc.noilsRange;
+
+                                if (noilsCalc.average_wt_noils < (noilsCalc.standardNoils - noilsCalc.noilsRange) ||
+                                    noilsCalc.average_wt_noils > (noilsCalc.standardNoils + noilsCalc.noilsRange))
+                                {
+                                    report.isGREEN = false;
+                                    report.isRED = true;
+                                }
+                                else
+                                {
+                                    report.isGREEN = true;
+                                    report.isRED = false;
+                                }
+
+                                report.testID = noilsCalc.testID;
+                                report.userName = noilsCalc.userName;
+                                report.machineCategory = noilsCalc.machineCategory;
+                                report.machineName = noilsCalc.machineName;
+                                report.shift = noilsCalc.shift;
+                                report.process = noilsCalc.process;
+                                report.countsysname = noilsCalc.countsysname;
+                                report.yarnlenunit = noilsCalc.yarnlenunit;
+                                report.yarnlength = noilsCalc.yarnlength;
+                                report.totaltestcount = noilsCalc.totaltestcount;
+                                report.testRemark = noilsCalc.testRemark;
+                                report.createdate = noilsCalc.createdate;
+                            }
+                            //OVS.Add(report);
+                        }
+                        if (consolidatedReport)
+                        {
+                            OverallConsolidatedReports.Add(consolItems);
+                        }
+                        else
+                        {
+                            OVS.Add(report);
+                        }
                     }
                     ListOfReport = OVS;
                 }
+                if (consolidatedReport)
+                {
+                    YCTestConsolidatedNoilsReportMV consolItems = new YCTestConsolidatedNoilsReportMV()
+                    {
+                        serialNo = "Average",
+                        testID = "",
+                        machineName = "",
+                        testDate = "",
+                        shift = "",
+                        standardValue = "",
+                        noilsAvgWeight = "",
+                        standardDeviation = "",
+                        CoEfficientOfVariation = "",
+                        testDuration = "",
+                        remarks = "",
+                        isWhite = true,
+                        isRed = false,
+                    };
+
+                    //if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
+                    //{
+                    //    consolItems.isSpinning = true;
+                    //    consolItems.otherThanSpinning = false;
+                    //}
+                    //else
+                    //{
+                    //    consolItems.isSpinning = false;
+                    //    consolItems.otherThanSpinning = true;
+                    //}
+
+                    if (machineID != Guid.Empty)
+                    {
+                        isFinalAvgRowPresent = true;
+                        OverallConsolidatedReports.Add(consolItems);
+                    }
+
+                    ListOfConsolidatedReports = OverallConsolidatedReports;
+                }
+                else
+                {
+                    //CON_HANK = formatDecimal(CON_HANK / TOT_TEST);
+                    //CON_STD_DEV = formatDecimal(CON_STD_DEV / TOT_TEST);
+                    //CON_CV = formatDecimal(CON_CV / TOT_TEST);
+                    ListOfReport = OVS;
+                }
+
                 listview_tcreport.ItemsSource = null;
-                listview_tcreport.ItemsSource = ListOfReport;
+                listview_tcConsolidatedReport.ItemsSource = null;
+                if (consolidatedReport)
+                {
+                    //lbl_totalTest.Text = TOT_TEST.ToString();
+                    //lbl_AvgHank.Text = CON_HANK.ToString();
+                    //lbl_AvgSD.Text = CON_STD_DEV.ToString();
+                    //lbl_AvgCV.Text = CON_CV.ToString();
+
+                    if (((CON_UF_NAME_1 != null && CON_UF_NAME_1 != "") && (CON_UF_VAL_1 != null && CON_UF_VAL_1 != "")) ||
+                        ((CON_UF_NAME_2 != null && CON_UF_NAME_2 != "") && (CON_UF_VAL_2 != null && CON_UF_VAL_2 != "")) ||
+                        ((CON_UF_NAME_3 != null && CON_UF_NAME_3 != "") && (CON_UF_VAL_3 != null && CON_UF_VAL_3 != "")) ||
+                        ((CON_UF_NAME_4 != null && CON_UF_NAME_4 != "") && (CON_UF_VAL_4 != null && CON_UF_VAL_4 != "")))
+                    {
+                        grid_consolidated.IsVisible = true;
+                    }
+
+                    if (CON_UF_VAL_1 != null)
+                    {
+                        lbl_uf_name_1.IsVisible = true;
+                        lbl_uf_value_1.IsVisible = true;
+                        lbl_uf_name_1.Text = CON_UF_NAME_1;
+                        lbl_uf_value_1.Text = CON_UF_VAL_1;
+                    }
+                    if (CON_UF_VAL_1 == null)
+                    {
+                        lbl_uf_name_1.IsVisible = false;
+                        lbl_uf_value_1.IsVisible = false;
+                        if (CON_UF_VAL_2 != null)
+                        {
+                            lbl_uf_name_2_col1.IsVisible = true;
+                            lbl_uf_value_2_col1.IsVisible = true;
+                            lbl_uf_name_2_col1.Text = CON_UF_NAME_2;
+                            lbl_uf_value_2_col1.Text = CON_UF_VAL_2;
+                            lbl_uf_name_2_col2.IsVisible = false;
+                            lbl_uf_value_2_col2.IsVisible = false;
+                        }
+                    }
+                    else
+                    {
+                        if (CON_UF_VAL_2 != null)
+                        {
+                            lbl_uf_name_2_col2.IsVisible = true;
+                            lbl_uf_value_2_col2.IsVisible = true;
+                            lbl_uf_name_2_col2.Text = CON_UF_NAME_2;
+                            lbl_uf_value_2_col2.Text = CON_UF_VAL_2;
+                            lbl_uf_name_2_col1.IsVisible = false;
+                            lbl_uf_value_2_col1.IsVisible = false;
+                        }
+                        else
+                        {
+                            lbl_uf_name_2_col2.IsVisible = false;
+                            lbl_uf_value_2_col2.IsVisible = false;
+                            lbl_uf_name_2_col1.IsVisible = false;
+                            lbl_uf_value_2_col1.IsVisible = false;
+                        }
+                    }
+
+                    if (CON_UF_VAL_1 == null && CON_UF_VAL_2 == null)
+                    {
+                        if (CON_UF_VAL_3 != null)
+                        {
+                            lbl_uf_name_3_row1.IsVisible = true;
+                            lbl_uf_value_3_row1.IsVisible = true;
+                            lbl_uf_name_3_row1.Text = CON_UF_NAME_3;
+                            lbl_uf_value_3_row1.Text = CON_UF_VAL_3;
+                            lbl_uf_name_3_row2.IsVisible = false;
+                            lbl_uf_value_3_row2.IsVisible = false;
+                            if (CON_UF_VAL_4 != null)
+                            {
+                                lbl_uf_name_4_row1_col2.IsVisible = true;
+                                lbl_uf_value_4_row1_col2.IsVisible = true;
+                                lbl_uf_name_4_row1_col2.Text = CON_UF_NAME_3;
+                                lbl_uf_value_4_row1_col2.Text = CON_UF_VAL_3;
+                                lbl_uf_name_4_row2_col2.IsVisible = false;
+                                lbl_uf_value_4_row2_col2.IsVisible = false;
+                            }
+                            else
+                            {
+                                lbl_uf_name_4_row1_col2.IsVisible = false;
+                                lbl_uf_value_4_row1_col2.IsVisible = false;
+                                lbl_uf_name_4_row2_col2.IsVisible = false;
+                                lbl_uf_value_4_row2_col2.IsVisible = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (CON_UF_VAL_3 != null)
+                        {
+                            lbl_uf_name_3_row2.IsVisible = true;
+                            lbl_uf_value_3_row2.IsVisible = true;
+                            lbl_uf_name_3_row2.Text = CON_UF_NAME_3;
+                            lbl_uf_value_3_row2.Text = CON_UF_VAL_3;
+                            lbl_uf_name_3_row1.IsVisible = false;
+                            lbl_uf_value_3_row1.IsVisible = false;
+                            if (CON_UF_VAL_4 != null)
+                            {
+                                lbl_uf_name_4_row2_col2.IsVisible = true;
+                                lbl_uf_value_4_row2_col2.IsVisible = true;
+                                lbl_uf_name_4_row2_col2.Text = CON_UF_NAME_3;
+                                lbl_uf_value_4_row2_col2.Text = CON_UF_VAL_3;
+                                lbl_uf_name_4_row1_col2.IsVisible = false;
+                                lbl_uf_value_4_row1_col2.IsVisible = false;
+                            }
+                            else
+                            {
+                                lbl_uf_name_4_row2_col2.IsVisible = false;
+                                lbl_uf_value_4_row2_col2.IsVisible = false;
+                                lbl_uf_name_4_row1_col2.IsVisible = false;
+                                lbl_uf_value_4_row1_col2.IsVisible = false;
+                            }
+                        }
+                        else
+                        {
+                            lbl_uf_name_3_row2.IsVisible = false;
+                            lbl_uf_value_3_row2.IsVisible = false;
+                        }
+                    }
+
+                    listview_tcreport.IsVisible = false;
+                    listview_tcConsolidatedReport.IsVisible = true;
+                    listview_tcConsolidatedReport.ItemsSource = ListOfConsolidatedReports;
+                }
+                else
+                {
+                    listview_tcConsolidatedReport.IsVisible = false;
+                    listview_tcreport.IsVisible = true;
+                    listview_tcreport.ItemsSource = ListOfReport;
+                }
             }
             catch (Exception ex)
             {
@@ -484,10 +891,21 @@ namespace TQM
         [Obsolete]
         private async void btn_saveToPDF_Clicked(object sender, EventArgs e)
         {
-            if (listview_tcreport.ItemsSource == null)
+            if (consolidatedReport)
             {
-                await DisplayAlert("Notice", "No records to generate PDF!!!", "OK");
-                return;
+                if (listview_tcConsolidatedReport.ItemsSource == null)
+                {
+                    await DisplayAlert("Notice", "No records to generate PDF!!!", "OK");
+                    return;
+                }
+            }
+            else
+            {
+                if (listview_tcreport.ItemsSource == null)
+                {
+                    await DisplayAlert("Notice", "No records to generate PDF!!!", "OK");
+                    return;
+                }
             }
             if (deleteAll)
             {
@@ -822,6 +1240,404 @@ namespace TQM
             }
         }
 
+        private bool generatePDFConsolidatedReport()
+        {
+            try
+            {
+                PdfDocument pdfDocument = new PdfDocument();
+
+
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<CompanyModel>();
+                    List<CompanyModel> companieslist = conn.Table<CompanyModel>().ToList();
+                    selectedCompanyName = companieslist[0].Name;
+                };
+
+
+                PdfPage pdfPage = pdfDocument.Pages.Add();
+                PdfGrid pdfGrid = null;
+                PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
+                layoutFormat.Layout = PdfLayoutType.Paginate;
+                List<YCTestConsolidatedNoilsReportMV> overallReportList = (List<YCTestConsolidatedNoilsReportMV>)listview_tcConsolidatedReport.ItemsSource;
+                PdfLayoutResult result = null;
+                float overallHeight = 0;
+                int tableNo = 1;
+                //bool newPageAdded_Header = false;
+                //bool newPageAdded_Body = false;
+
+                PdfGrid pdfGridInfo = new PdfGrid();
+                pdfGridInfo.RepeatHeader = true;
+
+
+                int totalRow_header = 1;
+                int totalRow_header_height = totalRow_header * 18;
+
+                int rowCount = 1;
+                int pageRecordCount = 1;
+                float rowHeights = 0;
+                bool includeHeader = true;
+                //PdfGrid pdfGridBody = null;
+                PdfGridRow row = null;
+                foreach (YCTestConsolidatedNoilsReportMV orl in overallReportList)
+                {
+                    if (includeHeader)
+                    {
+                        includeHeader = false;
+                        pdfGrid = new PdfGrid();
+
+                        pdfGrid.Columns.Add(11);
+                        row = new PdfGridRow(pdfGrid);
+                        pdfGrid.Rows.Add(row);
+
+                        pdfGrid.Rows[0].Cells[0].Value = "S.No";
+                        pdfGrid.Rows[0].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[1].Value = "Date";
+                        pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[2].Value = "ID";
+                        pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[3].Value = "Mac Name";
+                        pdfGrid.Rows[0].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                        pdfGrid.Rows[0].Cells[4].Value = "Shift";
+                        pdfGrid.Rows[0].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[4].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+
+                        pdfGrid.Rows[0].Cells[5].Value = "Std. Noils";
+                        pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+                        pdfGrid.Rows[0].Cells[6].Value = "Noils Avg";
+                        pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+
+                        pdfGrid.Rows[0].Cells[7].Value = "SD";
+                        pdfGrid.Rows[0].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[7].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+                        pdfGrid.Rows[0].Cells[8].Value = "CV";
+                        pdfGrid.Rows[0].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+                        pdfGrid.Rows[0].Cells[9].Value = "Test Time";
+                        pdfGrid.Rows[0].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[9].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+                        pdfGrid.Rows[0].Cells[10].Value = "Remark";
+                        pdfGrid.Rows[0].Cells[10].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[0].Cells[10].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[0].Cells[10].Style.BackgroundBrush = PdfBrushes.LightGray;
+                        pdfGrid.Rows[0].Cells[10].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+                        row = new PdfGridRow(pdfGrid);
+                        pdfGrid.Rows.Add(row);
+                        rowHeights = rowHeights + pdfGrid.Rows[0].Height;
+                    }
+
+
+                    pdfGrid.Rows.Add();
+
+                    pdfGrid.Rows[pageRecordCount].Cells[0].Value = orl.serialNo;
+                    pdfGrid.Rows[pageRecordCount].Cells[1].Value = orl.testDate;
+                    pdfGrid.Rows[pageRecordCount].Cells[2].Value = orl.testID;
+                    pdfGrid.Rows[pageRecordCount].Cells[3].Value = orl.machineName;
+                    pdfGrid.Rows[pageRecordCount].Cells[4].Value = orl.shift;
+                    pdfGrid.Rows[pageRecordCount].Cells[5].Value = orl.standardValue;
+
+
+
+                    if (orl.noilsAvgWeight != null && orl.noilsAvgWeight != "")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Value = formatDecimal(Decimal.Parse(orl.noilsAvgWeight)).ToString();
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.noilsAvgWeight;
+                    }
+
+                    if (orl.standardDeviation != null && orl.standardDeviation != "")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString();
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.standardDeviation;
+                    }
+
+                    if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Value = formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString();
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.CoEfficientOfVariation;
+                    }
+
+                    pdfGrid.Rows[pageRecordCount].Cells[9].Value = orl.testDuration;
+                    pdfGrid.Rows[pageRecordCount].Cells[10].Value = orl.remarks;
+
+                    if (orl.remarks != null || orl.standardValue != null)
+                    {
+                        //if (orl.testID == "82")
+                        //{
+                        //    decimal a = 1 / 9;
+                        //}
+                        PdfStringFormat format = new PdfStringFormat();
+                        format.WordWrap = PdfWordWrapType.Word;
+                        pdfGrid.Rows[pageRecordCount].Cells[10].Style.StringFormat = format;
+                        float currentRowHeight = pdfGrid.Rows[pageRecordCount].Height;
+                        int contentLength = 0;
+                        if (orl.remarks != null)
+                        {
+                            contentLength = orl.remarks.Length;
+                        }
+                        if (orl.standardValue != null && orl.remarks != null)
+                        {
+                            if (orl.standardValue.Length > orl.remarks.Length)
+                            {
+                                contentLength = orl.standardValue.Length;
+                            }
+                        }
+                        else if (orl.standardValue != null && orl.remarks == null)
+                        {
+                            contentLength = orl.standardValue.Length;
+                        }
+                        if (contentLength >= 9)
+                        {
+                            pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 9) + 1);
+                        }
+                    }
+
+                    pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+                    if (orl.isWhite)
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.BackgroundBrush = PdfBrushes.White;
+                        //pdfGrid.Rows[pageRecordCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.BackgroundBrush = PdfBrushes.Red;
+                        //pdfGrid.Rows[pageRecordCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.TextBrush = brush_con;
+                    }
+
+                    pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+
+
+                    pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    pdfGrid.Rows[pageRecordCount].Cells[10].StringFormat.Alignment = PdfTextAlignment.Center;
+                    pdfGrid.Rows[pageRecordCount].Cells[10].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+
+                    //**************************** Overall total ****************************
+
+                    if (rowCount == overallReportList.Count && isFinalAvgRowPresent)
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[9].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount].Cells[10].Style.Borders.All = PdfPens.Transparent;
+
+                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount].Cells[10].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    }
+
+                    //**************************** End of Overall total *****************************
+
+                    rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
+                    if (rowHeights <= 700 && rowCount == overallReportList.Count)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, 75), layoutFormat);
+                    }
+                    else if ((rowHeights >= 670 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, 75), layoutFormat);
+                        pdfPage = pdfDocument.Pages.Add();
+                        pageRecordCount = 0;
+                        rowHeights = 0;
+                        includeHeader = true;
+                    }
+                    Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
+                    pageRecordCount++;
+                    rowCount++;
+                }
+
+
+
+
+                //Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
+                Debug.WriteLine("Table NO==>" + tableNo + " ,tableHeigth ===>" + overallHeight);
+                tableNo++;
+                //};
+
+
+                addPageHeaderAndFooter(pdfDocument);
+                MemoryStream stream = new MemoryStream();
+                pdfDocument.Save(stream);
+                pdfDocument.Close(true);
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "TQM_Report_Consolidated(Noils).pdf");
+                //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
+                //Process.Start(pdfPath);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                return false;
+            }
+        }
+
+        [Obsolete]
+        private bool generateCSVConsolidatedReport()
+        {
+            try
+            {
+                string downloadsFolder = Path.Combine(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads), "TQMDownloads");
+                using (var textWriter = new StreamWriter(Path.Combine(downloadsFolder, "TQM_Report_Consolidated(Noils).csv")))
+                {
+
+                    var writer = new CsvWriter(textWriter, CultureInfo.InvariantCulture);
+                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        Delimiter = ",",
+                        HasHeaderRecord = false
+                    };
+                    //Header
+                    writer.WriteField("S.No");
+                    writer.WriteField("Date");
+                    writer.WriteField("Test No");
+                    writer.WriteField("Mac Name");
+                    writer.WriteField("Shift");
+                    writer.WriteField("Std. Noils");
+                    writer.WriteField("Noils Avg");
+
+                    writer.WriteField("SD");
+                    writer.WriteField("CV");
+                    writer.WriteField("Test Time");
+                    writer.WriteField("Remark");
+                    //Actual Data
+                    writer.NextRecord();
+                    List<YCTestConsolidatedNoilsReportMV> overallReportList = (List<YCTestConsolidatedNoilsReportMV>)listview_tcConsolidatedReport.ItemsSource;
+                    foreach (YCTestConsolidatedNoilsReportMV orl in overallReportList)
+                    {
+                        writer.WriteField(orl.serialNo);
+                        writer.WriteField(orl.testDate);
+                        writer.WriteField(orl.testNo);
+                        writer.WriteField(orl.machineName);
+
+                        writer.WriteField(orl.shift);
+                        writer.WriteField(orl.standardValue);
+
+
+                        if (orl.noilsAvgWeight != null && orl.noilsAvgWeight != "")
+                        {
+                            writer.WriteField(formatDecimal(Decimal.Parse(orl.noilsAvgWeight)).ToString());
+                        }
+                        else
+                        {
+                            writer.WriteField(orl.noilsAvgWeight);
+                        }
+
+                        if (orl.standardDeviation != null && orl.standardDeviation != "")
+                        {
+                            writer.WriteField(formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString());
+                        }
+                        else
+                        {
+                            writer.WriteField(orl.standardDeviation);
+                        }
+
+                        if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
+                        {
+                            writer.WriteField(formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString());
+                        }
+                        else
+                        {
+                            writer.WriteField(orl.CoEfficientOfVariation);
+                        }
+
+                        writer.WriteField(orl.testDuration);
+                        writer.WriteField(orl.remarks);
+                        writer.NextRecord();
+                    }
+                    writer.Flush();
+
+
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                return false;
+            }
+        }
+
         private void addPageHeaderAndFooter(PdfDocument pdfDocument)
         {
             String companyName = null;
@@ -856,7 +1672,65 @@ namespace TQM
                 PdfFont font_rn = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
                 PdfBrush brush_rn = new PdfSolidBrush(Syncfusion.Drawing.Color.Blue);
                 //header.Graphics.DrawString("Noils Report - " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(165, 16));
-                header.Graphics.DrawString("Noils Report - (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+
+                if (consolidatedReport)
+                {
+                    header.Graphics.DrawString("Con. Noils Report - " + selectedMachineCategory + " (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(135, 20));
+                    header.Graphics.DrawString("Date: " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(200, 36));
+                    if (CON_UF_NAME_1 != null && CON_UF_NAME_1 != "")
+                    {
+                        //header.Graphics.DrawString("Lot Number" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(10, 48));
+                        //header.Graphics.DrawString("Material" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(285, 48));
+                        //header.Graphics.DrawString("Lot Number" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(10, 58));
+                        //header.Graphics.DrawString("Material" + ": " + "Ajksdjfk kdsfkjsdkfl ksjdfkjsdkf skfklsajkfj eeeeW", font_rn_uf, brush_rn, new PointF(285, 58));
+
+                        header.Graphics.DrawString(CON_UF_NAME_1 + ": " + CON_UF_VAL_1, font_rn, brush_rn, new PointF(10, 48));
+                        if (CON_UF_NAME_2 != null && CON_UF_NAME_2 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_2 + ": " + CON_UF_VAL_2, font_rn, brush_rn, new PointF(285, 48));
+                        }
+                    }
+                    if ((CON_UF_NAME_1 == null || CON_UF_NAME_1 == "") && CON_UF_NAME_2 != null && CON_UF_NAME_2 != "")
+                    {
+                        header.Graphics.DrawString(CON_UF_NAME_2 + ": " + CON_UF_VAL_2, font_rn, brush_rn, new PointF(10, 48));
+                    }
+                    if ((CON_UF_NAME_1 != null && CON_UF_NAME_1 != "") || (CON_UF_NAME_2 != null && CON_UF_NAME_2 != ""))
+                    {
+                        if (CON_UF_NAME_3 != null && CON_UF_NAME_3 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_3 + ": " + CON_UF_VAL_3, font_rn, brush_rn, new PointF(10, 58));
+                            if (CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                            {
+                                header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(285, 58));
+                            }
+                        }
+                        if ((CON_UF_NAME_3 == null || CON_UF_NAME_3 == "") && CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(10, 58));
+                        }
+                    }
+                    else
+                    {
+                        if (CON_UF_NAME_3 != null && CON_UF_NAME_3 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_3 + ": " + CON_UF_VAL_3, font_rn, brush_rn, new PointF(10, 48));
+                            if (CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                            {
+                                header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(285, 48));
+                            }
+                        }
+                        if ((CON_UF_NAME_3 == null || CON_UF_NAME_3 == "") && CON_UF_NAME_4 != null && CON_UF_NAME_4 != "")
+                        {
+                            header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(10, 48));
+                        }
+                    }
+                }
+                else
+                {
+
+                    header.Graphics.DrawString("Noils Report - (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+
+                }
                 //Title Ends
                 pdfDocument.Template.Top = header;
                 PdfPageTemplateElement footer = new PdfPageTemplateElement(bounds);
@@ -877,56 +1751,166 @@ namespace TQM
         {
             try
             {
-                if (!generatePDFreport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
-                else
+                if (consolidatedReport)
                 {
-                    String companyName = null;
-                    try
+
+                    if (!generatePDFConsolidatedReport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+                    else
                     {
-                        SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
-                        conn.CreateTable<CompanyModel>();
-                        var company = conn.Table<CompanyModel>().FirstOrDefault();
-                        if (company != null)
+                        String companyName = null;
+                        try
                         {
-                            companyName = company.Name;
+                            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                            conn.CreateTable<CompanyModel>();
+                            var company = conn.Table<CompanyModel>().FirstOrDefault();
+                            if (company != null)
+                            {
+                                companyName = company.Name;
+                            }
+                            conn.Close();
                         }
-                        conn.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
-                    }
-                    string fileName = "TQM_Report(NOILS).pdf";
-                    string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                    Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
-                    Java.IO.File file = new Java.IO.File(myDir, fileName);
-                    string filePath = file.Path;
-                    var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
-                    var request = new RestRequest();
-                    request.Method = Method.Post;
-                    //request.Timeout = Timeout.Infinite;
-                    request.AddParameter("userName", runConfiguration.getTQMAppUserID());
-                    request.AddParameter("uploadedby", companyName);
-                    request.AddParameter("title", "TQMReports(NOILS)-" + DateTime.Now.ToString());
-                    request.AddFile("reportpath", filePath);
-                    RestResponse response = client.Execute(request);
-                    if (response.IsSuccessful)
-                    {
-                        if (deleteAll)
+                        catch (Exception ex)
                         {
-                            deleteRecords(deleteList);
-                            showAlert("Report uploaded and deleted sucessfully!!!");
+                            showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                        }
+                        string fileName = "TQM_Report_Consolidated(Noils).pdf";
+                        string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                        Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                        Java.IO.File file = new Java.IO.File(myDir, fileName);
+                        string filePath = file.Path;
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        //request.Timeout = Timeout.Infinite;
+                        request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                        request.AddParameter("uploadedby", companyName);
+                        if (selectedMachineCategory != null)
+                        {
+                            request.AddParameter("title", "TQMReportsConsolidated(Noils-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
                         }
                         else
                         {
-                            showAlert("Report upload is sucessful!!!");
+                            request.AddParameter("title", "TQMReportsConsolidated(Noils-All)-" + DateTime.Now.ToString());
                         }
+                        request.AddFile("reportpath", filePath);
+                        RestResponse response = client.Execute(request);
+                        if (response.IsSuccessful)
+                        {
+                            if (runConfiguration.getCSVReportStatus())
+                            {
+                                if (!generateCSVConsolidatedReport()) { showAlert("Error occurred in CSV report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+                                fileName = "TQM_Report_Consolidated(Noils).csv";
+                                root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                                myDir = new Java.IO.File(root + "/TQMDownloads");
+                                file = new Java.IO.File(myDir, fileName);
+                                filePath = file.Path;
+                                client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                                request = new RestRequest();
+                                request.Method = Method.Post;
+                                //request.Timeout = Timeout.Infinite;
+                                request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                                request.AddParameter("uploadedby", companyName);
+                                if (selectedMachineCategory != null)
+                                {
+                                    request.AddParameter("title", "TQMReportsConsolidated-CSV-(Noils-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                                }
+                                else
+                                {
+                                    request.AddParameter("title", "TQMReportsConsolidated-CSV-(Noils-All)-" + DateTime.Now.ToString());
+                                }
+                                request.AddFile("reportpath", filePath);
+                                response = client.Execute(request);
+                                if (response.IsSuccessful)
+                                {
+                                    if (deleteAll)
+                                    {
+                                        deleteRecords(deleteList);
+                                        showAlert("Report uploaded and deleted sucessfully!!!");
+                                    }
+                                    else
+                                    {
+                                        showAlert("Report upload is sucessful!!!");
+                                    }
+                                }
+                                else
+                                {
+                                    showAlert("Upload Failed. Please try again!!!", "Error");
+                                }
+                            }
+                            else
+                            {
+                                if (deleteAll)
+                                {
+                                    deleteRecords(deleteList);
+                                    showAlert("Report uploaded and deleted sucessfully!!!");
+                                }
+                                else
+                                {
+                                    showAlert("Report upload is sucessful!!!");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            showAlert("Upload Failed. Please try again!!!", "Error");
+                        }
+                        await resetBtn();
                     }
+
+                }
+                else
+                {
+                    if (!generatePDFreport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
                     else
                     {
-                        showAlert("Upload Failed. Please try again!!!", "Error");
+                        String companyName = null;
+                        try
+                        {
+                            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                            conn.CreateTable<CompanyModel>();
+                            var company = conn.Table<CompanyModel>().FirstOrDefault();
+                            if (company != null)
+                            {
+                                companyName = company.Name;
+                            }
+                            conn.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                        }
+                        string fileName = "TQM_Report(NOILS).pdf";
+                        string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                        Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                        Java.IO.File file = new Java.IO.File(myDir, fileName);
+                        string filePath = file.Path;
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        //request.Timeout = Timeout.Infinite;
+                        request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                        request.AddParameter("uploadedby", companyName);
+                        request.AddParameter("title", "TQMReports(NOILS)-" + DateTime.Now.ToString());
+                        request.AddFile("reportpath", filePath);
+                        RestResponse response = client.Execute(request);
+                        if (response.IsSuccessful)
+                        {
+                            if (deleteAll)
+                            {
+                                deleteRecords(deleteList);
+                                showAlert("Report uploaded and deleted sucessfully!!!");
+                            }
+                            else
+                            {
+                                showAlert("Report upload is sucessful!!!");
+                            }
+                        }
+                        else
+                        {
+                            showAlert("Upload Failed. Please try again!!!", "Error");
+                        }
+                        await resetBtn();
                     }
-                    await resetBtn();
                 }
             }
             catch (Exception ex)
@@ -944,16 +1928,20 @@ namespace TQM
             });
         }
 
-        private decimal formatDecimal(decimal inputVal)
+        private decimal formatDecimal(decimal inputVal, int afterDecimalCount = 4)
         {
-            inputVal = Math.Round(inputVal, 4);
+            if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
+            {
+                afterDecimalCount = 2;
+            }
+            inputVal = Math.Round(inputVal, afterDecimalCount);
             string inputString = inputVal.ToString();
             string[] ipStringArray = inputString.Split('.');
             if (ipStringArray.Length > 1)
             {
                 string beforeDecimal = ipStringArray[0];
                 string afterDecimal = ipStringArray[1];
-                for (int i = ipStringArray[1].Length; i < 4; i++)
+                for (int i = ipStringArray[1].Length; i < afterDecimalCount; i++)
                 {
                     afterDecimal = afterDecimal + "0";
                 }
@@ -961,8 +1949,34 @@ namespace TQM
             }
             else
             {
-                return decimal.Parse(inputString + ".0000");
+                inputString = inputString + ".";
+                for (int i = 0; i < afterDecimalCount; i++)
+                {
+                    inputString = inputString + "0";
+                }
+                return decimal.Parse(inputString);
             }
+        }
+
+        private string formatTime(DateTime startDateTime)
+        {
+            string hrs = startDateTime.Hour.ToString();
+            if (hrs.Length < 2)
+            {
+                hrs = "0" + hrs;
+            }
+            string mins = startDateTime.Minute.ToString();
+            if (mins.Length < 2)
+            {
+                mins = "0" + mins;
+            }
+            string sec = startDateTime.Second.ToString();
+            if (sec.Length < 2)
+            {
+                sec = "0" + sec;
+            }
+            //return hrs + "h:" + mins + "m:" + sec + "s";
+            return hrs + ":" + mins + ":" + sec;
         }
 
         private void btn_backToReport_Clicked(object sender, EventArgs e)

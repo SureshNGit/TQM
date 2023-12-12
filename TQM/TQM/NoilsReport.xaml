@@ -1,7 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:TQM"
              x:Class="TQM.NoilsReport" NavigationPage.HasBackButton="False">
+
+    <ContentPage.Resources>
+        <local:AllTrueMultiConverter x:Key="AllTrueConverter" />
+        <local:TextFormatterBaedOnMacCat x:Key="MacCategoryTestValueConverter" />
+        <local:TextFormatterStandardValue x:Key="MacCategoryStdConverter" />
+    </ContentPage.Resources>
+
+
     <NavigationPage.TitleView>
         <StackLayout BackgroundColor="White">
             <Grid>
@@ -38,6 +46,84 @@
 
 
         <StackLayout Margin="10,10,10,10">
+
+            <Grid x:Name="grid_consolidated" IsVisible="false" BackgroundColor="LightSteelBlue">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <!--<Label Grid.Row="0" Grid.Column="0" Text="Total Test : " FontSize="18" TextColor="#0e0273"/>
+                <Label Grid.Row="0" Grid.Column="1" x:Name="lbl_totalTest"  Text="" FontSize="18" TextColor="Green" />
+                
+                <Label Grid.Row="0" Grid.Column="2" Text="Avg. HANK : " FontSize="18" x:Name="lbl_con_Hank" TextColor="#0e0273"/>
+                
+                <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" x:Name="lbl_AvgHank" HorizontalOptions="Center" 
+                       Margin="30,0,0,0"  Text="" FontSize="18" TextColor="Green" />
+                <Label Grid.Row="0" Grid.Column="4" Text="Avg. SD : " FontSize="18" TextColor="#0e0273"/>
+                <Label Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" x:Name="lbl_AvgSD" HorizontalOptions="Center" 
+                       Margin="0,0,40,0" Text="" FontSize="18" TextColor="Green" />
+                <Label Grid.Row="0" Grid.Column="6" Text="Avg. CV : " FontSize="18" TextColor="#0e0273"/>
+                <Label Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="2" x:Name="lbl_AvgCV" HorizontalOptions="Center" 
+                       Margin="0,0,40,0" Text="" FontSize="18" TextColor="Green" />-->
+                
+                <Label Grid.Row="0" Grid.Column="0" Text="" FontSize="18" x:Name="lbl_uf_name_1" TextColor="#0e0273" IsVisible="false"/>
+                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" x:Name="lbl_uf_value_1"  Text="" FontSize="18" TextColor="Green" IsVisible="false"/>
+                
+                <!--if val1 is present, algin val2 in col2--> 
+                <Label Grid.Row="0" Grid.Column="4"  Grid.ColumnSpan="2" Text="" FontSize="18" IsVisible="false"
+                       x:Name="lbl_uf_name_2_col2" TextColor="#0e0273" Margin="90,0,0,0"/>
+                <Label Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="4" x:Name="lbl_uf_value_2_col2" IsVisible="false"
+                       HorizontalOptions="Start" Margin="50,0,0,0"  Text="" FontSize="18" TextColor="Green" />
+
+                <!--if val1 is absent, algin val2 in col1-->
+                <Label Grid.Row="0" Grid.Column="0" Text="" FontSize="18" IsVisible="false"
+                       x:Name="lbl_uf_name_2_col1" TextColor="#0e0273"/>
+                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" x:Name="lbl_uf_value_2_col1" IsVisible="false"
+                        Text="" FontSize="18" TextColor="Green" />
+
+                <!--2nd row if 1st row is present-->
+                <Label Grid.Row="1" Grid.Column="0" Text="" FontSize="18" x:Name="lbl_uf_name_3_row2" TextColor="#0e0273" IsVisible="false"/>
+                <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" x:Name="lbl_uf_value_3_row2" IsVisible="false"
+                       Text="" FontSize="18" TextColor="Green" />
+    
+               <Label Grid.Row="1" Grid.Column="0" Text="" FontSize="18" IsVisible="false"
+                       x:Name="lbl_uf_name_4_row2_col1" TextColor="#0e0273"/>
+                <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" x:Name="lbl_uf_value_4_row2_col1" IsVisible="false"
+                       Text="" FontSize="18" TextColor="Green" />
+
+                <Label Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2" Text="" FontSize="18" IsVisible="false"
+                       x:Name="lbl_uf_name_4_row2_col2" TextColor="#0e0273" Margin="90,0,0,0"/>
+                <Label Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="4" x:Name="lbl_uf_value_4_row2_col2" IsVisible="false"
+                       HorizontalOptions="Start" Margin="50,0,0,0"  Text="" FontSize="18" TextColor="Green" />
+                <!--End of 2nd row if 1st row is present-->
+
+                <!--2nd row if 1st row is absent-->
+                <Label Grid.Row="1" Grid.Column="0" Text="" FontSize="18" x:Name="lbl_uf_name_3_row1" TextColor="#0e0273" IsVisible="false"/>
+                <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" x:Name="lbl_uf_value_3_row1" IsVisible="false"
+                       Text="" FontSize="18" TextColor="Green" />
+
+                <Label Grid.Row="1" Grid.Column="0" Text="" FontSize="18" IsVisible="false"
+                       x:Name="lbl_uf_name_4_row1_col1" TextColor="#0e0273"/>
+                <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" x:Name="lbl_uf_value_4_row1_col1" IsVisible="false"
+                       Text="" FontSize="18" TextColor="Green" />
+
+                <Label Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2" Text="" FontSize="18" IsVisible="false"
+                       x:Name="lbl_uf_name_4_row1_col2" TextColor="#0e0273" Margin="90,0,0,0"/>
+                <Label Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="4" x:Name="lbl_uf_value_4_row1_col2" IsVisible="false"
+                       HorizontalOptions="Start" Margin="50,0,0,0"  Text="" FontSize="18" TextColor="Green" />
+                <!--End of 2nd row if 1st row is absent-->
+
+            </Grid>
 
             <ListView x:Name="listview_tcreport"   IsGroupingEnabled="true" 
                       HasUnevenRows="True"
@@ -278,6 +364,187 @@
                     
                 </ListView.ItemTemplate>
                 
+            </ListView>
+
+
+            <ListView x:Name="listview_tcConsolidatedReport"  
+                      HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always" 
+                       IsVisible="false">
+                <ListView.Header>
+                    
+                        <StackLayout Margin="0,20,0,0" >
+                        <Grid ColumnSpacing="2"
+                                         RowSpacing="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+
+                            <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="11" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="Start" HorizontalOptions="FillAndExpand"/>
+                            <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="11" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+
+
+                            <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                            <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                            <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                            <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                            <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                            <BoxView Grid.Column="5" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                            <BoxView Grid.Column="6" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                            <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                            <BoxView Grid.Column="8" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                            <BoxView Grid.Column="9" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                            <BoxView Grid.Column="10" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                            <BoxView Grid.Column="10" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+                            <Label  Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="S.No"  TextColor="#0e0273" FontSize="14" FontAttributes="Bold"/>
+                            <Label  Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="Date"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <Label  Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="Test ID"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <Label  Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="Machine"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <Label  Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="Shift"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <Label  Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="Std. Noils"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <Label  Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="Noils Avg" TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <Label  Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="SD"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <Label  Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="CV"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <Label  Grid.Column="9" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                Text="Test Time"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                            <Label  Grid.Column="10" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                                    Text="Remark"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                        </Grid>
+                        </StackLayout>
+                    
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Margin="0,0,0,0">
+                                <Grid ColumnSpacing="2"
+                                         RowSpacing="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="11" BackgroundColor="#0e0273" HeightRequest="1" VerticalOptions="End" HorizontalOptions="FillAndExpand"/>
+
+                                    <BoxView Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="1" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="2" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="4" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="5" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="6" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="7" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="8" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="9" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="10" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="Start"/>
+                                    <BoxView Grid.Column="10" Grid.Row="0" Grid.RowSpan="1" BackgroundColor="#0e0273" WidthRequest="1" VerticalOptions="FillAndExpand" HorizontalOptions="End"/>
+
+
+                                    <Label Grid.Column="0" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding serialNo}" FontSize="14"/>
+                                    <Label Grid.Column="1" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding testDate}" FontSize="14"/>
+                                    <Label Grid.Column="2" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding testID}" FontSize="14"/>
+                                    <Label Grid.Column="3" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding machineName}" FontSize="14"/>
+                                    <Label Grid.Column="4" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding shift}" FontSize="14"/>
+                                    
+                                    
+                                    <Label Grid.Column="5" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding standardValue}" FontSize="14"/>
+
+                                    <!--< Test Nminus1 >-->
+
+                                    <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                            Text="{Binding noilsAvgWeight,StringFormat='{0:N2}'}" 
+                                        FontSize="14">
+
+                                        <Label.IsVisible>
+                                            <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                                                <Binding Path="isWhite" />
+                                                <!--<Binding Path="isSpinning" />-->
+                                             </MultiBinding>
+                                        </Label.IsVisible>
+
+                                    </Label>
+
+                                     <Label Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                               Text="{Binding noilsAvgWeight,StringFormat='{0:N2}'}" 
+                                           FontSize="14" BackgroundColor="Red" TextColor="White">
+
+                                        <Label.IsVisible>
+                                            <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                                                <Binding Path="isRed" />
+                                                <!--<Binding Path="isSpinning" />-->
+                                            </MultiBinding>
+                                        </Label.IsVisible>
+
+                                    </Label>
+
+                                   
+
+                                    <!--< End of Test Nminus1 >-->
+
+                                   
+                                    
+                                    <!--< Standard Deviation >-->
+
+
+                                    <Label Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding standardDeviation,StringFormat='{0:N2}'}" FontSize="14"/>
+
+                                    <!--< End of Standard Deviation >-->
+
+
+                                    <!--< Co-Efficient of Variation >-->
+
+                                    <Label Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding CoEfficientOfVariation,StringFormat='{0:N2}'}" FontSize="14"/>
+
+                                    
+
+                                    <!--< End of Co-Efficient of Variation >-->
+                                    
+                                    <Label Grid.Column="9" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding testDuration}" FontSize="14"/>
+                                    <Label Grid.Column="10" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           Text="{Binding remarks}" FontSize="14"/>
+                                </Grid>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
             </ListView>
             
             

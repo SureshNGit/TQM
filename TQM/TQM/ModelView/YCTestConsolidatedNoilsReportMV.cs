@@ -9,15 +9,13 @@
         public string testDate { get; set; }
         public string shift { get; set; }
         public string standardValue { get; set; }
-        public string testAverage { get; set; }
+        public string noilsAvgWeight { get; set; }
         public string standardDeviation { get; set; }
         public string CoEfficientOfVariation { get; set; }
         public string testDuration { get; set; }
         public string remarks { get; set; }
         public bool isWhite { get; set; } = true;
         public bool isRed { get; set; } = false;
-        public bool isSpinning { get; set; } = false;
-        public bool otherThanSpinning { get; set; } = false;
         public string uf_name_1 { get; set; } = null;
         public string uf_name_2 { get; set; } = null;
         public string uf_name_3 { get; set; } = null;

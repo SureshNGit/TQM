@@ -268,7 +268,7 @@ namespace TQM
                 else if (picker_reportName.SelectedItem.ToString() == "Noils")
                 {
                     Navigation.PushAsync(new NoilsReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, false, is_consolidated));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, false, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
                 }
             }
             catch (Exception ex)
@@ -478,7 +478,7 @@ namespace TQM
                 else if (picker_reportName.SelectedItem.ToString() == "Noils")
                 {
                     Navigation.PushAsync(new NoilsReport
-                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, true, is_consolidated));
+                        (date_fromdate.Date, date_enddate.Date, selectedCategory, selectedMachineID, shift, process, testID, matType, materialLength, true, is_consolidated, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
                 }
             }
             catch (Exception ex)
