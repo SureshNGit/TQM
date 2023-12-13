@@ -555,48 +555,52 @@ namespace TQM
                                     {
                                         testID = test.testID,
                                         description = test.testcount.ToString(),
-                                        IB = formatDecimal(yctestStretchlist_IB[loopCount].yarnweight),
-                                        FB = formatDecimal(yctestStretchlist_FB[loopCount].yarnweight),
+                                        //IB = formatDecimal(yctestStretchlist_IB[loopCount].yarnweight),
+                                        //FB = formatDecimal(yctestStretchlist_FB[loopCount].yarnweight),
+                                        IB = formatDecimal(yctestStretchlist_IB[loopCount].yccalcval),
+                                        FB = formatDecimal(yctestStretchlist_FB[loopCount].yccalcval),
                                     };
                                     report.Add(stretchReportMV);
                                     loopCount += 1;
                                 }
 
-                                StretchReportModelView StretchReportModelView = new StretchReportModelView()
-                                {
-                                    testID = stretchCalc.testID,
-                                    description = "Average Weight",
-                                    IB = formatDecimal(stretchCalc.avg_weight_IB),
-                                    FB = formatDecimal(stretchCalc.avg_weight_FB),
-                                };
-                                report.Add(StretchReportModelView);
+                                //StretchReportModelView StretchReportModelView = new StretchReportModelView()
+                                //{
+                                //    testID = stretchCalc.testID,
+                                //    description = "Average Weight",
+                                //    IB = formatDecimal(stretchCalc.avg_weight_IB),
+                                //    FB = formatDecimal(stretchCalc.avg_weight_FB),
+                                //};
+                                //report.Add(StretchReportModelView);
 
-                                StretchReportModelView = new StretchReportModelView()
-                                {
-                                    testID = stretchCalc.testID,
-                                    description = "Weight (Max)",
-                                    IB = formatDecimal(stretchCalc.max_IB),
-                                    FB = formatDecimal(stretchCalc.max_FB),
-                                };
-                                report.Add(StretchReportModelView);
+                                //StretchReportModelView = new StretchReportModelView()
+                                //{
+                                //    testID = stretchCalc.testID,
+                                //    description = "Weight (Max)",
+                                //    IB = formatDecimal(stretchCalc.max_IB),
+                                //    FB = formatDecimal(stretchCalc.max_FB),
+                                //};
+                                //report.Add(StretchReportModelView);
 
-                                StretchReportModelView = new StretchReportModelView()
-                                {
-                                    testID = stretchCalc.testID,
-                                    description = "Weight (Min)",
-                                    IB = formatDecimal(stretchCalc.min_IB),
-                                    FB = formatDecimal(stretchCalc.min_FB),
-                                };
-                                report.Add(StretchReportModelView);
+                                //StretchReportModelView = new StretchReportModelView()
+                                //{
+                                //    testID = stretchCalc.testID,
+                                //    description = "Weight (Min)",
+                                //    IB = formatDecimal(stretchCalc.min_IB),
+                                //    FB = formatDecimal(stretchCalc.min_FB),
+                                //};
+                                //report.Add(StretchReportModelView);
 
-                                StretchReportModelView = new StretchReportModelView()
-                                {
-                                    testID = stretchCalc.testID,
-                                    description = "Range",
-                                    IB = formatDecimal(stretchCalc.range_IB),
-                                    FB = formatDecimal(stretchCalc.range_FB),
-                                };
-                                report.Add(StretchReportModelView);
+                                //StretchReportModelView = new StretchReportModelView()
+                                //{
+                                //    testID = stretchCalc.testID,
+                                //    description = "Range",
+                                //    IB = formatDecimal(stretchCalc.range_IB),
+                                //    FB = formatDecimal(stretchCalc.range_FB),
+                                //};
+                                //report.Add(StretchReportModelView);
+
+                                StretchReportModelView StretchReportModelView;
 
                                 if (stretchCalc.machineCategory == "Spinning")
                                 {

@@ -591,48 +591,52 @@ namespace TQM
                             {
                                 testID = test.testID,
                                 description = test.testcount.ToString(),
-                                IB = formatDecimal(yctestStretchlist_IB[loopCount].yarnweight),
-                                FB = formatDecimal(yctestStretchlist_FB[loopCount].yarnweight),
+                                //IB = formatDecimal(yctestStretchlist_IB[loopCount].yarnweight),
+                                //FB = formatDecimal(yctestStretchlist_FB[loopCount].yarnweight),
+                                IB = formatDecimal(yctestStretchlist_IB[loopCount].yccalcval),
+                                FB = formatDecimal(yctestStretchlist_FB[loopCount].yccalcval),
                             };
                             OVS.Add(stretchReportMV);
                             loopCount += 1;
                         }
 
-                        StretchReportModelView StretchReportModelView = new StretchReportModelView()
-                        {
-                            testID = stretchCalcList_finalOut.testID,
-                            description = "Average Weight",
-                            IB = formatDecimal(stretchCalcList_finalOut.avg_weight_IB),
-                            FB = formatDecimal(stretchCalcList_finalOut.avg_weight_FB),
-                        };
-                        OVS.Add(StretchReportModelView);
+                        //StretchReportModelView StretchReportModelView = new StretchReportModelView()
+                        //{
+                        //    testID = stretchCalcList_finalOut.testID,
+                        //    description = "Average Weight",
+                        //    IB = formatDecimal(stretchCalcList_finalOut.avg_weight_IB),
+                        //    FB = formatDecimal(stretchCalcList_finalOut.avg_weight_FB),
+                        //};
+                        //OVS.Add(StretchReportModelView);
 
-                        StretchReportModelView = new StretchReportModelView()
-                        {
-                            testID = stretchCalcList_finalOut.testID,
-                            description = "Weight (Max)",
-                            IB = formatDecimal(stretchCalcList_finalOut.max_IB),
-                            FB = formatDecimal(stretchCalcList_finalOut.max_FB),
-                        };
-                        OVS.Add(StretchReportModelView);
+                        //StretchReportModelView = new StretchReportModelView()
+                        //{
+                        //    testID = stretchCalcList_finalOut.testID,
+                        //    description = "Weight (Max)",
+                        //    IB = formatDecimal(stretchCalcList_finalOut.max_IB),
+                        //    FB = formatDecimal(stretchCalcList_finalOut.max_FB),
+                        //};
+                        //OVS.Add(StretchReportModelView);
 
-                        StretchReportModelView = new StretchReportModelView()
-                        {
-                            testID = stretchCalcList_finalOut.testID,
-                            description = "Weight (Min)",
-                            IB = formatDecimal(stretchCalcList_finalOut.min_IB),
-                            FB = formatDecimal(stretchCalcList_finalOut.min_FB),
-                        };
-                        OVS.Add(StretchReportModelView);
+                        //StretchReportModelView = new StretchReportModelView()
+                        //{
+                        //    testID = stretchCalcList_finalOut.testID,
+                        //    description = "Weight (Min)",
+                        //    IB = formatDecimal(stretchCalcList_finalOut.min_IB),
+                        //    FB = formatDecimal(stretchCalcList_finalOut.min_FB),
+                        //};
+                        //OVS.Add(StretchReportModelView);
 
-                        StretchReportModelView = new StretchReportModelView()
-                        {
-                            testID = stretchCalcList_finalOut.testID,
-                            description = "Range",
-                            IB = formatDecimal(stretchCalcList_finalOut.range_IB),
-                            FB = formatDecimal(stretchCalcList_finalOut.range_FB),
-                        };
-                        OVS.Add(StretchReportModelView);
+                        //StretchReportModelView = new StretchReportModelView()
+                        //{
+                        //    testID = stretchCalcList_finalOut.testID,
+                        //    description = "Range",
+                        //    IB = formatDecimal(stretchCalcList_finalOut.range_IB),
+                        //    FB = formatDecimal(stretchCalcList_finalOut.range_FB),
+                        //};
+                        //OVS.Add(StretchReportModelView);
+
+                        StretchReportModelView StretchReportModelView;
 
                         if (selectedMachineCategory == "Spinning")
                         {
