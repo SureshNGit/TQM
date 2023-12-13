@@ -21,6 +21,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Xaml;
 using static Android.Icu.Text.IDNA;
+using static System.Net.Mime.MediaTypeNames;
 using Color = Xamarin.Forms.Color;
 
 namespace TQM
@@ -350,6 +351,195 @@ namespace TQM
             });
         }
 
+        private List<YCTestReportModelView> generateResultView()
+        {
+            try
+            {
+                List<YCTestReportModelView> OVS = new List<YCTestReportModelView>();
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+
+                    conn.CreateTable<YCTestModel>();
+                    conn.CreateTable<YCTestSummaryModel>();
+
+
+                    if (ycTestModelViewlist == null)
+                    {
+                        return null;
+                    }
+
+
+                    List<YCTestModel> id_test = conn.Table<YCTestModel>().Where(
+                        YCTestModel => YCTestModel.testID == currentTestID).ToList();
+
+
+                    List<YCTestSummaryModel> ts = conn.Table<YCTestSummaryModel>().Where(
+                        YCTestSummaryModel => YCTestSummaryModel.testID == currentTestID).ToList();
+
+                    if (id_test.Count>0 && ts.Count>0)
+                    {
+
+                        int loopCount = 0;
+                        decimal totalWeight = 0.0000m;
+                        decimal totalCalcCountVal = 0.0000m;
+                        foreach (YCTestModel id in id_test)
+                        {
+                            YCTestReportModelView ycTestReportMV = new YCTestReportModelView()
+                            {
+                                testID = id.testID,
+                                description = id.testcount.ToString(),
+                                weight = formatDecimal(id.yarnweight).ToString(),
+                                hank = formatDecimal(id.yccalcval).ToString(),
+                            };
+                            OVS.Add(ycTestReportMV);
+                            loopCount += 1;
+                            totalCalcCountVal = totalCalcCountVal + id.yccalcval;
+                            totalCalcCountVal = formatDecimal(totalCalcCountVal);
+                            totalWeight = totalWeight + id.yarnweight;
+                            totalWeight = formatDecimal(totalWeight);
+                        }
+
+
+                        decimal mean = 0.0000m;
+                        decimal min = 0.0000m;
+                        decimal max = 0.0000m;
+                        decimal range = 0.0000m;
+                        decimal sd = 0.0000m;
+                        decimal cv = 0.0000m;
+
+                        decimal mean_weight = 0.0000m;
+                        decimal min_weight = 0.0000m;
+                        decimal max_weight = 0.0000m;
+                        decimal range_weight = 0.0000m;
+                        decimal sd_weight = 0.0000m;
+                        decimal cv_weight = 0.0000m;
+
+                        if (ts[0].yarnWeightAvg==0.0m)
+                        {
+                            mean = totalCalcCountVal / id_test[0].totaltestcount;
+                            decimal IndividualCalValminusMean = 0m;
+                            foreach (YCTestModel test in id_test)
+                            {
+                                IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
+                            }
+                            sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(id_test[0].totaltestcount - 1));//Standard Deviation
+                            sd = formatDecimal(sd);
+                            mean = formatDecimal(mean);
+                            cv = (sd / mean) * 100.0000m; //Coefficient of Variation
+                            cv = formatDecimal(cv);
+
+                            min = id_test.Min(YCTestModel => YCTestModel.yccalcval);
+                            max = id_test.Max(YCTestModel => YCTestModel.yccalcval);
+                            range = max - min;
+
+
+                            mean_weight = totalWeight / id_test[0].totaltestcount;
+                            decimal IndividualWeightminusMean = 0m;
+                            foreach (YCTestModel test in id_test)
+                            {
+                                IndividualWeightminusMean = IndividualWeightminusMean + ((test.yarnweight - mean) * (test.yarnweight - mean));
+                            }
+                            sd_weight = (decimal)Math.Sqrt((double)IndividualWeightminusMean / (double)(id_test[0].totaltestcount - 1));//Standard Deviation
+                            sd_weight = formatDecimal(sd_weight);
+                            mean_weight = formatDecimal(mean_weight);
+                            cv_weight = (sd_weight / mean_weight) * 100.0000m; //Coefficient of Variation
+                            cv_weight = formatDecimal(cv_weight);
+
+                            min_weight = id_test.Min(YCTestModel => YCTestModel.yarnweight);
+                            max_weight = id_test.Max(YCTestModel => YCTestModel.yarnweight);
+                            range_weight = max_weight - min_weight;
+                        }
+                        else
+                        {
+                            mean_weight = ts[0].yarnWeightAvg;
+                            mean = ts[0].testaverage;
+
+                            max_weight = ts[0].yarnWeightMax;
+                            max = ts[0].testMax;
+
+                            min_weight = ts[0].yarnWeightMin;
+                            min = ts[0].testMin;
+
+                            range_weight = ts[0].yarnWeightRange;
+                            range = ts[0].testRange;
+
+                            sd_weight = ts[0].yarnWeightSD;
+                            sd = ts[0].testsd;
+
+                            cv_weight = ts[0].yarnWeightCV;
+                            cv = ts[0].testcv;
+                        }
+
+                        YCTestReportModelView testMV = new YCTestReportModelView()
+                        {
+                            testID = ts[0].testID,
+                            description = "Average Weight",
+                            weight = formatDecimal(mean_weight).ToString(),
+                            hank = formatDecimal(mean).ToString(),
+                        };
+                        OVS.Add(testMV);
+
+                        testMV = new YCTestReportModelView()
+                        {
+                            testID = ts[0].testID,
+                            description = "Max",
+                            weight = formatDecimal(max_weight).ToString(),
+                            hank = formatDecimal(max).ToString(),
+                        };
+                        OVS.Add(testMV);
+
+                        testMV = new YCTestReportModelView()
+                        {
+                            testID = ts[0].testID,
+                            description = "Min",
+                            weight = formatDecimal(min_weight).ToString(),
+                            hank = formatDecimal(min).ToString(),
+                        };
+                        OVS.Add(testMV);
+
+                        testMV = new YCTestReportModelView()
+                        {
+                            testID = ts[0].testID,
+                            description = "Range",
+                            weight = formatDecimal(range_weight).ToString(),
+                            hank = formatDecimal(range).ToString(),
+                        };
+                        OVS.Add(testMV);
+
+
+                        testMV = new YCTestReportModelView()
+                        {
+                            testID = ts[0].testID,
+                            description = "SD",
+                            weight = formatDecimal(sd_weight).ToString(),
+                            hank = formatDecimal(sd).ToString(),
+                        };
+                        OVS.Add(testMV);
+
+                        testMV = new YCTestReportModelView()
+                        {
+                            testID = ts[0].testID,
+                            description = "CV",
+                            weight = formatDecimal(cv_weight).ToString(),
+                            hank = formatDecimal(cv).ToString(),
+                        };
+                        OVS.Add(testMV);
+
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                return OVS;
+            }
+            catch (Exception ex)
+            {
+                //DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
+                return null;
+            }
+        }
+
         private async Task refListView(bool visibility = true, bool showFinalOut = false)
         {
             Device.BeginInvokeOnMainThread(() =>
@@ -363,7 +553,8 @@ namespace TQM
                     individualTestResultFrame_FinalOut.IsVisible = true;
                     listview_testresult_FinalOut.ItemsSource = null;
                     listview_testresult_FinalOut.IsVisible = visibility;
-                    listview_testresult_FinalOut.ItemsSource = ycTestModelViewlist;
+                    //listview_testresult_FinalOut.ItemsSource = ycTestModelViewlist;
+                    listview_testresult_FinalOut.ItemsSource = generateResultView();
                     if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                     {
                         //lbl_testresult_Final_stadHank.Text = "Count (" + STD_HANK.ToString() + "\u00B1" + selectedDeviationPercent + ")";
@@ -475,6 +666,7 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 bool dbStatus = true;
+                decimal totalWeight = 0.0000m;
                 decimal totalCalcCountVal = 0.0000m;
                 conn.CreateTable<YCTestModel>();
                 foreach (YCTestModelView test in ycTestModelViewlist)
@@ -507,12 +699,24 @@ namespace TQM
                     }
                     totalCalcCountVal = totalCalcCountVal + test.yccalcval;
                     totalCalcCountVal = formatDecimal(totalCalcCountVal);
+                    totalWeight = totalWeight + test.yarnweight;
+                    totalWeight = formatDecimal(totalWeight);
                 }
                 if (dbStatus)
                 {
                     decimal mean = 0.0000m;
+                    decimal min = 0.0000m;
+                    decimal max = 0.0000m;
+                    decimal range = 0.0000m;
                     decimal sd = 0.0000m;
                     decimal cv = 0.0000m;
+
+                    decimal mean_weight = 0.0000m;
+                    decimal min_weight = 0.0000m;
+                    decimal max_weight = 0.0000m;
+                    decimal range_weight = 0.0000m;
+                    decimal sd_weight = 0.0000m;
+                    decimal cv_weight = 0.0000m;
                     if (ycTestModelViewlist[0].totaltestcount > 1)
                     {
                         mean = totalCalcCountVal / ycTestModelViewlist[0].totaltestcount;
@@ -526,6 +730,29 @@ namespace TQM
                         mean = formatDecimal(mean);
                         cv = (sd / mean) * 100.0000m; //Coefficient of Variation
                         cv = formatDecimal(cv);
+
+                        min = ycTestModelViewlist.Min(YCTestModelView => YCTestModelView.yccalcval);
+                        max = ycTestModelViewlist.Max(YCTestModelView => YCTestModelView.yccalcval);
+                        range = max - min;
+
+
+                        mean_weight = totalWeight / ycTestModelViewlist[0].totaltestcount;
+                        decimal IndividualWeightminusMean = 0m;
+                        foreach (YCTestModelView test in ycTestModelViewlist)
+                        {
+                            IndividualWeightminusMean = IndividualWeightminusMean + ((test.yarnweight - mean) * (test.yarnweight - mean));
+                        }
+                        sd_weight = (decimal)Math.Sqrt((double)IndividualWeightminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
+                        sd_weight = formatDecimal(sd_weight);
+                        mean_weight = formatDecimal(mean_weight);
+                        cv_weight = (sd_weight / mean_weight) * 100.0000m; //Coefficient of Variation
+                        cv_weight = formatDecimal(cv_weight);
+
+                        min_weight = ycTestModelViewlist.Min(YCTestModelView => YCTestModelView.yarnweight);
+                        max_weight = ycTestModelViewlist.Max(YCTestModelView => YCTestModelView.yarnweight);
+                        range_weight = max_weight - min_weight;
+
+
                     }
                     //TimeSpan duration = (DateTime.Now - currentTestStartTime).Duration();
                     //string testDuration = duration.Hours.ToString() + ":" + duration.Minutes.ToString() + ":" + duration.Seconds.ToString();
@@ -547,7 +774,16 @@ namespace TQM
                         yarnlenunit = ycTestModelViewlist[0].yarnlenunit,
                         yarnlength = ycTestModelViewlist[0].yarnlength,
                         totaltestcount = ycTestModelViewlist[0].totaltestcount,
+                        yarnWeightAvg = mean_weight,
+                        yarnWeightMin = min_weight,
+                        yarnWeightMax = max_weight,
+                        yarnWeightRange = range_weight,
+                        yarnWeightSD = sd_weight,
+                        yarnWeightCV = cv_weight,
                         testaverage = mean,
+                        testMin = min,
+                        testMax = max,
+                        testRange = range,
                         testsd = sd,
                         testcv = cv,
                         standardHank = STD_HANK_CURR,

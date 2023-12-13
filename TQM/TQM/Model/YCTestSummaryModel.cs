@@ -34,7 +34,25 @@ namespace TQM.Model
 
         public int totaltestcount { get; set; }
 
+        public decimal yarnWeightAvg { get; set; }
+
+        public decimal yarnWeightMax { get; set; }
+
+        public decimal yarnWeightMin { get; set; }
+
+        public decimal yarnWeightRange { get; set; }
+
+        public decimal yarnWeightSD { get; set; }
+
+        public decimal yarnWeightCV { get; set; }
+
         public decimal testaverage { get; set; }
+
+        public decimal testMin { get; set; }
+
+        public decimal testMax { get; set; }
+
+        public decimal testRange { get; set; }
 
         public decimal testsd { get; set; }
 
@@ -47,6 +65,7 @@ namespace TQM.Model
         public string testRemark { get; set; }
 
         public string testDuration { get; set; }
+
         public string uf_value_1 { get; set; }
         public string uf_value_2 { get; set; }
         public string uf_value_3 { get; set; }
