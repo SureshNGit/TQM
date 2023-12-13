@@ -473,7 +473,7 @@ namespace TQM
                         YCTestReportModelView testMV = new YCTestReportModelView()
                         {
                             testID = ts[0].testID,
-                            description = "Average Weight",
+                            description = "Average",
                             weight = formatDecimal(mean_weight).ToString(),
                             hank = formatDecimal(mean).ToString(),
                         };

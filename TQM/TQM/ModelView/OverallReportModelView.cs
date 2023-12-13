@@ -4,7 +4,7 @@ using TQM.Model;
 
 namespace TQM.ModelView
 {
-    public class OverallReportModelView : List<YCTestModel>
+    public class OverallReportModelView : List<YCTestReportModelView>
     {
         public long testID { get; set; }
         public string userName { get; set; }
@@ -47,7 +47,9 @@ namespace TQM.ModelView
         public bool remark_2 { get; set; } = false;
         public bool remark_3 { get; set; } = false;
         public DateTime createdate { get; set; }
-        public List<YCTestModel> yctestlist => this;
+        //public List<YCTestModel> yctestlist => this;
+
+        public List<YCTestReportModelView> yctestlist => this;
     }
 
 

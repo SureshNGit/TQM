@@ -20,6 +20,7 @@ using TQM.ModelView;
 using TQM.SfPdfViewer;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using static Android.Resource;
 using Color = Xamarin.Forms.Color;
 using Exception = Java.Lang.Exception;
 using String = System.String;
@@ -645,11 +646,160 @@ namespace TQM
                                     report.otherThanSpinning = true;
                                 }
 
+                                //List<YCTestReportModelView> finalView = new List<YCTestReportModelView>();
+                                int loopCount = 0;
+                                decimal totalWeight = 0.0000m;
+                                decimal totalCalcCountVal = 0.0000m;
+
+                                
 
                                 foreach (YCTestModel test in yctestlist)
                                 {
-                                    report.Add(test);
+                                    
+                                    YCTestReportModelView ycTestReportMV = new YCTestReportModelView()
+                                    {
+                                        testID = test.testID,
+                                        description = test.testcount.ToString(),
+                                        weight = formatDecimal(test.yarnweight).ToString(),
+                                        hank = formatDecimal(test.yccalcval).ToString(),
+                                    };
+                                    report.Add(ycTestReportMV);
+                                    loopCount += 1;
+                                    totalCalcCountVal = totalCalcCountVal + test.yccalcval;
+                                    totalCalcCountVal = formatDecimal(totalCalcCountVal);
+                                    totalWeight = totalWeight + test.yarnweight;
+                                    totalWeight = formatDecimal(totalWeight);
                                 }
+
+
+                                decimal mean = 0.0000m;
+                                decimal min = 0.0000m;
+                                decimal max = 0.0000m;
+                                decimal range = 0.0000m;
+                                decimal sd = 0.0000m;
+                                decimal cv = 0.0000m;
+
+                                decimal mean_weight = 0.0000m;
+                                decimal min_weight = 0.0000m;
+                                decimal max_weight = 0.0000m;
+                                decimal range_weight = 0.0000m;
+                                decimal sd_weight = 0.0000m;
+                                decimal cv_weight = 0.0000m;
+
+                                if (testsummary.yarnWeightAvg == 0.0m)
+                                {
+                                    mean = totalCalcCountVal / yctestlist[0].totaltestcount;
+                                    decimal IndividualCalValminusMean = 0m;
+                                    foreach (YCTestModel test in yctestlist)
+                                    {
+                                        IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
+                                    }
+                                    sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(yctestlist[0].totaltestcount - 1));//Standard Deviation
+                                    sd = formatDecimal(sd);
+                                    mean = formatDecimal(mean);
+                                    cv = (sd / mean) * 100.0000m; //Coefficient of Variation
+                                    cv = formatDecimal(cv);
+
+                                    min = yctestlist.Min(YCTestModel => YCTestModel.yccalcval);
+                                    max = yctestlist.Max(YCTestModel => YCTestModel.yccalcval);
+                                    range = max - min;
+
+
+                                    mean_weight = totalWeight / yctestlist[0].totaltestcount;
+                                    decimal IndividualWeightminusMean = 0m;
+                                    foreach (YCTestModel test in yctestlist)
+                                    {
+                                        IndividualWeightminusMean = IndividualWeightminusMean + ((test.yarnweight - mean) * (test.yarnweight - mean));
+                                    }
+                                    sd_weight = (decimal)Math.Sqrt((double)IndividualWeightminusMean / (double)(yctestlist[0].totaltestcount - 1));//Standard Deviation
+                                    sd_weight = formatDecimal(sd_weight);
+                                    mean_weight = formatDecimal(mean_weight);
+                                    cv_weight = (sd_weight / mean_weight) * 100.0000m; //Coefficient of Variation
+                                    cv_weight = formatDecimal(cv_weight);
+
+                                    min_weight = yctestlist.Min(YCTestModel => YCTestModel.yarnweight);
+                                    max_weight = yctestlist.Max(YCTestModel => YCTestModel.yarnweight);
+                                    range_weight = max_weight - min_weight;
+                                }
+                                else
+                                {
+                                    mean_weight = testsummary.yarnWeightAvg;
+                                    mean = testsummary.testaverage;
+
+                                    max_weight = testsummary.yarnWeightMax;
+                                    max = testsummary.testMax;
+
+                                    min_weight = testsummary.yarnWeightMin;
+                                    min = testsummary.testMin;
+
+                                    range_weight = testsummary.yarnWeightRange;
+                                    range = testsummary.testRange;
+
+                                    sd_weight = testsummary.yarnWeightSD;
+                                    sd = testsummary.testsd;
+
+                                    cv_weight = testsummary.yarnWeightCV;
+                                    cv = testsummary.testcv;
+                                }
+
+                                YCTestReportModelView testMV = new YCTestReportModelView()
+                                {
+                                    testID = testsummary.testID,
+                                    description = "Average",
+                                    weight = formatDecimal(mean_weight).ToString(),
+                                    hank = formatDecimal(mean).ToString(),
+                                };
+                                report.Add(testMV);
+
+                                testMV = new YCTestReportModelView()
+                                {
+                                    testID = testsummary.testID,
+                                    description = "Max",
+                                    weight = formatDecimal(max_weight).ToString(),
+                                    hank = formatDecimal(max).ToString(),
+                                };
+                                report.Add(testMV);
+
+                                testMV = new YCTestReportModelView()
+                                {
+                                    testID = testsummary.testID,
+                                    description = "Min",
+                                    weight = formatDecimal(min_weight).ToString(),
+                                    hank = formatDecimal(min).ToString(),
+                                };
+                                report.Add(testMV);
+
+                                testMV = new YCTestReportModelView()
+                                {
+                                    testID = testsummary.testID,
+                                    description = "Range",
+                                    weight = formatDecimal(range_weight).ToString(),
+                                    hank = formatDecimal(range).ToString(),
+                                };
+                                report.Add(testMV);
+
+
+                                testMV = new YCTestReportModelView()
+                                {
+                                    testID = testsummary.testID,
+                                    description = "SD",
+                                    weight = formatDecimal(sd_weight).ToString(),
+                                    hank = formatDecimal(sd).ToString(),
+                                };
+                                report.Add(testMV);
+
+                                testMV = new YCTestReportModelView()
+                                {
+                                    testID = testsummary.testID,
+                                    description = "CV",
+                                    weight = formatDecimal(cv_weight).ToString(),
+                                    hank = formatDecimal(cv).ToString(),
+                                };
+                                report.Add(testMV);
+
+
+
+
                                 report.testID = testsummary.testID;
                                 report.userName = testsummary.userName;
                                 report.machineCategory = testsummary.machineCategory;
@@ -1134,7 +1284,7 @@ namespace TQM
                 foreach (OverallReportModelView orl in overallReportList)
                 {
 
-                    List<YCTestModel> testList = orl.yctestlist;
+                    List<YCTestReportModelView> testList = orl.yctestlist;
 
                     //if (tableNo == int.Parse(entry_reportNo.Text.Trim())) break;
                     PdfGrid pdfGridInfo = new PdfGrid();
@@ -1415,20 +1565,20 @@ namespace TQM
 
 
                     int rowCount = 1;
-                    foreach (YCTestModel test in testList)
+                    foreach (YCTestReportModelView test in testList)
                     {
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
-                        pdfGrid.Rows[rowCount].Cells[0].Value = test.testcount.ToString();
+                        pdfGrid.Rows[rowCount].Cells[0].Value = test.description.ToString();
                         if (orl.machineCategory == "Spinning" || orl.machineCategory == "Winding")
                         {
-                            pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight, 2).ToString();
-                            pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval, 2).ToString();
+                            pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(Decimal.Parse(test.weight), 2).ToString();
+                            pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(Decimal.Parse(test.hank), 2).ToString();
                         }
                         else
                         {
-                            pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.yarnweight, 4).ToString();
-                            pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.yccalcval, 4).ToString();
+                            pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(Decimal.Parse(test.weight), 4).ToString();
+                            pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(Decimal.Parse(test.hank), 4).ToString();
                         }
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
