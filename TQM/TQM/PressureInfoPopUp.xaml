@@ -2,7 +2,7 @@
 <xct:Popup xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:xct="clr-namespace:Xamarin.CommunityToolkit.UI.Views;assembly=Xamarin.CommunityToolkit"
-    xmlns:effects="clr-namespace:TQM.Effects"
+    xmlns:effects="clr-namespace:TQM.Effects" xmlns:xct1="http://xamarin.com/schemas/2020/toolkit"
     x:Class="TQM.PressureInfoPopUp">
 
     
