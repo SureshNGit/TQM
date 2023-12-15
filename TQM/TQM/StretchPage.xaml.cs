@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TQM.Model;
 using TQM.ModelView;
+using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -171,6 +172,11 @@ namespace TQM
                             entry_yarnlen.IsEnabled = false;
                             lbl_TestID.Text = currentTestID.ToString();
                             startFullBobbinButton.IsVisible = true;
+                            btn_UF.IsVisible = false;
+                            UFVAL1 = lastTest.uf_value_1;
+                            UFVAL2 = lastTest.uf_value_2;
+                            UFVAL3 = lastTest.uf_value_3;
+                            UFVAL4 = lastTest.uf_value_4;
                         }
                     }
                     else // to check last full bobbin test was completed properly
@@ -208,6 +214,11 @@ namespace TQM
                                 entry_yarnlen.IsEnabled = false;
                                 lbl_TestID.Text = currentTestID.ToString();
                                 startFullBobbinButton.IsVisible = true;
+                                btn_UF.IsVisible = false;
+                                UFVAL1 = lastTest.uf_value_1;
+                                UFVAL2 = lastTest.uf_value_2;
+                                UFVAL3 = lastTest.uf_value_3;
+                                UFVAL4 = lastTest.uf_value_4;
                             }
                         }
                         else
@@ -743,6 +754,10 @@ namespace TQM
                             yccalcval = test.yccalcval,
                             standardStretch = test.standardStretch,
                             status = true,
+                            uf_value_1 = UFVAL1,
+                            uf_value_2 = UFVAL2,
+                            uf_value_3 = UFVAL3,
+                            uf_value_4 = UFVAL4,
                             createdate = DateTime.Now
                         };
                         int row = conn.Insert(stretchTestModel);
@@ -1025,6 +1040,7 @@ namespace TQM
                                 if (currentTestType == "FB")
                                 {
                                     currentTestID = 0;
+                                    btn_UF.IsVisible = true;
                                     entry_yarnlen.IsEnabled = true;
                                     entry_testcount.IsEnabled = true;
                                     entry_testcount.Text = TESTCOUNT.ToString();
@@ -1257,6 +1273,7 @@ namespace TQM
             picker_shift.IsEnabled = false;
             picker_process.IsEnabled = false;
             entry_standardStretch.IsEnabled = true;
+            btn_UF.IsVisible = false;
 
             //showToast
             src_t = new CancellationTokenSource();
@@ -1937,6 +1954,7 @@ namespace TQM
                 selectedMachineName = selectedMachine.machineName;
                 populateTestParams(selectedMachineCategory, selectedMachineID, selectedMachineName);
                 getUserfieldConfig(selectedMachineCategory, selectedMachineID, selectedMachineName);
+                btn_UF.IsVisible = true;
             }
             catch (Exception ex)
             {
@@ -1997,7 +2015,87 @@ namespace TQM
             }
             catch (Exception ex)
             {
-                DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+                await DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+            }
+        }
+
+        async void btn_UF_Clicked(System.Object sender, System.EventArgs e)
+        {
+            try
+            {
+                if (selectedMachineCategory == null || selectedMachineCategory == "" ||
+                    selectedMachineID == Guid.Empty || selectedMachineName == null ||
+                    selectedMachineName == "")
+                {
+                    await DisplayAlert("Attention", "Please select machine category and machine name to modify machine parameters", "OK");
+                    return;
+                }
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    YarnCountConfigModel macDetails = conn.Table<YarnCountConfigModel>().Where(YarnCountConfigModel =>
+                                        (YarnCountConfigModel.machineCategory == selectedMachineCategory
+                                        && YarnCountConfigModel.machineID == selectedMachineID
+                                        && YarnCountConfigModel.machineName == selectedMachineName)).FirstOrDefault();
+                    if (macDetails == null) { await DisplayAlert("Attention", "Error Occurred!!!Error: Unable to reterive machine details", "OK"); return; }
+                    var result = await Navigation.ShowPopupAsync(new UserFieldsPopup(selectedMachineCategory,
+                                                                                        selectedMachineID,
+                                                                                        selectedMachineName,
+                                                                                        macDetails.uf_name_1,
+                                                                                        macDetails.uf_name_2,
+                                                                                        macDetails.uf_name_3,
+                                                                                        macDetails.uf_name_4,
+                                                                                        macDetails.uf_value_1,
+                                                                                        macDetails.uf_value_2,
+                                                                                        macDetails.uf_value_3,
+                                                                                        macDetails.uf_value_4));
+                    if (result != null)
+                    {
+
+                        if (!result.ToString().Contains("|"))
+                        {
+                            UFVAL1 = macDetails.uf_value_1;
+                            UFVAL2 = macDetails.uf_value_2;
+                            UFVAL3 = macDetails.uf_value_3;
+                            UFVAL4 = macDetails.uf_value_4;
+                            await DisplayAlert("Attention", result.ToString(), "OK");
+                            return;
+                        }
+
+                        string res_msg = result.ToString().Split('~')[0];
+                        string user_params = result.ToString().Split('~')[1];
+
+
+                        if (res_msg == "Success")
+                        {
+                            UFVAL1 = user_params.Split('|')[0];
+                            UFVAL2 = user_params.Split('|')[1];
+                            UFVAL3 = user_params.Split('|')[2];
+                            UFVAL4 = user_params.Split('|')[3];
+                            return;
+                        }
+                        else
+                        {
+                            UFVAL1 = macDetails.uf_value_1;
+                            UFVAL2 = macDetails.uf_value_2;
+                            UFVAL3 = macDetails.uf_value_3;
+                            UFVAL4 = macDetails.uf_value_4;
+                            await DisplayAlert("Attention", result.ToString(), "OK");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        UFVAL1 = macDetails.uf_value_1;
+                        UFVAL2 = macDetails.uf_value_2;
+                        UFVAL3 = macDetails.uf_value_3;
+                        UFVAL4 = macDetails.uf_value_4;
+                        return;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
             }
         }
     }

@@ -35,6 +35,10 @@
                         x:Name="startInitialBobbinButton"  Clicked="startInitialBobbinButton_Clicked" BackgroundColor="Green" TextColor="white" CornerRadius="25"/>
                 <Button Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" HorizontalOptions="End" Text="Full Bobbin" IsVisible="false" Margin="0,2" HeightRequest="12"
                         x:Name="startFullBobbinButton"  Clicked="startFullBobbinButton_Clicked" BackgroundColor="Green" TextColor="white" CornerRadius="25"/>
+                <Button Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="1" HorizontalOptions="Start" Text="&#x270E;" 
+                        Padding="10,-35,0,0" Margin="-10,-5,-30,-30" WidthRequest="40" HeightRequest="50" FontSize="Large"
+                        IsVisible="false"
+                        x:Name="btn_UF" Clicked="btn_UF_Clicked" BackgroundColor="red" TextColor="white" CornerRadius="0"/>
                 <Label Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="4" Text="" 
                        FontSize="16" TextColor="ForestGreen" x:Name="lbl_un" Margin="0,-12,0,0"
                        HorizontalOptions="Center" VerticalTextAlignment="Center" />

@@ -511,15 +511,63 @@ namespace TQM
                             consolItems.testNo = macTestNo.ToString();
                             consolItems.testID = apercentCalc.testID.ToString();
                             consolItems.machineName = apercentCalc.machineName;
-                            consolItems.testDate = apercentCalc.createdate.Day.ToString() + "-" + apercentCalc.createdate.Month.ToString() + "-" + apercentCalc.createdate.Year.ToString();
+                            consolItems.testDate = apercentCalc.createdate.Day.ToString() + "-" +
+                                                    apercentCalc.createdate.Month.ToString() + "-" +
+                                                    apercentCalc.createdate.Year.ToString() + "\n" +
+                                                    formatTime(apercentCalc.createdate);
                             consolItems.shift = apercentCalc.shift;
                             consolItems.standardValue = "\u00B1" + formatDecimal(apercentCalc.standardApercent, 2).ToString() ;
 
                             consolItems.Nminus1 = formatDecimal(apercentCalc.apercent_nMinus1).ToString();
                             consolItems.Nplus1 = formatDecimal(apercentCalc.apercent_nPlus1).ToString();
-                            
+
                             //consolItems.testDuration = testsummary.testDuration;
-                            consolItems.testDuration = formatTime(apercentCalc.createdate);
+                            //consolItems.testDuration = formatTime(apercentCalc.createdate);
+
+                            string userParams = "";
+
+                            if (apercentCalc.uf_value_1 != null && apercentCalc.uf_value_1 != "")
+                            {
+                                userParams = apercentCalc.uf_value_1;
+                            }
+
+                            if (apercentCalc.uf_value_2 != null && apercentCalc.uf_value_2 != "")
+                            {
+                                if (userParams == "")
+                                {
+                                    userParams = apercentCalc.uf_value_2;
+                                }
+                                else
+                                {
+                                    userParams = userParams + "\n" + apercentCalc.uf_value_2;
+                                }
+                            }
+
+                            if (apercentCalc.uf_value_3 != null && apercentCalc.uf_value_3 != "")
+                            {
+                                if (userParams == "")
+                                {
+                                    userParams = apercentCalc.uf_value_3;
+                                }
+                                else
+                                {
+                                    userParams = userParams + "\n" + apercentCalc.uf_value_3;
+                                }
+                            }
+
+                            if (apercentCalc.uf_value_4 != null && apercentCalc.uf_value_4 != "")
+                            {
+                                if (userParams == "")
+                                {
+                                    userParams = apercentCalc.uf_value_4;
+                                }
+                                else
+                                {
+                                    userParams = userParams + "\n" + apercentCalc.uf_value_4;
+                                }
+                            }
+
+                            consolItems.testDuration = userParams;
 
                             consolItems.remarks = apercentCalc.testRemark;
 
@@ -1456,7 +1504,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[7].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
                         
-                        pdfGrid.Rows[0].Cells[8].Value = "Test Time";
+                        pdfGrid.Rows[0].Cells[8].Value = "User Params";
                         pdfGrid.Rows[0].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -1529,6 +1577,15 @@ namespace TQM
                         {
                             contentLength = orl.standardValue.Length;
                         }
+
+                        if (orl.testDuration != null)
+                        {
+                            if (orl.testDuration.Length > contentLength)
+                            {
+                                contentLength = orl.testDuration.Length;
+                            }
+                        }
+
                         if (contentLength >= 9)
                         {
                             pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 9) + 1);
@@ -1689,7 +1746,7 @@ namespace TQM
                     writer.WriteField("N-1");
                   
                     writer.WriteField("N+1");
-                    writer.WriteField("Test Time");
+                    writer.WriteField("User Params");
                     writer.WriteField("Remark");
                     //Actual Data
                     writer.NextRecord();
@@ -1697,7 +1754,7 @@ namespace TQM
                     foreach (YCTestConsolidatedApercentReportMV orl in overallReportList)
                     {
                         writer.WriteField(orl.serialNo);
-                        writer.WriteField(orl.testDate);
+                        writer.WriteField(orl.testDate.Replace("\n"," "));
                         writer.WriteField(orl.testNo);
                         writer.WriteField(orl.machineName);
                        

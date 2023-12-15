@@ -418,7 +418,7 @@
                             <!--<Label  Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="CV"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>-->
                             <Label  Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                                Text="Test Time"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                                                Text="User Params"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                     Text="Remark"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                         </Grid>

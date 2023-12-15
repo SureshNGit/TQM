@@ -496,14 +496,63 @@ namespace TQM
                             consolItems.testNo = macTestNo.ToString();
                             consolItems.testID = noilsCalc.testID.ToString();
                             consolItems.machineName = noilsCalc.machineName;
-                            consolItems.testDate = noilsCalc.createdate.Day.ToString() + "-" + noilsCalc.createdate.Month.ToString() + "-" + noilsCalc.createdate.Year.ToString();
+                            consolItems.testDate = noilsCalc.createdate.Day.ToString() + "-" +
+                                                    noilsCalc.createdate.Month.ToString() + "-" +
+                                                    noilsCalc.createdate.Year.ToString() + "\n" +
+                                                    formatTime(noilsCalc.createdate);
                             consolItems.shift = noilsCalc.shift;
                             consolItems.standardValue = formatDecimal(noilsCalc.standardNoils, 2).ToString() + " "+  "\u00B1" + formatDecimal(noilsCalc.noilsRange, 2).ToString();
                             consolItems.noilsAvgWeight = formatDecimal(noilsCalc.average_wt_noils, 2).ToString();
                             consolItems.standardDeviation = formatDecimal(noilsCalc.testsd_noils, 2).ToString();
                             consolItems.CoEfficientOfVariation = formatDecimal(noilsCalc.testcv_noils, 2).ToString();
                             //consolItems.testDuration = testsummary.testDuration;
-                            consolItems.testDuration = formatTime(noilsCalc.createdate);
+                            //consolItems.testDuration = formatTime(noilsCalc.createdate);
+
+                            string userParams = "";
+
+                            if (noilsCalc.uf_value_1 != null && noilsCalc.uf_value_1 != "")
+                            {
+                                userParams = noilsCalc.uf_value_1;
+                            }
+
+                            if (noilsCalc.uf_value_2 != null && noilsCalc.uf_value_2 != "")
+                            {
+                                if (userParams == "")
+                                {
+                                    userParams = noilsCalc.uf_value_2;
+                                }
+                                else
+                                {
+                                    userParams = userParams + "\n" + noilsCalc.uf_value_2;
+                                }
+                            }
+
+                            if (noilsCalc.uf_value_3 != null && noilsCalc.uf_value_3 != "")
+                            {
+                                if (userParams == "")
+                                {
+                                    userParams = noilsCalc.uf_value_3;
+                                }
+                                else
+                                {
+                                    userParams = userParams + "\n" + noilsCalc.uf_value_3;
+                                }
+                            }
+
+                            if (noilsCalc.uf_value_4 != null && noilsCalc.uf_value_4 != "")
+                            {
+                                if (userParams == "")
+                                {
+                                    userParams = noilsCalc.uf_value_4;
+                                }
+                                else
+                                {
+                                    userParams = userParams + "\n" + noilsCalc.uf_value_4;
+                                }
+                            }
+
+                            consolItems.testDuration = userParams;
+
 
                             consolItems.remarks = noilsCalc.testRemark;
 
@@ -1342,7 +1391,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
 
-                        pdfGrid.Rows[0].Cells[9].Value = "Test Time";
+                        pdfGrid.Rows[0].Cells[9].Value = "User Params";
                         pdfGrid.Rows[0].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[9].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -1427,6 +1476,15 @@ namespace TQM
                         {
                             contentLength = orl.standardValue.Length;
                         }
+
+                        if (orl.testDuration != null)
+                        {
+                            if (orl.testDuration.Length > contentLength)
+                            {
+                                contentLength = orl.testDuration.Length;
+                            }
+                        }
+
                         if (contentLength >= 9)
                         {
                             pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 9) + 1);
@@ -1578,7 +1636,7 @@ namespace TQM
 
                     writer.WriteField("SD");
                     writer.WriteField("CV");
-                    writer.WriteField("Test Time");
+                    writer.WriteField("User Params");
                     writer.WriteField("Remark");
                     //Actual Data
                     writer.NextRecord();
@@ -1586,7 +1644,7 @@ namespace TQM
                     foreach (YCTestConsolidatedNoilsReportMV orl in overallReportList)
                     {
                         writer.WriteField(orl.serialNo);
-                        writer.WriteField(orl.testDate);
+                        writer.WriteField(orl.testDate.Replace("\n"," "));
                         writer.WriteField(orl.testNo);
                         writer.WriteField(orl.machineName);
 

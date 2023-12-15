@@ -32,37 +32,37 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="" FontSize="16" x:Name="lbl_UF1"
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="" FontSize="16" x:Name="lbl_UF1" IsVisible="false"
                    TextColor="WhiteSmoke"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Entry Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_UF1" TextColor="Green" FontSize="16"
-                   Keyboard="Numeric"  BackgroundColor="White"
+                   Keyboard="Text"  BackgroundColor="White" IsVisible="false"
                  HorizontalOptions="Start" WidthRequest="700"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
             </Entry>
-            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="P1" FontSize="16" x:Name="lbl_UF2"
+            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="" FontSize="16" x:Name="lbl_UF2" IsVisible="false"
                    TextColor="WhiteSmoke"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_UF2" TextColor="Green" FontSize="16"
-                   Keyboard="Numeric"  BackgroundColor="White"
+                   Keyboard="Text"  BackgroundColor="White" IsVisible="false"
                  HorizontalOptions="Start" WidthRequest="700"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
             </Entry>
-            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="P2" FontSize="16" x:Name="lbl_UF3"
+            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="" FontSize="16" x:Name="lbl_UF3" IsVisible="false"
                    TextColor="WhiteSmoke"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_UF3" TextColor="Green" FontSize="16"
-                   Keyboard="Numeric" BackgroundColor="White"
+                   Keyboard="Text" BackgroundColor="White" IsVisible="false"
                  HorizontalOptions="Start" WidthRequest="700"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
                 <Entry.Effects>
                     <effects:PlainEntry/>
                 </Entry.Effects>
             </Entry>
-            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="N1" FontSize="16" x:Name="lbl_UF3"
+            <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Text="" FontSize="16" x:Name="lbl_UF4" IsVisible="false"
                    TextColor="WhiteSmoke"  VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
             <Entry Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="" x:Name="entry_UF4" TextColor="Green" FontSize="16"
-                   Keyboard="Numeric" BackgroundColor="White"
+                   Keyboard="Text" BackgroundColor="White" IsVisible="false"
                  HorizontalOptions="Start" WidthRequest="700"   VerticalTextAlignment="Center" HorizontalTextAlignment="Center" IsEnabled="True">
                 <Entry.Effects>
                     <effects:PlainEntry/>

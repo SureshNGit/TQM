@@ -503,13 +503,62 @@ namespace TQM
                             consolItems.testNo = macTestNo.ToString();
                             consolItems.testID = stretchCalc.testID.ToString();
                             consolItems.machineName = stretchCalc.machineName;
-                            consolItems.testDate = stretchCalc.createdate.Day.ToString() + "-" + stretchCalc.createdate.Month.ToString() + "-" + stretchCalc.createdate.Year.ToString();
+                            consolItems.testDate = stretchCalc.createdate.Day.ToString() + "-" +
+                                                    stretchCalc.createdate.Month.ToString() + "-" +
+                                                    stretchCalc.createdate.Year.ToString() + "\n" +
+                                                    formatTime(stretchCalc.createdate);
                             consolItems.shift = stretchCalc.shift;
                             consolItems.standardValue = "\u00B1" + formatDecimal(stretchCalc.standardStretch, 2).ToString();
 
                             consolItems.stretch = formatDecimal(stretchCalc.stretch).ToString();
                             //consolItems.testDuration = stretchCalc.testDuration;
-                            consolItems.testDuration = formatTime(stretchCalc.createdate);
+                            //consolItems.testDuration = formatTime(stretchCalc.createdate);
+
+                            string userParams = "";
+
+                            if (stretchCalc.uf_value_1 != null && stretchCalc.uf_value_1 != "")
+                            {
+                                userParams = stretchCalc.uf_value_1;
+                            }
+
+                            if (stretchCalc.uf_value_2 != null && stretchCalc.uf_value_2 != "")
+                            {
+                                if (userParams == "")
+                                {
+                                    userParams = stretchCalc.uf_value_2;
+                                }
+                                else
+                                {
+                                    userParams = userParams + "\n" + stretchCalc.uf_value_2;
+                                }
+                            }
+
+                            if (stretchCalc.uf_value_3 != null && stretchCalc.uf_value_3 != "")
+                            {
+                                if (userParams == "")
+                                {
+                                    userParams = stretchCalc.uf_value_3;
+                                }
+                                else
+                                {
+                                    userParams = userParams + "\n" + stretchCalc.uf_value_3;
+                                }
+                            }
+
+                            if (stretchCalc.uf_value_4 != null && stretchCalc.uf_value_4 != "")
+                            {
+                                if (userParams == "")
+                                {
+                                    userParams = stretchCalc.uf_value_4;
+                                }
+                                else
+                                {
+                                    userParams = userParams + "\n" + stretchCalc.uf_value_4;
+                                }
+                            }
+
+                            consolItems.testDuration = userParams;
+
 
                             consolItems.remarks = stretchCalc.testRemark;
 
@@ -1366,7 +1415,7 @@ namespace TQM
 
                        
 
-                        pdfGrid.Rows[0].Cells[7].Value = "Test Time";
+                        pdfGrid.Rows[0].Cells[7].Value = "User Params";
                         pdfGrid.Rows[0].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[7].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -1432,6 +1481,15 @@ namespace TQM
                         {
                             contentLength = orl.standardValue.Length;
                         }
+
+                        if (orl.testDuration != null)
+                        {
+                            if (orl.testDuration.Length > contentLength)
+                            {
+                                contentLength = orl.testDuration.Length;
+                            }
+                        }
+
                         if (contentLength >= 9)
                         {
                             pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 9) + 1);
@@ -1572,7 +1630,7 @@ namespace TQM
                     writer.WriteField("Std. Stretch");
                     writer.WriteField("Stretch");
 
-                    writer.WriteField("Test Time");
+                    writer.WriteField("User Params");
                     writer.WriteField("Remark");
                     //Actual Data
                     writer.NextRecord();
@@ -1580,7 +1638,7 @@ namespace TQM
                     foreach (YCTestConsolidatedStretchReportMV orl in overallReportList)
                     {
                         writer.WriteField(orl.serialNo);
-                        writer.WriteField(orl.testDate);
+                        writer.WriteField(orl.testDate.Replace("\n"," "));
                         writer.WriteField(orl.testNo);
                         writer.WriteField(orl.machineName);
 

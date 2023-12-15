@@ -594,7 +594,10 @@ namespace TQM
                                 consolItems.testNo = macTestNo.ToString();
                                 consolItems.testID = testsummary.testID.ToString();
                                 consolItems.machineName = testsummary.machineName;
-                                consolItems.testDate = testsummary.createdate.Day.ToString() + "-" + testsummary.createdate.Month.ToString() + "-" + testsummary.createdate.Year.ToString();
+                                consolItems.testDate = testsummary.createdate.Day.ToString() + "-" +
+                                                        testsummary.createdate.Month.ToString() + "-" +
+                                                        testsummary.createdate.Year.ToString() + "\n" +
+                                                        formatTime(testsummary.createdate);
                                 consolItems.shift = testsummary.shift;
                                 if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
                                 {
@@ -609,7 +612,53 @@ namespace TQM
                                 consolItems.standardDeviation = formatDecimal(testsummary.testsd).ToString();
                                 consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
                                 //consolItems.testDuration = testsummary.testDuration;
-                                consolItems.testDuration = formatTime(testsummary.createdate);
+                                //consolItems.testDuration = formatTime(testsummary.createdate);
+
+                                string userParams = "";
+
+                                if(testsummary.uf_value_1!=null && testsummary.uf_value_1 != "")
+                                {
+                                    userParams = testsummary.uf_value_1;
+                                }
+
+                                if (testsummary.uf_value_2 != null && testsummary.uf_value_2 != "")
+                                {
+                                    if (userParams == "")
+                                    { 
+                                        userParams = testsummary.uf_value_2;
+                                    }
+                                    else
+                                    {
+                                        userParams = userParams + "\n" + testsummary.uf_value_2;
+                                    }
+                                }
+
+                                if (testsummary.uf_value_3 != null && testsummary.uf_value_3 != "")
+                                {
+                                    if (userParams == "")
+                                    {
+                                        userParams = testsummary.uf_value_3;
+                                    }
+                                    else
+                                    {
+                                        userParams = userParams + "\n" + testsummary.uf_value_3;
+                                    }
+                                }
+
+                                if (testsummary.uf_value_4 != null && testsummary.uf_value_4 != "")
+                                {
+                                    if (userParams == "")
+                                    {
+                                        userParams = testsummary.uf_value_4;
+                                    }
+                                    else
+                                    {
+                                        userParams = userParams + "\n" + testsummary.uf_value_4;
+                                    }
+                                }
+
+                                consolItems.testDuration = userParams;
+
                                 consolItems.remarks = testsummary.testRemark;
 
                                 if (testsummary.machineCategory == "Spinning" || testsummary.machineCategory == "Winding")
@@ -1720,7 +1769,7 @@ namespace TQM
                     foreach (YCTestConsolidatedReportMV orl in overallReportList)
                     {
                         writer.WriteField(orl.serialNo);
-                        writer.WriteField(orl.testDate);
+                        writer.WriteField(orl.testDate.Replace("\n"," "));
                         writer.WriteField(orl.testNo);
                         writer.WriteField(orl.machineName);
                         if (orl.uf_value_2 != null)
@@ -1909,7 +1958,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        pdfGrid.Rows[0].Cells[9].Value = "Test Time";
+                        pdfGrid.Rows[0].Cells[9].Value = "User Params";
                         pdfGrid.Rows[0].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[9].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -1989,6 +2038,15 @@ namespace TQM
                         {
                             contentLength = orl.standardValue.Length;
                         }
+
+                        if (orl.testDuration != null)
+                        {
+                            if (orl.testDuration.Length > contentLength)
+                            {
+                                contentLength = orl.testDuration.Length;
+                            }
+                        }
+
                         if (contentLength >= 9)
                         {
                             pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 9) + 1);
