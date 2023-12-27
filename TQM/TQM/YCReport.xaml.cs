@@ -52,6 +52,8 @@ namespace TQM
 
         private string selectedMachineCategory = null;
         private Guid selectedCategoryID = Guid.Empty;
+        private Guid selectedMachineID = Guid.Empty;
+        private string selectedMachineName = null;
         private const string BLUE = "#0e0273";
         private RunConfiguration runConfiguration = new RunConfiguration();
         private List<StrengthTestSummaryModel> deleteList = null;
@@ -61,6 +63,7 @@ namespace TQM
         private decimal CON_STD_DEV = 0.0000m;
         private decimal CON_CV = 0.0000m;
         private bool consolidatedReport = false;
+        private bool drumViewReport = false;
         private bool drumDetailsReport = false;
         private bool maintenanceReport = false;
         private DateTime reportStartDate;
@@ -77,6 +80,15 @@ namespace TQM
         private TestedDrumsModelView tdmv = null;
         private bool is_IncompleteTest = false;
         private long inCompleteTestID = 0;
+        private Dictionary<int, string> drumDict = null;
+        private Dictionary<int, Boolean> drumDictRandomTest = null;
+        private ViewCell lastCell = null;
+        private int selectedTotalDrumCount = 0;
+        private string selectedP1 = null;
+        private string selectedP2 = null;
+        private string selectedN1 = null;
+        private string selectedMaterialCount = null;
+        private string selectedSpeed = null;
 
         private List<MissingDrumReportModelView> odl = new List<MissingDrumReportModelView>();
         private List<MaintenanceReportMV> oml = new List<MaintenanceReportMV>();
@@ -86,13 +98,14 @@ namespace TQM
             InitializeComponent();
         }
 
-        public YCReport(DateTime startDate, DateTime endDate, Guid catID, string categoryName, Guid machineID, string shift, string testID, string drumNumber,string standardStrength, bool deleteRequest, bool isConsolidated, bool drumDetails, bool is_maintenance, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
+        public YCReport(DateTime startDate, DateTime endDate, Guid catID, string categoryName, Guid machineID, string shift, string testID, string drumNumber,string standardStrength, bool deleteRequest, bool isConsolidated, bool drumView, bool drumDetails, bool is_maintenance, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             InitializeComponent();
             isFinalAvgRowPresent = false;
             is_IncompleteTest = false;
             inCompleteTestID = 0;
             consolidatedReport = isConsolidated;
+            drumViewReport = drumView;
             drumDetailsReport = drumDetails;
             maintenanceReport = is_maintenance;
             if (consolidatedReport)
@@ -106,6 +119,10 @@ namespace TQM
                 //    lbl_reportHeader.Text = "Con. Wrapping Report - All";
                 //}
                 lbl_reportHeader.Text = "Consolidated Report";
+            }
+            else if (drumViewReport)
+            {
+                lbl_reportHeader.Text = "Drum View Report";
             }
             else if (drumDetailsReport)
             {
@@ -133,7 +150,7 @@ namespace TQM
                 btn_saveToPDF.BackgroundColor = Color.Red;
                 btn_saveToPDF.TextColor = Color.White;
             }
-            if (categoryName != null && categoryName != "" && catID!=Guid.Empty)
+            if (categoryName != null && categoryName != "" && catID != Guid.Empty)
             {
                 selectedCategoryID = catID;
                 selectedMachineCategory = categoryName;
@@ -897,11 +914,155 @@ namespace TQM
         }
 
 
+        void ViewCell_Tapped(System.Object sender, System.EventArgs e)
+        {
+            try
+            {
+                if (lastCell != null)
+                    lastCell.View.BackgroundColor = Color.White;
+                var viewCell = (ViewCell)sender;
+                if (viewCell.View != null)
+                {
+                    viewCell.View.BackgroundColor = Color.White;
+                    lastCell = viewCell;
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "An error occurred.Error: " + ex.ToString(), "OK");
+                return;
+            }
+        }
+
+        private void getDrumViewReport(DateTime sd, DateTime ed, Guid categoryID, Guid machineID)
+        {
+            try
+            {
+                int totalDrums = 0;
+                int firstDrumNo = 0;
+                int selectedDrumEndNo = 0;
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    TestConfigModel tcm = conn.Table<TestConfigModel>().Where(TestConfigModel =>
+                                                        (TestConfigModel.categoryID == selectedCategoryID
+                                                        && TestConfigModel.machineID == selectedMachineID
+                                                        && TestConfigModel.scheduledStartDate ==sd
+                                                        && TestConfigModel.scheduledEndDate ==ed)).FirstOrDefault();
+                    if (tcm != null)
+                    {
+                        totalDrums = tcm.totalDrumCount;
+                        firstDrumNo = 0;
+                        selectedDrumEndNo = tcm.totalDrumCount;
+                        selectedTotalDrumCount = tcm.totalDrumCount;
+                        selectedMachineCategory = tcm.machineCategory;
+                        selectedMachineName = tcm.machineName;
+                        selectedP1 = tcm.p1.ToString() + "\u00B1" + tcm.p1Deviation.ToString();
+                        selectedP2 = tcm.p2.ToString() + "\u00B1" + tcm.p2Deviation.ToString();
+                        selectedN1 = tcm.n1.ToString() + "\u00B1" + tcm.n1Deviation.ToString();
+                        selectedMaterialCount = tcm.materialCount;
+                        selectedSpeed = tcm.speed.ToString();
+                    }
+                    else
+                    {
+                        DisplayAlert("Attention", "Error Occurred!!! Error: Unable to get settings for selected machine", "OK");
+                        return;
+                    }
+                }
+
+                drumDict = new Dictionary<int, string>();
+                drumDictRandomTest = new Dictionary<int, Boolean>();
+                selectedCategoryID = categoryID;
+                selectedMachineID = machineID;
+                
+
+                List<DrumMVReport> dv_list = new List<DrumMVReport>();
+                for (int i = 0; i < totalDrums; i++)
+                {
+                    DrumMVReport dv = new DrumMVReport();
+                    if ((firstDrumNo + 1) <= selectedDrumEndNo) { dv.D1 = (firstDrumNo + 1).ToString(); if (getTestDetailsForDrum(firstDrumNo + 1)) { if (drumDictRandomTest[firstDrumNo + 1]) { dv.D1_BG_Color = "red"; } else { dv.D1_BG_Color = "red"; }; dv.D1_Strength = drumDict[firstDrumNo + 1].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 1]) { dv.D1_BG_Color = "orange"; } else { dv.D1_BG_Color = "green"; }; dv.D1_Strength = drumDict[firstDrumNo + 1].ToString(); }; dv.D1_Visible = true; } else { dv.D1 = ""; dv.D1_Visible = false; }
+                    if ((firstDrumNo + 2) <= selectedDrumEndNo) { dv.D2 = (firstDrumNo + 2).ToString(); if (getTestDetailsForDrum(firstDrumNo + 2)) { if (drumDictRandomTest[firstDrumNo + 2]) { dv.D2_BG_Color = "red"; } else { dv.D2_BG_Color = "red"; }; dv.D2_Strength = drumDict[firstDrumNo + 2].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 2]) { dv.D2_BG_Color = "orange"; } else { dv.D2_BG_Color = "green"; }; dv.D2_Strength = drumDict[firstDrumNo + 2].ToString(); }; dv.D2_Visible = true; } else { dv.D2 = ""; dv.D2_Visible = false; }
+                    if ((firstDrumNo + 3) <= selectedDrumEndNo) { dv.D3 = (firstDrumNo + 3).ToString(); if (getTestDetailsForDrum(firstDrumNo + 3)) { if (drumDictRandomTest[firstDrumNo + 3]) { dv.D3_BG_Color = "red"; } else { dv.D3_BG_Color = "red"; }; dv.D3_Strength = drumDict[firstDrumNo + 3].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 3]) { dv.D3_BG_Color = "orange"; } else { dv.D3_BG_Color = "green"; }; dv.D3_Strength = drumDict[firstDrumNo + 3].ToString(); }; dv.D3_Visible = true; } else { dv.D3 = ""; dv.D3_Visible = false; }
+                    if ((firstDrumNo + 4) <= selectedDrumEndNo) { dv.D4 = (firstDrumNo + 4).ToString(); if (getTestDetailsForDrum(firstDrumNo + 4)) { if (drumDictRandomTest[firstDrumNo + 4]) { dv.D4_BG_Color = "red"; } else { dv.D4_BG_Color = "red"; }; dv.D4_Strength = drumDict[firstDrumNo + 4].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 4]) { dv.D4_BG_Color = "orange"; } else { dv.D4_BG_Color = "green"; }; dv.D4_Strength = drumDict[firstDrumNo + 4].ToString(); }; dv.D4_Visible = true; } else { dv.D4 = ""; dv.D4_Visible = false; }
+                    if ((firstDrumNo + 5) <= selectedDrumEndNo) { dv.D5 = (firstDrumNo + 5).ToString(); if (getTestDetailsForDrum(firstDrumNo + 5)) { if (drumDictRandomTest[firstDrumNo + 5]) { dv.D5_BG_Color = "red"; } else { dv.D5_BG_Color = "red"; }; dv.D5_Strength = drumDict[firstDrumNo + 5].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 5]) { dv.D5_BG_Color = "orange"; } else { dv.D5_BG_Color = "green"; }; dv.D5_Strength = drumDict[firstDrumNo + 5].ToString(); }; dv.D5_Visible = true; } else { dv.D5 = ""; dv.D5_Visible = false; }
+                    if ((firstDrumNo + 6) <= selectedDrumEndNo) { dv.D6 = (firstDrumNo + 6).ToString(); if (getTestDetailsForDrum(firstDrumNo + 6)) { if (drumDictRandomTest[firstDrumNo + 6]) { dv.D6_BG_Color = "red"; } else { dv.D6_BG_Color = "red"; }; dv.D6_Strength = drumDict[firstDrumNo + 6].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 6]) { dv.D6_BG_Color = "orange"; } else { dv.D6_BG_Color = "green"; }; dv.D6_Strength = drumDict[firstDrumNo + 6].ToString(); }; dv.D6_Visible = true; } else { dv.D6 = ""; dv.D6_Visible = false; }
+                    if ((firstDrumNo + 7) <= selectedDrumEndNo) { dv.D7 = (firstDrumNo + 7).ToString(); if (getTestDetailsForDrum(firstDrumNo + 7)) { if (drumDictRandomTest[firstDrumNo + 7]) { dv.D7_BG_Color = "red"; } else { dv.D7_BG_Color = "red"; }; dv.D7_Strength = drumDict[firstDrumNo + 7].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 7]) { dv.D7_BG_Color = "orange"; } else { dv.D7_BG_Color = "green"; }; dv.D7_Strength = drumDict[firstDrumNo + 7].ToString(); }; dv.D7_Visible = true; } else { dv.D7 = ""; dv.D7_Visible = false; }
+                    if ((firstDrumNo + 8) <= selectedDrumEndNo) { dv.D8 = (firstDrumNo + 8).ToString(); if (getTestDetailsForDrum(firstDrumNo + 8)) { if (drumDictRandomTest[firstDrumNo + 8]) { dv.D8_BG_Color = "red"; } else { dv.D8_BG_Color = "red"; }; dv.D8_Strength = drumDict[firstDrumNo + 8].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 8]) { dv.D8_BG_Color = "orange"; } else { dv.D8_BG_Color = "green"; }; dv.D8_Strength = drumDict[firstDrumNo + 8].ToString(); }; dv.D8_Visible = true; } else { dv.D8 = ""; dv.D8_Visible = false; }
+                    if ((firstDrumNo + 9) <= selectedDrumEndNo) { dv.D9 = (firstDrumNo + 9).ToString(); if (getTestDetailsForDrum(firstDrumNo + 9)) { if (drumDictRandomTest[firstDrumNo + 9]) { dv.D9_BG_Color = "red"; } else { dv.D9_BG_Color = "red"; }; dv.D9_Strength = drumDict[firstDrumNo + 9].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 9]) { dv.D9_BG_Color = "orange"; } else { dv.D9_BG_Color = "green"; }; dv.D9_Strength = drumDict[firstDrumNo + 9].ToString(); }; dv.D9_Visible = true; } else { dv.D9 = ""; dv.D9_Visible = false; }
+                    if ((firstDrumNo + 10) <= selectedDrumEndNo) { dv.D10 = (firstDrumNo + 10).ToString(); if (getTestDetailsForDrum(firstDrumNo + 10)) { if (drumDictRandomTest[firstDrumNo + 10]) { dv.D10_BG_Color = "red"; } else { dv.D10_BG_Color = "red"; }; dv.D10_Strength = drumDict[firstDrumNo + 10].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 10]) { dv.D10_BG_Color = "orange"; } else { dv.D10_BG_Color = "green"; }; dv.D10_Strength = drumDict[firstDrumNo + 10].ToString(); }; dv.D10_Visible = true; } else { dv.D10 = ""; dv.D10_Visible = false; }
+                    dv_list.Add(dv);
+                    i += 9;
+                    firstDrumNo += 10;
+                }
+                listview_drums.ItemsSource = dv_list;
+                listview_drums.IsVisible = true;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
+            }
+        }
+
+        private bool getTestDetailsForDrum(int drumNo)
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    bool ret = false;
+                    StrengthTestSummaryModel sts = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
+                                                        (StrengthTestSummaryModel.categoryID == selectedCategoryID
+                                                        && StrengthTestSummaryModel.machineID == selectedMachineID
+                                                        && StrengthTestSummaryModel.drumSelectionMethod == "Scheduled"
+                                                        && StrengthTestSummaryModel.drumNumber == drumNo)).FirstOrDefault();
+                    StrengthTestModel stm = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
+                                                        (StrengthTestModel.categoryID == selectedCategoryID
+                                                        && StrengthTestModel.machineID == selectedMachineID
+                                                        && StrengthTestModel.drumNumber == drumNo))
+                                                        .OrderByDescending(StrengthTestModel => StrengthTestModel.createdate).FirstOrDefault();
+                    if (sts == null)
+                    {
+                        drumDict.Add(drumNo, "QT-0 \n ST-0.0");
+                        ret = true;
+                    }
+                    else
+                    {
+                        drumDict.Add(drumNo, "QT-"+sts.qualifiedTestCount.ToString() + "\n" + "ST-"+ sts.yarnStrength.ToString());
+                        ret = false;
+                    }
+
+                    if (stm != null && stm.totalTestCount != stm.sampleNo)
+                    {
+                        drumDictRandomTest.Add(drumNo, true);
+                    }
+                    else
+                    {
+                        drumDictRandomTest.Add(drumNo, false);
+                    }
+                    return ret;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+
         private void getReport(DateTime startDate, DateTime endDate, Guid catID, string categoryName, Guid machineID, string shift, string testID, string drumNumber, string standardStrength, bool deleteRequest, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             try
             {
-               
+
+                if (machineID != Guid.Empty )
+                {
+                    selectedMachineID = machineID;
+                }
+
+                if (drumViewReport)
+                {
+                    getDrumViewReport(startDate, endDate, catID, machineID);
+                    return;
+                }
 
                 if (drumDetailsReport)
                 {
@@ -2969,6 +3130,499 @@ namespace TQM
         }
 
 
+        private bool generatePDFConsolidatedDrumViewReport()
+        {
+            try
+            {
+                PdfDocument pdfDocument = new PdfDocument();
+
+
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<CompanyModel>();
+                    List<CompanyModel> companieslist = conn.Table<CompanyModel>().ToList();
+                    selectedCompanyName = companieslist[0].Name;
+                };
+
+
+                PdfPage pdfPage = pdfDocument.Pages.Add();
+                PdfGrid pdfGrid = null;
+                PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
+                layoutFormat.Layout = PdfLayoutType.Paginate;
+                List<DrumMVReport> overallReportList = (List<DrumMVReport>)listview_drums.ItemsSource;
+                PdfLayoutResult result = null;
+                float overallHeight = 0;
+                int tableNo = 1;
+                //bool newPageAdded_Header = false;
+                //bool newPageAdded_Body = false;
+
+                PdfGrid pdfGridInfo = new PdfGrid();
+                pdfGridInfo.RepeatHeader = true;
+
+
+                int totalRow_header = 5;
+                int totalRow_header_height = totalRow_header * 20;
+
+                int rowCount = 1;
+                int pageRecordCount = 0;
+                float rowHeights = 0;
+
+                decimal totalStrength = 0.0m;
+
+
+                //bool includeHeader = true;
+                //PdfGrid pdfGridBody = null;
+                PdfGridRow row = null;
+                pdfGrid = new PdfGrid();
+
+                pdfGrid.Columns.Add(10);
+                foreach (DrumMVReport orl in overallReportList)
+                {
+                    //if (includeHeader)
+                    //{
+                    //    includeHeader = false;
+                    //    pdfGrid = new PdfGrid();
+
+                    //    pdfGrid.Columns.Add(10);
+                    //    row = new PdfGridRow(pdfGrid);
+                    //    pdfGrid.Rows.Add(row);
+
+
+                    //    pdfGrid.Rows[0].Cells[0].Value = "Date & Shift";
+                    //    pdfGrid.Rows[0].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //    pdfGrid.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //    pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //    pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    //    pdfGrid.Rows[0].Cells[1].Value = "Drum No";
+                    //    pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //    pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //    pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //    pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    //    pdfGrid.Rows[0].Cells[2].Value = "Strength";
+                    //    pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //    pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //    pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //    pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    //    pdfGrid.Rows[0].Cells[3].Value = "Machine";
+                    //    pdfGrid.Rows[0].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //    pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //    pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //    pdfGrid.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    //    pdfGrid.Rows[0].Cells[4].Value = "ID";
+                    //    pdfGrid.Rows[0].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //    pdfGrid.Rows[0].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //    pdfGrid.Rows[0].Cells[4].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //    pdfGrid.Rows[0].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    //    pdfGrid.Rows[0].Cells[5].Value = "Total Sample";
+                    //    pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //    pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //    pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //    pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    //    pdfGrid.Rows[0].Cells[6].Value = "Count";
+                    //    pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //    pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //    pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //    pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    //    pdfGrid.Rows[0].Cells[7].Value = "Qualified";
+                    //    pdfGrid.Rows[0].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //    pdfGrid.Rows[0].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //    pdfGrid.Rows[0].Cells[7].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //    pdfGrid.Rows[0].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    //    pdfGrid.Rows[0].Cells[8].Value = "Mac Parameters";
+                    //    pdfGrid.Rows[0].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //    pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //    pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //    pdfGrid.Rows[0].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    //    pdfGrid.Rows[0].Cells[9].Value = "Remark";
+                    //    pdfGrid.Rows[0].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //    pdfGrid.Rows[0].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //    pdfGrid.Rows[0].Cells[9].Style.BackgroundBrush = PdfBrushes.LightGray;
+                    //    pdfGrid.Rows[0].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    //    pdfGrid.Rows[0].Height = pdfGrid.Rows[0].Height * 2;
+                    //    row = new PdfGridRow(pdfGrid);
+                    //    pdfGrid.Rows.Add(row);
+                    //    rowHeights = rowHeights + pdfGrid.Rows[0].Height;
+                    //}
+
+                    
+                    row = new PdfGridRow(pdfGrid);
+                    pdfGrid.Rows.Add(row);
+
+
+                    if (orl.D1 != null && orl.D1 != "")
+                    {
+                        totalStrength = totalStrength + decimal.Parse(orl.D1_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
+                        pdfGrid.Rows[pageRecordCount].Cells[0].Value = orl.D1 + "\n" + orl.D1_Strength;
+                    }
+                    if (orl.D2 != null && orl.D2 != "")
+                    {
+                        totalStrength = totalStrength + decimal.Parse(orl.D2_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
+                        pdfGrid.Rows[pageRecordCount].Cells[1].Value = orl.D2 + "\n" + orl.D2_Strength;
+                    }
+                    if (orl.D3 != null && orl.D3 != "")
+                    {
+                        totalStrength = totalStrength + decimal.Parse(orl.D3_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
+                        pdfGrid.Rows[pageRecordCount].Cells[2].Value = orl.D3 + "\n" + orl.D3_Strength;
+                    }
+                    if (orl.D4 != null && orl.D4 != "")
+                    {
+                        totalStrength = totalStrength + decimal.Parse(orl.D4_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
+                        pdfGrid.Rows[pageRecordCount].Cells[3].Value = orl.D4 + "\n" + orl.D4_Strength;
+                    }
+                    if (orl.D5 != null && orl.D5 != "")
+                    {
+                        totalStrength = totalStrength + decimal.Parse(orl.D5_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
+                        pdfGrid.Rows[pageRecordCount].Cells[4].Value = orl.D5 + "\n" + orl.D5_Strength;
+                    }
+                    if (orl.D6 != null && orl.D6 != "")
+                    {
+                        totalStrength = totalStrength + decimal.Parse(orl.D6_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
+                        pdfGrid.Rows[pageRecordCount].Cells[5].Value = orl.D6 + "\n" + orl.D6_Strength;
+                    }
+                    if (orl.D7 != null && orl.D7 != "")
+                    {
+                        totalStrength = totalStrength + decimal.Parse(orl.D7_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.D7 + "\n" + orl.D7_Strength;
+                    }
+                    if (orl.D8 != null && orl.D8 != "")
+                    {
+                        totalStrength = totalStrength + decimal.Parse(orl.D8_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.D8 + "\n" + orl.D8_Strength;
+                    }
+                    if (orl.D9 != null && orl.D9 != "")
+                    {
+                        totalStrength = totalStrength + decimal.Parse(orl.D9_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.D9 + "\n" + orl.D9_Strength;
+                    }
+                    if (orl.D10 != null && orl.D10 != "")
+                    {
+                        totalStrength = totalStrength + decimal.Parse(orl.D10_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
+                        pdfGrid.Rows[pageRecordCount].Cells[9].Value = orl.D10 + "\n" + orl.D10_Strength;
+                    }
+
+                    if (orl.D1_BG_Color == "green" || orl.D1_BG_Color == "orange")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.BackgroundBrush = PdfBrushes.White;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        if (orl.D1 == null || orl.D1 == "")
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                            pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                            pdfGrid.Rows[pageRecordCount].Cells[0].Style.BackgroundBrush = PdfBrushes.Red;
+                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                            pdfGrid.Rows[pageRecordCount].Cells[0].Style.TextBrush = brush_con;
+                        }
+                    }
+
+                    if (orl.D2_BG_Color == "green" || orl.D2_BG_Color == "orange")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[1].Style.BackgroundBrush = PdfBrushes.White;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[1].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        if (orl.D2 == null || orl.D2 == "")
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                            pdfGrid.Rows[pageRecordCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                            pdfGrid.Rows[pageRecordCount].Cells[1].Style.BackgroundBrush = PdfBrushes.Red;
+                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                            pdfGrid.Rows[pageRecordCount].Cells[1].Style.TextBrush = brush_con;
+                        }
+                    }
+
+                    if (orl.D3_BG_Color == "green" || orl.D3_BG_Color == "orange")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.BackgroundBrush = PdfBrushes.White;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        if (orl.D3 == null || orl.D3 == "")
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                            pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                            pdfGrid.Rows[pageRecordCount].Cells[2].Style.BackgroundBrush = PdfBrushes.Red;
+                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                            pdfGrid.Rows[pageRecordCount].Cells[2].Style.TextBrush = brush_con;
+                        }
+                    }
+
+                    if (orl.D4_BG_Color == "green" || orl.D4_BG_Color == "orange")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[3].Style.BackgroundBrush = PdfBrushes.White;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[3].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        if (orl.D4 == null || orl.D4 == "")
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                            pdfGrid.Rows[pageRecordCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                            pdfGrid.Rows[pageRecordCount].Cells[3].Style.BackgroundBrush = PdfBrushes.Red;
+                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                            pdfGrid.Rows[pageRecordCount].Cells[3].Style.TextBrush = brush_con;
+                        }
+                    }
+
+                    if (orl.D5_BG_Color == "green" || orl.D5_BG_Color == "orange")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.BackgroundBrush = PdfBrushes.White;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        if (orl.D5 == null || orl.D5 == "")
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                            pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                            pdfGrid.Rows[pageRecordCount].Cells[4].Style.BackgroundBrush = PdfBrushes.Red;
+                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                            pdfGrid.Rows[pageRecordCount].Cells[4].Style.TextBrush = brush_con;
+                        }
+                    }
+
+                    if (orl.D6_BG_Color == "green" || orl.D6_BG_Color == "orange")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.BackgroundBrush = PdfBrushes.White;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        if (orl.D6 == null || orl.D6 == "")
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[5].Style.Borders.All = PdfPens.Transparent;
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                            pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                            pdfGrid.Rows[pageRecordCount].Cells[5].Style.BackgroundBrush = PdfBrushes.Red;
+                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                            pdfGrid.Rows[pageRecordCount].Cells[5].Style.TextBrush = brush_con;
+                        }
+                    }
+
+                    if (orl.D7_BG_Color == "green" || orl.D7_BG_Color == "orange")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.BackgroundBrush = PdfBrushes.White;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        if (orl.D7 == null || orl.D7 == "")
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[6].Style.Borders.All = PdfPens.Transparent;
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                            pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                            pdfGrid.Rows[pageRecordCount].Cells[6].Style.BackgroundBrush = PdfBrushes.Red;
+                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                            pdfGrid.Rows[pageRecordCount].Cells[6].Style.TextBrush = brush_con;
+                        }
+                    }
+
+                    if (orl.D8_BG_Color == "green" || orl.D8_BG_Color == "orange")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.BackgroundBrush = PdfBrushes.White;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        if (orl.D8 == null || orl.D8 == "")
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[7].Style.Borders.All = PdfPens.Transparent;
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                            pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                            pdfGrid.Rows[pageRecordCount].Cells[7].Style.BackgroundBrush = PdfBrushes.Red;
+                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                            pdfGrid.Rows[pageRecordCount].Cells[7].Style.TextBrush = brush_con;
+                        }
+                    }
+
+                    if (orl.D9_BG_Color == "green" || orl.D9_BG_Color == "orange")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.BackgroundBrush = PdfBrushes.White;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        if (orl.D9 == null || orl.D9 == "")
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[8].Style.Borders.All = PdfPens.Transparent;
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                            pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                            pdfGrid.Rows[pageRecordCount].Cells[8].Style.BackgroundBrush = PdfBrushes.Red;
+                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                            pdfGrid.Rows[pageRecordCount].Cells[8].Style.TextBrush = brush_con;
+                        }
+                    }
+
+                    if (orl.D10_BG_Color == "green" || orl.D10_BG_Color == "orange")
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[9].Style.BackgroundBrush = PdfBrushes.White;
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[9].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        if (orl.D10 == null || orl.D10 == "")
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[9].Style.Borders.All = PdfPens.Transparent;
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
+                            pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                            pdfGrid.Rows[pageRecordCount].Cells[9].Style.BackgroundBrush = PdfBrushes.Red;
+                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                            pdfGrid.Rows[pageRecordCount].Cells[9].Style.TextBrush = brush_con;
+                        }
+                    }
+
+
+
+
+                    //**************************** Overall total ****************************
+
+                    if (rowCount == overallReportList.Count)
+                    {
+                        row = new PdfGridRow(pdfGrid);
+                        pdfGrid.Rows.Add(row);
+
+                        pdfGrid.Rows[pageRecordCount+1].Cells[0].Value = "Average Strength : " + formatDecimal(totalStrength/selectedTotalDrumCount,2).ToString();
+                        pdfGrid.Rows[pageRecordCount + 1].Cells[0].ColumnSpan = 10;
+                        pdfGrid.Rows[pageRecordCount+1].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount+1].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+                        pdfGrid.Rows[pageRecordCount+1].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount+1].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount+1].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount+1].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount+1].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount+1].Cells[5].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount+1].Cells[6].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount+1].Cells[7].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount+1].Cells[8].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount+1].Cells[9].Style.Borders.All = PdfPens.Transparent;
+
+                        pdfGrid.Rows[pageRecordCount+1].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount+1].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount+1].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount+1].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount+1].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount+1].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount+1].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount+1].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount+1].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount+1].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    }
+
+                    //**************************** End of Overall total *****************************
+
+                    rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
+                    if (rowHeights <= 700 && rowCount == overallReportList.Count)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
+                    }
+                    else if ((rowHeights >= 600 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, 60), layoutFormat);
+                        pdfPage = pdfDocument.Pages.Add();
+                        pageRecordCount = 0;
+                        rowHeights = 0;
+                    }
+                    Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
+                    pageRecordCount++;
+                    rowCount++;
+                }
+
+
+
+
+                //Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
+                Debug.WriteLine("Table NO==>" + tableNo + " ,tableHeigth ===>" + overallHeight);
+                tableNo++;
+                //};
+
+
+                addPageHeaderAndFooter(pdfDocument);
+                MemoryStream stream = new MemoryStream();
+                pdfDocument.Save(stream);
+                pdfDocument.Close(true);
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "SVYA_Consolidated_Drum_View_Report.pdf");
+                //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
+                //Process.Start(pdfPath);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                return false;
+            }
+        }
+
+
         private bool generatePDFConsolidatedReport()
         {
             try
@@ -3282,7 +3936,7 @@ namespace TQM
 
             for (int i = 0; i < pdfDocument.PageCount; i++)
             {
-                RectangleF bounds = new RectangleF(0, 0, pdfDocument.Pages[i].GetClientSize().Width, 70);
+                RectangleF bounds = new RectangleF(0, 0, pdfDocument.Pages[i].GetClientSize().Width, 100);
                 PdfPageTemplateElement header = new PdfPageTemplateElement(bounds);
                 //Stream imageStream = App.Current.GetType().Assembly.GetManifestResourceStream("TQM.Assets.SasthaLogo.jpg");
                 //PdfImage image = new PdfBitmap(imageStream);
@@ -3346,6 +4000,17 @@ namespace TQM
                             header.Graphics.DrawString(CON_UF_NAME_4 + ": " + CON_UF_VAL_4, font_rn, brush_rn, new PointF(10, 48));
                         }
                     }
+                }
+                else if (drumViewReport)
+                {
+                    header.Graphics.DrawString("SVYA Drum View Report (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                    header.Graphics.DrawString("Date: " + DateTime.Now.ToString(), font_rn, brush_rn, new PointF(10, 36));
+                    header.Graphics.DrawString("Machine: " + selectedMachineCategory + " - "+selectedMachineName, font_rn, brush_rn, new PointF(200, 36));
+                    header.Graphics.DrawString("Material Count: " + selectedMaterialCount.ToString(), font_rn, brush_rn, new PointF(10, 56));
+                    header.Graphics.DrawString("Speed: " + selectedSpeed, font_rn, brush_rn, new PointF(400, 56));
+                    header.Graphics.DrawString("P1: " + selectedP1.ToString() , font_rn, brush_rn, new PointF(10, 76));
+                    header.Graphics.DrawString("P2: " + selectedP2.ToString(), font_rn, brush_rn, new PointF(200, 76));
+                    header.Graphics.DrawString("P3: " + selectedN1.ToString(), font_rn, brush_rn, new PointF(400, 76));
                 }
                 else if (drumDetailsReport)
                 {
@@ -3496,6 +4161,52 @@ namespace TQM
                         await resetBtn();
                     }
 
+                }
+                else if (drumViewReport)
+                {
+                    if (!generatePDFConsolidatedDrumViewReport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+                    else
+                    {
+                        String companyName = null;
+                        try
+                        {
+                            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                            conn.CreateTable<CompanyModel>();
+                            var company = conn.Table<CompanyModel>().FirstOrDefault();
+                            if (company != null)
+                            {
+                                companyName = company.Name;
+                            }
+                            conn.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                        }
+                        string fileName = "SVYA_Consolidated_Drum_View_Report.pdf";
+                        string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                        Java.IO.File myDir = new Java.IO.File(root + "/SVYADownloads");
+                        Java.IO.File file = new Java.IO.File(myDir, fileName);
+                        string filePath = file.Path;
+                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                        var request = new RestRequest();
+                        request.Method = Method.Post;
+                        //request.Timeout = Timeout.Infinite;
+                        request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                        request.AddParameter("uploadedby", companyName);
+                        request.AddParameter("title", "SVYA Consolidated Drum View Report -" + DateTime.Now.ToString());
+                        request.AddFile("reportpath", filePath);
+                        RestResponse response = client.Execute(request);
+                        if (response.IsSuccessful)
+                        {
+                            showAlert("Report uploaded sucessfully!!!");
+                        }
+                        else
+                        {
+                            showAlert("Upload Failed. Please try again!!!", "Error");
+                        }
+                        await resetBtn();
+                    }
                 }
                 else if (drumDetailsReport)
                 {

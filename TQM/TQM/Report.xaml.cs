@@ -268,6 +268,8 @@ namespace TQM
                 
                 bool is_consolidated = false;
                 if (reportType == "Consolidated") { is_consolidated = true; }
+                bool drumView = false;
+                if (reportType == "Drum View") { drumView = true; }
                 bool drumDetails = false;
                 if (reportType == "Drum Details") { drumDetails = true; }
                 bool is_maintenance = false;
@@ -276,7 +278,7 @@ namespace TQM
                 
 
                 Navigation.PushAsync(new YCReport
-                    (date_fromdate.Date, date_enddate.Date, selectedCategoryID, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength , false, is_consolidated, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
+                    (date_fromdate.Date, date_enddate.Date, selectedCategoryID, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength , false, is_consolidated, drumView, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
             catch (Exception ex)
             {
@@ -357,6 +359,7 @@ namespace TQM
                 bool is_consolidated = false;
                 bool drumDetails = false;
                 bool is_maintenance = false;
+                bool drumView = false;
 
                 if (picker_reportType.SelectedIndex < 0)
                 {
@@ -510,7 +513,7 @@ namespace TQM
                 }
 
                Navigation.PushAsync(new YCReport
-                    (date_fromdate.Date, date_enddate.Date,selectedCategoryID, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength, true, is_consolidated, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
+                    (date_fromdate.Date, date_enddate.Date,selectedCategoryID, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength, true, is_consolidated, drumView, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
             catch (Exception ex)
             {

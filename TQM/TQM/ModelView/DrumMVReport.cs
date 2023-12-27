@@ -1,7 +1,7 @@
 ﻿using System;
 namespace TQM.ModelView
 {
-	public class DrumMVReport
+	public class DrumMV
 	{
         public string D1 { get; set; }
         public string D2 { get; set; }

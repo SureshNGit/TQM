@@ -4,7 +4,7 @@ using Xamarin.Forms;
 
 namespace TQM
 {
-    public class TextFormatterDrumView : IMultiValueConverter
+    public class TextFormatterDrumViewReport : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -33,7 +33,7 @@ namespace TQM
             //    return formatDecimal(act, 2).ToString() + " [Std Count:" + formatDecimal(exp, 2).ToString() + " " + deviation.ToString() + "]";
             //}
 
-            return drumNo + "\n" + "ST-"+ Strength;
+            return drumNo + "\n" + Strength;
 
             //return "";
         }
