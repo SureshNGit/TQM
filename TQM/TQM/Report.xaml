@@ -59,6 +59,7 @@
                     <Picker.ItemsSource>
                         <x:Array Type="{x:Type x:String}">
                             <x:String>Detailed</x:String>
+                            <x:String>Individual Test - Brief View</x:String>
                             <x:String>Consolidated</x:String>
                             <x:String>Drum View</x:String>
                             <x:String>Drum Details</x:String>

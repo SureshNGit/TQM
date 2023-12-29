@@ -62,6 +62,7 @@ namespace TQM
         private decimal CON_HANK = 0.0000m;
         private decimal CON_STD_DEV = 0.0000m;
         private decimal CON_CV = 0.0000m;
+        private bool is_indBreifViewReport = false;
         private bool consolidatedReport = false;
         private bool drumViewReport = false;
         private bool drumDetailsReport = false;
@@ -98,12 +99,13 @@ namespace TQM
             InitializeComponent();
         }
 
-        public YCReport(DateTime startDate, DateTime endDate, Guid catID, string categoryName, Guid machineID, string shift, string testID, string drumNumber,string standardStrength, bool deleteRequest, bool isConsolidated, bool drumView, bool drumDetails, bool is_maintenance, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
+        public YCReport(DateTime startDate, DateTime endDate, Guid catID, string categoryName, Guid machineID, string shift, string testID, string drumNumber,string standardStrength, bool deleteRequest,bool is_indBreifView, bool isConsolidated, bool drumView, bool drumDetails, bool is_maintenance, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             InitializeComponent();
             isFinalAvgRowPresent = false;
             is_IncompleteTest = false;
             inCompleteTestID = 0;
+            is_indBreifViewReport = is_indBreifView;
             consolidatedReport = isConsolidated;
             drumViewReport = drumView;
             drumDetailsReport = drumDetails;
@@ -934,6 +936,87 @@ namespace TQM
             }
         }
 
+
+        private void getIndividualTestView(DateTime sd, DateTime ed, Guid categoryID, Guid machineID)
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    List<StrengthTestSummaryModel> stm_list = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel => (
+                                                        StrengthTestSummaryModel.categoryID == categoryID
+                                                        && StrengthTestSummaryModel.machineID == machineID
+                                                        && StrengthTestSummaryModel.createdate >= sd
+                                                        && StrengthTestSummaryModel.createdate <= ed)).ToList();
+                    if (stm_list.Count == 0)
+                    {
+                        DisplayAlert("Attention", "No records to display!!!", "OK");
+                        return;
+                    }
+                    
+                    List<IndividualTestMVReport> itr_all = new List<IndividualTestMVReport>();
+                    foreach(StrengthTestSummaryModel stm in stm_list)
+                    {
+                        List<StrengthTestModel> indTest_list = conn.Table<StrengthTestModel>().Where(StrengthTestModel => (
+                                                        StrengthTestModel.testID == stm.testID)).ToList();
+
+                        if (indTest_list.Count > 0 && indTest_list[0].totalTestCount<=10)
+                        {
+                            //Head
+
+                            IndividualTestMVReport itr = new IndividualTestMVReport();
+                            itr.isHeader = true;
+                            itr.isBody = false;
+                            itr.Header = "Test ID: " + stm.testID.ToString();
+                            itr.Speed = "Speed: " + stm.speed.ToString();
+                            itr.P1 = "P1: " + stm.p1.ToString();
+                            itr.P2 = "P2: " + stm.p2.ToString();
+                            itr.N1 = "N1: " + stm.n1.ToString();
+                            itr.Mat_Count = "Count: " + stm.materialCount;
+                            itr.DrumNumber = "Drum No: "+ stm.drumNumber.ToString();
+                            itr_all.Add(itr);
+
+                            //Body
+                            
+                            itr = new IndividualTestMVReport();
+                            itr.isHeader = false;
+                            itr.isBody = true;
+                            itr.T1 = indTest_list[0].sampleStrengthCount.ToString();
+                            itr.T2 = indTest_list[1].sampleStrengthCount.ToString();
+                            itr.T3 = indTest_list[2].sampleStrengthCount.ToString();
+                            itr.T4 = indTest_list[3].sampleStrengthCount.ToString();
+                            itr.T5 = indTest_list[4].sampleStrengthCount.ToString();
+                            itr.T6 = indTest_list[5].sampleStrengthCount.ToString();
+                            itr.T7 = indTest_list[6].sampleStrengthCount.ToString();
+                            itr.T8 = indTest_list[7].sampleStrengthCount.ToString();
+                            itr.T9 = indTest_list[8].sampleStrengthCount.ToString();
+                            itr.T10 = indTest_list[9].sampleStrengthCount.ToString();
+                            itr.QT = "QT: " + stm.qualifiedTestCount.ToString();
+                            itr.ST = "ST: " + stm.yarnStrength.ToString();
+                            decimal maxRangeVal = stm.standardStrength + stm.strengthDeviation;
+                            decimal minRangeVal = stm.standardStrength - stm.strengthDeviation;
+                            if (stm.yarnStrength < minRangeVal || stm.yarnStrength > maxRangeVal)
+                            {
+                                itr.ST_BG_Color = "red";
+                            }
+                            else
+                            {
+                                itr.ST_BG_Color = "white";
+                            }
+                            itr_all.Add(itr);
+                        }
+                    }
+                    listview_individualTest.ItemsSource = itr_all;
+                    listview_individualTest.IsVisible = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "An error occurred.Error: " + ex.ToString(), "OK");
+                return;
+            }
+        }
+
         private void getDrumViewReport(DateTime sd, DateTime ed, Guid categoryID, Guid machineID)
         {
             try
@@ -1056,6 +1139,12 @@ namespace TQM
                 if (machineID != Guid.Empty )
                 {
                     selectedMachineID = machineID;
+                }
+
+                if (is_indBreifViewReport)
+                {
+                    getIndividualTestView(startDate, endDate, catID, machineID);
+                    return;
                 }
 
                 if (drumViewReport)
@@ -3120,6 +3209,102 @@ namespace TQM
                   
             
                 }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                return false;
+            }
+        }
+
+
+        private bool generatePDFIndividualBreifReport()
+        {
+            try
+            {
+                PdfDocument pdfDocument = new PdfDocument();
+
+
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.CreateTable<CompanyModel>();
+                    List<CompanyModel> companieslist = conn.Table<CompanyModel>().ToList();
+                    selectedCompanyName = companieslist[0].Name;
+                };
+
+
+                PdfPage pdfPage = pdfDocument.Pages.Add();
+                PdfGrid pdfGrid = null;
+                PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
+                layoutFormat.Layout = PdfLayoutType.Paginate;
+                List<IndividualTestMVReport> overallReportList = (List<IndividualTestMVReport>)listview_individualTest.ItemsSource;
+                PdfLayoutResult result = null;
+                float overallHeight = 0;
+                int tableNo = 1;
+                //bool newPageAdded_Header = false;
+                //bool newPageAdded_Body = false;
+
+                PdfGrid pdfGridInfo = new PdfGrid();
+                pdfGridInfo.RepeatHeader = true;
+
+
+                int totalRow_header = 5;
+                int totalRow_header_height = totalRow_header * 20;
+
+                int rowCount = 1;
+                int pageRecordCount = 0;
+                float rowHeights = 0;
+
+                //bool includeHeader = true;
+                //PdfGrid pdfGridBody = null;
+                PdfGridRow row = null;
+                pdfGrid = new PdfGrid();
+
+                pdfGrid.Columns.Add(10);
+                foreach (IndividualTestMVReport orl in overallReportList)
+                {
+                    row = new PdfGridRow(pdfGrid);
+                    pdfGrid.Rows.Add(row);
+
+
+                   
+
+                    //**************************** End of Overall total *****************************
+
+                    rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
+                    if (rowHeights <= 700 && rowCount == overallReportList.Count)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
+                    }
+                    else if ((rowHeights >= 600 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
+                    {
+                        result = pdfGrid.Draw(pdfPage, new PointF(10, 60), layoutFormat);
+                        pdfPage = pdfDocument.Pages.Add();
+                        pageRecordCount = 0;
+                        rowHeights = 0;
+                    }
+                    Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
+                    pageRecordCount++;
+                    rowCount++;
+                }
+
+
+
+
+                //Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
+                Debug.WriteLine("Table NO==>" + tableNo + " ,tableHeigth ===>" + overallHeight);
+                tableNo++;
+                //};
+
+
+                addPageHeaderAndFooter(pdfDocument);
+                MemoryStream stream = new MemoryStream();
+                pdfDocument.Save(stream);
+                pdfDocument.Close(true);
+                string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "SVYA_Consolidated_Drum_View_Report.pdf");
+                //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
+                //Process.Start(pdfPath);
                 return true;
             }
             catch (Exception ex)
