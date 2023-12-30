@@ -945,13 +945,15 @@ namespace TQM
         {
             try
             {
+                ed= ed.AddDays(1);
+
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     List<StrengthTestSummaryModel> stm_list = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel => (
                                                         StrengthTestSummaryModel.categoryID == categoryID
                                                         && StrengthTestSummaryModel.machineID == machineID
                                                         && StrengthTestSummaryModel.createdate >= sd
-                                                        && StrengthTestSummaryModel.createdate <= ed)).ToList();
+                                                        && StrengthTestSummaryModel.createdate < ed)).ToList();
                     if (stm_list.Count == 0)
                     {
                         DisplayAlert("Attention", "No records to display!!!", "OK");
@@ -961,9 +963,15 @@ namespace TQM
                     selectedMachineCategory = stm_list[0].machineCategory;
                     selectedMachineName = stm_list[0].machineName;
 
+                    int breakCounter = 0;
+
                     List<IndividualTestMVReport> itr_all = new List<IndividualTestMVReport>();
                     foreach(StrengthTestSummaryModel stm in stm_list)
                     {
+                        breakCounter++;
+
+
+
                         List<StrengthTestModel> indTest_list = conn.Table<StrengthTestModel>().Where(StrengthTestModel => (
                                                         StrengthTestModel.testID == stm.testID)).ToList();
 
@@ -1013,6 +1021,8 @@ namespace TQM
                             }
                             itr_all.Add(itr);
                         }
+
+                        if (breakCounter == 1) { break; }
                     }
                     listview_individualTest.ItemsSource = itr_all;
                     listview_individualTest.IsVisible = true;
@@ -3251,8 +3261,6 @@ namespace TQM
                 PdfLayoutResult result = null;
                 float overallHeight = 0;
                 int tableNo = 1;
-                //bool newPageAdded_Header = false;
-                //bool newPageAdded_Body = false;
 
                 PdfGrid pdfGridInfo = new PdfGrid();
                 pdfGridInfo.RepeatHeader = true;
@@ -3267,33 +3275,34 @@ namespace TQM
 
                 //bool includeHeader = true;
                 //PdfGrid pdfGridBody = null;
-                PdfGridRow row = null;
-                pdfGrid = new PdfGrid();
+                //PdfGridRow row = null;
+               
 
-                pdfGrid.Columns.Add(13);
-                bool isNewPageAdded = false;
                 foreach (IndividualTestMVReport orl in overallReportList)
                 {
+                    
+                    pdfGrid = new PdfGrid(); pdfGrid.Columns.Add(13);
+                    
+                    //row = new PdfGridRow(pdfGrid);
 
-                    row = new PdfGridRow(pdfGrid);
-                    pdfGrid.Rows.Add(row);
+                    pdfGrid.Rows.Add();
 
 
                     if (orl.isHeader)
                     {
                         
-                        rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height+25;
-                        if ((rowHeights >= 600 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
+                        float rh = rowHeights + pdfGrid.Rows[pageRecordCount].Height+25;
+
+                        if ((rh >= 600 && rh <= 700) && pageRecordCount != overallReportList.Count)
                         {
                             result = pdfGrid.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
                             pdfPage = pdfDocument.Pages.Add();
                             pageRecordCount = 0;
                             rowHeights = 0;
-                            isNewPageAdded = true;
                         }
 
 
-                        pdfGrid.Rows[pageRecordCount].Cells[0].Value = "";
+                        pdfGrid.Rows[pageRecordCount].Cells[0].Value = "Test ID: "+ orl.Header;
                         pdfGrid.Rows[pageRecordCount].Cells[0].ColumnSpan = 2;
                         pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
@@ -3389,10 +3398,25 @@ namespace TQM
                         pdfGrid.Rows[pageRecordCount].Cells[10].Style.Borders.Right = PdfPens.Transparent;
 
 
+                        rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
+
+                        if ((rowHeights >= 600 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
+                        {
+                            result = pdfGrid.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
+                            pdfPage = pdfDocument.Pages.Add();
+                            pageRecordCount = 0;
+                            rowHeights = 0;
+                        }
+                        else
+                        {
+                            result = pdfGrid.Draw(pdfPage, new PointF(10, rowHeights), layoutFormat);
+                        }
+
                     }
                     else
                     {
-                       
+
+                        break;
 
                         pdfGrid.Rows[pageRecordCount].Cells[0].Value = "D: "+ orl.DrumNumber;
                         pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -3486,47 +3510,35 @@ namespace TQM
                         }
 
                         pdfGrid.Rows[pageRecordCount].Height = 14;
-                    }
 
-
-                    //**************************** End of Overall total *****************************
-                    if (!isNewPageAdded)
-                    {
                         rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
-                        if (rowHeights <= 700 && rowCount == overallReportList.Count)
+
+                        if ((rowHeights >= 600 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
                         {
                             result = pdfGrid.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
-                        }
-                        else if ((rowHeights >= 600 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
-                        {
-                            result = pdfGrid.Draw(pdfPage, new PointF(10, 60), layoutFormat);
                             pdfPage = pdfDocument.Pages.Add();
                             pageRecordCount = 0;
                             rowHeights = 0;
                         }
-                        isNewPageAdded = false;
+                        else
+                        {
+                            result = pdfGrid.Draw(pdfPage, new PointF(10, rowHeights), layoutFormat);
+                        }
+                      
                     }
+
                     Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
-                    pageRecordCount++;
+                    //pageRecordCount++;
                     rowCount++;
                 }
 
-
-
-
-                //Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
                 Debug.WriteLine("Table NO==>" + tableNo + " ,tableHeigth ===>" + overallHeight);
                 tableNo++;
-                //};
-
-
                 addPageHeaderAndFooter(pdfDocument);
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
                 pdfDocument.Close(true);
                 string pdfPath = Xamarin.Forms.DependencyService.Get<ISave>().Save(stream, "SVYA_Individual_Report.pdf");
-                //DisplayAlert("Notice", "PDF saved at [" + pdfPath + "]", "OK");
-                //Process.Start(pdfPath);
                 return true;
             }
             catch (Exception ex)

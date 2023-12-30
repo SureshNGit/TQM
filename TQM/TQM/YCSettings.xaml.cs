@@ -533,12 +533,12 @@ namespace TQM
                             }
                         }
 
-                        DisplayAlert("Attention", "Test started for the scheduled date ("
-                                                    + selectedScheduledStartDate.Date.ToShortDateString()
-                                                    + " - "
-                                                    + selectedScheduledEndDate.Date.ToShortDateString()
-                                                    +"), hence start date cannot be changed", "OK");
-                        ret= false;
+                        //DisplayAlert("Attention", "Test started for the scheduled date ("
+                        //                            + selectedScheduledStartDate.Date.ToShortDateString()
+                        //                            + " - "
+                        //                            + selectedScheduledEndDate.Date.ToShortDateString()
+                        //                            +"), hence start date cannot be changed", "OK");
+                        //ret= false;
                     }
                     
                     if (selectedScheduledEndDate.Date != date_scheduledEndDate.Date)
