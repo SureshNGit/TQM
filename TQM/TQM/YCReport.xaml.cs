@@ -982,7 +982,7 @@ namespace TQM
                             IndividualTestMVReport itr = new IndividualTestMVReport();
                             itr.isHeader = true;
                             itr.isBody = false;
-                            itr.Header = "Test ID: " + stm.testID.ToString();
+                            itr.Header = "TID:"+stm.testID.ToString() + "(" + stm.createdate.Day.ToString()+"-"+stm.createdate.Month.ToString()+"-"+stm.createdate.Year.ToString().Substring(2,2)+")";
                             itr.Speed = "Speed: " + stm.speed.ToString();
                             itr.P1 = "P1: " + stm.p1.ToString();
                             itr.P2 = "P2: " + stm.p2.ToString();
@@ -1022,7 +1022,7 @@ namespace TQM
                             itr_all.Add(itr);
                         }
 
-                        if (breakCounter == 1) { break; }
+                        //if (breakCounter == 1) { break; }
                     }
                     listview_individualTest.ItemsSource = itr_all;
                     listview_individualTest.IsVisible = true;
@@ -3242,7 +3242,8 @@ namespace TQM
         {
             try
             {
-                PdfDocument pdfDocument = new PdfDocument();
+                List<IndividualTestMVReport> overallReportList = (List<IndividualTestMVReport>)listview_individualTest.ItemsSource;
+               
 
 
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -3253,287 +3254,268 @@ namespace TQM
                 };
 
 
-                PdfPage pdfPage = pdfDocument.Pages.Add();
-                PdfGrid pdfGrid = null;
-                PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
-                layoutFormat.Layout = PdfLayoutType.Paginate;
-                List<IndividualTestMVReport> overallReportList = (List<IndividualTestMVReport>)listview_individualTest.ItemsSource;
-                PdfLayoutResult result = null;
-                float overallHeight = 0;
-                int tableNo = 1;
-
-                PdfGrid pdfGridInfo = new PdfGrid();
-                pdfGridInfo.RepeatHeader = true;
-
-
                 int totalRow_header = 3;
                 int totalRow_header_height = totalRow_header * 20;
+                float rowHeights = totalRow_header_height;
 
-                int rowCount = 1;
-                int pageRecordCount = 0;
-                float rowHeights = 0;
 
-                //bool includeHeader = true;
-                //PdfGrid pdfGridBody = null;
-                //PdfGridRow row = null;
-               
 
-                foreach (IndividualTestMVReport orl in overallReportList)
+                PdfDocument pdfDocument = new PdfDocument();
+                PdfPage pdfPage = pdfDocument.Pages.Add();
+
+                PdfGridLayoutFormat layoutFormat = new PdfGridLayoutFormat();
+                layoutFormat.Layout = PdfLayoutType.Paginate;
+                layoutFormat.Break = PdfLayoutBreakType.FitPage;
+                
+                PdfGrid pdfGrid = new PdfGrid();
+                pdfGrid.Columns.Add(13);
+
+
+
+                for (int i = 0; i < overallReportList.Count; i += 2)
                 {
+
+                    PdfGridRow row = pdfGrid.Rows.Add();
+                    row.Height = 20;
+
+
+                    row.Cells[0].Value = overallReportList[i].Header;
+                    row.Cells[0].ColumnSpan = 4;
+                    row.Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[0].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+
+                    //row.Cells[2].Value = "";
+                    //row.Cells[2].ColumnSpan = 2;
+                    //row.Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //row.Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //row.Cells[2].Style.BackgroundBrush = PdfBrushes.White;
+                    //row.Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+
+                    row.Cells[4].Value = overallReportList[i].Speed.Replace("Speed","SP");
+                    row.Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[4].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+
+                    row.Cells[5].Value = overallReportList[i].P1;
+                    row.Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[5].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+
+                    row.Cells[6].Value = overallReportList[i].P2;
+                    row.Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[6].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+
+                    row.Cells[7].Value = overallReportList[i].N1;
+                    row.Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[7].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+
+                    row.Cells[8].Value = overallReportList[i].Mat_Count;
+                    row.Cells[8].ColumnSpan = 5;
+                    row.Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[8].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
                     
-                    pdfGrid = new PdfGrid(); pdfGrid.Columns.Add(13);
-                    
-                    //row = new PdfGridRow(pdfGrid);
 
-                    pdfGrid.Rows.Add();
-
-
-                    if (orl.isHeader)
+                    if (i == 0)
                     {
-                        
-                        float rh = rowHeights + pdfGrid.Rows[pageRecordCount].Height+25;
-
-                        if ((rh >= 600 && rh <= 700) && pageRecordCount != overallReportList.Count)
-                        {
-                            result = pdfGrid.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
-                            pdfPage = pdfDocument.Pages.Add();
-                            pageRecordCount = 0;
-                            rowHeights = 0;
-                        }
-
-
-                        pdfGrid.Rows[pageRecordCount].Cells[0].Value = "Test ID: "+ orl.Header;
-                        pdfGrid.Rows[pageRecordCount].Cells[0].ColumnSpan = 2;
-                        pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        
-
-                        pdfGrid.Rows[pageRecordCount].Cells[2].Value = "";
-                        pdfGrid.Rows[pageRecordCount].Cells[2].ColumnSpan = 2;
-                        pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                       
-
-                        pdfGrid.Rows[pageRecordCount].Cells[4].Value = orl.Speed.Replace("Speed","SP");
-                        pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                       
-
-                        pdfGrid.Rows[pageRecordCount].Cells[5].Value = orl.P1;
-                        pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                       
-
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.P2;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                       
-
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.N1;
-                        pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        
-
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.Mat_Count;
-                        pdfGrid.Rows[pageRecordCount].Cells[8].ColumnSpan = 5;
-                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Height = 25;
-
-                        if (rowCount == 1)
-                        {
-                            pdfGrid.Rows[pageRecordCount].Cells[0].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[1].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[2].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[3].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[4].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[5].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[6].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[7].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[8].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[9].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[10].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[11].Style.Borders.Top = PdfPens.Transparent;
-                            pdfGrid.Rows[pageRecordCount].Cells[12].Style.Borders.Top = PdfPens.Transparent;
-                        }
-                        
-
-                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.Borders.Left = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[1].Style.Borders.Left = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.Borders.Left = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[3].Style.Borders.Left = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.Borders.Left = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.Borders.Left = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.Borders.Left = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.Borders.Left = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.Borders.Left = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[9].Style.Borders.Left = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[10].Style.Borders.Left = PdfPens.Transparent;
-
-                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.Borders.Right = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[1].Style.Borders.Right = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.Borders.Right = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[3].Style.Borders.Right = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.Borders.Right = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.Borders.Right = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.Borders.Right = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.Borders.Right = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.Borders.Right = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[9].Style.Borders.Right = PdfPens.Transparent;
-                        pdfGrid.Rows[pageRecordCount].Cells[10].Style.Borders.Right = PdfPens.Transparent;
+                        row.Cells[0].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[1].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[2].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[3].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[4].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[5].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[6].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[7].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[8].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[9].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[10].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[11].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[12].Style.Borders.Top = PdfPens.Transparent;
+                    }
 
 
-                        rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
+                    row.Cells[0].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[1].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[2].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[3].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[4].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[5].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[6].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[7].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[8].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[9].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[10].Style.Borders.Left = PdfPens.Transparent;
 
-                        if ((rowHeights >= 600 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
-                        {
-                            result = pdfGrid.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
-                            pdfPage = pdfDocument.Pages.Add();
-                            pageRecordCount = 0;
-                            rowHeights = 0;
-                        }
-                        else
-                        {
-                            result = pdfGrid.Draw(pdfPage, new PointF(10, rowHeights), layoutFormat);
-                        }
+                    row.Cells[0].Style.Borders.Right = PdfPens.Transparent;
+                    row.Cells[1].Style.Borders.Right = PdfPens.Transparent;
+                    row.Cells[2].Style.Borders.Right = PdfPens.Transparent;
+                    row.Cells[3].Style.Borders.Right = PdfPens.Transparent;
+                    row.Cells[4].Style.Borders.Right = PdfPens.Transparent;
+                    row.Cells[5].Style.Borders.Right = PdfPens.Transparent;
+                    row.Cells[6].Style.Borders.Right = PdfPens.Transparent;
+                    row.Cells[7].Style.Borders.Right = PdfPens.Transparent;
+                    row.Cells[8].Style.Borders.Right = PdfPens.Transparent;
+                    row.Cells[9].Style.Borders.Right = PdfPens.Transparent;
+                    row.Cells[10].Style.Borders.Right = PdfPens.Transparent;
 
+
+
+
+                    //break;
+
+                   
+                    row = pdfGrid.Rows.Add();
+                    row.Height = 20;
+                    
+                    PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+
+
+                    row.Cells[0].Value = "D: "+ overallReportList[i+1].DrumNumber;
+                    row.Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[0].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[0].Style.TextBrush = brush_con;
+
+                    row.Cells[1].Value = overallReportList[i+1].T1;
+                    row.Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[1].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[1].Style.TextBrush = brush_con;
+
+                    row.Cells[2].Value = overallReportList[i+1].T2;
+                    row.Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[2].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[2].Style.TextBrush = brush_con;
+
+                    row.Cells[3].Value = overallReportList[i+1].T3;
+                    row.Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[3].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[3].Style.TextBrush = brush_con;
+
+                    row.Cells[4].Value = overallReportList[i+1].T4;
+                    row.Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[4].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[4].Style.TextBrush = brush_con;
+
+                    row.Cells[5].Value = overallReportList[i+1].T5;
+                    row.Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[5].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[5].Style.TextBrush = brush_con;
+
+                    row.Cells[6].Value = overallReportList[i+1].T6;
+                    row.Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[6].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[6].Style.TextBrush = brush_con;
+
+                    row.Cells[7].Value = overallReportList[i+1].T7;
+                    row.Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[7].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[7].Style.TextBrush = brush_con;
+
+                    row.Cells[8].Value = overallReportList[i+1].T8;
+                    row.Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[8].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[8].Style.TextBrush = brush_con;
+
+                    row.Cells[9].Value = overallReportList[i+1].T9;
+                    row.Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[9].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[9].Style.TextBrush = brush_con;
+
+                    row.Cells[10].Value = overallReportList[i+1].T10;
+                    row.Cells[10].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[10].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[10].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[10].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[10].Style.TextBrush = brush_con;
+
+                    row.Cells[11].Value = overallReportList[i+1].QT;
+                    row.Cells[11].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[11].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    row.Cells[11].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[11].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+                    row.Cells[11].Style.TextBrush = brush_con;
+
+                    row.Cells[12].Value = overallReportList[i+1].ST;
+                    row.Cells[12].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[12].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //row.Cells[12].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[12].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+                    if (overallReportList[i+1].ST_BG_Color == "white")
+                    {
+                        row.Cells[12].Style.BackgroundBrush = PdfBrushes.White;
+                        row.Cells[12].Style.TextBrush = brush_con;
                     }
                     else
                     {
-
-                        break;
-
-                        pdfGrid.Rows[pageRecordCount].Cells[0].Value = "D: "+ orl.DrumNumber;
-                        pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[1].Value = orl.T1;
-                        pdfGrid.Rows[pageRecordCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[1].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[2].Value = orl.T2;
-                        pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[3].Value = orl.T3;
-                        pdfGrid.Rows[pageRecordCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[3].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[4].Value = orl.T4;
-                        pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[5].Value = orl.T5;
-                        pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.T6;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.T7;
-                        pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.T8;
-                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[9].Value = orl.T9;
-                        pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[9].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[10].Value = orl.T10;
-                        pdfGrid.Rows[pageRecordCount].Cells[10].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[10].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[10].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[10].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[11].Value = orl.QT;
-                        pdfGrid.Rows[pageRecordCount].Cells[11].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[11].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGrid.Rows[pageRecordCount].Cells[11].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[11].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        pdfGrid.Rows[pageRecordCount].Cells[12].Value = orl.ST;
-                        pdfGrid.Rows[pageRecordCount].Cells[12].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGrid.Rows[pageRecordCount].Cells[12].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        //pdfGrid.Rows[pageRecordCount].Cells[12].Style.BackgroundBrush = PdfBrushes.White;
-                        pdfGrid.Rows[pageRecordCount].Cells[12].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                        if (orl.ST_BG_Color == "white")
-                        {
-                            pdfGrid.Rows[pageRecordCount].Cells[12].Style.BackgroundBrush = PdfBrushes.White;
-                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
-                            pdfGrid.Rows[pageRecordCount].Cells[12].Style.TextBrush = brush_con;
-                        }
-                        else
-                        {
-                            pdfGrid.Rows[pageRecordCount].Cells[12].Style.BackgroundBrush = PdfBrushes.Red;
-                            PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
-                            pdfGrid.Rows[pageRecordCount].Cells[12].Style.TextBrush = brush_con;
-                        }
-
-                        pdfGrid.Rows[pageRecordCount].Height = 14;
-
-                        rowHeights = rowHeights + pdfGrid.Rows[pageRecordCount].Height;
-
-                        if ((rowHeights >= 600 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
-                        {
-                            result = pdfGrid.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
-                            pdfPage = pdfDocument.Pages.Add();
-                            pageRecordCount = 0;
-                            rowHeights = 0;
-                        }
-                        else
-                        {
-                            result = pdfGrid.Draw(pdfPage, new PointF(10, rowHeights), layoutFormat);
-                        }
-                      
+                        row.Cells[12].Style.BackgroundBrush = PdfBrushes.Red;
+                        PdfBrush brush_con_white = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        row.Cells[12].Style.TextBrush = brush_con_white;
                     }
 
-                    Debug.WriteLine("Page Count ===>" + pdfPage.Section.Pages.Count);
-                    //pageRecordCount++;
-                    rowCount++;
+                    //pdfGrid.Rows[i + 1].Height = 14;
+
+                    //rowHeights = rowHeights + (pdfGrid.Rows[i].Height + pdfGrid.Rows[i + 1].Height);
+
+
+                    PdfDocument pdfDocument_dummmy = new PdfDocument();
+                    PdfPage pdfPage_dummy = pdfDocument_dummmy.Pages.Add();
+                    PdfLayoutResult result = pdfGrid.Draw(pdfPage_dummy, new PointF(10, totalRow_header_height), layoutFormat);
+                    float height = result.Bounds.Height;
+
+                    if (height >= 560 && height <= 600)
+                    {
+                        pdfGrid.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
+                        pdfPage = pdfDocument.Pages.Add();
+                        pdfGrid = new PdfGrid();
+                        pdfGrid.Columns.Add(13);
+                    }
+                    else if (i+2 == overallReportList.Count)
+                    {
+                        pdfGrid.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
+                    }
+
                 }
 
-                Debug.WriteLine("Table NO==>" + tableNo + " ,tableHeigth ===>" + overallHeight);
-                tableNo++;
+
+
+
+
                 addPageHeaderAndFooter(pdfDocument);
                 MemoryStream stream = new MemoryStream();
                 pdfDocument.Save(stream);
