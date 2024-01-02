@@ -57,6 +57,13 @@
                         SelectedIndexChanged="picker_machinename_SelectedIndexChanged" Margin="15,0,90,0"
                     x:Name="picker_machinename" TextColor="Green" FontSize="16" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
 
+                <!--<Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Scheduled Dates"
+                       Margin="0,10,0,0"
+                       FontSize="16" TextColor="#0e0273"/>
+                <Picker Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="picker_scheduledDates" HorizontalTextAlignment="Center"
+                        Margin="0,0,90,0" ItemDisplayBinding="{Binding scheduledDates}"
+                        SelectedIndexChanged="picker_scheduledDates_SelectedIndexChanged" TextColor="Green" FontSize="16"/>-->
+
                 <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text = "Section-1" Margin="0,50,0,0"
                         x:Name="btn_section1" IsVisible="false" Clicked="btn_section1_Clicked"
                         BackgroundColor="#0e0273" TextColor="White" CornerRadius="5" />

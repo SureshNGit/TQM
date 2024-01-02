@@ -107,6 +107,8 @@ namespace TQM
         private int DV_selectedDrumNumber = 0;
         private int DV_selectedDrumStartNo = 0;
         private int DV_selectedDrumEndNo = 0;
+        private DateTime DV_selectedScheduledStartDate = DEFAULTDATE;
+        private DateTime DV_selectedScheduledEndDate = DEFAULTDATE;
 
         public StrengthAnalyzer()
         {
@@ -114,7 +116,7 @@ namespace TQM
             initializer();
         }
 
-        public StrengthAnalyzer(Guid categoryID,string machineCat, Guid machineID, string machineName, int overallDrums, int overallSections, int sectionNo, int drumNo,int drumStartNo, int drumEndNo, bool isRandomTest)
+        public StrengthAnalyzer(Guid categoryID,string machineCat, Guid machineID, string machineName, DateTime ssd, DateTime sed, int overallDrums, int overallSections, int sectionNo, int drumNo,int drumStartNo, int drumEndNo, bool isRandomTest)
         {   InitializeComponent();
 
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -145,6 +147,8 @@ namespace TQM
             isRandomTestSelected = isRandomTest;
             selectedOverallDrumNos = overallDrums;
             selectedOverallSections = overallSections;
+            DV_selectedScheduledStartDate = ssd;
+            DV_selectedScheduledEndDate = sed;
 
             if (isRandomTestSelected) { btn_drumSelectionMethod.IsEnabled = false; }
             IList<string> machineCategorylist = picker_machinecategory.Items;
@@ -2768,6 +2772,8 @@ namespace TQM
                                                 DV_selectedMachineCategory,
                                                 DV_selectedMachineID,
                                                 DV_selectedMachineName,
+                                                DV_selectedScheduledStartDate,
+                                                DV_selectedScheduledEndDate,
                                                 selectedOverallDrumNos,
                                                 selectedOverallSections,
                                                 DV_selectedSectionNumber,

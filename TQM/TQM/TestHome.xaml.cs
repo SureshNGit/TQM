@@ -8,10 +8,13 @@ namespace TQM
 {	
 	public partial class TestHome : ContentPage
 	{
+        private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
         private Guid selectedCategoryID = Guid.Empty;
         private string selectedCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
+        private DateTime selectedScheduledStartDate = DEFAULTDATE;
+        private DateTime selectedScheduledEndDate = DEFAULTDATE;
         private int selectedOverallDrumNos = 0;
         private int selectedOverallSections = 0;
         private int sec1_lowerLimit = 0;
@@ -138,6 +141,8 @@ namespace TQM
                                                                 ConfigModel.machineName == selectedMachineName)).FirstOrDefault();
                     if (yarncountconfigmodel != null)
                     {
+                        selectedScheduledStartDate = yarncountconfigmodel.scheduledStartDate;
+                        selectedScheduledEndDate = yarncountconfigmodel.scheduledEndDate;
                         selectedOverallDrumNos = yarncountconfigmodel.totalDrumCount;
                         selectedOverallSections = yarncountconfigmodel.totalSections;
                         if (yarncountconfigmodel.drumNumbers_s1 != null
@@ -197,6 +202,7 @@ namespace TQM
                         lbl_section4.Text = "";
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -261,6 +267,8 @@ namespace TQM
                                                 selectedCategory,
                                                 selectedMachineID,
                                                 selectedMachineName,
+                                                selectedScheduledStartDate,
+                                                selectedScheduledEndDate,
                                                 selectedOverallDrumNos,
                                                 selectedOverallSections,
                                                 1,
@@ -274,6 +282,8 @@ namespace TQM
                                                 selectedCategory,
                                                 selectedMachineID,
                                                 selectedMachineName,
+                                                selectedScheduledStartDate,
+                                                selectedScheduledEndDate,
                                                 selectedOverallDrumNos,
                                                 selectedOverallSections,
                                                 2,
@@ -287,6 +297,8 @@ namespace TQM
                                                 selectedCategory,
                                                 selectedMachineID,
                                                 selectedMachineName,
+                                                selectedScheduledStartDate,
+                                                selectedScheduledEndDate,
                                                 selectedOverallDrumNos,
                                                 selectedOverallSections,
                                                 3,
@@ -300,12 +312,16 @@ namespace TQM
                                                 selectedCategory,
                                                 selectedMachineID,
                                                 selectedMachineName,
+                                                selectedScheduledStartDate,
+                                                selectedScheduledEndDate,
                                                 selectedOverallDrumNos,
                                                 selectedOverallSections,
                                                 4,
                                                 sec4_lowerLimit,
                                                 sec4_upperLimit));
         }
+
+        
     }
 }
 

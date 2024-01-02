@@ -10,10 +10,13 @@ namespace TQM
 {	
 	public partial class DrumView : ContentPage
 	{
+        private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
         private Guid selectedCategoryID = Guid.Empty;
         private string selectedMachineCategory = null;
 		private Guid selectedMachineID = Guid.Empty;
 		private string selectedMachineName = null;
+        private DateTime selectedScheduledStartDate = DEFAULTDATE;
+        private DateTime selectedScheduledEndDate = DEFAULTDATE;
         private int selectedOverallDrumNos = 0;
         private int selectedOverallSections = 0;
 		private int selectedSectionNo = 0;
@@ -28,7 +31,7 @@ namespace TQM
 			InitializeComponent ();
 		}
 
-        public DrumView(Guid catID, string macCat, Guid macID, string macName,int overallDrums, int overallSections, int sectionNo, int startDrumNo, int endDrumNo)
+        public DrumView(Guid catID, string macCat, Guid macID, string macName, DateTime ssd, DateTime sed,int overallDrums, int overallSections, int sectionNo, int startDrumNo, int endDrumNo)
         {
             InitializeComponent();
             drumDict = new Dictionary<int, decimal>();
@@ -37,6 +40,8 @@ namespace TQM
             selectedMachineCategory = macCat;
 			selectedMachineID = macID;
 			selectedMachineName = macName;
+            selectedScheduledStartDate = ssd;
+            selectedScheduledEndDate = sed;
             selectedOverallDrumNos = overallDrums;
             selectedOverallSections = overallSections;
 			selectedSectionNo = sectionNo;
@@ -92,12 +97,16 @@ namespace TQM
                                                         && StrengthTestSummaryModel.machineID == selectedMachineID
                                                         && StrengthTestSummaryModel.sectionNumber == selectedSectionNo
                                                         && StrengthTestSummaryModel.drumSelectionMethod == "Scheduled"
-                                                        && StrengthTestSummaryModel.drumNumber==drumNo)).FirstOrDefault();
+                                                        && StrengthTestSummaryModel.drumNumber==drumNo
+                                                        && StrengthTestSummaryModel.scheduledStartDate == selectedScheduledStartDate
+                                                        && StrengthTestSummaryModel.scheduledEndDate == selectedScheduledEndDate)).FirstOrDefault();
                     StrengthTestModel stm = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
                                                         (StrengthTestModel.categoryID == selectedCategoryID
                                                         && StrengthTestModel.machineID == selectedMachineID
                                                         && StrengthTestModel.sectionNumber == selectedSectionNo
-                                                        && StrengthTestModel.drumNumber == drumNo))
+                                                        && StrengthTestModel.drumNumber == drumNo
+                                                        && StrengthTestModel.scheduledStartDate == selectedScheduledStartDate
+                                                        && StrengthTestModel.scheduledEndDate == selectedScheduledEndDate))
                                                         .OrderByDescending(StrengthTestModel=>StrengthTestModel.createdate).FirstOrDefault();
                     if (sts == null)
                     {
@@ -187,6 +196,8 @@ namespace TQM
                                                                   selectedMachineCategory,
                                                                   selectedMachineID,
                                                                   selectedMachineName,
+                                                                  selectedScheduledStartDate,
+                                                                  selectedScheduledEndDate,
                                                                   selectedOverallDrumNos,
                                                                   selectedOverallSections,
                                                                   selectedSectionNo,
@@ -213,6 +224,8 @@ namespace TQM
                                                                   selectedMachineCategory,
                                                                   selectedMachineID,
                                                                   selectedMachineName,
+                                                                  selectedScheduledStartDate,
+                                                                  selectedScheduledEndDate,
                                                                   selectedOverallDrumNos,
                                                                   selectedOverallSections,
                                                                   selectedSectionNo,
@@ -232,6 +245,8 @@ namespace TQM
                                                                     selectedMachineCategory,
                                                                     selectedMachineID,
                                                                     selectedMachineName,
+                                                                    selectedScheduledStartDate,
+                                                                    selectedScheduledEndDate,
                                                                     selectedOverallDrumNos,
                                                                     selectedOverallSections,
                                                                     selectedSectionNo,
