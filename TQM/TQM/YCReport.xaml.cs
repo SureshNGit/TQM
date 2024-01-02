@@ -102,6 +102,15 @@ namespace TQM
         public YCReport(DateTime startDate, DateTime endDate, Guid catID, string categoryName, Guid machineID, string shift, string testID, string drumNumber,string standardStrength, bool deleteRequest,bool is_indBreifView, bool isConsolidated, bool drumView, bool drumDetails, bool is_maintenance, string UFVAL1, string UFVAL2, string UFVAL3, string UFVAL4)
         {
             InitializeComponent();
+
+            //showProgress
+            CancellationTokenSource src_p = new CancellationTokenSource();
+            CancellationToken ct_p = src_p.Token;
+            ct_p.Register(() => Debug.WriteLine("Show progress"));
+            Task.Run(async () => await Task.FromResult(toggleProgressBar(true)), ct_p);
+            src_p.Cancel();
+            //showProgress End
+
             isFinalAvgRowPresent = false;
             is_IncompleteTest = false;
             inCompleteTestID = 0;
@@ -120,36 +129,29 @@ namespace TQM
                 //{
                 //    lbl_reportHeader.Text = "Con. Wrapping Report - All";
                 //}
-                lbl_reportHeader.Text = "Consolidated Report";
+                lbl_reportHeader.Text = "Consolidated Report \n(" + startDate.ToShortDateString() + " to " + endDate.ToShortDateString() + ")";
             }
             else if (is_indBreifViewReport)
             {
-                lbl_reportHeader.Text = "Individual Report";
+                lbl_reportHeader.Text = "Individual Report \n("+ startDate.ToShortDateString() + " to " + endDate.ToShortDateString()+")";
             }
             else if (drumViewReport)
             {
-                lbl_reportHeader.Text = "Drum View Report";
+                lbl_reportHeader.Text = "Drum View Report \n("+ startDate.ToShortDateString() + " to " + endDate.ToShortDateString()+")";
             }
             else if (drumDetailsReport)
             {
-                lbl_reportHeader.Text = "Drum Details Report";
+                lbl_reportHeader.Text = "Drum Details Report \n("+ startDate.ToShortDateString() + " to " + endDate.ToShortDateString()+")";
             }
             else if (maintenanceReport)
             {
-                lbl_reportHeader.Text = "Maintenance Report";
+                lbl_reportHeader.Text = "Maintenance Report \n(" + startDate.ToShortDateString() + " to " + endDate.ToShortDateString() + ")";
             }
             else
             {
-                //if (categoryName != null && categoryName != "")
-                //{
-                //    lbl_reportHeader.Text = "Detailed Report - " + categoryName;
-                //}
-                //else
-                //{
-                //    lbl_reportHeader.Text = "Detailed Report - All";
-                //}
-                lbl_reportHeader.Text = "Detailed Report";
+                lbl_reportHeader.Text = "Detailed Report \n(" + startDate.ToShortDateString() + " to " + endDate.ToShortDateString() + ")";
             }
+
             if (deleteRequest)
             {
                 btn_saveToPDF.Text = "Send & Delete Records";
@@ -496,6 +498,15 @@ namespace TQM
             }
         }
 
+        private async Task toggleProgressBar(bool visibility = false)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                actInd.IsVisible = visibility;
+                actInd.IsRunning = visibility;
+            });
+        }
+
         private void getDrumReport(DateTime startDate, DateTime endDate,Guid categoryID, Guid machineID)
         {
             try
@@ -507,10 +518,12 @@ namespace TQM
                     conn.CreateTable<TestConfigModel>();
                     conn.CreateTable<ConfigModel>();
 
+                    //endDate = endDate.AddDays(1);
+
                     List<StrengthTestSummaryModel> strengthTestSummaryList =
                         conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel =>
-                         ((StrengthTestSummaryModel.scheduledStartDate >= startDate
-                         && StrengthTestSummaryModel.scheduledEndDate <= endDate)
+                         (StrengthTestSummaryModel.scheduledStartDate == startDate
+                         //&& StrengthTestSummaryModel.scheduledEndDate <= endDate
                          && StrengthTestSummaryModel.categoryID == categoryID
                          && StrengthTestSummaryModel.machineID == machineID
                          && StrengthTestSummaryModel.drumSelectionMethod == "Scheduled"))
@@ -529,21 +542,58 @@ namespace TQM
 
                         ConfigModel configModel = conn.Table<ConfigModel>().Where(ConfigModel =>
                                                     (ConfigModel.machineID == machineID
-                                                    && ((ConfigModel.scheduledStartDate >= startDate
-                                                    && ConfigModel.scheduledEndDate <= endDate)))).FirstOrDefault();
+                                                    && ConfigModel.scheduledStartDate == startDate
+                                                    && ConfigModel.scheduledEndDate == endDate)).FirstOrDefault();
+
+                        string temp_drumNumbers_s1 = null;
+                        string temp_machineName = null;
+                        int temp_totalDrumCount = 0;
+                        int temp_totalSections = 0;
+                        DateTime temp_scheduledStartDate = DEFAULTDATE;
+                        DateTime temp_scheduledEndDate = DEFAULTDATE;
+                        DateTime temp_updateddate = DEFAULTDATE;
+
 
                         if (configModel == null)
                         {
-                            DisplayAlert("Notice", "No records to display!!!", "OK");
-                            return;
+                           TestConfigModel configModel_History = conn.Table<TestConfigModel>().Where(TestConfigModel =>
+                                                    (TestConfigModel.machineID == machineID
+                                                    && TestConfigModel.scheduledStartDate == startDate
+                                                    && TestConfigModel.scheduledEndDate == endDate
+                                                    && TestConfigModel.testID==0)).FirstOrDefault();
+
+                            if (configModel_History == null)
+                            {
+                                DisplayAlert("Notice", "No records to display!!!", "OK");
+                                _ = toggleProgressBar();
+                                return;
+                            }
+
+                            temp_drumNumbers_s1 = configModel_History.drumNumbers_s1;
+                            temp_machineName = configModel_History.machineName;
+                            temp_totalDrumCount = configModel_History.totalDrumCount;
+                            temp_totalSections = configModel_History.totalSections;
+                            temp_scheduledStartDate = configModel_History.scheduledStartDate;
+                            temp_scheduledEndDate = configModel_History.scheduledEndDate;
+                            temp_updateddate = configModel_History.updateddate;
+                        }
+                        else
+                        {
+                            temp_drumNumbers_s1 = configModel.drumNumbers_s1;
+                            temp_machineName = configModel.machineName;
+                            temp_totalDrumCount = configModel.totalDrumCount;
+                            temp_totalSections = configModel.totalSections;
+                            temp_scheduledStartDate = configModel.scheduledStartDate;
+                            temp_scheduledEndDate = configModel.scheduledEndDate;
+                            temp_updateddate = configModel.updateddate;
                         }
 
                         int minDrumNo = 0;
                         int maxDrumNo = 0;
-                        if (configModel.drumNumbers_s1 != null)
+                        if (temp_drumNumbers_s1 != null)
                         {
-                            minDrumNo = int.Parse(configModel.drumNumbers_s1.ToString().Split('.')[0]);
-                            maxDrumNo = int.Parse(configModel.drumNumbers_s1.ToString().Split('.')[1]);
+                            minDrumNo = int.Parse(temp_drumNumbers_s1.ToString().Split('.')[0]);
+                            maxDrumNo = int.Parse(temp_drumNumbers_s1.ToString().Split('.')[1]);
                         }
                         List<int> drumList_nr = new List<int>();
 
@@ -552,59 +602,16 @@ namespace TQM
                             drumList_nr.Add(i);
                         }
 
-                        //TestConfigModel tcm = new TestConfigModel()
-                        //{
-                        //    testID = 0,
-                        //    machineID = configModel.machineID,
-                        //    machineCategory = configModel.machineCategory,
-                        //    machineName = configModel.machineName,
-                        //    speed = configModel.speed,
-                        //    p1 = configModel.p1,
-                        //    p1Deviation = configModel.p1Deviation,
-                        //    p2 = configModel.p2,
-                        //    p2Deviation = configModel.p2Deviation,
-                        //    n1 = configModel.n1,
-                        //    n1Deviation = configModel.n1Deviation,
-                        //    totalDrumCount = configModel.totalDrumCount,
-                        //    totalSections = configModel.totalSections,
-                        //    stdRollingStrength = configModel.stdRollingStrength,
-                        //    strengthDeviation = configModel.strengthDeviation,
-                        //    belowLimit = configModel.belowLimit,
-                        //    maxLimit = configModel.maxLimit,
-                        //    totalSamples = configModel.totalSamples,
-                        //    scheduledStartDate = configModel.scheduledStartDate,
-                        //    scheduledEndDate = configModel.scheduledEndDate,
-                        //    materialCount = configModel.materialCount,
-                        //    drumNumbers_s1 = configModel.drumNumbers_s1,
-                        //    drumNumbers_s2 = configModel.drumNumbers_s2,
-                        //    drumNumbers_s3 = configModel.drumNumbers_s3,
-                        //    drumNumbers_s4 = configModel.drumNumbers_s4,
-                        //    shiftCount = configModel.shiftCount,
-                        //    shift1time = configModel.shift1time,
-                        //    shift2time = configModel.shift2time,
-                        //    shift3time = configModel.shift3time,
-                        //    uf_name_1 = configModel.uf_name_1,
-                        //    uf_value_1 = configModel.uf_value_1,
-                        //    uf_name_2 = configModel.uf_name_2,
-                        //    uf_value_2 = configModel.uf_value_2,
-                        //    uf_name_3 = configModel.uf_name_3,
-                        //    uf_value_3 = configModel.uf_value_3,
-                        //    uf_name_4 = configModel.uf_name_4,
-                        //    uf_value_4 = configModel.uf_value_4,
-                        //    updateddate = configModel.updateddate,
-                        //    createdate = configModel.createdate,
-                        //};
-
                         updateDrumReportModel(categoryID,
                                                 machineID,
-                                                configModel.machineName,
-                                                configModel.totalDrumCount,
-                                                configModel.totalSections,
+                                                temp_machineName,
+                                                temp_totalDrumCount,
+                                                temp_totalSections,
                                                 1,
-                                                configModel.drumNumbers_s1,
-                                                configModel.scheduledStartDate.Date,
-                                                configModel.scheduledEndDate.Date,
-                                                configModel.updateddate.Date,
+                                                temp_drumNumbers_s1,
+                                                temp_scheduledStartDate.Date,
+                                                temp_scheduledEndDate.Date,
+                                                temp_updateddate.Date,
                                                 minDrumNo,
                                                 maxDrumNo,
                                                 drumList_nr,
@@ -618,6 +625,8 @@ namespace TQM
                         listview_tcreport_missingDrum.ItemsSource = null;
                         listview_tcreport_missingDrum.ItemsSource = ListOfMissingDrumReports;
 
+                        
+                        _ = toggleProgressBar();
                         return;
                     }
 
@@ -760,11 +769,16 @@ namespace TQM
                     listview_tcreport_missingDrum.IsVisible = true;
                     listview_tcreport_missingDrum.ItemsSource = null;
                     listview_tcreport_missingDrum.ItemsSource = ListOfMissingDrumReports;
+
+                    
+                    _ = toggleProgressBar();
                 }
             }
             catch (Exception ex)
             {
                 DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
+                
+                _ = toggleProgressBar();
             }
         }
 
@@ -788,6 +802,8 @@ namespace TQM
                     if (testSummary.Count==0)
                     {
                         DisplayAlert("Notice", "No records to display!!!", "OK");
+                        
+                        _ = toggleProgressBar();
                         return;
                     }
                     int sn = 1;
@@ -825,6 +841,8 @@ namespace TQM
                         if (st_config == null)
                         {
                             DisplayAlert("Notice", "Error Occurred while preparing report", "OK");
+                            
+                            _ = toggleProgressBar();
                             return;
                         }
 
@@ -889,11 +907,15 @@ namespace TQM
                     listview_tcreport_maintenance.IsVisible = true;
                     listview_tcreport_maintenance.ItemsSource = null;
                     listview_tcreport_maintenance.ItemsSource = ListOfMaintenanceReports;
+                    
+                    _ = toggleProgressBar();
                 }
             }
             catch(Exception ex)
             {
                 DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
+                
+                _ = toggleProgressBar();
             }
         }
 
@@ -957,6 +979,8 @@ namespace TQM
                     if (stm_list.Count == 0)
                     {
                         DisplayAlert("Attention", "No records to display!!!", "OK");
+                        
+                        _ = toggleProgressBar();
                         return;
                     }
 
@@ -1008,6 +1032,16 @@ namespace TQM
                             itr.T9 = indTest_list[8].sampleStrengthCount.ToString();
                             itr.T10 = indTest_list[9].sampleStrengthCount.ToString();
                             itr.QT = "QT: " + stm.qualifiedTestCount.ToString();
+                            int disqualifiedTest = stm.totalTestCount - stm.qualifiedTestCount;
+                            itr.DQT = "DQT: " + disqualifiedTest.ToString();
+                            if (disqualifiedTest!=0)
+                            {
+                                itr.DQT_BG_Color = "red";
+                            }
+                            else
+                            {
+                                itr.DQT_BG_Color = "white";
+                            }
                             itr.ST = "ST: " + stm.yarnStrength.ToString();
                             decimal maxRangeVal = stm.standardStrength + stm.strengthDeviation;
                             decimal minRangeVal = stm.standardStrength - stm.strengthDeviation;
@@ -1027,10 +1061,14 @@ namespace TQM
                     listview_individualTest.ItemsSource = itr_all;
                     listview_individualTest.IsVisible = true;
                 }
+                
+                _ = toggleProgressBar();
             }
             catch (Exception ex)
             {
                 DisplayAlert("Attention", "An error occurred.Error: " + ex.ToString(), "OK");
+                
+                _ = toggleProgressBar();
                 return;
             }
         }
@@ -1065,7 +1103,9 @@ namespace TQM
                     }
                     else
                     {
-                        DisplayAlert("Attention", "Error Occurred!!! Error: Unable to get settings for selected machine", "OK");
+                        DisplayAlert("Attention", "No records to display!!!", "OK");
+
+                        _ = toggleProgressBar();
                         return;
                     }
                 }
@@ -1080,30 +1120,34 @@ namespace TQM
                 for (int i = 0; i < totalDrums; i++)
                 {
                     DrumMVReport dv = new DrumMVReport();
-                    if ((firstDrumNo + 1) <= selectedDrumEndNo) { dv.D1 = (firstDrumNo + 1).ToString(); if (getTestDetailsForDrum(firstDrumNo + 1)) { if (drumDictRandomTest[firstDrumNo + 1]) { dv.D1_BG_Color = "red"; } else { dv.D1_BG_Color = "red"; }; dv.D1_Strength = drumDict[firstDrumNo + 1].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 1]) { dv.D1_BG_Color = "orange"; } else { dv.D1_BG_Color = "green"; }; dv.D1_Strength = drumDict[firstDrumNo + 1].ToString(); }; dv.D1_Visible = true; } else { dv.D1 = ""; dv.D1_Visible = false; }
-                    if ((firstDrumNo + 2) <= selectedDrumEndNo) { dv.D2 = (firstDrumNo + 2).ToString(); if (getTestDetailsForDrum(firstDrumNo + 2)) { if (drumDictRandomTest[firstDrumNo + 2]) { dv.D2_BG_Color = "red"; } else { dv.D2_BG_Color = "red"; }; dv.D2_Strength = drumDict[firstDrumNo + 2].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 2]) { dv.D2_BG_Color = "orange"; } else { dv.D2_BG_Color = "green"; }; dv.D2_Strength = drumDict[firstDrumNo + 2].ToString(); }; dv.D2_Visible = true; } else { dv.D2 = ""; dv.D2_Visible = false; }
-                    if ((firstDrumNo + 3) <= selectedDrumEndNo) { dv.D3 = (firstDrumNo + 3).ToString(); if (getTestDetailsForDrum(firstDrumNo + 3)) { if (drumDictRandomTest[firstDrumNo + 3]) { dv.D3_BG_Color = "red"; } else { dv.D3_BG_Color = "red"; }; dv.D3_Strength = drumDict[firstDrumNo + 3].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 3]) { dv.D3_BG_Color = "orange"; } else { dv.D3_BG_Color = "green"; }; dv.D3_Strength = drumDict[firstDrumNo + 3].ToString(); }; dv.D3_Visible = true; } else { dv.D3 = ""; dv.D3_Visible = false; }
-                    if ((firstDrumNo + 4) <= selectedDrumEndNo) { dv.D4 = (firstDrumNo + 4).ToString(); if (getTestDetailsForDrum(firstDrumNo + 4)) { if (drumDictRandomTest[firstDrumNo + 4]) { dv.D4_BG_Color = "red"; } else { dv.D4_BG_Color = "red"; }; dv.D4_Strength = drumDict[firstDrumNo + 4].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 4]) { dv.D4_BG_Color = "orange"; } else { dv.D4_BG_Color = "green"; }; dv.D4_Strength = drumDict[firstDrumNo + 4].ToString(); }; dv.D4_Visible = true; } else { dv.D4 = ""; dv.D4_Visible = false; }
-                    if ((firstDrumNo + 5) <= selectedDrumEndNo) { dv.D5 = (firstDrumNo + 5).ToString(); if (getTestDetailsForDrum(firstDrumNo + 5)) { if (drumDictRandomTest[firstDrumNo + 5]) { dv.D5_BG_Color = "red"; } else { dv.D5_BG_Color = "red"; }; dv.D5_Strength = drumDict[firstDrumNo + 5].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 5]) { dv.D5_BG_Color = "orange"; } else { dv.D5_BG_Color = "green"; }; dv.D5_Strength = drumDict[firstDrumNo + 5].ToString(); }; dv.D5_Visible = true; } else { dv.D5 = ""; dv.D5_Visible = false; }
-                    if ((firstDrumNo + 6) <= selectedDrumEndNo) { dv.D6 = (firstDrumNo + 6).ToString(); if (getTestDetailsForDrum(firstDrumNo + 6)) { if (drumDictRandomTest[firstDrumNo + 6]) { dv.D6_BG_Color = "red"; } else { dv.D6_BG_Color = "red"; }; dv.D6_Strength = drumDict[firstDrumNo + 6].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 6]) { dv.D6_BG_Color = "orange"; } else { dv.D6_BG_Color = "green"; }; dv.D6_Strength = drumDict[firstDrumNo + 6].ToString(); }; dv.D6_Visible = true; } else { dv.D6 = ""; dv.D6_Visible = false; }
-                    if ((firstDrumNo + 7) <= selectedDrumEndNo) { dv.D7 = (firstDrumNo + 7).ToString(); if (getTestDetailsForDrum(firstDrumNo + 7)) { if (drumDictRandomTest[firstDrumNo + 7]) { dv.D7_BG_Color = "red"; } else { dv.D7_BG_Color = "red"; }; dv.D7_Strength = drumDict[firstDrumNo + 7].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 7]) { dv.D7_BG_Color = "orange"; } else { dv.D7_BG_Color = "green"; }; dv.D7_Strength = drumDict[firstDrumNo + 7].ToString(); }; dv.D7_Visible = true; } else { dv.D7 = ""; dv.D7_Visible = false; }
-                    if ((firstDrumNo + 8) <= selectedDrumEndNo) { dv.D8 = (firstDrumNo + 8).ToString(); if (getTestDetailsForDrum(firstDrumNo + 8)) { if (drumDictRandomTest[firstDrumNo + 8]) { dv.D8_BG_Color = "red"; } else { dv.D8_BG_Color = "red"; }; dv.D8_Strength = drumDict[firstDrumNo + 8].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 8]) { dv.D8_BG_Color = "orange"; } else { dv.D8_BG_Color = "green"; }; dv.D8_Strength = drumDict[firstDrumNo + 8].ToString(); }; dv.D8_Visible = true; } else { dv.D8 = ""; dv.D8_Visible = false; }
-                    if ((firstDrumNo + 9) <= selectedDrumEndNo) { dv.D9 = (firstDrumNo + 9).ToString(); if (getTestDetailsForDrum(firstDrumNo + 9)) { if (drumDictRandomTest[firstDrumNo + 9]) { dv.D9_BG_Color = "red"; } else { dv.D9_BG_Color = "red"; }; dv.D9_Strength = drumDict[firstDrumNo + 9].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 9]) { dv.D9_BG_Color = "orange"; } else { dv.D9_BG_Color = "green"; }; dv.D9_Strength = drumDict[firstDrumNo + 9].ToString(); }; dv.D9_Visible = true; } else { dv.D9 = ""; dv.D9_Visible = false; }
-                    if ((firstDrumNo + 10) <= selectedDrumEndNo) { dv.D10 = (firstDrumNo + 10).ToString(); if (getTestDetailsForDrum(firstDrumNo + 10)) { if (drumDictRandomTest[firstDrumNo + 10]) { dv.D10_BG_Color = "red"; } else { dv.D10_BG_Color = "red"; }; dv.D10_Strength = drumDict[firstDrumNo + 10].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 10]) { dv.D10_BG_Color = "orange"; } else { dv.D10_BG_Color = "green"; }; dv.D10_Strength = drumDict[firstDrumNo + 10].ToString(); }; dv.D10_Visible = true; } else { dv.D10 = ""; dv.D10_Visible = false; }
+                    if ((firstDrumNo + 1) <= selectedDrumEndNo) { dv.D1 = (firstDrumNo + 1).ToString(); if (getTestDetailsForDrum(firstDrumNo + 1,sd,ed)) { if (drumDictRandomTest[firstDrumNo + 1]) { dv.D1_BG_Color = "red"; } else { dv.D1_BG_Color = "red"; }; dv.D1_Strength = drumDict[firstDrumNo + 1].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 1]) { dv.D1_BG_Color = "orange"; } else { dv.D1_BG_Color = "green"; }; dv.D1_Strength = drumDict[firstDrumNo + 1].ToString(); }; dv.D1_Visible = true; } else { dv.D1 = ""; dv.D1_Visible = false; }
+                    if ((firstDrumNo + 2) <= selectedDrumEndNo) { dv.D2 = (firstDrumNo + 2).ToString(); if (getTestDetailsForDrum(firstDrumNo + 2, sd, ed)) { if (drumDictRandomTest[firstDrumNo + 2]) { dv.D2_BG_Color = "red"; } else { dv.D2_BG_Color = "red"; }; dv.D2_Strength = drumDict[firstDrumNo + 2].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 2]) { dv.D2_BG_Color = "orange"; } else { dv.D2_BG_Color = "green"; }; dv.D2_Strength = drumDict[firstDrumNo + 2].ToString(); }; dv.D2_Visible = true; } else { dv.D2 = ""; dv.D2_Visible = false; }
+                    if ((firstDrumNo + 3) <= selectedDrumEndNo) { dv.D3 = (firstDrumNo + 3).ToString(); if (getTestDetailsForDrum(firstDrumNo + 3, sd, ed)) { if (drumDictRandomTest[firstDrumNo + 3]) { dv.D3_BG_Color = "red"; } else { dv.D3_BG_Color = "red"; }; dv.D3_Strength = drumDict[firstDrumNo + 3].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 3]) { dv.D3_BG_Color = "orange"; } else { dv.D3_BG_Color = "green"; }; dv.D3_Strength = drumDict[firstDrumNo + 3].ToString(); }; dv.D3_Visible = true; } else { dv.D3 = ""; dv.D3_Visible = false; }
+                    if ((firstDrumNo + 4) <= selectedDrumEndNo) { dv.D4 = (firstDrumNo + 4).ToString(); if (getTestDetailsForDrum(firstDrumNo + 4, sd, ed)) { if (drumDictRandomTest[firstDrumNo + 4]) { dv.D4_BG_Color = "red"; } else { dv.D4_BG_Color = "red"; }; dv.D4_Strength = drumDict[firstDrumNo + 4].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 4]) { dv.D4_BG_Color = "orange"; } else { dv.D4_BG_Color = "green"; }; dv.D4_Strength = drumDict[firstDrumNo + 4].ToString(); }; dv.D4_Visible = true; } else { dv.D4 = ""; dv.D4_Visible = false; }
+                    if ((firstDrumNo + 5) <= selectedDrumEndNo) { dv.D5 = (firstDrumNo + 5).ToString(); if (getTestDetailsForDrum(firstDrumNo + 5, sd, ed)) { if (drumDictRandomTest[firstDrumNo + 5]) { dv.D5_BG_Color = "red"; } else { dv.D5_BG_Color = "red"; }; dv.D5_Strength = drumDict[firstDrumNo + 5].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 5]) { dv.D5_BG_Color = "orange"; } else { dv.D5_BG_Color = "green"; }; dv.D5_Strength = drumDict[firstDrumNo + 5].ToString(); }; dv.D5_Visible = true; } else { dv.D5 = ""; dv.D5_Visible = false; }
+                    if ((firstDrumNo + 6) <= selectedDrumEndNo) { dv.D6 = (firstDrumNo + 6).ToString(); if (getTestDetailsForDrum(firstDrumNo + 6, sd, ed)) { if (drumDictRandomTest[firstDrumNo + 6]) { dv.D6_BG_Color = "red"; } else { dv.D6_BG_Color = "red"; }; dv.D6_Strength = drumDict[firstDrumNo + 6].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 6]) { dv.D6_BG_Color = "orange"; } else { dv.D6_BG_Color = "green"; }; dv.D6_Strength = drumDict[firstDrumNo + 6].ToString(); }; dv.D6_Visible = true; } else { dv.D6 = ""; dv.D6_Visible = false; }
+                    if ((firstDrumNo + 7) <= selectedDrumEndNo) { dv.D7 = (firstDrumNo + 7).ToString(); if (getTestDetailsForDrum(firstDrumNo + 7, sd, ed)) { if (drumDictRandomTest[firstDrumNo + 7]) { dv.D7_BG_Color = "red"; } else { dv.D7_BG_Color = "red"; }; dv.D7_Strength = drumDict[firstDrumNo + 7].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 7]) { dv.D7_BG_Color = "orange"; } else { dv.D7_BG_Color = "green"; }; dv.D7_Strength = drumDict[firstDrumNo + 7].ToString(); }; dv.D7_Visible = true; } else { dv.D7 = ""; dv.D7_Visible = false; }
+                    if ((firstDrumNo + 8) <= selectedDrumEndNo) { dv.D8 = (firstDrumNo + 8).ToString(); if (getTestDetailsForDrum(firstDrumNo + 8, sd, ed)) { if (drumDictRandomTest[firstDrumNo + 8]) { dv.D8_BG_Color = "red"; } else { dv.D8_BG_Color = "red"; }; dv.D8_Strength = drumDict[firstDrumNo + 8].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 8]) { dv.D8_BG_Color = "orange"; } else { dv.D8_BG_Color = "green"; }; dv.D8_Strength = drumDict[firstDrumNo + 8].ToString(); }; dv.D8_Visible = true; } else { dv.D8 = ""; dv.D8_Visible = false; }
+                    if ((firstDrumNo + 9) <= selectedDrumEndNo) { dv.D9 = (firstDrumNo + 9).ToString(); if (getTestDetailsForDrum(firstDrumNo + 9, sd, ed)) { if (drumDictRandomTest[firstDrumNo + 9]) { dv.D9_BG_Color = "red"; } else { dv.D9_BG_Color = "red"; }; dv.D9_Strength = drumDict[firstDrumNo + 9].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 9]) { dv.D9_BG_Color = "orange"; } else { dv.D9_BG_Color = "green"; }; dv.D9_Strength = drumDict[firstDrumNo + 9].ToString(); }; dv.D9_Visible = true; } else { dv.D9 = ""; dv.D9_Visible = false; }
+                    if ((firstDrumNo + 10) <= selectedDrumEndNo) { dv.D10 = (firstDrumNo + 10).ToString(); if (getTestDetailsForDrum(firstDrumNo + 10, sd, ed)) { if (drumDictRandomTest[firstDrumNo + 10]) { dv.D10_BG_Color = "red"; } else { dv.D10_BG_Color = "red"; }; dv.D10_Strength = drumDict[firstDrumNo + 10].ToString(); } else { if (drumDictRandomTest[firstDrumNo + 10]) { dv.D10_BG_Color = "orange"; } else { dv.D10_BG_Color = "green"; }; dv.D10_Strength = drumDict[firstDrumNo + 10].ToString(); }; dv.D10_Visible = true; } else { dv.D10 = ""; dv.D10_Visible = false; }
                     dv_list.Add(dv);
                     i += 9;
                     firstDrumNo += 10;
                 }
                 listview_drums.ItemsSource = dv_list;
                 listview_drums.IsVisible = true;
+                
+                _ = toggleProgressBar();
             }
             catch (Exception ex)
             {
                 DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
+                
+                _ = toggleProgressBar();
             }
         }
 
-        private bool getTestDetailsForDrum(int drumNo)
+        private bool getTestDetailsForDrum(int drumNo, DateTime sd, DateTime ed)
         {
             try
             {
@@ -1114,11 +1158,13 @@ namespace TQM
                                                         (StrengthTestSummaryModel.categoryID == selectedCategoryID
                                                         && StrengthTestSummaryModel.machineID == selectedMachineID
                                                         && StrengthTestSummaryModel.drumSelectionMethod == "Scheduled"
-                                                        && StrengthTestSummaryModel.drumNumber == drumNo)).FirstOrDefault();
+                                                        && StrengthTestSummaryModel.drumNumber == drumNo
+                                                        && StrengthTestSummaryModel.scheduledStartDate ==sd)).FirstOrDefault();
                     StrengthTestModel stm = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
                                                         (StrengthTestModel.categoryID == selectedCategoryID
                                                         && StrengthTestModel.machineID == selectedMachineID
-                                                        && StrengthTestModel.drumNumber == drumNo))
+                                                        && StrengthTestModel.drumNumber == drumNo
+                                                        && StrengthTestModel.scheduledStartDate == sd))
                                                         .OrderByDescending(StrengthTestModel => StrengthTestModel.createdate).FirstOrDefault();
                     if (sts == null)
                     {
@@ -1292,6 +1338,9 @@ namespace TQM
                                 is_IncompleteTest = true;
                                 inCompleteTestID = givenTestId;
 
+                                
+                                _ = toggleProgressBar();
+
                                 return;
 
                             }
@@ -1311,6 +1360,8 @@ namespace TQM
                         if (parentList.Count == 0)
                         {
                             DisplayAlert("Notice", "No records to display!!!", "OK");
+                            
+                            _ = toggleProgressBar();
                             return;
                         }
 
@@ -1370,11 +1421,15 @@ namespace TQM
                         if (categoryName == null || categoryName == "")
                         {
                             DisplayAlert("Notice", "Machine category is blank!!!", "OK");
+                            
+                            _ = toggleProgressBar();
                             return;
                         }
                         else if (categoryName != null && machineID == Guid.Empty)
                         {
                             DisplayAlert("Notice", "Machine name is blank!!!", "OK");
+                            
+                            _ = toggleProgressBar();
                             return;
                         }
 
@@ -1386,6 +1441,8 @@ namespace TQM
                             if (parentList.Count == 0)
                             {
                                 DisplayAlert("Notice", "No records to display!!!", "OK");
+                                
+                                _ = toggleProgressBar();
                                 return;
                             }
                         }
@@ -1398,6 +1455,8 @@ namespace TQM
                             if (parentList.Count == 0)
                             {
                                 DisplayAlert("Notice", "No records to display!!!", "OK");
+                                
+                                _ = toggleProgressBar();
                                 return;
                             }
                         }
@@ -1411,6 +1470,8 @@ namespace TQM
                             if (parentList.Count == 0)
                             {
                                 DisplayAlert("Notice", "No records to display!!!", "OK");
+                                
+                                _ = toggleProgressBar();
                                 return;
                             }
                         }
@@ -1424,6 +1485,8 @@ namespace TQM
                             if (parentList.Count == 0)
                             {
                                 DisplayAlert("Notice", "No records to display!!!", "OK");
+                                
+                                _ = toggleProgressBar();
                                 return;
                             }
                         }
@@ -1437,6 +1500,8 @@ namespace TQM
                     if (ycTestSummaryModels.Count == 0)
                     {
                         DisplayAlert("Notice", "No records to display!!!", "OK");
+                        
+                        _ = toggleProgressBar();
                         return;
                     }
                     else if (testID=="" || testID==null)
@@ -1449,6 +1514,8 @@ namespace TQM
                         if (ycTestSummaryModels.Count == 0)
                         {
                             DisplayAlert("Notice", "No records to display!!!", "OK");
+                            
+                            _ = toggleProgressBar();
                             return;
                         }
                         if (UFVAL2 != "" && UFVAL2 != null)
@@ -1459,6 +1526,8 @@ namespace TQM
                         if (ycTestSummaryModels.Count == 0)
                         {
                             DisplayAlert("Notice", "No records to display!!!", "OK");
+                            
+                            _ = toggleProgressBar();
                             return;
                         }
                         if (UFVAL3 != "" && UFVAL3 != null)
@@ -1469,6 +1538,8 @@ namespace TQM
                         if (ycTestSummaryModels.Count == 0)
                         {
                             DisplayAlert("Notice", "No records to display!!!", "OK");
+                            
+                            _ = toggleProgressBar();
                             return;
                         }
                         if (UFVAL4 != "" && UFVAL4 != null)
@@ -1479,6 +1550,8 @@ namespace TQM
                         if (ycTestSummaryModels.Count == 0)
                         {
                             DisplayAlert("Notice", "No records to display!!!", "OK");
+                            
+                            _ = toggleProgressBar();
                             return;
                         }
 
@@ -2025,10 +2098,14 @@ namespace TQM
                     listview_tcreport.IsVisible = true;
                     listview_tcreport.ItemsSource = ListOfReport;
                 }
+                
+                _ = toggleProgressBar();
             }
             catch (Exception ex)
             {
                 DisplayAlert("Attention", "Error Occurred!!! Error:" + ex.Message.ToString(), "OK");
+                
+                _ = toggleProgressBar();
             }
         }
 
@@ -3268,7 +3345,7 @@ namespace TQM
                 layoutFormat.Break = PdfLayoutBreakType.FitPage;
                 
                 PdfGrid pdfGrid = new PdfGrid();
-                pdfGrid.Columns.Add(13);
+                pdfGrid.Columns.Add(14);
 
 
 
@@ -3324,7 +3401,7 @@ namespace TQM
 
 
                     row.Cells[8].Value = overallReportList[i].Mat_Count;
-                    row.Cells[8].ColumnSpan = 5;
+                    row.Cells[8].ColumnSpan = 6;
                     row.Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
                     row.Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     row.Cells[8].Style.BackgroundBrush = PdfBrushes.White;
@@ -3347,6 +3424,7 @@ namespace TQM
                         row.Cells[10].Style.Borders.Top = PdfPens.Transparent;
                         row.Cells[11].Style.Borders.Top = PdfPens.Transparent;
                         row.Cells[12].Style.Borders.Top = PdfPens.Transparent;
+                        row.Cells[13].Style.Borders.Top = PdfPens.Transparent;
                     }
 
 
@@ -3361,6 +3439,8 @@ namespace TQM
                     row.Cells[8].Style.Borders.Left = PdfPens.Transparent;
                     row.Cells[9].Style.Borders.Left = PdfPens.Transparent;
                     row.Cells[10].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[11].Style.Borders.Left = PdfPens.Transparent;
+                    row.Cells[12].Style.Borders.Left = PdfPens.Transparent;
 
                     row.Cells[0].Style.Borders.Right = PdfPens.Transparent;
                     row.Cells[1].Style.Borders.Right = PdfPens.Transparent;
@@ -3373,13 +3453,14 @@ namespace TQM
                     row.Cells[8].Style.Borders.Right = PdfPens.Transparent;
                     row.Cells[9].Style.Borders.Right = PdfPens.Transparent;
                     row.Cells[10].Style.Borders.Right = PdfPens.Transparent;
+                    row.Cells[11].Style.Borders.Right = PdfPens.Transparent;
 
 
 
 
                     //break;
 
-                   
+
                     row = pdfGrid.Rows.Add();
                     row.Height = 20;
                     
@@ -3470,13 +3551,12 @@ namespace TQM
                     row.Cells[11].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
                     row.Cells[11].Style.TextBrush = brush_con;
 
-                    row.Cells[12].Value = overallReportList[i+1].ST;
+                    row.Cells[12].Value = overallReportList[i + 1].DQT;
                     row.Cells[12].StringFormat.Alignment = PdfTextAlignment.Center;
                     row.Cells[12].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     //row.Cells[12].Style.BackgroundBrush = PdfBrushes.White;
                     row.Cells[12].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-
-                    if (overallReportList[i+1].ST_BG_Color == "white")
+                    if (overallReportList[i + 1].DQT_BG_Color == "white")
                     {
                         row.Cells[12].Style.BackgroundBrush = PdfBrushes.White;
                         row.Cells[12].Style.TextBrush = brush_con;
@@ -3486,6 +3566,24 @@ namespace TQM
                         row.Cells[12].Style.BackgroundBrush = PdfBrushes.Red;
                         PdfBrush brush_con_white = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
                         row.Cells[12].Style.TextBrush = brush_con_white;
+                    }
+
+                    row.Cells[13].Value = overallReportList[i+1].ST;
+                    row.Cells[13].StringFormat.Alignment = PdfTextAlignment.Center;
+                    row.Cells[13].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //row.Cells[13].Style.BackgroundBrush = PdfBrushes.White;
+                    row.Cells[13].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
+
+                    if (overallReportList[i+1].ST_BG_Color == "white")
+                    {
+                        row.Cells[13].Style.BackgroundBrush = PdfBrushes.White;
+                        row.Cells[13].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        row.Cells[13].Style.BackgroundBrush = PdfBrushes.Red;
+                        PdfBrush brush_con_white = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        row.Cells[13].Style.TextBrush = brush_con_white;
                     }
 
                     //pdfGrid.Rows[i + 1].Height = 14;
@@ -3503,7 +3601,7 @@ namespace TQM
                         pdfGrid.Draw(pdfPage, new PointF(10, totalRow_header_height), layoutFormat);
                         pdfPage = pdfDocument.Pages.Add();
                         pdfGrid = new PdfGrid();
-                        pdfGrid.Columns.Add(13);
+                        pdfGrid.Columns.Add(14);
                     }
                     else if (i+2 == overallReportList.Count)
                     {

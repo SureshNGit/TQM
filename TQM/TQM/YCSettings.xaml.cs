@@ -1330,6 +1330,28 @@ namespace TQM
                     {
                         return false;
                     }
+
+
+                    List<StrengthTestModel> test_list = conn.Table<StrengthTestModel>().Where(StrengthTestModel =>
+                                                              (StrengthTestModel.categoryID == selectedCategoryID
+                                                              && StrengthTestModel.machineID == selectedMachineID
+                                                              && StrengthTestModel.scheduledStartDate == sch_startDate)).ToList();
+                    if (test_list.Count > 0)
+                    {
+                        int failCounter = 0;
+                        foreach (StrengthTestModel sts in test_list)
+                        {
+                            sts.scheduledEndDate = date_scheduledEndDate.Date;
+                            int row = conn.Update(sts);
+                            if (row < 1) { failCounter += 1; }
+                        }
+                        if (failCounter > 0) { return false; }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
                 }
                 return true;
             }

@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using Android.Content;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using TQM.Model;
@@ -10,6 +11,7 @@ namespace TQM
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Report : ContentPage
     {
+        private static readonly DateTime DEFAULTDATE = new DateTime(2000, 01, 01);
         private Guid selectedCategoryID = Guid.Empty;
         private string selectedCategory = null;
         private Guid selectedMachineID = Guid.Empty;
@@ -17,6 +19,11 @@ namespace TQM
         public Report()
         {
             InitializeComponent();
+
+            contentGrid.IsVisible = true;
+
+            progressGrid.IsVisible = false;
+
             getUserfieldConfig();
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
@@ -117,11 +124,37 @@ namespace TQM
         {
             try
             {
+                actInd.IsVisible = true;
+                actInd.IsRunning = true;
+
+
+                DateTime sd = date_fromdate.Date;
+                DateTime ed = date_enddate.Date;
+
+                
+
                 if (picker_reportType.SelectedIndex < 0)
                 {
                     DisplayAlert("Attention", "Please select report type to proceed!!!", "OK");
+                    actInd.IsVisible = false;
+                    actInd.IsRunning = false;
                     return;
                 }
+
+                if (picker_reportType.SelectedItem.ToString() == "Drum View" || picker_reportType.SelectedItem.ToString() == "Drum Details")
+                {
+                    if(picker_scheduledDates.SelectedIndex <0)
+                    {
+                        DisplayAlert("Attention", "Please select schedule period to proceed!!!", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
+                        return;
+                    }
+
+                    sd = DateTime.Parse(picker_scheduledDates.SelectedItem.ToString().Split(new[] { " to " }, StringSplitOptions.None)[0] + " 00:00:00");
+                    ed = DateTime.Parse(picker_scheduledDates.SelectedItem.ToString().Split(new[] { " to " }, StringSplitOptions.None)[1] + " 00:00:00");
+                }
+
                 string drumNumber = "";
                 string standardStrength = "";
                 string testID = "";
@@ -131,17 +164,22 @@ namespace TQM
                 string UFVAL2 = null;
                 string UFVAL3 = null;
                 string UFVAL4 = null;
+
                 if (entry_testID.Text.Trim() != "")
                 {
                     if(picker_reportType.SelectedItem.ToString()!= "Detailed")
                     {
                         DisplayAlert("Attention", "Only Detailed Report is allowed with Test ID", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
 
                     if (entry_testID.Text.Contains("."))
                     {
                         DisplayAlert("Attention", "Test ID should not be decimal", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
                     else
@@ -155,6 +193,8 @@ namespace TQM
                         if (startTestID > endTestID)
                         {
                             DisplayAlert("Notice", "Invalid. Start Test ID should be less than End Test ID!!!", "OK");
+                            actInd.IsVisible = false;
+                            actInd.IsRunning = false;
                             return;
                         }
                     }
@@ -164,16 +204,22 @@ namespace TQM
                     if (date_enddate.Date < date_fromdate.Date)
                     {
                         DisplayAlert("Attention", "Report End Date cannot be less than Report Start Date", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
                     if (date_fromdate.Date > date_fromdate.Date)
                     {
                         DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
                     if (picker_machinecategory.SelectedIndex < 0)
                     {
                         DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
                     
@@ -184,6 +230,8 @@ namespace TQM
                             if (picker_drumNumber.SelectedItem.ToString().Contains("."))
                             {
                                 DisplayAlert("Attention", "Drum number should not be decimal", "OK");
+                                actInd.IsVisible = false;
+                                actInd.IsRunning = false;
                                 return;
                             }
                             else
@@ -200,11 +248,15 @@ namespace TQM
                         if (entry_stdStrength.Text.Trim().Contains("-"))
                         {
                             DisplayAlert("Attention", "Standard Strength should not be a negative value!!!", "Ok");
+                            actInd.IsVisible = false;
+                            actInd.IsRunning = false;
                             return;
                         }
                         if (entry_stdStrength.Text.Trim() == "" || decimal.Parse(entry_stdStrength.Text.Trim()) == 0)
                         {
                             DisplayAlert("Attention", "Standard Strength should not be blank or zero!!!", "Ok");
+                            actInd.IsVisible = false;
+                            actInd.IsRunning = false;
                             return;
                         }
                         standardStrength = entry_stdStrength.Text.Trim();
@@ -213,12 +265,16 @@ namespace TQM
                     if (selectedCategory == null || selectedCategory == "" || selectedCategoryID==Guid.Empty)
                     {
                         DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
 
                     if (picker_machinename.SelectedIndex < 0)
                     {
                         DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
 
@@ -275,15 +331,20 @@ namespace TQM
                 bool is_maintenance = false;
                 if(reportType == "Maintenance") { is_maintenance = true; }
                 bool is_indBreifView = false;
-                if(reportType == "Individual Test - Brief View") { is_indBreifView = true; }
-                
+                if(reportType == "Ind-Brief View") { is_indBreifView = true; }
+
+                contentGrid.IsVisible = false;
+
+                progressGrid.IsVisible = true;
 
                 Navigation.PushAsync(new YCReport
-                    (date_fromdate.Date, date_enddate.Date, selectedCategoryID, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength , false, is_indBreifView, is_consolidated, drumView, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
+                    (sd, ed, selectedCategoryID, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength , false, is_indBreifView, is_consolidated, drumView, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
             catch (Exception ex)
             {
                 DisplayAlert("Notice-ReportSearch", ex.Message.ToString(), "Ok");
+                actInd.IsVisible = false;
+                actInd.IsRunning = false;
             }
         }
 
@@ -315,6 +376,56 @@ namespace TQM
                         }
 
                     }
+
+                    if (selectedCategoryID == Guid.Empty || selectedMachineID == Guid.Empty) { picker_scheduledDates.ItemsSource = null; return; }
+
+                    
+
+                    List<TestConfigModel> tc_list = conn.Table<TestConfigModel>().Where(
+                                                    TestConfigModel => (TestConfigModel.categoryID == selectedCategoryID
+                                                    && TestConfigModel.machineID == selectedMachineID
+                                                    && TestConfigModel.testID == 0))
+                                                    .OrderBy(TestConfigModel=>TestConfigModel.scheduledStartDate)
+                                                    .ToList();
+                    if (tc_list.Count == 0) { picker_scheduledDates.ItemsSource = null; return; }
+
+                    DateTime prev_sd = DEFAULTDATE;
+                    DateTime prev_ed = DEFAULTDATE;
+                    List<String> scheduledDates = new List<string>();
+                    foreach (TestConfigModel test in tc_list)
+                    {
+                        if (prev_sd == DEFAULTDATE && prev_ed== DEFAULTDATE)
+                        {
+                            prev_sd = test.scheduledStartDate;
+                            prev_ed = test.scheduledEndDate;
+                        }
+                        else
+                        {
+                            if (prev_sd == test.scheduledStartDate && prev_ed != test.scheduledEndDate)
+                            {
+                                prev_ed = test.scheduledEndDate;
+                            }else if(prev_sd != test.scheduledStartDate)
+                            {
+                                string sp = prev_sd.ToShortDateString() + " to " + prev_ed.ToShortDateString();
+                                if (!scheduledDates.Contains(sp))
+                                {
+                                    scheduledDates.Add(sp);
+                                }
+                                prev_sd = test.scheduledStartDate;
+                                prev_ed = test.scheduledEndDate;
+                            }
+                        }
+                    }
+
+                    string sp_final = prev_sd.ToShortDateString() + " to " + prev_ed.ToShortDateString();
+                    if (!scheduledDates.Contains(sp_final))
+                    {
+                        scheduledDates.Add(sp_final);
+                    }
+
+                    picker_scheduledDates.ItemsSource = null;
+                    picker_scheduledDates.ItemsSource = scheduledDates;
+                    
                 }
             }
             catch (Exception ex)
@@ -357,6 +468,9 @@ namespace TQM
         {
             try
             {
+                actInd.IsVisible = true;
+                actInd.IsRunning = true;
+
                 bool is_consolidated = false;
                 bool drumDetails = false;
                 bool is_maintenance = false;
@@ -366,11 +480,15 @@ namespace TQM
                 if (picker_reportType.SelectedIndex < 0)
                 {
                     DisplayAlert("Attention", "Please select report type to proceed!!!", "OK");
+                    actInd.IsVisible = false;
+                    actInd.IsRunning = false;
                     return;
                 }
                 if (picker_reportType.SelectedItem.ToString() != "Detailed")
                 {
                     DisplayAlert("Attention", "Please select report type as 'Detailed Report' for record deletion", "OK");
+                    actInd.IsVisible = false;
+                    actInd.IsRunning = false;
                     return;
                 }
                 string drumNumber = "";
@@ -387,12 +505,16 @@ namespace TQM
                     if (picker_reportType.SelectedItem.ToString() != "Detailed")
                     {
                         DisplayAlert("Attention", "Only Detailed Report is allowed with Test ID", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
 
                     if (entry_testID.Text.Contains("."))
                     {
                         DisplayAlert("Attention", "Test ID should not be decimal", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
                     else
@@ -406,6 +528,8 @@ namespace TQM
                         if (startTestID > endTestID)
                         {
                             DisplayAlert("Notice", "Invalid. Start Test ID should be less than End Test ID!!!", "OK");
+                            actInd.IsVisible = false;
+                            actInd.IsRunning = false;
                             return;
                         }
                     }
@@ -415,16 +539,22 @@ namespace TQM
                     if (date_enddate.Date < date_fromdate.Date)
                     {
                         DisplayAlert("Attention", "Report End Date cannot be less than Report Start Date", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
                     if (date_fromdate.Date > date_fromdate.Date)
                     {
                         DisplayAlert("Attention", "Report Start Date cannot be greater than Report End Date", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
                     if (picker_machinecategory.SelectedIndex < 0)
                     {
                         DisplayAlert("Attention", "Please select machine category to proceed!!!", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
 
@@ -435,6 +565,8 @@ namespace TQM
                             if (picker_drumNumber.SelectedItem.ToString().Contains("."))
                             {
                                 DisplayAlert("Attention", "Drum number should not be decimal", "OK");
+                                actInd.IsVisible = false;
+                                actInd.IsRunning = false;
                                 return;
                             }
                             else
@@ -451,11 +583,15 @@ namespace TQM
                         if (entry_stdStrength.Text.Trim().Contains("-"))
                         {
                             DisplayAlert("Attention", "Standard Strength should not be a negative value!!!", "Ok");
+                            actInd.IsVisible = false;
+                            actInd.IsRunning = false;
                             return;
                         }
                         if (entry_stdStrength.Text.Trim() == "" || decimal.Parse(entry_stdStrength.Text.Trim()) == 0)
                         {
                             DisplayAlert("Attention", "Standard Strength should not be blank or zero!!!", "Ok");
+                            actInd.IsVisible = false;
+                            actInd.IsRunning = false;
                             return;
                         }
                         standardStrength = entry_stdStrength.Text.Trim();
@@ -464,12 +600,16 @@ namespace TQM
                     if (selectedCategory == null || selectedCategory == "" || selectedCategoryID==Guid.Empty)
                     {
                         DisplayAlert("Attention", "Please select machine category for consolidated report", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
 
                     if (picker_machinename.SelectedIndex < 0)
                     {
                         DisplayAlert("Attention", "Please select machine name to proceed!!!", "OK");
+                        actInd.IsVisible = false;
+                        actInd.IsRunning = false;
                         return;
                     }
 
@@ -514,12 +654,18 @@ namespace TQM
                     }
                 }
 
-               Navigation.PushAsync(new YCReport
+                contentGrid.IsVisible = false;
+
+                progressGrid.IsVisible = true;
+
+                Navigation.PushAsync(new YCReport
                     (date_fromdate.Date, date_enddate.Date,selectedCategoryID, selectedCategory, selectedMachineID, shift, testID, drumNumber, standardStrength, true, is_indBreifView, is_consolidated, drumView, drumDetails, is_maintenance, UFVAL1, UFVAL2, UFVAL3, UFVAL4));
             }
             catch (Exception ex)
             {
                 DisplayAlert("Notice-ReportSearch", ex.Message.ToString(), "Ok");
+                actInd.IsVisible = false;
+                actInd.IsRunning = false;
             }
         }
 
@@ -533,13 +679,78 @@ namespace TQM
                     lbl_testID.IsVisible = false;
                     entry_testID.IsVisible = false;
                     btn_deleteRecords.IsVisible = false;
+
+                    lbl_drumNumber.IsVisible = false;
+                    picker_drumNumber.IsVisible = false;
+
+                    lbl_stdStrength.IsVisible = false;
+                    entry_stdStrength.IsVisible = false;
+
+                    lbl_shift.IsVisible = false;
+                    picker_shift.IsVisible = false;
+
+                    lbl_userfield1.IsVisible = false;
+                    entry_userfield1.IsVisible = false;
+
+                    lbl_userfield2.IsVisible = false;
+                    entry_userfield2.IsVisible = false;
+
+                    lbl_userfield3.IsVisible = false;
+                    entry_userfield3.IsVisible = false;
+
+                    lbl_userfield4.IsVisible = false;
+                    entry_userfield4.IsVisible = false;
                 }
                 else
                 {
                     lbl_testID.IsVisible = true;
                     entry_testID.IsVisible = true;
                     btn_deleteRecords.IsVisible = true;
+
+                    lbl_drumNumber.IsVisible = true;
+                    picker_drumNumber.IsVisible = true;
+
+                    lbl_stdStrength.IsVisible = true;
+                    entry_stdStrength.IsVisible = true;
+
+                    lbl_shift.IsVisible = true;
+                    picker_shift.IsVisible = true;
+
+                    //lbl_userfield1.IsVisible = true;
+                    //entry_userfield1.IsVisible = true;
+
+                    //lbl_userfield2.IsVisible = true;
+                    //entry_userfield2.IsVisible = true;
+
+                    //lbl_userfield3.IsVisible = true;
+                    //entry_userfield3.IsVisible = true;
+
+                    //lbl_userfield4.IsVisible = true;
+                    //entry_userfield4.IsVisible = true;
+
                 }
+
+                if (selectedReportType == "Drum View" || selectedReportType == "Drum Details")
+                {
+                    lbl_sd.IsVisible = false;
+                    lbl_ed.IsVisible = false;
+                    date_fromdate.IsVisible = false;
+                    date_enddate.IsVisible = false;
+
+                    lbl_scheduledDates.IsVisible = true;
+                    picker_scheduledDates.IsVisible = true;
+                }
+                else
+                {
+                    lbl_scheduledDates.IsVisible = false;
+                    picker_scheduledDates.IsVisible = false;
+
+                    lbl_sd.IsVisible = true;
+                    lbl_ed.IsVisible = true;
+                    date_fromdate.IsVisible = true;
+                    date_enddate.IsVisible = true;
+                }
+
             }
             catch (Exception ex)
             {
@@ -547,5 +758,7 @@ namespace TQM
             }
 
         }
+
+        
     }
 }

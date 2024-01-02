@@ -17,6 +17,7 @@ namespace TQM.ModelView
         public string T9 { get; set; }
         public string T10 { get; set; }
         public string QT { get; set; }
+        public string DQT { get; set; }
         public string ST { get; set; }
         public string DrumNumber { get; set; }
         public string Speed { get; set; }
@@ -25,6 +26,7 @@ namespace TQM.ModelView
         public string N1 { get; set; }
         public string Mat_Count { get; set; }
         public string ST_BG_Color { get; set; } = "red";
+        public string DQT_BG_Color { get; set; } = "red";
     }
 }
 
