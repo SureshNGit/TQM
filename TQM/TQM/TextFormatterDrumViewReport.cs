@@ -33,7 +33,7 @@ namespace TQM
             //    return formatDecimal(act, 2).ToString() + " [Std Count:" + formatDecimal(exp, 2).ToString() + " " + deviation.ToString() + "]";
             //}
 
-            return drumNo + "\n" + Strength;
+            return drumNo + "\n" + Strength.Split('~')[0];
 
             //return "";
         }

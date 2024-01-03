@@ -278,7 +278,66 @@
                 </ListView.ItemTemplate>
             </ListView>
 
-            <ListView x:Name="listview_drums"  BackgroundColor="White" SeparatorColor="White"
+            <StackLayout x:Name="sl_drums_header" Margin="0,0,0,15" >
+
+                    <Grid ColumnSpacing="2" RowSpacing="2" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" 
+                                        Margin="0,0,0,0" >
+
+                                <Label  Margin="0,0,0,0" 
+                                TextColor="Black"
+                                        x:Name="lbl_AvgStrength"
+                                Text=""
+                                        FontSize="18"
+                                VerticalOptions="Center"
+                                HorizontalOptions="Center"/>
+
+                        </StackLayout>
+
+                        <StackLayout Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="3" 
+                                        Margin="0,0,0,0">
+
+                                <Label  Margin="0,0,0,0" 
+                                TextColor="Black"
+                                        x:Name="lbl_TotDrumsTestedToday"
+                                Text=""
+                                        FontSize="18"
+                                VerticalOptions="Center"
+                                HorizontalOptions="Center"/>
+
+                        </StackLayout>
+
+                        <StackLayout Grid.Column="6" Grid.Row="0" Grid.ColumnSpan="4" 
+                                        Margin="0,0,0,0">
+
+                                <Label  Margin="0,0,0,0" 
+                                TextColor="Black"
+                                        x:Name="lbl_AvgStrengthForToday"
+                                Text=""
+                                        FontSize="18"
+                                VerticalOptions="Center"
+                                HorizontalOptions="Center"/>
+
+                        </StackLayout>
+
+                    </Grid>
+
+            </StackLayout>
+
+            <!--<ListView x:Name="listview_drums_header"  BackgroundColor="White" SeparatorColor="White"
                       HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always" 
                        IsVisible="false">
                 
@@ -300,6 +359,77 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
+
+                                    <StackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" 
+                                                  Margin="0,10,0,0">
+
+                                         <Label  Margin="0,0,0,0" 
+                                            TextColor="White"
+                                                 x:Name="lbl_AvgStrength"
+                                            Text=""
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="Center"/>
+
+                                    </StackLayout>
+
+                                    <StackLayout Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="3" 
+                                                  Margin="0,10,0,0">
+
+                                         <Label  Margin="0,0,0,0" 
+                                            TextColor="White"
+                                                 x:Name="lbl_TotDrumsTestedToday"
+                                            Text=""
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="Center"/>
+
+                                    </StackLayout>
+
+                                    <StackLayout Grid.Column="6" Grid.Row="0" Grid.ColumnSpan="4" 
+                                                  Margin="0,10,0,0">
+
+                                         <Label  Margin="0,0,0,0" 
+                                            TextColor="White"
+                                                 x:Name="lbl_AvgStrengthForToday"
+                                            Text=""
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="Center"/>
+
+                                    </StackLayout>
+
+                                </Grid>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>-->
+
+            <ListView x:Name="listview_drums"  BackgroundColor="White" SeparatorColor="White"
+                      HasUnevenRows="True" HorizontalScrollBarVisibility="Always" VerticalScrollBarVisibility="Always" 
+                       IsVisible="false">
+                
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell Tapped="ViewCell_Tapped">
+                            <StackLayout Margin="0,0,0,0">
+
+                                
+
+                                <Grid ColumnSpacing="2"
+                                         RowSpacing="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+
 
                                     <StackLayout Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1" IsVisible="{Binding D1_Visible}"
                                                   Margin="0,10,0,0">

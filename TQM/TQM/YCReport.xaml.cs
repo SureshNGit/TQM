@@ -91,6 +91,12 @@ namespace TQM
         private string selectedMaterialCount = null;
         private string selectedSpeed = null;
 
+        private decimal avgStregnth_DV = 0.0m;
+        private decimal avgStregnthForToday_DV = 0.0m;
+        private decimal totalDrumTestedForToday_DV = 0.0m;
+
+        private bool isTestIDReport = false;
+
         private List<MissingDrumReportModelView> odl = new List<MissingDrumReportModelView>();
         private List<MaintenanceReportMV> oml = new List<MaintenanceReportMV>();
 
@@ -1136,7 +1142,20 @@ namespace TQM
                 }
                 listview_drums.ItemsSource = dv_list;
                 listview_drums.IsVisible = true;
+
+                sl_drums_header.IsVisible = true;
+                lbl_AvgStrength.Text = "Average Strength : " + formatDecimal(avgStregnth_DV / selectedTotalDrumCount, 2).ToString();
                 
+                if (totalDrumTestedForToday_DV > 0)
+                {
+                    lbl_TotDrumsTestedToday.Text = "No. of drums tested today : " + totalDrumTestedForToday_DV.ToString();
+                    lbl_AvgStrengthForToday.Text = "Average strength for today : " + formatDecimal(avgStregnthForToday_DV / totalDrumTestedForToday_DV, 2).ToString();
+                }
+                else
+                {
+                    lbl_TotDrumsTestedToday.Text = "No. of drums tested today : 0";
+                    lbl_AvgStrengthForToday.Text = "Average strength for today : 0.00";
+                }
                 _ = toggleProgressBar();
             }
             catch (Exception ex)
@@ -1168,12 +1187,20 @@ namespace TQM
                                                         .OrderByDescending(StrengthTestModel => StrengthTestModel.createdate).FirstOrDefault();
                     if (sts == null)
                     {
-                        drumDict.Add(drumNo, "QT-0 \n ST-0.0");
+                        drumDict.Add(drumNo, "QT-0 \n ST-0.0"+"~N");
                         ret = true;
                     }
                     else
                     {
-                        drumDict.Add(drumNo, "QT-"+sts.qualifiedTestCount.ToString() + "\n" + "ST-"+ sts.yarnStrength.ToString());
+                        string todayFlag = "N";
+                        if (sts.createdate.Date == DateTime.Today.Date)
+                        {
+                            todayFlag = "Y";
+                            avgStregnthForToday_DV = avgStregnthForToday_DV + sts.yarnStrength;
+                            totalDrumTestedForToday_DV++;
+                        }
+                        drumDict.Add(drumNo, "QT-"+sts.qualifiedTestCount.ToString() + "\n" + "ST-"+ sts.yarnStrength.ToString()+"~"+todayFlag);
+                        avgStregnth_DV = avgStregnth_DV + sts.yarnStrength;
                         ret = false;
                     }
 
@@ -1253,6 +1280,9 @@ namespace TQM
                     List<StrengthTestSummaryModel> ycTestSummaryModels = null;
                     if (testID != "")
                     {
+                        isTestIDReport = true;
+                        lbl_reportHeader.Text = lbl_reportHeader.Text.Split('\n')[0];
+
                         if (!testID.Contains("."))
                         {
                             long givenTestId = long.Parse(testID);
@@ -1398,8 +1428,11 @@ namespace TQM
                         //Start of logic to ignore the previous date last shift record from the given actual start date
                         if (parentList[0].shift != "Shift-1")
                         {
+                            DateTime firstTestedDated = parentList[0].createdate.Date.AddDays(1);
+
                             StrengthTestSummaryModel actualStartDate_Shift1_Recs = parentList.Where(StrengthTestSummaryModel =>
-                                                                                         (StrengthTestSummaryModel.shift == "Shift-1"))
+                                                                                         (StrengthTestSummaryModel.shift == "Shift-1"
+                                                                                         && StrengthTestSummaryModel.createdate < firstTestedDated))
                                                                                         .OrderBy(StrengthTestSummaryModel => StrengthTestSummaryModel.createdate)
                                                                                         .FirstOrDefault();
                             if (actualStartDate_Shift1_Recs != null)
@@ -3652,8 +3685,6 @@ namespace TQM
                 PdfLayoutResult result = null;
                 float overallHeight = 0;
                 int tableNo = 1;
-                //bool newPageAdded_Header = false;
-                //bool newPageAdded_Body = false;
 
                 PdfGrid pdfGridInfo = new PdfGrid();
                 pdfGridInfo.RepeatHeader = true;
@@ -3667,136 +3698,149 @@ namespace TQM
                 float rowHeights = 0;
 
                 decimal totalStrength = 0.0m;
+                decimal totalStrength_today = 0.0m;
+                int totalDrumTestedToday = 0;
 
 
-                //bool includeHeader = true;
-                //PdfGrid pdfGridBody = null;
                 PdfGridRow row = null;
                 pdfGrid = new PdfGrid();
 
                 pdfGrid.Columns.Add(10);
                 foreach (DrumMVReport orl in overallReportList)
                 {
-                    //if (includeHeader)
-                    //{
-                    //    includeHeader = false;
-                    //    pdfGrid = new PdfGrid();
-
-                    //    pdfGrid.Columns.Add(10);
-                    //    row = new PdfGridRow(pdfGrid);
-                    //    pdfGrid.Rows.Add(row);
-
-
-                    //    pdfGrid.Rows[0].Cells[0].Value = "Date & Shift";
-                    //    pdfGrid.Rows[0].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
-                    //    pdfGrid.Rows[0].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    //    pdfGrid.Rows[0].Cells[0].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    //    pdfGrid.Rows[0].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                    //    pdfGrid.Rows[0].Cells[1].Value = "Drum No";
-                    //    pdfGrid.Rows[0].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
-                    //    pdfGrid.Rows[0].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    //    pdfGrid.Rows[0].Cells[1].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    //    pdfGrid.Rows[0].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                    //    pdfGrid.Rows[0].Cells[2].Value = "Strength";
-                    //    pdfGrid.Rows[0].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
-                    //    pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    //    pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    //    pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                    //    pdfGrid.Rows[0].Cells[3].Value = "Machine";
-                    //    pdfGrid.Rows[0].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
-                    //    pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    //    pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    //    pdfGrid.Rows[0].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                    //    pdfGrid.Rows[0].Cells[4].Value = "ID";
-                    //    pdfGrid.Rows[0].Cells[4].StringFormat.Alignment = PdfTextAlignment.Center;
-                    //    pdfGrid.Rows[0].Cells[4].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    //    pdfGrid.Rows[0].Cells[4].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    //    pdfGrid.Rows[0].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                    //    pdfGrid.Rows[0].Cells[5].Value = "Total Sample";
-                    //    pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
-                    //    pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    //    pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    //    pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                    //    pdfGrid.Rows[0].Cells[6].Value = "Count";
-                    //    pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
-                    //    pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    //    pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    //    pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                    //    pdfGrid.Rows[0].Cells[7].Value = "Qualified";
-                    //    pdfGrid.Rows[0].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
-                    //    pdfGrid.Rows[0].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    //    pdfGrid.Rows[0].Cells[7].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    //    pdfGrid.Rows[0].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                    //    pdfGrid.Rows[0].Cells[8].Value = "Mac Parameters";
-                    //    pdfGrid.Rows[0].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
-                    //    pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    //    pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    //    pdfGrid.Rows[0].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                    //    pdfGrid.Rows[0].Cells[9].Value = "Remark";
-                    //    pdfGrid.Rows[0].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
-                    //    pdfGrid.Rows[0].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    //    pdfGrid.Rows[0].Cells[9].Style.BackgroundBrush = PdfBrushes.LightGray;
-                    //    pdfGrid.Rows[0].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                    //    pdfGrid.Rows[0].Height = pdfGrid.Rows[0].Height * 2;
-                    //    row = new PdfGridRow(pdfGrid);
-                    //    pdfGrid.Rows.Add(row);
-                    //    rowHeights = rowHeights + pdfGrid.Rows[0].Height;
-                    //}
-
-                    
                     row = new PdfGridRow(pdfGrid);
                     pdfGrid.Rows.Add(row);
 
 
                     if (orl.D1 != null && orl.D1 != "")
                     {
-                        totalStrength = totalStrength + decimal.Parse(orl.D1_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
-                        pdfGrid.Rows[pageRecordCount].Cells[0].Value = orl.D1 + "\n" + orl.D1_Strength;
+                        string strength_temp = orl.D1_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1];
+                        string st = strength_temp.Split('~')[0];
+                        string st_today = strength_temp.Split('~')[1];
+                        totalStrength = totalStrength + decimal.Parse(st);
+                        if (st_today == "Y")
+                        {
+                            totalStrength_today = totalStrength_today + decimal.Parse(st);
+                            totalDrumTestedToday++;
+                        }
+                        pdfGrid.Rows[pageRecordCount].Cells[0].Value = orl.D1 + "\n" + orl.D1_Strength.Split('~')[0];
                     }
                     if (orl.D2 != null && orl.D2 != "")
                     {
-                        totalStrength = totalStrength + decimal.Parse(orl.D2_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
-                        pdfGrid.Rows[pageRecordCount].Cells[1].Value = orl.D2 + "\n" + orl.D2_Strength;
+                        string strength_temp = orl.D2_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1];
+                        string st = strength_temp.Split('~')[0];
+                        string st_today = strength_temp.Split('~')[1];
+                        totalStrength = totalStrength + decimal.Parse(st);
+                        if (st_today == "Y")
+                        {
+                            totalStrength_today = totalStrength_today + decimal.Parse(st);
+                            totalDrumTestedToday++;
+                        }
+                        pdfGrid.Rows[pageRecordCount].Cells[1].Value = orl.D2 + "\n" + orl.D2_Strength.Split('~')[0];
                     }
                     if (orl.D3 != null && orl.D3 != "")
                     {
-                        totalStrength = totalStrength + decimal.Parse(orl.D3_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
-                        pdfGrid.Rows[pageRecordCount].Cells[2].Value = orl.D3 + "\n" + orl.D3_Strength;
+                        string strength_temp = orl.D3_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1];
+                        string st = strength_temp.Split('~')[0];
+                        string st_today = strength_temp.Split('~')[1];
+                        totalStrength = totalStrength + decimal.Parse(st);
+                        if (st_today == "Y")
+                        {
+                            totalStrength_today = totalStrength_today + decimal.Parse(st);
+                            totalDrumTestedToday++;
+                        }
+                        pdfGrid.Rows[pageRecordCount].Cells[2].Value = orl.D3 + "\n" + orl.D3_Strength.Split('~')[0];
                     }
                     if (orl.D4 != null && orl.D4 != "")
                     {
-                        totalStrength = totalStrength + decimal.Parse(orl.D4_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
-                        pdfGrid.Rows[pageRecordCount].Cells[3].Value = orl.D4 + "\n" + orl.D4_Strength;
+                        string strength_temp = orl.D4_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1];
+                        string st = strength_temp.Split('~')[0];
+                        string st_today = strength_temp.Split('~')[1];
+                        totalStrength = totalStrength + decimal.Parse(st);
+                        if (st_today == "Y")
+                        {
+                            totalStrength_today = totalStrength_today + decimal.Parse(st);
+                            totalDrumTestedToday++;
+                        }
+                        pdfGrid.Rows[pageRecordCount].Cells[3].Value = orl.D4 + "\n" + orl.D4_Strength.Split('~')[0];
                     }
                     if (orl.D5 != null && orl.D5 != "")
                     {
-                        totalStrength = totalStrength + decimal.Parse(orl.D5_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
-                        pdfGrid.Rows[pageRecordCount].Cells[4].Value = orl.D5 + "\n" + orl.D5_Strength;
+                        string strength_temp = orl.D5_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1];
+                        string st = strength_temp.Split('~')[0];
+                        string st_today = strength_temp.Split('~')[1];
+                        totalStrength = totalStrength + decimal.Parse(st);
+                        if (st_today == "Y")
+                        {
+                            totalStrength_today = totalStrength_today + decimal.Parse(st);
+                            totalDrumTestedToday++;
+                        }
+                        pdfGrid.Rows[pageRecordCount].Cells[4].Value = orl.D5 + "\n" + orl.D5_Strength.Split('~')[0];
                     }
                     if (orl.D6 != null && orl.D6 != "")
                     {
-                        totalStrength = totalStrength + decimal.Parse(orl.D6_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
-                        pdfGrid.Rows[pageRecordCount].Cells[5].Value = orl.D6 + "\n" + orl.D6_Strength;
+                        string strength_temp = orl.D6_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1];
+                        string st = strength_temp.Split('~')[0];
+                        string st_today = strength_temp.Split('~')[1];
+                        totalStrength = totalStrength + decimal.Parse(st);
+                        if (st_today == "Y")
+                        {
+                            totalStrength_today = totalStrength_today + decimal.Parse(st);
+                            totalDrumTestedToday++;
+                        }
+                        pdfGrid.Rows[pageRecordCount].Cells[5].Value = orl.D6 + "\n" + orl.D6_Strength.Split('~')[0];
                     }
                     if (orl.D7 != null && orl.D7 != "")
                     {
-                        totalStrength = totalStrength + decimal.Parse(orl.D7_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
-                        pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.D7 + "\n" + orl.D7_Strength;
+                        string strength_temp = orl.D7_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1];
+                        string st = strength_temp.Split('~')[0];
+                        string st_today = strength_temp.Split('~')[1];
+                        totalStrength = totalStrength + decimal.Parse(st);
+                        if (st_today == "Y")
+                        {
+                            totalStrength_today = totalStrength_today + decimal.Parse(st);
+                            totalDrumTestedToday++;
+                        }
+                        pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.D7 + "\n" + orl.D7_Strength.Split('~')[0];
                     }
                     if (orl.D8 != null && orl.D8 != "")
                     {
-                        totalStrength = totalStrength + decimal.Parse(orl.D8_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.D8 + "\n" + orl.D8_Strength;
+                        string strength_temp = orl.D8_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1];
+                        string st = strength_temp.Split('~')[0];
+                        string st_today = strength_temp.Split('~')[1];
+                        totalStrength = totalStrength + decimal.Parse(st);
+                        if (st_today == "Y")
+                        {
+                            totalStrength_today = totalStrength_today + decimal.Parse(st);
+                            totalDrumTestedToday++;
+                        }
+                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.D8 + "\n" + orl.D8_Strength.Split('~')[0];
                     }
                     if (orl.D9 != null && orl.D9 != "")
                     {
-                        totalStrength = totalStrength + decimal.Parse(orl.D9_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.D9 + "\n" + orl.D9_Strength;
+                        string strength_temp = orl.D9_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1];
+                        string st = strength_temp.Split('~')[0];
+                        string st_today = strength_temp.Split('~')[1];
+                        totalStrength = totalStrength + decimal.Parse(st);
+                        if (st_today == "Y")
+                        {
+                            totalStrength_today = totalStrength_today + decimal.Parse(st);
+                            totalDrumTestedToday++;
+                        }
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.D9 + "\n" + orl.D9_Strength.Split('~')[0];
                     }
                     if (orl.D10 != null && orl.D10 != "")
                     {
-                        totalStrength = totalStrength + decimal.Parse(orl.D10_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1]);
-                        pdfGrid.Rows[pageRecordCount].Cells[9].Value = orl.D10 + "\n" + orl.D10_Strength;
+                        string strength_temp = orl.D10_Strength.Split(new[] { "ST-" }, StringSplitOptions.None)[1];
+                        string st = strength_temp.Split('~')[0];
+                        string st_today = strength_temp.Split('~')[1];
+                        totalStrength = totalStrength + decimal.Parse(st);
+                        if (st_today == "Y")
+                        {
+                            totalStrength_today = totalStrength_today + decimal.Parse(st);
+                            totalDrumTestedToday++;
+                        }
+                        pdfGrid.Rows[pageRecordCount].Cells[9].Value = orl.D10 + "\n" + orl.D10_Strength.Split('~')[0];
                     }
 
                     if (orl.D1_BG_Color == "green" || orl.D1_BG_Color == "orange")
@@ -4049,7 +4093,7 @@ namespace TQM
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
 
-                        pdfGrid.Rows[pageRecordCount+1].Cells[0].Value = "Average Strength : " + formatDecimal(totalStrength/selectedTotalDrumCount,2).ToString();
+                        pdfGrid.Rows[pageRecordCount+1].Cells[0].Value = "Average strength : " + formatDecimal(totalStrength/selectedTotalDrumCount,2).ToString();
                         pdfGrid.Rows[pageRecordCount + 1].Cells[0].ColumnSpan = 10;
                         pdfGrid.Rows[pageRecordCount+1].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[pageRecordCount+1].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
@@ -4075,6 +4119,44 @@ namespace TQM
                         pdfGrid.Rows[pageRecordCount+1].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
                         pdfGrid.Rows[pageRecordCount+1].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
                         pdfGrid.Rows[pageRecordCount+1].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+
+                        row = new PdfGridRow(pdfGrid);
+                        pdfGrid.Rows.Add(row);
+
+                        if (totalDrumTestedToday > 0)
+                        {
+                            pdfGrid.Rows[pageRecordCount + 2].Cells[0].Value = "No. of drums tested today : "+ totalDrumTestedToday.ToString() + "\n" + "Average strength for today : " + formatDecimal(totalStrength_today / totalDrumTestedToday, 2).ToString();
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount + 2].Cells[0].Value = "No. of drums tested today : 0" + "\n" + "Average strength for today : " + "0.00";
+                        }
+
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[0].ColumnSpan = 10;
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[0].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[1].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[2].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[3].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[4].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[5].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[6].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[7].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[8].Style.Borders.All = PdfPens.Transparent;
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[9].Style.Borders.All = PdfPens.Transparent;
+
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        pdfGrid.Rows[pageRecordCount + 2].Cells[9].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
                     }
 
                     //**************************** End of Overall total *****************************
@@ -4529,15 +4611,14 @@ namespace TQM
                 }
                 else
                 {
-                    //if (selectedMachineCategory != null)
-                    //{
-                    //    header.Graphics.DrawString("Wrapping Report - " + selectedMachineCategory + " (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
-                    //}
-                    //else
-                    //{
-                    //    header.Graphics.DrawString("Wrapping Report - All (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
-                    //}
-                    header.Graphics.DrawString("SVYA Detailed Report (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                    if (isTestIDReport)
+                    {
+                        header.Graphics.DrawString("SVYA Detailed Report", font_rn, brush_rn, new PointF(165, 16));
+                    }
+                    else
+                    {
+                        header.Graphics.DrawString("SVYA Detailed Report (" + reportStartDate.Day + "-" + reportStartDate.Month + "-" + reportStartDate.Year + " To " + reportEndDate.Day + "-" + reportEndDate.Month + "-" + reportEndDate.Year + " )", font_rn, brush_rn, new PointF(165, 16));
+                    }
                 }
                 //Title Ends
                 pdfDocument.Template.Top = header;
