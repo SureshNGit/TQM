@@ -79,6 +79,10 @@ namespace TQM
             {
                 base.OnAppearing();
                 reset();
+                contentGrid.IsVisible = true;
+                progressGrid.IsVisible = false;
+                actInd.IsVisible = false;
+                actInd.IsRunning = false;
                 bool isAdmin = false;
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
@@ -97,6 +101,10 @@ namespace TQM
             }
             catch (Exception ex)
             {
+                contentGrid.IsVisible = true;
+                progressGrid.IsVisible = false;
+                actInd.IsVisible = false;
+                actInd.IsRunning = false;
                 DisplayAlert("Notice-ReportSearch", ex.Message.ToString(), "Ok");
             }
         }
@@ -175,9 +183,9 @@ namespace TQM
                         return;
                     }
 
-                    if (entry_testID.Text.Contains("."))
+                    if (entry_testID.Text.Contains("-"))
                     {
-                        DisplayAlert("Attention", "Test ID should not be decimal", "OK");
+                        DisplayAlert("Attention", "Please remove '-' symbol in test ID instead use '.' sysmbol", "OK");
                         actInd.IsVisible = false;
                         actInd.IsRunning = false;
                         return;
