@@ -58,16 +58,16 @@
     <AndroidSigningKeyStore>/Users/suresh.subramaniyan/Library/Developer/Xamarin/Keystore/srisastha-legacy/srisastha-legacy.keystore</AndroidSigningKeyStore>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Android" />
+    <Reference Include="Java.Interop">
+      <HintPath>..\..\..\..\..\dlls\Java.Interop_x86\Java.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="MONO.ANDROID" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors" />
-    <Reference Include="Java.Interop">
-      <HintPath>obj\Debug\android\assets\Java.Interop.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Plugin.BluetoothClassic">
