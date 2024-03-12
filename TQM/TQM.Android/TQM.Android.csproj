@@ -58,16 +58,26 @@
     <AndroidSigningKeyStore>/Users/suresh.subramaniyan/Library/Developer/Xamarin/Keystore/srisastha-legacy/srisastha-legacy.keystore</AndroidSigningKeyStore>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Java.Interop" />
-    <Reference Include="Mono.Android" />
+    <Reference Include="Java.Interop">
+      <HintPath>..\..\..\..\..\dlls\Java.Interop_x86\Java.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="MONO.ANDROID" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity">
+      <HintPath>..\..\..\..\..\..\..\..\Windows\Microsoft.NET\FrameworkArm64\v4.0.30319\System.Data.Entity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml">
+      <HintPath>..\..\..\..\..\dlls\System.Xml_x86\System.Xml.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="EntityFramework">
+      <Version>6.4.4</Version>
+    </PackageReference>
     <PackageReference Include="Plugin.BluetoothClassic">
       <Version>1.1.5</Version>
     </PackageReference>
@@ -93,9 +103,6 @@
     </PackageReference>
     <PackageReference Include="Xamarin.CommunityToolkit">
       <Version>2.0.6</Version>
-    </PackageReference>
-    <PackageReference Include="EntityFramework">
-      <Version>6.4.4</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

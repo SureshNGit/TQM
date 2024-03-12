@@ -15,7 +15,7 @@ using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data.Entity.Core.Objects;
+//using System.Data.Entity.Core.Objects;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;

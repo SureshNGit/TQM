@@ -123,6 +123,9 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="EntityFramework">
+      <Version>6.4.4</Version>
+    </PackageReference>
     <PackageReference Include="Plugin.BluetoothClassic">
       <Version>1.1.5</Version>
     </PackageReference>
@@ -139,9 +142,6 @@
     </PackageReference>
     <PackageReference Include="Xamarin.CommunityToolkit">
       <Version>2.0.6</Version>
-    </PackageReference>
-    <PackageReference Include="EntityFramework">
-      <Version>6.4.4</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
