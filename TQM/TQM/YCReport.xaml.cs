@@ -2130,7 +2130,7 @@ namespace TQM
                     {
                         result = pdfGrid.Draw(pdfPage, new PointF(10, 75), layoutFormat);
                     }
-                    else if ((rowHeights >= 670 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
+                    else if ((rowHeights >= 600 && rowHeights <= 700) && pageRecordCount != overallReportList.Count)
                     {
                         result = pdfGrid.Draw(pdfPage, new PointF(10, 75), layoutFormat);
                         pdfPage = pdfDocument.Pages.Add();
