@@ -113,7 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Java.Interop">
-      <HintPath>C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\Java.Interop\Java.Interop.dll</HintPath>
+      <HintPath>..\..\..\..\..\dlls\Java.Interop_x86\Java.Interop.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Android">
       <HintPath>C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v13.0\Mono.Android.dll</HintPath>
