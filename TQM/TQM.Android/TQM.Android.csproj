@@ -39,6 +39,11 @@
     <MandroidI18n />
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
+    <AndroidKeyStore>false</AndroidKeyStore>
+    <AndroidSigningKeyStore>C:\Users\sures\AppData\Local\Xamarin\Mono for Android\Keystore\SriSastha\SriSastha.keystore</AndroidSigningKeyStore>
+    <AndroidSigningStorePass>Summer@2021</AndroidSigningStorePass>
+    <AndroidEnableMultiDex>false</AndroidEnableMultiDex>
+    <AndroidSupportedAbis />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

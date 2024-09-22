@@ -718,6 +718,13 @@ namespace TQM
             }
         }
 
+        private decimal CalculateStandardDeviation(decimal[] values)
+        {
+            decimal avg = values.Average();
+            decimal sumOfSquares = (decimal)values.Select(val => Math.Pow((double)(val - avg), 2)).Sum();
+            return (decimal)Math.Sqrt((double)(sumOfSquares / (values.Length - 1))); // Using sample SD (N-1)
+        }
+
         private async void updateDB()
         {
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -811,12 +818,16 @@ namespace TQM
                         avg_weight = formatDecimal(avg_weight);
                         mean = totalCalcCountVal / noilsTestModelViewList[0].totaltestcount;
                         mean = formatDecimal(mean);
-                        decimal IndividualCalValminusMean = 0m;
-                        foreach (NoilsTestModelView test in noilsTestModelViewList)
-                        {
-                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
-                        }
-                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(noilsTestModelViewList[0].totaltestcount - 1));//Standard Deviation
+
+                        //decimal IndividualCalValminusMean = 0m;
+                        //foreach (NoilsTestModelView test in noilsTestModelViewList)
+                        //{
+                        //    IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
+                        //}
+                        //sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(noilsTestModelViewList[0].totaltestcount - 1));//Standard Deviation
+
+                        decimal[] yarnWeightlArray = noilsTestModelViewList.Select(m => m.yarnweight).ToArray();
+                        sd = CalculateStandardDeviation(yarnWeightlArray);
                         sd = formatDecimal(sd);
                         cv = (sd / avg_weight) * 100m; //Coefficient of Variation
                         cv = formatDecimal(cv);
@@ -984,12 +995,16 @@ namespace TQM
                                                           NoilsTestFinalModel.testID == currentTestID)
                                                           ).ToList();
 
-                                        decimal IndividualCalValminusMean = 0m;
-                                        foreach (NoilsTestFinalModel test in noilsFinal_list)
-                                        {
-                                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.noils - avg_weight_noils) * (test.noils - avg_weight_noils));
-                                        }
-                                        decimal sd_noils = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(noilsTest_sliverList[0].totaltestcount - 1));//Standard Deviation
+                                        //decimal IndividualCalValminusMean = 0m;
+                                        //foreach (NoilsTestFinalModel test in noilsFinal_list)
+                                        //{
+                                        //    IndividualCalValminusMean = IndividualCalValminusMean + ((test.noils - avg_weight_noils) * (test.noils - avg_weight_noils));
+                                        //}
+                                        //decimal sd_noils = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(noilsTest_sliverList[0].totaltestcount - 1));//Standard Deviation
+
+
+                                        decimal[] noilsarray = noilsFinal_list.Select(m => m.noils).ToArray();
+                                        decimal sd_noils = CalculateStandardDeviation(noilsarray);
                                         decimal cv_noils = (sd_noils / avg_weight_noils) * 100m; //Coefficient of Variation
                                         sd_noils = formatDecimal(sd_noils);
                                         cv_noils = formatDecimal(cv_noils);

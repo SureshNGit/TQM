@@ -1028,6 +1028,12 @@ namespace TQM
             }
         }
 
+        private decimal CalculateStandardDeviation(decimal[] values)
+        {
+            decimal avg = values.Average();
+            decimal sumOfSquares = (decimal)values.Select(val => Math.Pow((double)(val - avg), 2)).Sum();
+            return (decimal)Math.Sqrt((double)(sumOfSquares / (values.Length - 1))); // Using sample SD (N-1)
+        }
 
         private bool insertMissingSummaryRecord(List<YCTestApercentModel> allTestRecordsList)
         {
@@ -1050,12 +1056,17 @@ namespace TQM
                     avg_weight = formatDecimal(avg_weight);
                     mean = totalCalcCountVal / allTestRecordsList[0].totaltestcount;
                     mean = formatDecimal(mean);
-                    decimal IndividualCalValminusMean = 0m;
-                    foreach (YCTestApercentModel test in allTestRecordsList)
-                    {
-                        IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
-                    }
-                    sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(allTestRecordsList[0].totaltestcount - 1));//Standard Deviation
+
+                    //decimal IndividualCalValminusMean = 0m;
+                    //foreach (YCTestApercentModel test in allTestRecordsList)
+                    //{
+                    //    IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
+                    //}
+                    //sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(allTestRecordsList[0].totaltestcount - 1));//Standard Deviation
+
+
+                    decimal[] yarweightarray = allTestRecordsList.Select(m => m.yarnweight).ToArray();
+                    sd = CalculateStandardDeviation(yarweightarray);
                     sd = formatDecimal(sd);
                     cv = (sd / avg_weight) * 100m; //Coefficient of Variation
                     cv = formatDecimal(cv);
@@ -1780,12 +1791,16 @@ namespace TQM
                         avg_weight = formatDecimal(avg_weight);
                         mean = totalCalcCountVal / ycTestApercentModelViewlist[0].totaltestcount;
                         mean = formatDecimal(mean);
-                        decimal IndividualCalValminusMean = 0m;
-                        foreach (YCTestApercentModelView test in ycTestApercentModelViewlist)
-                        {
-                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
-                        }
-                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestApercentModelViewlist[0].totaltestcount - 1));//Standard Deviation
+
+                        //decimal IndividualCalValminusMean = 0m;
+                        //foreach (YCTestApercentModelView test in ycTestApercentModelViewlist)
+                        //{
+                        //    IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
+                        //}
+                        //sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestApercentModelViewlist[0].totaltestcount - 1));//Standard Deviation
+
+                        decimal[] yarweightarray = ycTestApercentModelViewlist.Select(m => m.yarnweight).ToArray();
+                        sd = CalculateStandardDeviation(yarweightarray);
                         sd = formatDecimal(sd);
                         cv = (sd / avg_weight) * 100m; //Coefficient of Variation
                         cv = formatDecimal(cv);

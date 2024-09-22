@@ -705,6 +705,12 @@ namespace TQM
             }
         }
 
+        private decimal CalculateStandardDeviation(decimal[] values)
+        {
+            decimal avg = values.Average();
+            decimal sumOfSquares = (decimal)values.Select(val => Math.Pow((double)(val - avg), 2)).Sum();
+            return (decimal)Math.Sqrt((double)(sumOfSquares / (values.Length - 1))); // Using sample SD (N-1)
+        }
         private async void updateDB()
         {
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -799,12 +805,16 @@ namespace TQM
                         avg_weight = formatDecimal(avg_weight);
                         mean = totalCalcCountVal / stretchTestModelViewList[0].totaltestcount;
                         mean = formatDecimal(mean);
-                        decimal IndividualCalValminusMean = 0m;
-                        foreach (StretchTestModelView test in stretchTestModelViewList)
-                        {
-                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
-                        }
-                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(stretchTestModelViewList[0].totaltestcount - 1));//Standard Deviation
+
+                        //decimal IndividualCalValminusMean = 0m;
+                        //foreach (StretchTestModelView test in stretchTestModelViewList)
+                        //{
+                        //    IndividualCalValminusMean = IndividualCalValminusMean + ((test.yarnweight - avg_weight) * (test.yarnweight - avg_weight));
+                        //}
+                        //sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(stretchTestModelViewList[0].totaltestcount - 1));//Standard Deviation
+
+                        decimal[] yarweightarray = stretchTestModelViewList.Select(m => m.yarnweight).ToArray();
+                        sd = CalculateStandardDeviation(yarweightarray);
                         sd = formatDecimal(sd);
                         cv = (sd / avg_weight) * 100; //Coefficient of Variation
                         cv = formatDecimal(cv);

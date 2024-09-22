@@ -721,12 +721,14 @@ namespace TQM
                     if (ycTestModelViewlist[0].totaltestcount > 1)
                     {
                         mean = totalCalcCountVal / ycTestModelViewlist[0].totaltestcount;
-                        decimal IndividualCalValminusMean = 0m;
-                        foreach (YCTestModelView test in ycTestModelViewlist)
-                        {
-                            IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
-                        }
-                        sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
+                        //decimal IndividualCalValminusMean = 0m;
+                        //foreach (YCTestModelView test in ycTestModelViewlist)
+                        //{
+                        //    IndividualCalValminusMean = IndividualCalValminusMean + ((test.yccalcval - mean) * (test.yccalcval - mean));
+                        //}
+                        //sd = (decimal)Math.Sqrt((double)IndividualCalValminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
+                        decimal[] yccalcvalArray = ycTestModelViewlist.Select(m => m.yccalcval).ToArray();
+                        sd = CalculateStandardDeviation(yccalcvalArray);
                         sd = formatDecimal(sd);
                         mean = formatDecimal(mean);
                         cv = (sd / mean) * 100.0000m; //Coefficient of Variation
@@ -738,12 +740,15 @@ namespace TQM
 
 
                         mean_weight = totalWeight / ycTestModelViewlist[0].totaltestcount;
-                        decimal IndividualWeightminusMean = 0m;
-                        foreach (YCTestModelView test in ycTestModelViewlist)
-                        {
-                            IndividualWeightminusMean = IndividualWeightminusMean + ((test.yarnweight - mean) * (test.yarnweight - mean));
-                        }
-                        sd_weight = (decimal)Math.Sqrt((double)IndividualWeightminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
+                        //decimal IndividualWeightminusMean = 0m;
+                        //foreach (YCTestModelView test in ycTestModelViewlist)
+                        //{
+                        //    IndividualWeightminusMean = IndividualWeightminusMean + ((test.yarnweight - mean) * (test.yarnweight - mean));
+                        //}
+                        //sd_weight = (decimal)Math.Sqrt((double)IndividualWeightminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
+
+                        decimal[] sd_weightArray = ycTestModelViewlist.Select(m => m.yarnweight).ToArray();
+                        sd = CalculateStandardDeviation(sd_weightArray);
                         sd_weight = formatDecimal(sd_weight);
                         mean_weight = formatDecimal(mean_weight);
                         cv_weight = (sd_weight / mean_weight) * 100.0000m; //Coefficient of Variation
@@ -811,6 +816,16 @@ namespace TQM
 
             }
         }
+
+
+        // Method to calculate standard deviation
+        private decimal CalculateStandardDeviation(decimal[] values)
+        {
+            decimal avg = values.Average();
+            decimal sumOfSquares = (decimal)values.Select(val => Math.Pow((double)(val - avg), 2)).Sum();
+            return (decimal)Math.Sqrt((double)(sumOfSquares / (values.Length - 1))); // Using sample SD (N-1)
+        }
+
 
         private void reset(bool fullreset = true, bool dispose = true)
         {

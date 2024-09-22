@@ -96,7 +96,7 @@ namespace TQM
                             });
                             flyItems.Add(new MenuItem
                             {
-                                Title = "Version: 1.2.2.3",
+                                Title = "Version: 1.2.2.4",
                                 ImageSource = "",
                                 TargetPage = null
                             });
@@ -178,7 +178,7 @@ namespace TQM
                             });
                             flyItems.Add(new MenuItem
                             {
-                                Title = "Version: 1.2.2.3",
+                                Title = "Version: 1.2.2.4",
                                 ImageSource = "",
                                 TargetPage = null
                             });
