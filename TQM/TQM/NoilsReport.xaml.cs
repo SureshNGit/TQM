@@ -1045,6 +1045,14 @@ namespace TQM
                         pdfGridInfo.Rows[3].Cells[1].Style.TextBrush = brush_con;
                     }
 
+                    //To bold NOILS Values
+                    pdfGridInfo.Rows[3].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    pdfGridInfo.Rows[3].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    pdfGridInfo.Rows[3].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    pdfGridInfo.Rows[3].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    pdfGridInfo.Rows[3].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+
+
                     pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
                     pdfGridInfo.Rows[4].Cells[1].Value = "Tester: " + orl.userName;
                     pdfGridInfo.Rows[4].Cells[1].ColumnSpan = 2;
@@ -1199,6 +1207,17 @@ namespace TQM
                         pdfGrid.Rows[rowCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+                        if (test.description.ToString().Equals("Average Weight") ||
+                            test.description.ToString().Equals("SD") ||
+                            test.description.ToString().Equals("CV"))
+                        {
+                            pdfGrid.Rows[rowCount].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                            pdfGrid.Rows[rowCount].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                            pdfGrid.Rows[rowCount].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                            pdfGrid.Rows[rowCount].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        }
+
                         rowCount++;
                     }
 

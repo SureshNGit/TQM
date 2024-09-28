@@ -86,6 +86,10 @@ namespace TQM.Model
 
         public string testRemark { get; set; }
 
+        public decimal standardCV { get; set; }
+
+        public decimal CVDeviationPercent { get; set; }
+
         public string uf_value_1 { get; set; }
         public string uf_value_2 { get; set; }
         public string uf_value_3 { get; set; }

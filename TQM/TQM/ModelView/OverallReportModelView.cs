@@ -18,6 +18,10 @@ namespace TQM.ModelView
         public int totaltestcount { get; set; }
         public decimal testaverage { get; set; }
         public decimal standardHank { get; set; }
+
+        public decimal standardCV { get; set; }
+
+        public string CVDeviationPercent { get; set; }
         public decimal testsd { get; set; }
         public decimal testcv { get; set; }
         public string testRemark { get; set; }
@@ -29,6 +33,8 @@ namespace TQM.ModelView
         public string deviationPercent { get; set; }
         public string hankColor { get; set; } = "Green";
         public string hankColorGg { get; set; } = "White";
+        public string CVColor { get; set; } = "Green";
+        public string CVColorGg { get; set; } = "White";
         public bool DispUF_1 { get; set; } = false;
         public bool DispUF_2 { get; set; } = false;
         public bool DispUF_2_Col1 { get; set; } = false;

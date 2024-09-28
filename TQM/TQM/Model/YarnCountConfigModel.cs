@@ -30,6 +30,10 @@ namespace TQM.Model
 
         public decimal deviationPercent { get; set; }
 
+        public decimal standardCV { get; set; }
+
+        public decimal CVDeviationPercent { get; set; }
+
         public int testcountApercent { get; set; }
         public decimal standardApercent { get; set; }
         public int testcountStretch { get; set; }

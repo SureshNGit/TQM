@@ -149,6 +149,8 @@ namespace TQM
                 entry_testcount.Text = "";
                 entry_standardHank.Text = "";
                 entry_hankDeviationPercent.Text = "";
+                entry_stdCV.Text = "";
+                entry_CVDeviationPercent.Text = "";
                 entry_testcountApercent.Text = "";
                 entry_standardApercent.Text = "";
                 entry_testcountStretch.Text = "";
@@ -181,6 +183,8 @@ namespace TQM
                 entry_testcount.Text = "";
                 entry_standardHank.Text = "";
                 entry_hankDeviationPercent.Text = "";
+                entry_stdCV.Text = "";
+                entry_CVDeviationPercent.Text = "";
                 entry_testcountApercent.Text = "";
                 entry_standardApercent.Text = "";
                 entry_testcountStretch.Text = "";
@@ -341,6 +345,8 @@ namespace TQM
             entry_testcount.Text = ycConfig.testcount.ToString();
             entry_standardHank.Text = ycConfig.standardHank.ToString();
             entry_hankDeviationPercent.Text = ycConfig.deviationPercent.ToString();
+            entry_stdCV.Text = ycConfig.standardCV.ToString();
+            entry_CVDeviationPercent.Text = ycConfig.CVDeviationPercent.ToString();
             entry_testcountApercent.Text = ycConfig.testcountApercent.ToString();
             entry_standardApercent.Text = ycConfig.standardApercent.ToString();
             entry_testcountStretch.Text = ycConfig.testcountStretch.ToString();
@@ -492,12 +498,12 @@ namespace TQM
                     }
                     if (entry_standardHank.Text.Trim() == "." || entry_standardHank.Text.Trim() == "-")
                     {
-                        DisplayAlert("Attention", "Standard Count is invalid. Please check!!!", "Ok");
+                        DisplayAlert("Attention", "Standard Hank is invalid. Please check!!!", "Ok");
                         return;
                     }
                     if (entry_standardHank.Text.Trim() == "" || decimal.Parse(entry_standardHank.Text.Trim()) <= 0m)
                     {
-                        DisplayAlert("Attention", "Standard Count should not be blank or zero or negative!!!", "Ok");
+                        DisplayAlert("Attention", "Standard Hank should not be blank or zero or negative!!!", "Ok");
                         return;
                     }
                     if (entry_hankDeviationPercent.Text.Trim() == "." || entry_hankDeviationPercent.Text.Trim().Contains("-"))
@@ -508,6 +514,26 @@ namespace TQM
                     if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
                     {
                         DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
+                        return;
+                    }
+                    if (entry_stdCV.Text.Trim() == "." || entry_stdCV.Text.Trim() == "-")
+                    {
+                        DisplayAlert("Attention", "Standard CV is invalid. Please check!!!", "Ok");
+                        return;
+                    }
+                    if (entry_stdCV.Text.Trim() == "" || decimal.Parse(entry_stdCV.Text.Trim()) <= 0m)
+                    {
+                        DisplayAlert("Attention", "Standard CV should not be blank or zero or negative!!!", "Ok");
+                        return;
+                    }
+                    if (entry_CVDeviationPercent.Text.Trim() == "." || entry_CVDeviationPercent.Text.Trim().Contains("-"))
+                    {
+                        DisplayAlert("Attention", "CV Deviation percent should not be a decimal or negative value!!!", "Ok");
+                        return;
+                    }
+                    if (entry_CVDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_CVDeviationPercent.Text.Trim()) == 0m)
+                    {
+                        DisplayAlert("Attention", "CV Deviation percent should not be blank or zero!!!", "Ok");
                         return;
                     }
 
@@ -564,6 +590,26 @@ namespace TQM
                         DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
                         return;
                     }
+                    if (entry_stdCV.Text.Trim() == "." || entry_stdCV.Text.Trim() == "-")
+                    {
+                        DisplayAlert("Attention", "Standard CV is invalid. Please check!!!", "Ok");
+                        return;
+                    }
+                    if (entry_stdCV.Text.Trim() == "" || decimal.Parse(entry_stdCV.Text.Trim()) <= 0m)
+                    {
+                        DisplayAlert("Attention", "Standard CV should not be blank or zero or negative!!!", "Ok");
+                        return;
+                    }
+                    if (entry_CVDeviationPercent.Text.Trim() == "." || entry_CVDeviationPercent.Text.Trim().Contains("-"))
+                    {
+                        DisplayAlert("Attention", "CV Deviation percent should not be a decimal or negative value!!!", "Ok");
+                        return;
+                    }
+                    if (entry_CVDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_CVDeviationPercent.Text.Trim()) == 0m)
+                    {
+                        DisplayAlert("Attention", "CV Deviation percent should not be blank or zero!!!", "Ok");
+                        return;
+                    }
 
                 }
                 else if (selectedMachineCategory == "Comber")
@@ -610,6 +656,26 @@ namespace TQM
                     if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
                     {
                         DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
+                        return;
+                    }
+                    if (entry_stdCV.Text.Trim() == "." || entry_stdCV.Text.Trim() == "-")
+                    {
+                        DisplayAlert("Attention", "Standard CV is invalid. Please check!!!", "Ok");
+                        return;
+                    }
+                    if (entry_stdCV.Text.Trim() == "" || decimal.Parse(entry_stdCV.Text.Trim()) <= 0m)
+                    {
+                        DisplayAlert("Attention", "Standard CV should not be blank or zero or negative!!!", "Ok");
+                        return;
+                    }
+                    if (entry_CVDeviationPercent.Text.Trim() == "." || entry_CVDeviationPercent.Text.Trim().Contains("-"))
+                    {
+                        DisplayAlert("Attention", "CV Deviation percent should not be a decimal or negative value!!!", "Ok");
+                        return;
+                    }
+                    if (entry_CVDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_CVDeviationPercent.Text.Trim()) == 0m)
+                    {
+                        DisplayAlert("Attention", "CV Deviation percent should not be blank or zero!!!", "Ok");
                         return;
                     }
 
@@ -693,6 +759,26 @@ namespace TQM
                         DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
                         return;
                     }
+                    if (entry_stdCV.Text.Trim() == "." || entry_stdCV.Text.Trim() == "-")
+                    {
+                        DisplayAlert("Attention", "Standard CV is invalid. Please check!!!", "Ok");
+                        return;
+                    }
+                    if (entry_stdCV.Text.Trim() == "" || decimal.Parse(entry_stdCV.Text.Trim()) <= 0m)
+                    {
+                        DisplayAlert("Attention", "Standard CV should not be blank or zero or negative!!!", "Ok");
+                        return;
+                    }
+                    if (entry_CVDeviationPercent.Text.Trim() == "." || entry_CVDeviationPercent.Text.Trim().Contains("-"))
+                    {
+                        DisplayAlert("Attention", "CV Deviation percent should not be a decimal or negative value!!!", "Ok");
+                        return;
+                    }
+                    if (entry_CVDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_CVDeviationPercent.Text.Trim()) == 0m)
+                    {
+                        DisplayAlert("Attention", "CV Deviation percent should not be blank or zero!!!", "Ok");
+                        return;
+                    }
 
 
                     if (entry_testcountApercent.Text.Trim().Contains(".") || entry_testcountApercent.Text.Trim().Contains("-"))
@@ -760,6 +846,26 @@ namespace TQM
                     if (entry_hankDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_hankDeviationPercent.Text.Trim()) == 0m)
                     {
                         DisplayAlert("Attention", "Deviation percent should not be blank or zero!!!", "Ok");
+                        return;
+                    }
+                    if (entry_stdCV.Text.Trim() == "." || entry_stdCV.Text.Trim() == "-")
+                    {
+                        DisplayAlert("Attention", "Standard CV is invalid. Please check!!!", "Ok");
+                        return;
+                    }
+                    if (entry_stdCV.Text.Trim() == "" || decimal.Parse(entry_stdCV.Text.Trim()) <= 0m)
+                    {
+                        DisplayAlert("Attention", "Standard CV should not be blank or zero or negative!!!", "Ok");
+                        return;
+                    }
+                    if (entry_CVDeviationPercent.Text.Trim() == "." || entry_CVDeviationPercent.Text.Trim().Contains("-"))
+                    {
+                        DisplayAlert("Attention", "CV Deviation percent should not be a decimal or negative value!!!", "Ok");
+                        return;
+                    }
+                    if (entry_CVDeviationPercent.Text.Trim() == "" || decimal.Parse(entry_CVDeviationPercent.Text.Trim()) == 0m)
+                    {
+                        DisplayAlert("Attention", "CV Deviation percent should not be blank or zero!!!", "Ok");
                         return;
                     }
 
@@ -885,6 +991,11 @@ namespace TQM
                 {
                     stdHank = decimal.Parse(entry_standardHank.Text.ToString());
                 }
+                decimal stdCV = 0.0000m;
+                if (entry_stdCV.Text.Trim().ToString() != "")
+                {
+                    stdCV = decimal.Parse(entry_stdCV.Text.ToString());
+                }
                 decimal stdNoils = 0.0000m;
                 if (entry_standardNoils.Text.Trim().ToString() != "")
                 {
@@ -995,6 +1106,8 @@ namespace TQM
                     testcount = int.Parse(entry_testcount.Text.ToString()),
                     standardHank = stdHank,
                     deviationPercent = decimal.Parse(entry_hankDeviationPercent.Text.ToString()),
+                    standardCV = stdCV,
+                    CVDeviationPercent = decimal.Parse(entry_CVDeviationPercent.Text.ToString()),
                     testcountApercent = int.Parse(entry_testcountApercent.Text.ToString()),
                     standardApercent = stdApercent,
                     testcountStretch = int.Parse(entry_testcountStretch.Text.ToString()),

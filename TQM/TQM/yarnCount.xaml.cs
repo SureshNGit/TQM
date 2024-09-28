@@ -62,6 +62,8 @@ namespace TQM
         private int TESTCOUNT = 0;
         private decimal STD_HANK = 0.0000m;
         private decimal STD_HANK_CURR = 0.0000m;
+        private decimal STD_CV = 0.0000m;
+        private decimal STD_CV_DEVIATION = 0.0000m;
         private int currentTestCount = 0;
         private bool isTestStarted = false;
         private dynamic currentTestStartTime = null;
@@ -236,6 +238,8 @@ namespace TQM
                     entry_standardHank.Text = formatDecimal(yarncountconfigmodel.standardHank).ToString();
                     STD_HANK = formatDecimal(yarncountconfigmodel.standardHank);
                     STD_HANK_CURR = formatDecimal(yarncountconfigmodel.standardHank);
+                    STD_CV = formatDecimal(yarncountconfigmodel.standardCV);
+                    STD_CV_DEVIATION = formatDecimal(yarncountconfigmodel.CVDeviationPercent);
 
                     TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
@@ -748,7 +752,7 @@ namespace TQM
                         //sd_weight = (decimal)Math.Sqrt((double)IndividualWeightminusMean / (double)(ycTestModelViewlist[0].totaltestcount - 1));//Standard Deviation
 
                         decimal[] sd_weightArray = ycTestModelViewlist.Select(m => m.yarnweight).ToArray();
-                        sd = CalculateStandardDeviation(sd_weightArray);
+                        sd_weight = CalculateStandardDeviation(sd_weightArray);
                         sd_weight = formatDecimal(sd_weight);
                         mean_weight = formatDecimal(mean_weight);
                         cv_weight = (sd_weight / mean_weight) * 100.0000m; //Coefficient of Variation
@@ -794,6 +798,8 @@ namespace TQM
                         testcv = cv,
                         standardHank = STD_HANK_CURR,
                         deviationPercent = selectedDeviationPercent,
+                        standardCV=STD_CV,
+                        CVDeviationPercent=STD_CV_DEVIATION,
                         testDuration = testDuration,
                         uf_value_1 = UFVAL1,
                         uf_value_2 = UFVAL2,

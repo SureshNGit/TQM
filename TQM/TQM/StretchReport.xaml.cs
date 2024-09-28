@@ -1064,18 +1064,28 @@ namespace TQM
 
                     pdfGridInfo.Rows[3].Cells[0].Value = "Std. Stretch %: " + formatDecimal(orl.standardStretch).ToString() + " " + "\u00B1"
                                                             +orl.stretchDeviation;
+                    pdfGridInfo.Rows[3].Cells[0].ColumnSpan = 2;
 
-
-                    pdfGridInfo.Rows[3].Cells[1].Value = "Stretch %: " + formatDecimal(orl.stretch).ToString();
+                    pdfGridInfo.Rows[3].Cells[2].Value = "Stretch %: " + formatDecimal(orl.stretch).ToString();
 
                     if (orl.isRED)
                     {
-                        pdfGridInfo.Rows[3].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
-                        pdfGridInfo.Rows[3].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                        pdfGridInfo.Rows[3].Cells[1].Style.BackgroundBrush = PdfBrushes.Red;
+                        pdfGridInfo.Rows[3].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGridInfo.Rows[3].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGridInfo.Rows[3].Cells[2].Style.BackgroundBrush = PdfBrushes.Red;
                         PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
-                        pdfGridInfo.Rows[3].Cells[1].Style.TextBrush = brush_con;
+                        pdfGridInfo.Rows[3].Cells[2].Style.TextBrush = brush_con;
                     }
+
+                    pdfGridInfo.Rows[3].Cells[2].ColumnSpan = 2;
+
+                    //To bold Stretch Values
+                    pdfGridInfo.Rows[3].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    pdfGridInfo.Rows[3].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    pdfGridInfo.Rows[3].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    pdfGridInfo.Rows[3].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    pdfGridInfo.Rows[3].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+
 
                     pdfGridInfo.Rows[4].Cells[0].Value = "Date: " + orl.createdate;
                     pdfGridInfo.Rows[4].Cells[1].Value = "Tester: " + orl.userName;
@@ -1231,6 +1241,16 @@ namespace TQM
                         pdfGrid.Rows[rowCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         //pdfGrid.Rows[rowCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
                         //pdfGrid.Rows[rowCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+                        if (test.description.ToString().Equals("Hank") ||
+                            test.description.ToString().Equals("SD") ||
+                            test.description.ToString().Equals("CV"))
+                        {
+                            pdfGrid.Rows[rowCount].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                            pdfGrid.Rows[rowCount].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                            pdfGrid.Rows[rowCount].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        }
+
                         rowCount++;
                     }
 

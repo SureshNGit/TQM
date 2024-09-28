@@ -610,9 +610,47 @@ namespace TQM
                                 }
                                 consolItems.testAverage = formatDecimal(testsummary.testaverage).ToString();
                                 consolItems.standardDeviation = formatDecimal(testsummary.testsd).ToString();
-                                consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
+                                if (testsummary.standardCV == 0.0m)
+                                {
+                                    consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
+                                }
+                                else
+                                {
+                                    consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString() +
+                                                                        " \n" +
+                                                                        "("+
+                                                                        formatDecimal(testsummary.standardCV, 4).ToString()+
+                                                                        "\n"+
+                                                                        "\u00B1" + 
+                                                                        formatDecimal(testsummary.CVDeviationPercent, 4).ToString()+
+                                                                        ")";
+                                }
                                 //consolItems.testDuration = testsummary.testDuration;
                                 //consolItems.testDuration = formatTime(testsummary.createdate);
+
+                                decimal maxRangeVal_CV = testsummary.standardCV + testsummary.CVDeviationPercent;
+                                decimal minRangeVal_CV = testsummary.standardCV - testsummary.CVDeviationPercent;
+
+
+                                if (testsummary.yarnWeightCV < minRangeVal || testsummary.yarnWeightCV > maxRangeVal)
+                                {
+                                    if (testsummary.standardCV > 0.0m)
+                                    {
+                                        consolItems.isRed_CV = true;
+                                        consolItems.isWhite_CV = false;
+                                    }
+                                    else
+                                    {
+                                        consolItems.isRed_CV = false;
+                                        consolItems.isWhite_CV = true;
+                                    }
+                                }
+                                else
+                                {
+                                    consolItems.isRed_CV = false;
+                                    consolItems.isWhite_CV = true;
+                                }
+
 
                                 string userParams = "";
 
@@ -869,6 +907,8 @@ namespace TQM
                                 report.standardHank = formatDecimal(testsummary.standardHank);
                                 report.testDuration = testsummary.testDuration;
                                 report.deviationPercent = "\u00B1" + testsummary.deviationPercent;
+                                report.standardCV = testsummary.standardCV;
+                                report.CVDeviationPercent= "\u00B1" + testsummary.CVDeviationPercent;
 
                                 if (testsummary.uf_value_1 != null && testsummary.uf_value_1 != "")
                                 {
@@ -1034,6 +1074,21 @@ namespace TQM
                                 {
                                     report.hankColor = "Green";
                                     report.hankColorGg = "None";
+                                }
+
+                                decimal maxRangeVal_CV = testsummary.standardCV + testsummary.CVDeviationPercent;
+                                decimal minRangeVal_CV = testsummary.standardCV - testsummary.CVDeviationPercent;
+
+
+                                if (testsummary.yarnWeightCV < minRangeVal || testsummary.yarnWeightCV > maxRangeVal)
+                                {
+                                    report.CVColor = "Red";
+                                    report.CVColorGg = "Yellow";
+                                }
+                                else
+                                {
+                                    report.CVColor = "Green";
+                                    report.CVColorGg = "None";
                                 }
 
 
@@ -1415,6 +1470,7 @@ namespace TQM
                         PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
                         pdfGridInfo.Rows[4].Cells[0].Style.TextBrush = brush_con;
                     }
+                    
 
 
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
@@ -1423,6 +1479,14 @@ namespace TQM
                     pdfGridInfo.Rows[4].Cells[3].Value = "CV: " + orl.testcv;
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
+
+                    //To bold HANK and CV Values
+                    pdfGridInfo.Rows[4].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    pdfGridInfo.Rows[4].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    pdfGridInfo.Rows[4].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    pdfGridInfo.Rows[4].Cells[3].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                    //pdfGridInfo.Rows[4].Cells[4].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+
                     pdfGridInfo.Rows[5].Cells[0].Value = "Date: " + orl.createdate;
                     pdfGridInfo.Rows[5].Cells[0].ColumnSpan = 1;
                     pdfGridInfo.Rows[5].Cells[1].Value = "Duration: " + orl.testDuration;
@@ -1626,9 +1690,48 @@ namespace TQM
                         }
                         else
                         {
-                            pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(Decimal.Parse(test.weight), 4).ToString();
-                            pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(Decimal.Parse(test.hank), 4).ToString();
+                            if (test.description.ToString().Equals("CV"))
+                            {
+                                if (orl.standardCV == 0.0m)
+                                {
+                                    pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(Decimal.Parse(test.weight), 4).ToString();
+                                    pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(Decimal.Parse(test.hank), 4).ToString();
+                                }
+                                else
+                                {
+                                    pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(Decimal.Parse(test.weight), 4).ToString() +
+                                                                            "(" +
+                                                                            formatDecimal(orl.standardCV, 4).ToString() +
+                                                                            orl.CVDeviationPercent + ")";
+                                    pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(Decimal.Parse(test.hank), 4).ToString();
+                                    if (orl.CVColor == "Red")
+                                    {
+                                        pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                                        pdfGrid.Rows[rowCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                                        pdfGrid.Rows[rowCount].Cells[1].Style.BackgroundBrush = PdfBrushes.Red;
+                                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                                        pdfGrid.Rows[rowCount].Cells[1].Style.TextBrush = brush_con;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(Decimal.Parse(test.weight), 4).ToString();
+                                pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(Decimal.Parse(test.hank), 4).ToString();
+                            }
                         }
+
+                        
+
+                        if (test.description.ToString().Equals("Average") ||
+                            test.description.ToString().Equals("SD") ||
+                            test.description.ToString().Equals("CV"))
+                        {
+                            pdfGrid.Rows[rowCount].Cells[0].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                            pdfGrid.Rows[rowCount].Cells[1].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                            pdfGrid.Rows[rowCount].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
+                        }
+
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -1820,7 +1923,7 @@ namespace TQM
 
                         if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
                         {
-                            writer.WriteField(formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString());
+                            writer.WriteField(orl.CoEfficientOfVariation);
                         }
                         else
                         {
@@ -2003,7 +2106,14 @@ namespace TQM
                     }
                     if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
                     {
-                        pdfGrid.Rows[pageRecordCount].Cells[8].Value = formatDecimal(Decimal.Parse(orl.CoEfficientOfVariation)).ToString();
+                        if (orl.isRed_CV)
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.CoEfficientOfVariation;
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[pageRecordCount].Cells[8].Value = orl.CoEfficientOfVariation;
+                        }
                     }
                     else
                     {
@@ -2087,8 +2197,28 @@ namespace TQM
 
                     pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[pageRecordCount].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
-                    pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
-                    pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                    //pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                    //pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+                    if (orl.isWhite_CV)
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.BackgroundBrush = PdfBrushes.White;
+                        //pdfGrid.Rows[pageRecordCount].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.Black);
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.TextBrush = brush_con;
+                    }
+                    else
+                    {
+                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.BackgroundBrush = PdfBrushes.Red;
+                        //pdfGrid.Rows[pageRecordCount].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
+                        PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                        pdfGrid.Rows[pageRecordCount].Cells[8].Style.TextBrush = brush_con;
+                    }
+
                     pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
                     pdfGrid.Rows[pageRecordCount].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                     pdfGrid.Rows[pageRecordCount].Cells[10].StringFormat.Alignment = PdfTextAlignment.Center;

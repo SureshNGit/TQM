@@ -12,6 +12,8 @@
         public string testAverage { get; set; }
         public string standardDeviation { get; set; }
         public string CoEfficientOfVariation { get; set; }
+        public bool isWhite_CV { get; set; } = true;
+        public bool isRed_CV { get; set; } = false;
         public string testDuration { get; set; }
         public string remarks { get; set; }
         public bool isWhite { get; set; } = true;
