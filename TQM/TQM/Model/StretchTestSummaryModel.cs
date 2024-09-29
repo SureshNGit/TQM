@@ -46,6 +46,9 @@ namespace TQM.Model
         public decimal testsd { get; set; }
 
         public decimal testcv { get; set; }
+        public decimal standardCV { get; set; }
+
+        public decimal CVDeviationPercent { get; set; }
 
         public string uf_value_1 { get; set; }
         public string uf_value_2 { get; set; }

@@ -723,7 +723,41 @@ namespace TQM
                                     report.isGREEN = true;
                                     report.isRED = false;
                                 }
+                                
+                                report.standardCV = stretchCalc.standardCV;
+                                report.CVDeviationPercent = stretchCalc.CVDeviationPercent;
 
+                                decimal maxRangeVal_CV = stretchCalc.standardCV + stretchCalc.CVDeviationPercent;
+                                decimal minRangeVal_CV = stretchCalc.standardCV - stretchCalc.CVDeviationPercent;
+
+
+                                if (stretchCalc.testcv_IB < minRangeVal_CV || stretchCalc.testcv_IB > maxRangeVal_CV)
+                                {
+                                    if (stretchCalc.standardCV > 0.0m)
+                                    {
+                                        report.isRed_IB_CV = true;
+                                        report.isWhite_IB_CV = false;
+                                    }
+                                    else
+                                    {
+                                        report.isRed_IB_CV = false;
+                                        report.isWhite_IB_CV = true;
+                                    }
+                                }
+
+                                if (stretchCalc.testcv_FB < minRangeVal_CV || stretchCalc.testcv_FB > maxRangeVal_CV)
+                                {
+                                    if (stretchCalc.standardCV > 0.0m)
+                                    {
+                                        report.isRed_FB_CV = true;
+                                        report.isWhite_FB_CV = false;
+                                    }
+                                    else
+                                    {
+                                        report.isRed_FB_CV = false;
+                                        report.isWhite_FB_CV = true;
+                                    }
+                                }
 
                                 report.testaverage_IB = stretchCalc.testaverage_IB;
                                 report.testsd_IB = stretchCalc.testsd_IB;
@@ -1230,9 +1264,54 @@ namespace TQM
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
                         pdfGrid.Rows[rowCount].Cells[0].Value = test.description.ToString();
-                        pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.IB).ToString();
-                        //pdfGrid.Rows[rowCount].Cells[2].Value = test.N.ToString();
-                        pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.FB).ToString();
+
+                        if (test.description.ToString().Equals("CV"))
+                        {
+                            if (orl.standardCV == 0.0m)
+                            {
+                                pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.IB).ToString();
+                                pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.FB).ToString();
+                            }
+                            else
+                            {
+                                pdfGrid.Rows[rowCount].Cells[1].Value = test.IB +
+                                                                        "(" +
+                                                                        formatDecimal(orl.standardCV, 4).ToString() +
+                                                                        "\u00B1" +
+                                                                        orl.CVDeviationPercent + ")";
+                                pdfGrid.Rows[rowCount].Cells[2].Value = test.FB +
+                                                                        "(" +
+                                                                        formatDecimal(orl.standardCV, 4).ToString() +
+                                                                        "\u00B1" +
+                                                                        orl.CVDeviationPercent + ")";
+                                
+                                if (orl.isRed_IB_CV)
+                                {
+                                    pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                                    pdfGrid.Rows[rowCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                                    pdfGrid.Rows[rowCount].Cells[1].Style.BackgroundBrush = PdfBrushes.Red;
+                                    PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                                    pdfGrid.Rows[rowCount].Cells[1].Style.TextBrush = brush_con;
+                                }
+                                if (orl.isRed_FB_CV)
+                                {
+                                    pdfGrid.Rows[rowCount].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                                    pdfGrid.Rows[rowCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                                    pdfGrid.Rows[rowCount].Cells[2].Style.BackgroundBrush = PdfBrushes.Red;
+                                    PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                                    pdfGrid.Rows[rowCount].Cells[2].Style.TextBrush = brush_con;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.IB).ToString();
+                            pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.FB).ToString();
+                        }
+
+                        
+
+
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;

@@ -47,6 +47,12 @@ namespace TQM.ModelView
         public string testRemark { get; set; }
         public DateTime createdate { get; set; }
         public List<StretchReportModelView> stretchReportMV => this;
+        public bool isWhite_IB_CV { get; set; } = true;
+        public bool isRed_IB_CV { get; set; } = false;
+        public bool isWhite_FB_CV { get; set; } = true;
+        public bool isRed_FB_CV { get; set; } = false;
+        public decimal standardCV { get; set; }
+        public decimal CVDeviationPercent { get; set; }
     }
 
 

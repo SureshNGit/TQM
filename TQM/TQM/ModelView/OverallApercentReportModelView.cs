@@ -89,7 +89,6 @@ namespace TQM.ModelView
         public bool isWhite_N_CV { get; set; } = true;
         public bool isRed_N_CV { get; set; } = false;
         public decimal standardCV { get; set; }
-
         public decimal CVDeviationPercent { get; set; }
     }
 

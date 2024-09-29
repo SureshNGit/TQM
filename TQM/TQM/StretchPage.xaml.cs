@@ -57,6 +57,8 @@ namespace TQM
         private string UFVAL2 = null;
         private string UFVAL3 = null;
         private string UFVAL4 = null;
+        private decimal STD_CV = 0.0000m;
+        private decimal STD_CV_DEVIATION = 0.0000m;
 
         public StretchPage()
         {
@@ -356,6 +358,8 @@ namespace TQM
                     }
                     entry_testcount.Text = yarncountconfigmodel.testcountStretch.ToString();
                     TESTCOUNT = yarncountconfigmodel.testcountStretch;
+                    STD_CV = yarncountconfigmodel.standardCV;
+                    STD_CV_DEVIATION = yarncountconfigmodel.CVDeviationPercent;
 
 
                     TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
@@ -846,6 +850,8 @@ namespace TQM
                         testaverage = mean,
                         testsd = sd,
                         testcv = cv,
+                        standardCV=STD_CV,
+                        CVDeviationPercent=STD_CV_DEVIATION,
                         uf_value_1 = UFVAL1,
                         uf_value_2 = UFVAL2,
                         uf_value_3 = UFVAL3,
@@ -962,6 +968,8 @@ namespace TQM
                                         uf_value_2 = UFVAL2,
                                         uf_value_3 = UFVAL3,
                                         uf_value_4 = UFVAL4,
+                                        standardCV=ibSummary.standardCV,
+                                        CVDeviationPercent=ibSummary.CVDeviationPercent,
                                         status = true,
                                         createdate = DateTime.Now
                                     };
