@@ -81,6 +81,16 @@ namespace TQM.ModelView
         public string testRemark { get; set; }
         public DateTime createdate { get; set; }
         public List<ApercentReportModelView> apercentReportMV => this;
+
+        public bool isWhite_Nminus1_CV { get; set; } = true;
+        public bool isRed_Nminus1_CV { get; set; } = false;
+        public bool isWhite_NPlus1_CV { get; set; } = true;
+        public bool isRed_NPlus1_CV { get; set; } = false;
+        public bool isWhite_N_CV { get; set; } = true;
+        public bool isRed_N_CV { get; set; } = false;
+        public decimal standardCV { get; set; }
+
+        public decimal CVDeviationPercent { get; set; }
     }
 
 

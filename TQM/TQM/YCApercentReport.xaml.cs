@@ -524,6 +524,72 @@ namespace TQM
                             //consolItems.testDuration = testsummary.testDuration;
                             //consolItems.testDuration = formatTime(apercentCalc.createdate);
 
+                            //consolItems.standardCV = apercentCalc.standardCV;
+                            //consolItems.CVDeviationPercent = apercentCalc.CVDeviationPercent;
+
+
+                            //decimal maxRangeVal_CV = apercentCalc.standardCV + apercentCalc.CVDeviationPercent;
+                            //decimal minRangeVal_CV = apercentCalc.standardCV - apercentCalc.CVDeviationPercent;
+
+
+                            //if (apercentCalc.testcv_N < minRangeVal_CV || apercentCalc.testcv_N > maxRangeVal_CV)
+                            //{
+                            //    if (apercentCalc.standardCV > 0.0m)
+                            //    {
+                            //        consolItems.isRed_N_CV = true;
+                            //        consolItems.isWhite_N_CV = false;
+                            //    }
+                            //    else
+                            //    {
+                            //        consolItems.isRed_N_CV = false;
+                            //        consolItems.isWhite_N_CV = true;
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    consolItems.isRed_N_CV = false;
+                            //    consolItems.isWhite_N_CV = true;
+                            //}
+
+                            //if (apercentCalc.testcv_nMinus1 < minRangeVal_CV || apercentCalc.testcv_nMinus1 > maxRangeVal_CV)
+                            //{
+                            //    if (apercentCalc.standardCV > 0.0m)
+                            //    {
+                            //        consolItems.isRed_Nminus1_CV = true;
+                            //        consolItems.isWhite_Nminus1_CV = false;
+                            //    }
+                            //    else
+                            //    {
+                            //        consolItems.isRed_Nminus1_CV = false;
+                            //        consolItems.isWhite_Nminus1_CV = true;
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    consolItems.isRed_Nminus1_CV = false;
+                            //    consolItems.isWhite_Nminus1_CV = true;
+                            //}
+
+                            //if (apercentCalc.testcv_nPlus1 < minRangeVal_CV || apercentCalc.testcv_nPlus1 > maxRangeVal_CV)
+                            //{
+                            //    if (apercentCalc.standardCV > 0.0m)
+                            //    {
+                            //        consolItems.isRed_NPlus1_CV = true;
+                            //        consolItems.isWhite_NPlus1_CV = false;
+                            //    }
+                            //    else
+                            //    {
+                            //        consolItems.isRed_NPlus1_CV = false;
+                            //        consolItems.isWhite_NPlus1_CV = true;
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    consolItems.isRed_NPlus1_CV = false;
+                            //    consolItems.isWhite_NPlus1_CV = true;
+                            //}
+
+
                             string userParams = "";
 
                             if (apercentCalc.uf_value_1 != null && apercentCalc.uf_value_1 != "")
@@ -721,6 +787,70 @@ namespace TQM
                                 report.yarnlength = apercentCalc.yarnlength;
                                 report.totaltestcount = apercentCalc.totaltestcount;
                                 report.standardApercent = apercentCalc.standardApercent;
+                                report.standardCV = apercentCalc.standardCV;
+                                report.CVDeviationPercent = apercentCalc.CVDeviationPercent;
+
+
+                                decimal maxRangeVal_CV = apercentCalc.standardCV + apercentCalc.CVDeviationPercent;
+                                decimal minRangeVal_CV = apercentCalc.standardCV - apercentCalc.CVDeviationPercent;
+
+
+                                if (apercentCalc.testcv_N < minRangeVal_CV || apercentCalc.testcv_N > maxRangeVal_CV)
+                                {
+                                    if (apercentCalc.standardCV > 0.0m)
+                                    {
+                                        report.isRed_N_CV = true;
+                                        report.isWhite_N_CV = false;
+                                    }
+                                    else
+                                    {
+                                        report.isRed_N_CV = false;
+                                        report.isWhite_N_CV = true;
+                                    }
+                                }
+                                else
+                                {
+                                    report.isRed_N_CV = false;
+                                    report.isWhite_N_CV = true;
+                                }
+
+                                if (apercentCalc.testcv_nMinus1 < minRangeVal_CV || apercentCalc.testcv_nMinus1 > maxRangeVal_CV)
+                                {
+                                    if (apercentCalc.standardCV > 0.0m)
+                                    {
+                                        report.isRed_Nminus1_CV = true;
+                                        report.isWhite_Nminus1_CV = false;
+                                    }
+                                    else
+                                    {
+                                        report.isRed_Nminus1_CV = false;
+                                        report.isWhite_Nminus1_CV = true;
+                                    }
+                                }
+                                else
+                                {
+                                    report.isRed_Nminus1_CV = false;
+                                    report.isWhite_Nminus1_CV = true;
+                                }
+
+                                if (apercentCalc.testcv_nPlus1 < minRangeVal_CV || apercentCalc.testcv_nPlus1 > maxRangeVal_CV)
+                                {
+                                    if (apercentCalc.standardCV > 0.0m)
+                                    {
+                                        report.isRed_NPlus1_CV = true;
+                                        report.isWhite_NPlus1_CV = false;
+                                    }
+                                    else
+                                    {
+                                        report.isRed_NPlus1_CV = false;
+                                        report.isWhite_NPlus1_CV = true;
+                                    }
+                                }
+                                else
+                                {
+                                    report.isRed_NPlus1_CV = false;
+                                    report.isWhite_NPlus1_CV = true;
+                                }
 
 
                                 decimal actual_Nminus1 = apercentCalc.apercent_nMinus1;
@@ -1317,9 +1447,69 @@ namespace TQM
                         row = new PdfGridRow(pdfGrid);
                         pdfGrid.Rows.Add(row);
                         pdfGrid.Rows[rowCount].Cells[0].Value = test.description.ToString();
-                        pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.nMinus1).ToString();
-                        pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.N).ToString();
-                        pdfGrid.Rows[rowCount].Cells[3].Value = formatDecimal(test.nPlus1).ToString();
+
+
+                        if (test.description.ToString().Equals("CV"))
+                        {
+                            if (orl.standardCV == 0.0m)
+                            {
+                                pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.nMinus1).ToString();
+                                pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.N).ToString();
+                                pdfGrid.Rows[rowCount].Cells[3].Value = formatDecimal(test.nPlus1).ToString();
+                            }
+                            else
+                            {
+                                pdfGrid.Rows[rowCount].Cells[1].Value = test.nMinus1 +
+                                                                        "(" +
+                                                                        formatDecimal(orl.standardCV, 4).ToString() +
+                                                                        "\u00B1"+
+                                                                        orl.CVDeviationPercent + ")";
+                                pdfGrid.Rows[rowCount].Cells[2].Value = test.N +
+                                                                        "(" +
+                                                                        formatDecimal(orl.standardCV, 4).ToString() +
+                                                                        "\u00B1" +
+                                                                        orl.CVDeviationPercent + ")";
+                                pdfGrid.Rows[rowCount].Cells[3].Value = test.nPlus1 +
+                                                                        "(" +
+                                                                        formatDecimal(orl.standardCV, 4).ToString() +
+                                                                        "\u00B1" +
+                                                                        orl.CVDeviationPercent + ")";
+                                if (orl.isRed_Nminus1_CV)
+                                {
+                                    pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
+                                    pdfGrid.Rows[rowCount].Cells[1].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                                    pdfGrid.Rows[rowCount].Cells[1].Style.BackgroundBrush = PdfBrushes.Red;
+                                    PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                                    pdfGrid.Rows[rowCount].Cells[1].Style.TextBrush = brush_con;
+                                }
+                                if (orl.isRed_N_CV)
+                                {
+                                    pdfGrid.Rows[rowCount].Cells[2].StringFormat.Alignment = PdfTextAlignment.Center;
+                                    pdfGrid.Rows[rowCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                                    pdfGrid.Rows[rowCount].Cells[2].Style.BackgroundBrush = PdfBrushes.Red;
+                                    PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                                    pdfGrid.Rows[rowCount].Cells[2].Style.TextBrush = brush_con;
+                                }
+                                if (orl.isRed_NPlus1_CV)
+                                {
+                                    pdfGrid.Rows[rowCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
+                                    pdfGrid.Rows[rowCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+                                    pdfGrid.Rows[rowCount].Cells[3].Style.BackgroundBrush = PdfBrushes.Red;
+                                    PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
+                                    pdfGrid.Rows[rowCount].Cells[3].Style.TextBrush = brush_con;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            pdfGrid.Rows[rowCount].Cells[1].Value = formatDecimal(test.nMinus1).ToString();
+                            pdfGrid.Rows[rowCount].Cells[2].Value = formatDecimal(test.N).ToString();
+                            pdfGrid.Rows[rowCount].Cells[3].Value = formatDecimal(test.nPlus1).ToString();
+                        }
+
+                        
+
+
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[0].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[1].StringFormat.Alignment = PdfTextAlignment.Center;
@@ -1328,6 +1518,8 @@ namespace TQM
                         pdfGrid.Rows[rowCount].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[rowCount].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[rowCount].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
+
+
                         
 
                         if (test.description.ToString().Equals("Average Weight") ||

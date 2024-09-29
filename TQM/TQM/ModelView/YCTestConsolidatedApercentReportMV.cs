@@ -27,5 +27,14 @@
         public string uf_value_2 { get; set; } = null;
         public string uf_value_3 { get; set; } = null;
         public string uf_value_4 { get; set; } = null;
+        //public bool isWhite_Nminus1_CV { get; set; } = true;
+        //public bool isRed_Nminus1_CV { get; set; } = false;
+        //public bool isWhite_NPlus1_CV { get; set; } = true;
+        //public bool isRed_NPlus1_CV { get; set; } = false;
+        //public bool isWhite_N_CV { get; set; } = true;
+        //public bool isRed_N_CV { get; set; } = false;
+        //public decimal standardCV { get; set; }
+
+        //public decimal CVDeviationPercent { get; set; }
     }
 }

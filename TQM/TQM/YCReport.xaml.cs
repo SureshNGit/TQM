@@ -632,7 +632,7 @@ namespace TQM
                                 decimal minRangeVal_CV = testsummary.standardCV - testsummary.CVDeviationPercent;
 
 
-                                if (testsummary.yarnWeightCV < minRangeVal || testsummary.yarnWeightCV > maxRangeVal)
+                                if (testsummary.yarnWeightCV < minRangeVal_CV || testsummary.yarnWeightCV > maxRangeVal_CV)
                                 {
                                     if (testsummary.standardCV > 0.0m)
                                     {
@@ -1080,7 +1080,7 @@ namespace TQM
                                 decimal minRangeVal_CV = testsummary.standardCV - testsummary.CVDeviationPercent;
 
 
-                                if (testsummary.yarnWeightCV < minRangeVal || testsummary.yarnWeightCV > maxRangeVal)
+                                if (testsummary.yarnWeightCV < minRangeVal_CV || testsummary.yarnWeightCV > maxRangeVal_CV)
                                 {
                                     report.CVColor = "Red";
                                     report.CVColorGg = "Yellow";

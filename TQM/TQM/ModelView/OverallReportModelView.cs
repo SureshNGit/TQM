@@ -18,9 +18,7 @@ namespace TQM.ModelView
         public int totaltestcount { get; set; }
         public decimal testaverage { get; set; }
         public decimal standardHank { get; set; }
-
         public decimal standardCV { get; set; }
-
         public string CVDeviationPercent { get; set; }
         public decimal testsd { get; set; }
         public decimal testcv { get; set; }

@@ -17,6 +17,7 @@ using TQM.ModelView;
 using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using static Android.Icu.Text.AlphabeticIndex;
 
 namespace TQM
 {
@@ -58,6 +59,8 @@ namespace TQM
         private string UFVAL2 = null;
         private string UFVAL3 = null;
         private string UFVAL4 = null;
+        private decimal STD_CV = 0.0000m;
+        private decimal STD_CV_DEVIATION = 0.0000m;
 
 
         public ApercentPage()
@@ -745,6 +748,8 @@ namespace TQM
                                         min_nPlus1 = Min_nPlus1.yarnweight,
                                         range_nPlus1 = range_nPlus1,
                                         apercent_nPlus1 = apercent_nPlus1,
+                                        standardCV=nMinus1Summary.standardCV,
+                                        CVDeviationPercent=nPlus1Summary.CVDeviationPercent,
                                         status = true,
                                         createdate = lastSuccessfulTest_summary.createdate
                                     };
@@ -876,6 +881,8 @@ namespace TQM
                                         min_nPlus1 = Min_nPlus1.yarnweight,
                                         range_nPlus1 = range_nPlus1,
                                         apercent_nPlus1 = apercent_nPlus1,
+                                        standardCV=nMinus1Summary.standardCV,
+                                        CVDeviationPercent= nMinus1Summary.CVDeviationPercent,
                                         status = true,
                                         createdate = nPlus1Summary.createdate
                                     };
@@ -1092,6 +1099,8 @@ namespace TQM
                         testaverage = mean,
                         testsd = sd,
                         testcv = cv,
+                        standardCV= STD_CV,
+                        CVDeviationPercent=STD_CV_DEVIATION,
                         status = true,
                         createdate = allTestRecordsList[allTestRecordsList.Count - 1].createdate,
                     };
@@ -1301,6 +1310,8 @@ namespace TQM
                     }
                     entry_testcount.Text = yarncountconfigmodel.testcountApercent.ToString();
                     TESTCOUNT = yarncountconfigmodel.testcountApercent;
+                    STD_CV = yarncountconfigmodel.standardCV;
+                    STD_CV_DEVIATION = yarncountconfigmodel.CVDeviationPercent;
 
                     TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
                     TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
@@ -1499,6 +1510,20 @@ namespace TQM
                     lbl_average.Text = mean.ToString();
                     lbl_sd.Text = sd.ToString();
                     lbl_cv.Text = cv.ToString();
+
+                    decimal maxRangeVal_CV = STD_CV + STD_CV_DEVIATION;
+                    decimal minRangeVal_CV = STD_CV - STD_CV_DEVIATION;
+
+
+                    if (cv < minRangeVal_CV || cv > maxRangeVal_CV)
+                    {
+                        if (STD_CV > 0.0m)
+                        {
+                            lbl_cv.BackgroundColor = Color.Red;
+                            lbl_cv.TextColor = Color.White;
+                        }
+                    }
+
                 }
                 else if (currentTestType == "nPlus1" && showFinalOut)
                 {
@@ -1826,6 +1851,8 @@ namespace TQM
                         testaverage = mean,
                         testsd = sd,
                         testcv = cv,
+                        standardCV=STD_CV,
+                        CVDeviationPercent=STD_CV_DEVIATION,
                         uf_value_1 = UFVAL1,
                         uf_value_2 = UFVAL2,
                         uf_value_3 = UFVAL3,
@@ -1966,6 +1993,8 @@ namespace TQM
                                             uf_value_2 = UFVAL2,
                                             uf_value_3 = UFVAL3,
                                             uf_value_4 = UFVAL4,
+                                            standardCV=nMinus1Summary.standardCV,
+                                            CVDeviationPercent=nMinus1Summary.CVDeviationPercent,
                                             status = true,
                                             createdate = DateTime.Now
                                         };
