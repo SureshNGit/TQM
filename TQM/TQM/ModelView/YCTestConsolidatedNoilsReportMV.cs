@@ -24,5 +24,9 @@
         public string uf_value_2 { get; set; } = null;
         public string uf_value_3 { get; set; } = null;
         public string uf_value_4 { get; set; } = null;
+        public bool isWhite_Noils_CV { get; set; } = true;
+        public bool isRed_Noils_CV { get; set; } = false;
+        public decimal standardCV { get; set; }
+        public decimal CVDeviationPercent { get; set; }
     }
 }
