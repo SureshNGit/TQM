@@ -1027,86 +1027,98 @@ namespace TQM
                             itr.isHeader = false;
                             itr.isBody = true;
                             itr.DrumNumber = indTest_list[0].drumNumber.ToString();
-                            try
+                           
+
+                            if (indTest_list.Count >= 1)
                             {
                                 itr.T1 = indTest_list[0].sampleStrengthCount.ToString();
                             }
-                            catch (IndexOutOfRangeException)
+                            else
                             {
                                 itr.T1 = "";
                             }
-                            try
+
+                            if (indTest_list.Count >= 2)
                             {
                                 itr.T2 = indTest_list[1].sampleStrengthCount.ToString();
                             }
-                            catch (IndexOutOfRangeException)
+                            else
                             {
                                 itr.T2 = "";
                             }
-                            try
+
+                            if (indTest_list.Count >= 3)
                             {
                                 itr.T3 = indTest_list[2].sampleStrengthCount.ToString();
                             }
-                            catch (IndexOutOfRangeException)
+                            else
                             {
                                 itr.T3 = "";
                             }
-                            try
+
+                            if (indTest_list.Count >= 4)
                             {
                                 itr.T4 = indTest_list[3].sampleStrengthCount.ToString();
                             }
-                            catch (IndexOutOfRangeException)
+                            else
                             {
                                 itr.T4 = "";
                             }
-                            try
+
+                            if (indTest_list.Count >= 5)
                             {
                                 itr.T5 = indTest_list[4].sampleStrengthCount.ToString();
                             }
-                            catch (IndexOutOfRangeException)
+                            else
                             {
                                 itr.T5 = "";
                             }
-                            try
+
+                            if (indTest_list.Count >=6)
                             {
                                 itr.T6 = indTest_list[5].sampleStrengthCount.ToString();
                             }
-                            catch (IndexOutOfRangeException)
+                            else
                             {
                                 itr.T6 = "";
                             }
-                            try
+
+                            if (indTest_list.Count >= 7)
                             {
                                 itr.T7 = indTest_list[6].sampleStrengthCount.ToString();
                             }
-                            catch (IndexOutOfRangeException)
+                            else
                             {
                                 itr.T7 = "";
                             }
-                            try
+
+                            if (indTest_list.Count >= 8)
                             {
                                 itr.T8 = indTest_list[7].sampleStrengthCount.ToString();
                             }
-                            catch (IndexOutOfRangeException)
+                            else
                             {
                                 itr.T8 = "";
                             }
-                            try
+
+                            if (indTest_list.Count >= 9)
                             {
                                 itr.T9 = indTest_list[8].sampleStrengthCount.ToString();
                             }
-                            catch (IndexOutOfRangeException)
+                            else
                             {
                                 itr.T9 = "";
                             }
-                            try
+
+                            if (indTest_list.Count >= 10)
                             {
                                 itr.T10 = indTest_list[9].sampleStrengthCount.ToString();
                             }
-                            catch (IndexOutOfRangeException)
+                            else
                             {
                                 itr.T10 = "";
                             }
+
 
                             //itr.T2 = indTest_list[1].sampleStrengthCount.ToString();
                             //itr.T3 = indTest_list[2].sampleStrengthCount.ToString();
