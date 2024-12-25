@@ -63,6 +63,7 @@ namespace TQM
         {
             InitializeComponent();
             lbl_TestID.Text = "";
+            autoCorrection();
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 //conn.DropTable<NoilsTestModel>();
@@ -323,6 +324,447 @@ namespace TQM
         }
 
 
+        private void autoCorrection()
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    // Get all records from NoilsTestModel table sorted by createdate ascending
+                    List<NoilsTestModel> noilsTestRecords = conn.Table<NoilsTestModel>()
+                                                                 .OrderBy(record => record.createdate)
+                                                                 .ToList();
+
+                    // Initialize ProgTID to 1
+                    long ProgTID = 1;
+                    bool isSliverProcessed = false;
+
+
+                    // Loop through the records
+                    foreach (var record in noilsTestRecords)
+                    {
+                        // Check if the current record is of type 'Sliver'
+                        if (record.testType == "Sliver")
+                        {
+                            // Set the current record TestID column with ProgTID
+                            record.testID = ProgTID;
+                            if (record.testcount == record.totaltestcount)
+                            {
+                                isSliverProcessed = true;
+                            }
+                            // Update the record in the database
+                            conn.Update(record);
+                        }
+                        else if (record.testType == "Noils" && isSliverProcessed)
+                        {
+                            // Set the current record TestID column with ProgTID
+                            record.testID = ProgTID;
+                            // Increment ProgTID by 1 after processing 'Noils' record
+                            if (record.testcount == record.totaltestcount)
+                            {
+                                ProgTID++;
+                                isSliverProcessed = false;
+                            }
+                            // Update the record in the database
+                            conn.Update(record);
+                        }
+                        else
+                        {
+                            // Handle unexpected cases
+                            Debug.WriteLine("Unexpected testType or sequence in records. Test ID: "+record.testID.ToString());
+                            //DisplayAlert("Attention", "Unexpected testType or sequence in records.", "OK");
+                            //return;
+                            conn.Delete(record);
+                        }
+
+                       
+                    }
+                }
+                DisplayAlert("Attention", "Auto Correction Completed!!!", "OK");
+                autoCompleteNoils();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in autoCorrection: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                DisplayAlert("Error", "An error occurred during auto correction. Please check the logs for more details.", "OK");
+            }
+        }
+
+
+        private void autoCompleteNoils()
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.DropTable<NoilsTestSummaryModel>();
+                    conn.DropTable<NoilsTestCalculatedModel>();
+                    conn.DropTable<NoilsTestFinalModel>();
+
+                    decimal totalCalcCountVal = 0m;
+                    decimal totalWeight = 0m;
+                    conn.CreateTable<NoilsTestModel>();
+
+                    // Get all records from NoilsTestModel table sorted by createdate ascending
+                    List<NoilsTestModel> noilsTestRecords = conn.Table<NoilsTestModel>()
+                                                                 .OrderBy(record => record.createdate)
+                                                                 .ToList();
+
+                    long c_tID = 0;
+                    bool isSliverProcessed = false;
+                    foreach (NoilsTestModel test in noilsTestRecords)
+                    {
+                        if (c_tID == 0)
+                        {
+                            c_tID = test.testID;
+                        }
+                        if (test.testType == "Sliver" && c_tID == test.testID)
+                        {
+                            totalCalcCountVal = totalCalcCountVal + test.yccalcval;
+                            totalCalcCountVal = formatDecimal(totalCalcCountVal);
+                            totalWeight = totalWeight + test.yarnweight;
+                            totalWeight = formatDecimal(totalWeight);
+                            if (test.testcount == test.totaltestcount)
+                            {
+                                isSliverProcessed = true;
+                                UFVAL1 = test.uf_value_1;
+                                UFVAL2 = test.uf_value_2;
+                                UFVAL3 = test.uf_value_3;
+                                UFVAL4 = test.uf_value_4;
+                                autoCompleteNoilsCalcTabs(conn,test,totalWeight, totalCalcCountVal);
+                                totalCalcCountVal = 0m;
+                                totalWeight = 0m;
+                            }
+                        }
+                        else if (test.testType == "Noils" && isSliverProcessed && c_tID == test.testID)
+                        {
+                            totalCalcCountVal = totalCalcCountVal + test.yccalcval;
+                            totalCalcCountVal = formatDecimal(totalCalcCountVal);
+                            totalWeight = totalWeight + test.yarnweight;
+                            totalWeight = formatDecimal(totalWeight);
+                            if (test.testcount == test.totaltestcount)
+                            {
+                                c_tID = 0;
+                                isSliverProcessed = false;
+                                UFVAL1 = test.uf_value_1;
+                                UFVAL2 = test.uf_value_2;
+                                UFVAL3 = test.uf_value_3;
+                                UFVAL4 = test.uf_value_4;
+                                autoCompleteNoilsCalcTabs(conn,test,totalWeight, totalCalcCountVal);
+                                totalCalcCountVal = 0m;
+                                totalWeight = 0m;
+                            }
+                        }
+
+                    }
+                }
+                DisplayAlert("Attention", "Auto data completion has been ended successfully!!!", "OK");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in autoCompleteNoils: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                DisplayAlert("Error", "An error occurred during auto completion. Please check the logs for more details.", "OK");
+            }
+        }
+
+        private void autoCompleteNoilsCalcTabs(SQLiteConnection conn, NoilsTestModel testRecord, decimal totalWeight,decimal totalCalcCountVal)
+        {
+            try
+            {
+                bool dbStatus = true;
+
+                conn.CreateTable<NoilsTestSummaryModel>();
+                List<NoilsTestSummaryModel> noilsTestSMList = conn.Table<NoilsTestSummaryModel>().Where(
+                                NoilsTestSummaryModel => (NoilsTestSummaryModel.status == true &&
+                                NoilsTestSummaryModel.testID != currentTestID)).ToList();
+
+                foreach (NoilsTestSummaryModel noilsTestSM in noilsTestSMList)
+                {
+                    noilsTestSM.status = false;
+                    noilsTestSM.dataSyncStatus = false;
+                    if (conn.Update(noilsTestSM) < 1)
+                    {
+                        dbStatus = false;
+                    }
+                }
+
+                decimal avg_weight = 0m;
+                decimal mean = 0m;
+                decimal sd = 0m;
+                decimal cv = 0m;
+                if (testRecord.totaltestcount > 1)
+                {
+                    avg_weight = totalWeight / testRecord.totaltestcount;
+                    avg_weight = formatDecimal(avg_weight);
+                    mean = totalCalcCountVal / testRecord.totaltestcount;
+                    mean = formatDecimal(mean);
+
+                    decimal[] yarnWeightlArray = conn.Table<NoilsTestModel>()
+                        .Where(record => record.testID == testRecord.testID)
+                        .Select(record => record.yarnweight)
+                        .ToArray();
+                    sd = CalculateStandardDeviation(yarnWeightlArray);
+                    sd = formatDecimal(sd);
+                    cv = (sd / avg_weight) * 100m; //Coefficient of Variation
+                    cv = formatDecimal(cv);
+                }
+                NoilsTestSummaryModel noilsTestSummaryModel = new NoilsTestSummaryModel()
+                {
+                    ID = Guid.NewGuid(),
+                    testID = testRecord.testID,
+                    userID = testRecord.userID,
+                    userName = testRecord.userName,
+                    machineID = testRecord.machineID,
+                    machineCategory = testRecord.machineCategory,
+                    machineName = testRecord.machineName,
+                    process = testRecord.process,
+                    countsysname = testRecord.countsysname,
+                    yarnlenunit = testRecord.yarnlenunit,
+                    yarnlength = testRecord.yarnlength,
+                    shift = testRecord.shift,
+                    testType = testRecord.testType,
+                    totaltestcount = testRecord.totaltestcount,
+                    standardNoils = testRecord.standardNoils,
+                    noilsRange = testRecord.noilsRange,
+                    avg_weight = avg_weight,
+                    testaverage = mean,
+                    testsd = sd,
+                    testcv = cv,
+                    uf_value_1 = UFVAL1,
+                    uf_value_2 = UFVAL2,
+                    uf_value_3 = UFVAL3,
+                    uf_value_4 = UFVAL4,
+                    status = true,
+                    createdate = testRecord.createdate
+                };
+                conn.CreateTable<NoilsTestSummaryModel>();
+                int row = conn.Insert(noilsTestSummaryModel);
+                if (row < 1)
+                {
+                    dbStatus = false;
+                }
+                if (dbStatus)
+                {
+
+                    if (currentTestType == "Noils")
+                    {
+                        conn.CreateTable<NoilsTestCalculatedModel>();
+                        List<NoilsTestCalculatedModel> noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(
+                            NoilsTestCalculatedModel =>
+                            (NoilsTestCalculatedModel.status == true &&
+                            NoilsTestCalculatedModel.testID != currentTestID)).ToList();
+
+                        foreach (NoilsTestCalculatedModel noilsCalc in noilsCalcList)
+                        {
+                            noilsCalc.status = false;
+                            noilsCalc.dataSyncStatus = false;
+                            if (conn.Update(noilsCalc) < 1)
+                            {
+                                //to be decided if noils calculated active records failed to deactive
+                            }
+                        }
+                        NoilsTestSummaryModel sliver_Summary = conn.Table<NoilsTestSummaryModel>().Where(
+                                                        NoilsTestSummaryModel => (
+                                                        NoilsTestSummaryModel.testType == "Sliver" &&
+                                                        NoilsTestSummaryModel.status == true &&
+                                                        NoilsTestSummaryModel.testID == currentTestID)
+                                                        ).FirstOrDefault();
+                        if (sliver_Summary != null)
+                        {
+                            NoilsTestSummaryModel noils_Summary = conn.Table<NoilsTestSummaryModel>().Where(
+                                                        NoilsTestSummaryModel => (
+                                                        NoilsTestSummaryModel.testType == "Noils" &&
+                                                        NoilsTestSummaryModel.status == true &&
+                                                        NoilsTestSummaryModel.testID == currentTestID)
+                                                        ).FirstOrDefault();
+                            if (noils_Summary != null)
+                            {
+                                List<NoilsTestModel> noilsTest_sliverList = conn.Table<NoilsTestModel>().Where(
+                                                        NoilsTestModel => (
+                                                        NoilsTestModel.testType == "Sliver" &&
+                                                        NoilsTestModel.status == true &&
+                                                        NoilsTestModel.testID == currentTestID)
+                                                        ).ToList();
+
+                                List<NoilsTestModel> noilsTest_noilsList = conn.Table<NoilsTestModel>().Where(
+                                                        NoilsTestModel => (
+                                                        NoilsTestModel.testType == "Noils" &&
+                                                        NoilsTestModel.status == true &&
+                                                        NoilsTestModel.testID == currentTestID)
+                                                        ).ToList();
+
+                                if (noilsTest_sliverList.Count == 0 || noilsTest_noilsList.Count == 0)
+                                {
+
+                                    // to be decided if sliver and noils test are blank
+                                }
+                                else
+                                {
+                                    int testRecCount = 0;
+                                    decimal totalWeight_Noils = 0.00m;
+                                    foreach (NoilsTestModel noilsTest_sliver in noilsTest_sliverList)
+                                    {
+                                        decimal noils = (noilsTest_noilsList[testRecCount].yarnweight / (noilsTest_noilsList[testRecCount].yarnweight + noilsTest_sliver.yarnweight)) * 100m;
+                                        noils = formatDecimal(noils);
+                                        totalWeight_Noils = formatDecimal(totalWeight_Noils + noils);
+                                        NoilsTestFinalModel noilsTestFinalModel = new NoilsTestFinalModel()
+                                        {
+                                            ID = Guid.NewGuid(),
+                                            testID = noilsTest_sliver.testID,
+                                            testcount = noilsTest_sliver.testcount,
+                                            weigth_sliver = formatDecimal(noilsTest_sliver.yarnweight),
+                                            weigth_noils = formatDecimal(noilsTest_noilsList[testRecCount].yarnweight),
+                                            noils = noils,
+                                            status = true,
+                                            createdate = testRecord.createdate
+                                        };
+                                        conn.CreateTable<NoilsTestFinalModel>();
+                                        int row_final = conn.Insert(noilsTestFinalModel);
+                                        if (row_final < 1)
+                                        {
+                                            // to be decided if final rec failed to insert
+                                        }
+                                        testRecCount += 1;
+                                    }
+
+                                    decimal avg_weight_noils = totalWeight_Noils / noilsTest_sliverList[0].totaltestcount;
+                                    avg_weight_noils = formatDecimal(avg_weight_noils);
+
+
+
+                                    NoilsTestFinalModel Max_noils = conn.Table<NoilsTestFinalModel>().Where(
+                                        NoilsTestFinalModel =>
+                                        (NoilsTestFinalModel.testID == currentTestID &&
+                                        NoilsTestFinalModel.status == true)).OrderByDescending(NoilsTestFinalModel => NoilsTestFinalModel.noils).First();
+                                    NoilsTestFinalModel Min_noils = conn.Table<NoilsTestFinalModel>().Where(
+                                        NoilsTestFinalModel =>
+                                        (NoilsTestFinalModel.testID == currentTestID &&
+                                        NoilsTestFinalModel.status == true)).OrderBy(NoilsTestFinalModel => NoilsTestFinalModel.noils).First();
+
+                                    NoilsTestFinalModel Max_sliver = conn.Table<NoilsTestFinalModel>().Where(
+                                            NoilsTestFinalModel =>
+                                            (NoilsTestFinalModel.testID == currentTestID &&
+                                            NoilsTestFinalModel.status == true)).OrderByDescending(NoilsTestFinalModel => NoilsTestFinalModel.weigth_sliver).First();
+                                    NoilsTestFinalModel Min_sliver = conn.Table<NoilsTestFinalModel>().Where(
+                                        NoilsTestFinalModel =>
+                                        (NoilsTestFinalModel.testID == currentTestID &&
+                                        NoilsTestFinalModel.status == true)).OrderBy(NoilsTestFinalModel => NoilsTestFinalModel.weigth_sliver).First();
+
+                                    NoilsTestFinalModel Max_noilswt = conn.Table<NoilsTestFinalModel>().Where(
+                                        NoilsTestFinalModel =>
+                                        (NoilsTestFinalModel.testID == currentTestID &&
+                                        NoilsTestFinalModel.status == true)).OrderByDescending(NoilsTestFinalModel => NoilsTestFinalModel.weigth_noils).First();
+                                    NoilsTestFinalModel Min_noilswt = conn.Table<NoilsTestFinalModel>().Where(
+                                        NoilsTestFinalModel =>
+                                        (NoilsTestFinalModel.testID == currentTestID &&
+                                        NoilsTestFinalModel.status == true)).OrderBy(NoilsTestFinalModel => NoilsTestFinalModel.weigth_noils).First();
+
+                                    decimal range_sliver = formatDecimal(Max_sliver.weigth_sliver - Min_sliver.weigth_sliver);
+                                    decimal range_noilswt = formatDecimal(Max_noilswt.weigth_noils - Min_noilswt.weigth_noils);
+                                    decimal range_noils = formatDecimal(Max_noils.noils - Min_noils.noils);
+
+                                    List<NoilsTestFinalModel> noilsFinal_list = conn.Table<NoilsTestFinalModel>().Where(
+                                                        NoilsTestFinalModel => (
+                                                        NoilsTestFinalModel.status == true &&
+                                                        NoilsTestFinalModel.testID == currentTestID)
+                                                        ).ToList();
+
+
+                                    decimal[] noilsarray = noilsFinal_list.Select(m => m.noils).ToArray();
+                                    decimal sd_noils = CalculateStandardDeviation(noilsarray);
+                                    decimal cv_noils = (sd_noils / avg_weight_noils) * 100m; //Coefficient of Variation
+                                    sd_noils = formatDecimal(sd_noils);
+                                    cv_noils = formatDecimal(cv_noils);
+
+                                    NoilsTestCalculatedModel noilsTestCalculatedModel = new NoilsTestCalculatedModel()
+                                    {
+                                        ID = Guid.NewGuid(),
+                                        testID = sliver_Summary.testID,
+                                        userID = sliver_Summary.userID,
+                                        userName = sliver_Summary.userName,
+                                        machineID = sliver_Summary.machineID,
+                                        machineCategory = sliver_Summary.machineCategory,
+                                        machineName = sliver_Summary.machineName,
+                                        process = sliver_Summary.process,
+                                        countsysname = sliver_Summary.countsysname,
+                                        yarnlenunit = sliver_Summary.yarnlenunit,
+                                        yarnlength = sliver_Summary.yarnlength,
+                                        shift = sliver_Summary.shift,
+                                        totaltestcount = sliver_Summary.totaltestcount,
+                                        standardNoils = sliver_Summary.standardNoils,
+                                        noilsRange = sliver_Summary.noilsRange,
+                                        average_wt_sliverwt = sliver_Summary.avg_weight,
+                                        max_sliverwt = Max_sliver.weigth_sliver,
+                                        min_sliverwt = Min_sliver.weigth_sliver,
+                                        range_sliverwt = range_sliver,
+                                        testaverage_sliverwt = sliver_Summary.testaverage,
+                                        testsd_sliverwt = sliver_Summary.testsd,
+                                        testcv_sliverwt = sliver_Summary.testcv,
+                                        average_wt_noilswt = noils_Summary.avg_weight,
+                                        max_noilswt = Max_noilswt.weigth_noils,
+                                        min_noilswt = Min_noilswt.weigth_noils,
+                                        range_noilswt = range_noilswt,
+                                        testaverage_noilswt = noils_Summary.testaverage,
+                                        testsd_noilswt = noils_Summary.testsd,
+                                        testcv_noilswt = noils_Summary.testcv,
+                                        average_wt_noils = avg_weight_noils,
+                                        max_noils = Max_noils.noils,
+                                        min_noils = Min_noils.noils,
+                                        range_noils = range_noils,
+                                        testsd_noils = sd_noils,
+                                        testcv_noils = cv_noils,
+                                        status = true,
+                                        uf_value_1 = UFVAL1,
+                                        uf_value_2 = UFVAL2,
+                                        uf_value_3 = UFVAL3,
+                                        uf_value_4 = UFVAL4,
+                                        createdate = testRecord.createdate
+                                    };
+                                    int row_TestCalc = conn.Insert(noilsTestCalculatedModel);
+                                    if (row_TestCalc < 1)
+                                    {
+                                        // To be decieded if noils test calculated value failed to insert to db
+                                    }
+                                    else
+                                    {
+                                        noilsCalcList_finalOut = noilsTestCalculatedModel;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // To be decieded if FB Summary active record is not available in db
+                            }
+                        }
+                        else
+                        {
+                            // To be decieded if IB Summary active record is not available in db
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in autoCompleteNoilsCalcTabs: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                DisplayAlert("Error", "An error occurred during auto completion. Please check the logs for more details.", "OK");
+            }
+
+        }
+
+
         private void getUserfieldConfig(string mCat, Guid mid, string mac)
         {
             if (mCat == "" && mid == Guid.Empty && mac == "")
@@ -351,6 +793,7 @@ namespace TQM
                 }
             }
         }
+
 
         private void populateTestParams(string mCat, Guid mid, string mac)
         {
@@ -1335,7 +1778,10 @@ namespace TQM
                     }
                     else
                     {
-                        ///to be decided
+                        Debug.WriteLine("Data integrity check failed. Please logout, close and re-launch app to avoid data issues");
+                        await DisplayAlert("Attention", "Data integrity check failed. Please logout, close and re-launch app to avoid data issues", "OK");
+
+                        return;
                     }
                 }
                 lbl_TestID.Text = currentTestID.ToString();
@@ -1944,7 +2390,13 @@ namespace TQM
                 }
                 else
                 {
-                    currentTestID = 1;
+                    //currentTestID = 1;
+                    Debug.WriteLine("Data integrity check failed. Please logout, close and re-launch app to avoid data issues");
+                    await DisplayAlert("Attention", "Data integrity check failed. Please logout, close and re-launch app to avoid data issues", "OK");
+                    return;
+                    // Get the maximum TestID value and increment it by 1
+                    //long maxTestID = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.testID);
+                    //currentTestID = maxTestID + 1;
                 }
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
