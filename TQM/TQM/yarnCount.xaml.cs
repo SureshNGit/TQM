@@ -1065,7 +1065,10 @@ namespace TQM
                     }
                     else
                     {
-                        ///to be decided
+                        Debug.WriteLine("Data integrity check failed. Please logout, close and re-launch app to avoid data issues");
+                        await DisplayAlert("Attention", "Data integrity check failed. Please logout, close and re-launch app to avoid data issues", "OK");
+                        _ = showProgress(false);
+                        return;
                     }
                 }
                 lbl_TestID.Text = currentTestID.ToString();

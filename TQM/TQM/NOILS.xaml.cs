@@ -16,6 +16,7 @@ using TQM.ModelView;
 using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Xamarin.Essentials;
 
 namespace TQM
 {
@@ -63,7 +64,15 @@ namespace TQM
         {
             InitializeComponent();
             lbl_TestID.Text = "";
-            autoCorrection();
+            // Check if autoCorrection has been called before
+            bool IsNoilsAutoCorrectionDone = Preferences.Get("IsNoilsAutoCorrectionDone", false);
+
+            if (!IsNoilsAutoCorrectionDone)
+            {
+                autoCorrection();
+                // Set the flag to true to indicate that autoCorrection has been called
+                Preferences.Set("IsNoilsAutoCorrectionDone", true);
+            }
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 //conn.DropTable<NoilsTestModel>();
@@ -344,10 +353,11 @@ namespace TQM
                     foreach (var record in noilsTestRecords)
                     {
                         // Check if the current record is of type 'Sliver'
-                        if (record.testType == "Sliver")
+                        if (record.testType == "Sliver" && !isSliverProcessed)
                         {
                             // Set the current record TestID column with ProgTID
                             record.testID = ProgTID;
+                            record.status = true;
                             if (record.testcount == record.totaltestcount)
                             {
                                 isSliverProcessed = true;
@@ -359,6 +369,7 @@ namespace TQM
                         {
                             // Set the current record TestID column with ProgTID
                             record.testID = ProgTID;
+                            record.status = true;
                             // Increment ProgTID by 1 after processing 'Noils' record
                             if (record.testcount == record.totaltestcount)
                             {
@@ -454,6 +465,10 @@ namespace TQM
                                 UFVAL2 = test.uf_value_2;
                                 UFVAL3 = test.uf_value_3;
                                 UFVAL4 = test.uf_value_4;
+                                //if (test.testID == 74)
+                                //{
+                                //    int a = 1;
+                                //}
                                 autoCompleteNoilsCalcTabs(conn,test,totalWeight, totalCalcCountVal);
                                 totalCalcCountVal = 0m;
                                 totalWeight = 0m;
@@ -484,7 +499,7 @@ namespace TQM
                 conn.CreateTable<NoilsTestSummaryModel>();
                 List<NoilsTestSummaryModel> noilsTestSMList = conn.Table<NoilsTestSummaryModel>().Where(
                                 NoilsTestSummaryModel => (NoilsTestSummaryModel.status == true &&
-                                NoilsTestSummaryModel.testID != currentTestID)).ToList();
+                                NoilsTestSummaryModel.testID != testRecord.testID)).ToList();
 
                 foreach (NoilsTestSummaryModel noilsTestSM in noilsTestSMList)
                 {
@@ -545,7 +560,6 @@ namespace TQM
                     status = true,
                     createdate = testRecord.createdate
                 };
-                conn.CreateTable<NoilsTestSummaryModel>();
                 int row = conn.Insert(noilsTestSummaryModel);
                 if (row < 1)
                 {
@@ -554,13 +568,13 @@ namespace TQM
                 if (dbStatus)
                 {
 
-                    if (currentTestType == "Noils")
+                    if (testRecord.testType == "Noils")
                     {
                         conn.CreateTable<NoilsTestCalculatedModel>();
                         List<NoilsTestCalculatedModel> noilsCalcList = conn.Table<NoilsTestCalculatedModel>().Where(
                             NoilsTestCalculatedModel =>
                             (NoilsTestCalculatedModel.status == true &&
-                            NoilsTestCalculatedModel.testID != currentTestID)).ToList();
+                            NoilsTestCalculatedModel.testID != testRecord.testID)).ToList();
 
                         foreach (NoilsTestCalculatedModel noilsCalc in noilsCalcList)
                         {
@@ -575,7 +589,7 @@ namespace TQM
                                                         NoilsTestSummaryModel => (
                                                         NoilsTestSummaryModel.testType == "Sliver" &&
                                                         NoilsTestSummaryModel.status == true &&
-                                                        NoilsTestSummaryModel.testID == currentTestID)
+                                                        NoilsTestSummaryModel.testID == testRecord.testID)
                                                         ).FirstOrDefault();
                         if (sliver_Summary != null)
                         {
@@ -583,7 +597,7 @@ namespace TQM
                                                         NoilsTestSummaryModel => (
                                                         NoilsTestSummaryModel.testType == "Noils" &&
                                                         NoilsTestSummaryModel.status == true &&
-                                                        NoilsTestSummaryModel.testID == currentTestID)
+                                                        NoilsTestSummaryModel.testID == testRecord.testID)
                                                         ).FirstOrDefault();
                             if (noils_Summary != null)
                             {
@@ -591,14 +605,14 @@ namespace TQM
                                                         NoilsTestModel => (
                                                         NoilsTestModel.testType == "Sliver" &&
                                                         NoilsTestModel.status == true &&
-                                                        NoilsTestModel.testID == currentTestID)
+                                                        NoilsTestModel.testID == testRecord.testID)
                                                         ).ToList();
 
                                 List<NoilsTestModel> noilsTest_noilsList = conn.Table<NoilsTestModel>().Where(
                                                         NoilsTestModel => (
                                                         NoilsTestModel.testType == "Noils" &&
                                                         NoilsTestModel.status == true &&
-                                                        NoilsTestModel.testID == currentTestID)
+                                                        NoilsTestModel.testID == testRecord.testID)
                                                         ).ToList();
 
                                 if (noilsTest_sliverList.Count == 0 || noilsTest_noilsList.Count == 0)
@@ -642,29 +656,29 @@ namespace TQM
 
                                     NoilsTestFinalModel Max_noils = conn.Table<NoilsTestFinalModel>().Where(
                                         NoilsTestFinalModel =>
-                                        (NoilsTestFinalModel.testID == currentTestID &&
+                                        (NoilsTestFinalModel.testID == testRecord.testID &&
                                         NoilsTestFinalModel.status == true)).OrderByDescending(NoilsTestFinalModel => NoilsTestFinalModel.noils).First();
                                     NoilsTestFinalModel Min_noils = conn.Table<NoilsTestFinalModel>().Where(
                                         NoilsTestFinalModel =>
-                                        (NoilsTestFinalModel.testID == currentTestID &&
+                                        (NoilsTestFinalModel.testID == testRecord.testID &&
                                         NoilsTestFinalModel.status == true)).OrderBy(NoilsTestFinalModel => NoilsTestFinalModel.noils).First();
 
                                     NoilsTestFinalModel Max_sliver = conn.Table<NoilsTestFinalModel>().Where(
                                             NoilsTestFinalModel =>
-                                            (NoilsTestFinalModel.testID == currentTestID &&
+                                            (NoilsTestFinalModel.testID == testRecord.testID &&
                                             NoilsTestFinalModel.status == true)).OrderByDescending(NoilsTestFinalModel => NoilsTestFinalModel.weigth_sliver).First();
                                     NoilsTestFinalModel Min_sliver = conn.Table<NoilsTestFinalModel>().Where(
                                         NoilsTestFinalModel =>
-                                        (NoilsTestFinalModel.testID == currentTestID &&
+                                        (NoilsTestFinalModel.testID == testRecord.testID &&
                                         NoilsTestFinalModel.status == true)).OrderBy(NoilsTestFinalModel => NoilsTestFinalModel.weigth_sliver).First();
 
                                     NoilsTestFinalModel Max_noilswt = conn.Table<NoilsTestFinalModel>().Where(
                                         NoilsTestFinalModel =>
-                                        (NoilsTestFinalModel.testID == currentTestID &&
+                                        (NoilsTestFinalModel.testID == testRecord.testID &&
                                         NoilsTestFinalModel.status == true)).OrderByDescending(NoilsTestFinalModel => NoilsTestFinalModel.weigth_noils).First();
                                     NoilsTestFinalModel Min_noilswt = conn.Table<NoilsTestFinalModel>().Where(
                                         NoilsTestFinalModel =>
-                                        (NoilsTestFinalModel.testID == currentTestID &&
+                                        (NoilsTestFinalModel.testID == testRecord.testID &&
                                         NoilsTestFinalModel.status == true)).OrderBy(NoilsTestFinalModel => NoilsTestFinalModel.weigth_noils).First();
 
                                     decimal range_sliver = formatDecimal(Max_sliver.weigth_sliver - Min_sliver.weigth_sliver);
@@ -674,7 +688,7 @@ namespace TQM
                                     List<NoilsTestFinalModel> noilsFinal_list = conn.Table<NoilsTestFinalModel>().Where(
                                                         NoilsTestFinalModel => (
                                                         NoilsTestFinalModel.status == true &&
-                                                        NoilsTestFinalModel.testID == currentTestID)
+                                                        NoilsTestFinalModel.testID == testRecord.testID)
                                                         ).ToList();
 
 
@@ -1780,7 +1794,7 @@ namespace TQM
                     {
                         Debug.WriteLine("Data integrity check failed. Please logout, close and re-launch app to avoid data issues");
                         await DisplayAlert("Attention", "Data integrity check failed. Please logout, close and re-launch app to avoid data issues", "OK");
-
+                        _ = showProgress(false);
                         return;
                     }
                 }
@@ -2393,6 +2407,7 @@ namespace TQM
                     //currentTestID = 1;
                     Debug.WriteLine("Data integrity check failed. Please logout, close and re-launch app to avoid data issues");
                     await DisplayAlert("Attention", "Data integrity check failed. Please logout, close and re-launch app to avoid data issues", "OK");
+                    _ = showProgress(false);
                     return;
                     // Get the maximum TestID value and increment it by 1
                     //long maxTestID = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.testID);

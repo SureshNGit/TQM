@@ -1254,7 +1254,10 @@ namespace TQM
                     }
                     else
                     {
-                        ///to be decided
+                        Debug.WriteLine("Data integrity check failed. Please logout, close and re-launch app to avoid data issues");
+                        await DisplayAlert("Attention", "Data integrity check failed. Please logout, close and re-launch app to avoid data issues", "OK");
+                        _ = showProgress(false);
+                        return;
                     }
                 }
                 lbl_TestID.Text = currentTestID.ToString();
@@ -1859,7 +1862,10 @@ namespace TQM
                 }
                 else
                 {
-                    currentTestID = 1;
+                    Debug.WriteLine("Data integrity check failed. Please logout, close and re-launch app to avoid data issues");
+                    await DisplayAlert("Attention", "Data integrity check failed. Please logout, close and re-launch app to avoid data issues", "OK");
+                    _ = showProgress(false);
+                    return;
                 }
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
