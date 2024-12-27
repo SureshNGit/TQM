@@ -4,9 +4,11 @@
     {
         //Demo balance serail no: G85219651634
         //Test balance serail no: DS85222849198
-        private string balanceSerialNo = "DS85222849198";
+        private string balanceSerialNo = "H2400051527";
         private string tqmAppUserID = "tqmuser";
         private bool requireCSV = false;
+        private bool noilsAutoCorrection = false;
+        private bool apercentAutoCorrection = true;
 
         public string getBalanceSerialNo()
         {
@@ -21,6 +23,16 @@
         public bool getCSVReportStatus()
         {
             return requireCSV;
+        }
+
+        public bool getNoilsAutoCorrection()
+        {
+            return noilsAutoCorrection;
+        }
+
+        public bool getApercentAutoCorrection()
+        {
+            return apercentAutoCorrection;
         }
     }
 }

@@ -64,14 +64,17 @@ namespace TQM
         {
             InitializeComponent();
             lbl_TestID.Text = "";
-            // Check if autoCorrection has been called before
-            bool IsNoilsAutoCorrectionDone = Preferences.Get("IsNoilsAutoCorrectionDone", false);
-
-            if (!IsNoilsAutoCorrectionDone)
+            if (runConfiguration.getNoilsAutoCorrection())
             {
-                autoCorrection();
-                // Set the flag to true to indicate that autoCorrection has been called
-                Preferences.Set("IsNoilsAutoCorrectionDone", true);
+                // Check if autoCorrection has been called before
+                bool IsNoilsAutoCorrectionDone = Preferences.Get("IsNoilsAutoCorrectionDone", false);
+
+                if (!IsNoilsAutoCorrectionDone)
+                {
+                    autoCorrection();
+                    // Set the flag to true to indicate that autoCorrection has been called
+                    Preferences.Set("IsNoilsAutoCorrectionDone", true);
+                }
             }
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
