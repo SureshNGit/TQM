@@ -9,6 +9,7 @@
         private bool requireCSV = false;
         private bool noilsAutoCorrection = false;
         private bool apercentAutoCorrection = true;
+        private bool stretchAutoCorrection = true;
 
         public string getBalanceSerialNo()
         {
@@ -33,6 +34,11 @@
         public bool getApercentAutoCorrection()
         {
             return apercentAutoCorrection;
+        }
+
+        public bool getStretchAutoCorrection()
+        {
+            return stretchAutoCorrection;
         }
     }
 }

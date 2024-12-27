@@ -16,6 +16,7 @@ using TQM.ModelView;
 using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Xamarin.Essentials;
 
 namespace TQM
 {
@@ -64,32 +65,20 @@ namespace TQM
         {
             InitializeComponent();
             lbl_TestID.Text = "";
+            if (runConfiguration.getStretchAutoCorrection())
+            {
+                // Check if autoCorrection has been called before
+                bool IsStretchAutoCorrectionDone = Preferences.Get("IsStretchAutoCorrectionDone", false);
+
+                if (!IsStretchAutoCorrectionDone)
+                {
+                    autoCorrection();
+                    // Set the flag to true to indicate that autoCorrection has been called
+                    Preferences.Set("IsStretchAutoCorrectionDone", true);
+                }
+            }
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                //conn.DropTable<StretchTestModel>();
-                //conn.DropTable<StretchTestSummaryModel>();
-                //conn.DropTable<StretchTestCalculatedModel>();
-
-                //conn.CreateTable<YarnCountConfigModel>();
-                //YarnCountConfigModel yarncountconfigmodel = conn.Table<YarnCountConfigModel>().FirstOrDefault();
-                //if (yarncountconfigmodel != null)
-                //{
-                //    lbl_countsysname.Text = yarncountconfigmodel.countsysname;
-                //    lbl_yarncountunit.Text = yarncountconfigmodel.yarnlenunit;
-                //    entry_yarnlen.Text = "";
-                //    entry_testcount.Text = yarncountconfigmodel.testcountStretch.ToString();
-                //    TESTCOUNT = yarncountconfigmodel.testcountStretch;
-                //}
-                //else
-                //{
-                //    lbl_countsysname.Text = "";
-                //    lbl_yarncountunit.Text = "";
-                //    entry_yarnlen.Text = "";
-                //    entry_testcount.Text = "";
-                //    picker_shift.SelectedIndex = 0;
-                //    picker_process.SelectedIndex = 0;
-                //}
-
                 UserModel loggedInUser = conn.Table<UserModel>().Where(UserModel => UserModel.isloggedIn == true).FirstOrDefault();
                 if (loggedInUser == null)
                 {
@@ -123,9 +112,6 @@ namespace TQM
                 {
                     DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
                     StretchTestModel lastTest = conn.Table<StretchTestModel>().Where(StretchTestModel => StretchTestModel.createdate == maxDate).FirstOrDefault();
-                    //StretchTestModel lastTest = conn.Table<StretchTestModel>().
-                    //    Where(StretchTestModel => StretchTestModel.ID == maxTest.ID).FirstOrDefault();
-
                     if (lastTest.testType == "IB")
                     {
                         StretchTestSummaryModel lastTestSummary = conn.Table<StretchTestSummaryModel>().
@@ -287,6 +273,388 @@ namespace TQM
 
 
             }
+        }
+
+        private void autoCorrection()
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    // Get all records from NoilsTestModel table sorted by createdate ascending
+                    List<StretchTestModel> stretchTestRecords = conn.Table<StretchTestModel>()
+                                                                 .OrderBy(record => record.createdate)
+                                                                 .ToList();
+
+                    // Initialize ProgTID to 1
+                    long ProgTID = 1;
+                    bool isIBProcessed = false;
+
+
+                    // Loop through the records
+                    foreach (var record in stretchTestRecords)
+                    {
+                        // Check if the current record is of type 'IB'
+                        if (record.testType == "IB" && !isIBProcessed)
+                        {
+                            // Set the current record TestID column with ProgTID
+                            record.testID = ProgTID;
+                            record.status = true;
+                            if (record.testcount == record.totaltestcount)
+                            {
+                                isIBProcessed = true;
+                            }
+                            // Update the record in the database
+                            conn.Update(record);
+                        }
+                        else if (record.testType == "FB" && isIBProcessed)
+                        {
+                            // Set the current record TestID column with ProgTID
+                            record.testID = ProgTID;
+                            record.status = true;
+                            // Increment ProgTID by 1 after processing 'Noils' record
+                            if (record.testcount == record.totaltestcount)
+                            {
+                                ProgTID++;
+                                isIBProcessed = false;
+                            }
+                            // Update the record in the database
+                            conn.Update(record);
+                        }
+                        else
+                        {
+                            // Handle unexpected cases
+                            Debug.WriteLine("Unexpected testType or sequence in records. Test ID: " + record.testID.ToString());
+                            //DisplayAlert("Attention", "Unexpected testType or sequence in records.", "OK");
+                            //return;
+                            conn.Delete(record);
+                        }
+
+
+                    }
+                }
+                DisplayAlert("Attention", "Auto Correction Completed!!!", "OK");
+                autoCompleteNoils();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in autoCorrection: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                DisplayAlert("Error", "An error occurred during auto correction. Please check the logs for more details.", "OK");
+            }
+        }
+
+        private void autoCompleteNoils()
+        {
+            try
+            {
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    conn.DropTable<StretchTestSummaryModel>();
+                    conn.DropTable<StretchTestCalculatedModel>();
+
+                    decimal totalCalcCountVal = 0m;
+                    decimal totalWeight = 0m;
+                    conn.CreateTable<NoilsTestModel>();
+
+                    // Get all records from NoilsTestModel table sorted by createdate ascending
+                    List<StretchTestModel> stretchTestRecords = conn.Table<StretchTestModel>()
+                                                                 .OrderBy(record => record.createdate)
+                                                                 .ToList();
+
+                    long c_tID = 0;
+                    bool isSliverProcessed = false;
+                    foreach (StretchTestModel test in stretchTestRecords)
+                    {
+                        if (c_tID == 0)
+                        {
+                            c_tID = test.testID;
+                        }
+                        if (test.testType == "IB" && !isSliverProcessed && c_tID == test.testID)
+                        {
+                            totalCalcCountVal = totalCalcCountVal + test.yccalcval;
+                            totalCalcCountVal = formatDecimal(totalCalcCountVal);
+                            totalWeight = totalWeight + test.yarnweight;
+                            totalWeight = formatDecimal(totalWeight);
+                            if (test.testcount == test.totaltestcount)
+                            {
+                                isSliverProcessed = true;
+                                UFVAL1 = test.uf_value_1;
+                                UFVAL2 = test.uf_value_2;
+                                UFVAL3 = test.uf_value_3;
+                                UFVAL4 = test.uf_value_4;
+                                autoCompleteStretchCalcTabs(conn, test, totalWeight, totalCalcCountVal);
+                                totalCalcCountVal = 0m;
+                                totalWeight = 0m;
+                            }
+                        }
+                        else if (test.testType == "FB" && isSliverProcessed && c_tID == test.testID)
+                        {
+                            totalCalcCountVal = totalCalcCountVal + test.yccalcval;
+                            totalCalcCountVal = formatDecimal(totalCalcCountVal);
+                            totalWeight = totalWeight + test.yarnweight;
+                            totalWeight = formatDecimal(totalWeight);
+                            if (test.testcount == test.totaltestcount)
+                            {
+                                c_tID = 0;
+                                isSliverProcessed = false;
+                                UFVAL1 = test.uf_value_1;
+                                UFVAL2 = test.uf_value_2;
+                                UFVAL3 = test.uf_value_3;
+                                UFVAL4 = test.uf_value_4;
+                                autoCompleteStretchCalcTabs(conn, test, totalWeight, totalCalcCountVal);
+                                totalCalcCountVal = 0m;
+                                totalWeight = 0m;
+                            }
+                        }
+
+                    }
+                }
+                DisplayAlert("Attention", "Auto data completion has been ended successfully!!!", "OK");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in autoCompleteNoils: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                DisplayAlert("Error", "An error occurred during auto completion. Please check the logs for more details.", "OK");
+            }
+        }
+
+        private void autoCompleteStretchCalcTabs(SQLiteConnection conn, StretchTestModel testRecord, decimal totalWeight, decimal totalCalcCountVal)
+        {
+            try
+            {
+                bool dbStatus = true;
+
+                if (dbStatus)
+                {
+                    conn.CreateTable<StretchTestSummaryModel>();
+                    List<StretchTestSummaryModel> stretchTestSMList = conn.Table<StretchTestSummaryModel>().Where(
+                                    StretchTestSummaryModel => (StretchTestSummaryModel.status == true &&
+                                    StretchTestSummaryModel.testID != testRecord.testID &&
+                                    StretchTestSummaryModel.machineID == testRecord.machineID)).ToList();
+
+                    foreach (StretchTestSummaryModel stretchTestSM in stretchTestSMList)
+                    {
+                        stretchTestSM.status = false;
+                        stretchTestSM.dataSyncStatus = false;
+                        if (conn.Update(stretchTestSM) < 1)
+                        {
+                            dbStatus = false;
+                        }
+                    }
+
+                    decimal avg_weight = 0m;
+                    decimal mean = 0m;
+                    decimal sd = 0m;
+                    decimal cv = 0m;
+                    if (testRecord.totaltestcount > 1)
+                    {
+                        avg_weight = totalWeight / testRecord.totaltestcount;
+                        avg_weight = formatDecimal(avg_weight);
+                        mean = totalCalcCountVal / testRecord.totaltestcount;
+                        mean = formatDecimal(mean);
+
+                        
+                        //decimal[] yarweightarray = stretchTestModelViewList.Select(m => m.yarnweight).ToArray();
+
+                        decimal[] yarweightarray = conn.Table<StretchTestModel>()
+                                                    .Where(record => record.testID == testRecord.testID)
+                                                    .Select(record => record.yarnweight)
+                                                    .ToArray();
+
+                        sd = CalculateStandardDeviation(yarweightarray);
+                        sd = formatDecimal(sd);
+                        cv = (sd / avg_weight) * 100; //Coefficient of Variation
+                        cv = formatDecimal(cv);
+                    }
+                    decimal stretchDeviation = 0.0m;
+                    YarnCountConfigModel config = conn.Table<YarnCountConfigModel>().Where(
+                                    YarnCountConfigModel => (YarnCountConfigModel.machineID == testRecord.machineID
+                                    && YarnCountConfigModel.machineCategory == testRecord.machineCategory)).FirstOrDefault();
+                    if (config != null) { stretchDeviation = config.stretchDeviation; }
+                    StretchTestSummaryModel stretchTestSummaryModel = new StretchTestSummaryModel()
+                    {
+                        ID = Guid.NewGuid(),
+                        testID = testRecord.testID,
+                        userID = testRecord.userID,
+                        userName = testRecord.userName,
+                        machineID = testRecord.machineID,
+                        machineCategory = testRecord.machineCategory,
+                        machineName = testRecord.machineName,
+                        process = testRecord.process,
+                        countsysname = testRecord.countsysname,
+                        yarnlenunit = testRecord.yarnlenunit,
+                        yarnlength = testRecord.yarnlength,
+                        shift = testRecord.shift,
+                        testType = testRecord.testType,
+                        totaltestcount = testRecord.totaltestcount,
+                        standardStretch = testRecord.standardStretch,
+                        stretchDeviation = stretchDeviation,
+                        avg_weight = avg_weight,
+                        testaverage = mean,
+                        testsd = sd,
+                        testcv = cv,
+                        standardCV = STD_CV,
+                        CVDeviationPercent = STD_CV_DEVIATION,
+                        uf_value_1 = UFVAL1,
+                        uf_value_2 = UFVAL2,
+                        uf_value_3 = UFVAL3,
+                        uf_value_4 = UFVAL4,
+                        status = true,
+                        createdate = testRecord.createdate
+                    };
+                    conn.CreateTable<StretchTestSummaryModel>();
+                    int row = conn.Insert(stretchTestSummaryModel);
+                    if (row < 1)
+                    {
+                        dbStatus = false;
+                    }
+                    if (dbStatus)
+                    {
+                        if (testRecord.testType == "FB")
+                        {
+                            conn.CreateTable<StretchTestCalculatedModel>();
+                            List<StretchTestCalculatedModel> stretchCalcList = conn.Table<StretchTestCalculatedModel>().Where(
+                                StretchTestCalculatedModel =>
+                                (StretchTestCalculatedModel.status == true &&
+                                StretchTestCalculatedModel.testID != testRecord.testID &&
+                                StretchTestCalculatedModel.machineID == testRecord.machineID)).ToList();
+
+                            foreach (StretchTestCalculatedModel stretch in stretchCalcList)
+                            {
+                                stretch.status = false;
+                                stretch.dataSyncStatus = false;
+                                if (conn.Update(stretch) < 1)
+                                {
+                                    //to be decided if stretch calculated active records failed to deactive
+                                }
+                            }
+                            StretchTestSummaryModel ibSummary = conn.Table<StretchTestSummaryModel>().Where(
+                                                            StretchTestSummaryModel => (
+                                                            StretchTestSummaryModel.testType == "IB"
+                                                            && StretchTestSummaryModel.status == true
+                                                            && StretchTestSummaryModel.testID == testRecord.testID)
+                                                            ).FirstOrDefault();
+                            if (ibSummary != null)
+                            {
+                                StretchTestSummaryModel fbSummary = conn.Table<StretchTestSummaryModel>().Where(
+                                                            StretchTestSummaryModel => (
+                                                            StretchTestSummaryModel.testType == "FB"
+                                                            && StretchTestSummaryModel.status == true
+                                                            && StretchTestSummaryModel.testID == testRecord.testID)
+                                                            ).FirstOrDefault();
+                                if (fbSummary != null)
+                                {
+                                    decimal stretch = ((ibSummary.avg_weight - fbSummary.avg_weight) / ((ibSummary.avg_weight + fbSummary.avg_weight) / 2m)) * 100m;
+                                    stretch = formatDecimal(stretch);
+
+                                    StretchTestModel Max_IB = conn.Table<StretchTestModel>().Where(
+                                        StretchTestModel =>
+                                        (StretchTestModel.testID == testRecord.testID &&
+                                        StretchTestModel.status == true &&
+                                        StretchTestModel.testType == "IB")).OrderByDescending(StretchTestModel => StretchTestModel.yarnweight).First();
+                                    StretchTestModel Min_IB = conn.Table<StretchTestModel>().Where(
+                                        StretchTestModel =>
+                                        (StretchTestModel.testID == testRecord.testID &&
+                                        StretchTestModel.status == true &&
+                                        StretchTestModel.testType == "IB")).OrderBy(StretchTestModel => StretchTestModel.yarnweight).First();
+                                    StretchTestModel Max_FB = conn.Table<StretchTestModel>().Where(
+                                        StretchTestModel =>
+                                        (StretchTestModel.testID == testRecord.testID &&
+                                        StretchTestModel.status == true &&
+                                        StretchTestModel.testType == "FB")).OrderByDescending(StretchTestModel => StretchTestModel.yarnweight).First();
+                                    StretchTestModel Min_FB = conn.Table<StretchTestModel>().Where(
+                                        StretchTestModel =>
+                                        (StretchTestModel.testID == testRecord.testID &&
+                                        StretchTestModel.status == true &&
+                                        StretchTestModel.testType == "FB")).OrderBy(StretchTestModel => StretchTestModel.yarnweight).First();
+
+                                    decimal range_IB = formatDecimal(Max_IB.yarnweight - Min_IB.yarnweight);
+                                    decimal range_FB = formatDecimal(Max_FB.yarnweight - Min_FB.yarnweight);
+
+                                    StretchTestCalculatedModel stretchTestCalculatedModel = new StretchTestCalculatedModel()
+                                    {
+                                        ID = Guid.NewGuid(),
+                                        testID = ibSummary.testID,
+                                        userID = ibSummary.userID,
+                                        userName = ibSummary.userName,
+                                        machineID = ibSummary.machineID,
+                                        machineCategory = ibSummary.machineCategory,
+                                        machineName = ibSummary.machineName,
+                                        process = ibSummary.process,
+                                        countsysname = ibSummary.countsysname,
+                                        yarnlenunit = ibSummary.yarnlenunit,
+                                        yarnlength = ibSummary.yarnlength,
+                                        shift = ibSummary.shift,
+                                        testType = ibSummary.testType,
+                                        totaltestcount = ibSummary.totaltestcount,
+                                        standardStretch = ibSummary.standardStretch,
+                                        stretchDeviation = ibSummary.stretchDeviation,
+                                        avg_weight_IB = ibSummary.avg_weight,
+                                        testaverage_IB = ibSummary.testaverage,
+                                        testsd_IB = ibSummary.testsd,
+                                        testcv_IB = ibSummary.testcv,
+                                        max_IB = Max_IB.yarnweight,
+                                        min_IB = Min_IB.yarnweight,
+                                        range_IB = range_IB,
+                                        avg_weight_FB = fbSummary.avg_weight,
+                                        testaverage_FB = fbSummary.testaverage,
+                                        testsd_FB = fbSummary.testsd,
+                                        testcv_FB = fbSummary.testcv,
+                                        max_FB = Max_FB.yarnweight,
+                                        min_FB = Min_FB.yarnweight,
+                                        range_FB = range_FB,
+                                        stretch = stretch,
+                                        uf_value_1 = UFVAL1,
+                                        uf_value_2 = UFVAL2,
+                                        uf_value_3 = UFVAL3,
+                                        uf_value_4 = UFVAL4,
+                                        standardCV = ibSummary.standardCV,
+                                        CVDeviationPercent = ibSummary.CVDeviationPercent,
+                                        status = true,
+                                        createdate = testRecord.createdate
+                                    };
+                                    int row_TestCalc = conn.Insert(stretchTestCalculatedModel);
+                                    if (row_TestCalc < 1)
+                                    {
+                                        // To be decieded if stretch test calculated value failed to insert to db
+                                    }
+                                    else
+                                    {
+                                        stretchCalcList_finalOut = stretchTestCalculatedModel;
+                                    }
+                                }
+                                else
+                                {
+                                    // To be decieded if FB Summary active record is not available in db
+                                }
+                            }
+                            else
+                            {
+                                // To be decieded if IB Summary active record is not available in db
+                            }
+                        }
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error in autoCompleteNoilsCalcTabs: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                DisplayAlert("Error", "An error occurred during auto completion. Please check the logs for more details.", "OK");
+            }
+
         }
 
         private void getUserfieldConfig(string mCat, Guid mid, string mac)
@@ -565,7 +933,6 @@ namespace TQM
                 }
             });
         }
-
 
         private List<StretchReportModelView> generateResultView()
         {
