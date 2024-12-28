@@ -65,8 +65,9 @@ namespace TQM
         {
             InitializeComponent();
             lbl_TestID.Text = "";
+            //Preferences.Set("IsStretchAutoCorrectionDone", false);
             if (runConfiguration.getStretchAutoCorrection())
-            {
+            { 
                 // Check if autoCorrection has been called before
                 bool IsStretchAutoCorrectionDone = Preferences.Get("IsStretchAutoCorrectionDone", false);
 

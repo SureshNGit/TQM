@@ -68,6 +68,7 @@ namespace TQM
         {
             InitializeComponent();
             lbl_TestID.Text = "";
+            //Preferences.Set("IsApercentAutoCorrectionDone", false);
             if (runConfiguration.getApercentAutoCorrection())
             {
                 // Check if autoCorrection has been called before

@@ -64,6 +64,7 @@ namespace TQM
         {
             InitializeComponent();
             lbl_TestID.Text = "";
+            //Preferences.Set("IsNoilsAutoCorrectionDone", false);
             if (runConfiguration.getNoilsAutoCorrection())
             {
                 // Check if autoCorrection has been called before
