@@ -69,6 +69,7 @@ namespace TQM
         private dynamic currentTestStartTime = null;
         private RunConfiguration runConfiguration = new RunConfiguration();
         private bool toastInitialize = false;
+        private int RH_CORRECTION_PERCENT = 0;
 
         public yarnCount()
         {
@@ -615,7 +616,7 @@ namespace TQM
                 {
                     frame_overallSummary_FinalOut.IsVisible = visibility;
                     lbl_average_FinalOut.Text = mean.ToString();
-                    lbl_sd_FinalOut.Text = sd.ToString();
+                    lbl_sd_FinalOut.Text = sd.ToString() + "[" + RH_CORRECTION_PERCENT.ToString() + "]";
                     lbl_cv_FinalOut.Text = cv.ToString();
 
                     decimal maxRangeVal = STD_HANK + selectedDeviationPercent;
@@ -637,7 +638,7 @@ namespace TQM
                 {
                     frame_overallSummary.IsVisible = visibility;
                     lbl_average.Text = mean.ToString();
-                    lbl_sd.Text = sd.ToString();
+                    lbl_sd.Text = sd.ToString() + "[" + RH_CORRECTION_PERCENT.ToString() + "]";
                     lbl_cv.Text = cv.ToString();
                 }
             });
@@ -666,6 +667,66 @@ namespace TQM
             return hrs + ":" + mins + ":" + sec;
         }
 
+
+        private decimal getRHCorrectionFactor(int rh_correction_percent)
+        {
+            if(rh_correction_percent>=34 && rh_correction_percent < 39)
+            {
+                return 0.971m;
+            }
+            else if(rh_correction_percent >= 39 && rh_correction_percent < 44)
+            {
+                return 0.973m;
+            }
+            else if (rh_correction_percent >= 44 && rh_correction_percent < 49)
+            {
+                return 0.977m;
+            }
+            else if (rh_correction_percent >= 49 && rh_correction_percent < 54)
+            {
+                return 0.984m;
+            }
+            else if (rh_correction_percent >= 54 && rh_correction_percent < 59)
+            {
+                return 0.989m;
+            }
+            else if (rh_correction_percent >= 59 && rh_correction_percent < 64)
+            {
+                return 0.995m;
+            }
+            else if (rh_correction_percent >= 64 && rh_correction_percent < 69)
+            {
+                return 1.000m;
+            }
+            else if (rh_correction_percent >= 69 && rh_correction_percent < 74)
+            {
+                return 1.005m;
+            }
+            else if (rh_correction_percent >= 74 && rh_correction_percent < 79)
+            {
+                return 1.011m;
+            }
+            else if (rh_correction_percent >= 79 && rh_correction_percent < 84)
+            {
+                return 1.017m;
+            }
+            else if (rh_correction_percent >= 84 && rh_correction_percent < 89)
+            {
+                return 1.030m;
+            }
+            else if (rh_correction_percent >= 89 && rh_correction_percent < 95)
+            {
+                return 1.045m;
+            }
+            else if (rh_correction_percent >= 95 && rh_correction_percent < 100)
+            {
+                return 1.082m;
+            }
+            else
+            {
+                return 0.000m;
+            }
+        }
         private async void updateDB()
         {
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -693,6 +754,7 @@ namespace TQM
                         yarnlength = test.yarnlength,
                         totaltestcount = test.totaltestcount,
                         testcount = test.testcount,
+                        rhcorrection = test.rhcorrection,
                         yarnweight = test.yarnweight,
                         yccalcval = test.yccalcval,
                         createdate = DateTime.Now
@@ -769,6 +831,8 @@ namespace TQM
 
                     string testDuration = formatTime(currentTestStartTime);
 
+                    decimal rh_corrected_hank = formatDecimal(mean * getRHCorrectionFactor(ycTestModelViewlist[0].rhcorrection));
+
                     YCTestSummaryModel ycTestSummaryModel = new YCTestSummaryModel()
                     {
                         ID = Guid.NewGuid(),
@@ -784,6 +848,7 @@ namespace TQM
                         yarnlenunit = ycTestModelViewlist[0].yarnlenunit,
                         yarnlength = ycTestModelViewlist[0].yarnlength,
                         totaltestcount = ycTestModelViewlist[0].totaltestcount,
+                        rhcorrection = ycTestModelViewlist[0].rhcorrection,
                         yarnWeightAvg = mean_weight,
                         yarnWeightMin = min_weight,
                         yarnWeightMax = max_weight,
@@ -791,6 +856,7 @@ namespace TQM
                         yarnWeightSD = sd_weight,
                         yarnWeightCV = cv_weight,
                         testaverage = mean,
+                        rhcorrectedhank = rh_corrected_hank,
                         testMin = min,
                         testMax = max,
                         testRange = range,
@@ -798,8 +864,8 @@ namespace TQM
                         testcv = cv,
                         standardHank = STD_HANK_CURR,
                         deviationPercent = selectedDeviationPercent,
-                        standardCV=STD_CV,
-                        CVDeviationPercent=STD_CV_DEVIATION,
+                        standardCV = STD_CV,
+                        CVDeviationPercent = STD_CV_DEVIATION,
                         testDuration = testDuration,
                         uf_value_1 = UFVAL1,
                         uf_value_2 = UFVAL2,
@@ -816,7 +882,8 @@ namespace TQM
                     if (dbStatus)
                     {
                         await refListView(true, true);
-                        await refOverallSummary(mean, sd, cv, true, true);
+                        //await refOverallSummary(mean, sd, cv, true, true);
+                        await refOverallSummary(mean, rh_corrected_hank, cv, true, true);
                     }
                 }
 
@@ -872,6 +939,7 @@ namespace TQM
                             else
                             {
                                 currentTestID = 0;
+                                RH_CORRECTION_PERCENT = 0;
                                 showAlert("Test Completed!!! Start new test");
                             }
                         }
@@ -1243,6 +1311,7 @@ namespace TQM
                             yarnlength = selectedYarnLen,
                             totaltestcount = selectedTestCount,
                             testcount = i + 1,
+                            rhcorrection = RH_CORRECTION_PERCENT,
                             yarnweight = current_stable_data,
                             yccalcval = currentCalculatedValue
                         };
@@ -1613,6 +1682,7 @@ namespace TQM
                 populateTestParams(selectedMachineCategory, selectedMachineID, selectedMachineName);
                 getUserfieldConfig(selectedMachineCategory, selectedMachineID, selectedMachineName);
                 btn_UF.IsVisible = true;
+                _ = getRHCorrectionPercentage();
             }
             catch (Exception ex)
             {
@@ -1765,5 +1835,49 @@ namespace TQM
                 await DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
             }
         }
+
+        private async Task getRHCorrectionPercentage()
+        {
+            try
+            {
+                if (isTestStarted) { return; }
+                if (picker_machinename.SelectedIndex < 0) { return; }
+
+                    var result = await Navigation.ShowPopupAsync(new RHCorrectionPopUp());
+                    if (result != null)
+                    {
+                        if (!result.ToString().Contains('~'))
+                        {
+                            RH_CORRECTION_PERCENT = 0;
+                            await DisplayAlert("Attention", result.ToString(), "OK");
+                            return;
+                        }
+                        string res_msg = result.ToString().Split('~')[0];
+                        
+
+                        if (res_msg == "Success")
+                        {
+                            RH_CORRECTION_PERCENT = int.Parse(result.ToString().Split('~')[1]);
+                        }
+                        else
+                        {
+                            RH_CORRECTION_PERCENT = 0;
+                            await DisplayAlert("Attention", result.ToString(), "OK");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        RH_CORRECTION_PERCENT = 0;
+                        return;
+                    }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Attention", "Error Occurred!!!Error: " + ex.Message.ToString(), "OK");
+                return;
+            }
+        }
+
     }
 }

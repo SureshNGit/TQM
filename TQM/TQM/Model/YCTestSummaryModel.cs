@@ -22,6 +22,7 @@ namespace TQM.Model
 
         public string machineCategory { get; set; }
         public string machineName { get; set; }
+        public int rhcorrection { get; set; }
 
         public string shift { get; set; }
 
@@ -47,6 +48,8 @@ namespace TQM.Model
         public decimal yarnWeightCV { get; set; }
 
         public decimal testaverage { get; set; }
+
+        public decimal rhcorrectedhank { get; set; }
 
         public decimal testMin { get; set; }
 

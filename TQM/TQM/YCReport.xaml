@@ -7,6 +7,7 @@
         <local:AllTrueMultiConverter x:Key="AllTrueConverter" />
         <local:TextFormatterBaedOnMacCat x:Key="MacCategoryTestValueConverter" />
         <local:TextFormatterStandardValue x:Key="MacCategoryStdConverter" />
+        <local:TextFormatterRHCorrectedHank x:Key="FormatterRHCorrectedHank" />
     </ContentPage.Resources>
 
    
@@ -205,7 +206,20 @@
                                         </Label.Text>
                                     </Label>
 
-                                    <Label Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="1"
+                                    <Label Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="1" IsVisible="{Binding otherThanSpinning}"
+                                    Text="RH Corrected Hank" FontSize="14" TextColor="#0e0273"/>
+
+                                    <Label Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" HorizontalTextAlignment="Center" Margin="30,0,0,0"
+                                        FontSize="14" TextColor="Green" FontAttributes="None">
+                                        <Label.Text>
+                                            <MultiBinding Converter="{StaticResource FormatterRHCorrectedHank}">
+                                                <Binding Path="rhcorrectedhank"/>
+                                                <Binding Path="rhcorrectionpercentage"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+
+                                    <!--<Label Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="1"
                                     Text="SD" FontSize="14" TextColor="#0e0273"/>
 
                                     <Label Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="1" HorizontalTextAlignment="Start" Margin="30,0,0,0"
@@ -229,7 +243,7 @@
                                                 <Binding Path="testcv" />
                                             </MultiBinding>
                                         </Label.Text>
-                                    </Label>
+                                    </Label>-->
                                    
 
                                     <Label Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="1" 
@@ -469,7 +483,7 @@
                             <Label  Grid.Column="6" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="Avg. Hank" x:Name="lbl_conAvgHank" TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="7" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                                                Text="SD"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
+                                                Text="RH C.Hank"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="8" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                                                 Text="CV"  TextColor="#0e0273" FontSize="14"  FontAttributes="Bold"/>
                             <Label  Grid.Column="9" Grid.Row="0" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"

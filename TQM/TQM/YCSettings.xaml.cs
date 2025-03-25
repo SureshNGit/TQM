@@ -539,7 +539,7 @@ namespace TQM
 
 
                 }
-                else if (selectedMachineCategory == "Carding" || selectedMachineCategory == "Breaker Drawing")
+                else if (selectedMachineCategory == "Carding" || selectedMachineCategory == "Breaker Drawing" || selectedMachineCategory == "Lap Former")
                 {
                     entry_rovinglength.Text = "0";
                     entry_leaLength.Text = "0";
@@ -1309,7 +1309,7 @@ namespace TQM
                         lbl_standardHank.Text = "Standard Count (Wrapping)";
                         lbl_hankDeviation.Text = "Count Deviation ±";
                     }
-                    else if (selectedMachineCategory == "Carding" || selectedMachineCategory == "Breaker Drawing")
+                    else if (selectedMachineCategory == "Carding" || selectedMachineCategory == "Breaker Drawing" || selectedMachineCategory == "Lap Former")
                     {
                         lbl_rovinglength.IsVisible = false;
                         entry_rovinglength.IsVisible = false;

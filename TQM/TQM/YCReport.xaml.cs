@@ -609,7 +609,8 @@ namespace TQM
                                     consolItems.standardValue = formatDecimal(testsummary.standardHank, 4).ToString() + " " + "\u00B1" + formatDecimal(testsummary.deviationPercent, 4).ToString();
                                 }
                                 consolItems.testAverage = formatDecimal(testsummary.testaverage).ToString();
-                                consolItems.standardDeviation = formatDecimal(testsummary.testsd).ToString();
+                                //consolItems.standardDeviation = formatDecimal(testsummary.testsd).ToString();
+                                consolItems.standardDeviation = formatDecimal(testsummary.rhcorrectedhank,4).ToString() + "\n" + "[RH%: " + testsummary.rhcorrection.ToString() +"]" ;
                                 if (testsummary.standardCV == 0.0m)
                                 {
                                     consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
@@ -909,6 +910,8 @@ namespace TQM
                                 report.deviationPercent = "\u00B1" + testsummary.deviationPercent;
                                 report.standardCV = testsummary.standardCV;
                                 report.CVDeviationPercent= "\u00B1" + testsummary.CVDeviationPercent;
+                                report.rhcorrectedhank = testsummary.rhcorrectedhank;
+                                report.rhcorrectionpercentage = testsummary.rhcorrection;
 
                                 if (testsummary.uf_value_1 != null && testsummary.uf_value_1 != "")
                                 {
@@ -1470,13 +1473,14 @@ namespace TQM
                         PdfBrush brush_con = new PdfSolidBrush(Syncfusion.Drawing.Color.White);
                         pdfGridInfo.Rows[4].Cells[0].Style.TextBrush = brush_con;
                     }
-                    
 
 
+                    pdfGridInfo.Rows[4].Cells[2].Value = "RH Corrected Hank: " + formatDecimal(orl.rhcorrectedhank, 4).ToString() + " [RH% : " + orl.rhcorrectionpercentage.ToString() + "]";
+                    pdfGridInfo.Rows[4].Cells[2].ColumnSpan = 2;
                     //pdfGridInfo.Rows[4].Cells[0].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[2].Value = "SD: " + orl.testsd;
+                    //pdfGridInfo.Rows[4].Cells[2].Value = "SD: " + orl.testsd;
                     //pdfGridInfo.Rows[4].Cells[1].Style.TextPen = PdfPens.Red;
-                    pdfGridInfo.Rows[4].Cells[3].Value = "CV: " + orl.testcv;
+                    //pdfGridInfo.Rows[4].Cells[3].Value = "CV: " + orl.testcv;
                     //pdfGridInfo.Rows[4].Cells[2].Style.TextPen = PdfPens.Red;
                     //pdfGridInfo.Rows[4].Cells[3].Value = "A%: " + orl.apercent;
 
@@ -1862,7 +1866,7 @@ namespace TQM
                         //writer.WriteField("Std. Hank");
                         writer.WriteField("Avg. Hank");
                     }
-                    writer.WriteField("SD");
+                    writer.WriteField("RH Corrected Hank");
                     writer.WriteField("CV");
                     //writer.WriteField("Test Time");
                     writer.WriteField("Remark");
@@ -1912,14 +1916,18 @@ namespace TQM
                             writer.WriteField(orl.testAverage);
                         }
 
-                        if (orl.standardDeviation != null && orl.standardDeviation != "")
-                        {
-                            writer.WriteField(formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString());
-                        }
-                        else
-                        {
-                            writer.WriteField(orl.standardDeviation);
-                        }
+                        //if (orl.standardDeviation != null && orl.standardDeviation != "")
+                        //{
+                        //    writer.WriteField(formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString());
+                        //}
+                        //else
+                        //{
+                        //    writer.WriteField(orl.standardDeviation);
+                        //}
+
+                        
+                        writer.WriteField(orl.rhcorrectedhank.ToString() + "\n [" + orl.rhcorrectionpercentage + "]");
+                      
 
                         if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
                         {
@@ -2013,7 +2021,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[2].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[2].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[2].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        pdfGrid.Rows[0].Cells[3].Value = "Mac Name";
+                        pdfGrid.Rows[0].Cells[3].Value = "M.Name";
                         pdfGrid.Rows[0].Cells[3].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[3].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[3].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -2026,12 +2034,12 @@ namespace TQM
 
                         if (selectedMachineCategory == "Spinning" || selectedMachineCategory == "Winding")
                         {
-                            pdfGrid.Rows[0].Cells[5].Value = "Std. Count";
+                            pdfGrid.Rows[0].Cells[5].Value = "Std.Count";
                             pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
                             pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                             pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
                             pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                            pdfGrid.Rows[0].Cells[6].Value = "Avg. Count";
+                            pdfGrid.Rows[0].Cells[6].Value = "Avg.Count";
                             pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
                             pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                             pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -2039,19 +2047,20 @@ namespace TQM
                         }
                         else
                         {
-                            pdfGrid.Rows[0].Cells[5].Value = "Std. Hank";
+                            pdfGrid.Rows[0].Cells[5].Value = "Std.Hank";
                             pdfGrid.Rows[0].Cells[5].StringFormat.Alignment = PdfTextAlignment.Center;
                             pdfGrid.Rows[0].Cells[5].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                             pdfGrid.Rows[0].Cells[5].Style.BackgroundBrush = PdfBrushes.LightGray;
                             pdfGrid.Rows[0].Cells[5].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                            pdfGrid.Rows[0].Cells[6].Value = "Avg. Hank";
+                            pdfGrid.Rows[0].Cells[6].Value = "Avg.Hank";
                             pdfGrid.Rows[0].Cells[6].StringFormat.Alignment = PdfTextAlignment.Center;
                             pdfGrid.Rows[0].Cells[6].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                             pdfGrid.Rows[0].Cells[6].Style.BackgroundBrush = PdfBrushes.LightGray;
                             pdfGrid.Rows[0].Cells[6].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
                         }
 
-                        pdfGrid.Rows[0].Cells[7].Value = "SD";
+                        //pdfGrid.Rows[0].Cells[7].Value = "SD";
+                        pdfGrid.Rows[0].Cells[7].Value = "RHC.Hank";
                         pdfGrid.Rows[0].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[7].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -2061,7 +2070,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
                         pdfGrid.Rows[0].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
-                        pdfGrid.Rows[0].Cells[9].Value = "User Params";
+                        pdfGrid.Rows[0].Cells[9].Value = "U.Params";
                         pdfGrid.Rows[0].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[9].Style.BackgroundBrush = PdfBrushes.LightGray;
@@ -2096,14 +2105,17 @@ namespace TQM
                     {
                         pdfGrid.Rows[pageRecordCount].Cells[6].Value = orl.testAverage;
                     }
-                    if (orl.standardDeviation != null && orl.standardDeviation != "")
-                    {
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString();
-                    }
-                    else
-                    {
-                        pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.standardDeviation;
-                    }
+                    //if (orl.standardDeviation != null && orl.standardDeviation != "")
+                    //{
+                    //    pdfGrid.Rows[pageRecordCount].Cells[7].Value = formatDecimal(Decimal.Parse(orl.standardDeviation)).ToString();
+                    //}
+                    //else
+                    //{
+                    //    pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.standardDeviation;
+                    //}
+
+                    pdfGrid.Rows[pageRecordCount].Cells[7].Value = orl.standardDeviation;
+
                     if (orl.CoEfficientOfVariation != null && orl.CoEfficientOfVariation != "")
                     {
                         if (orl.isRed_CV)

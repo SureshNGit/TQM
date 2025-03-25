@@ -544,6 +544,7 @@ namespace TQM
                     lst_macCategory.Add("");
                     lst_macCategory.Add("Carding");
                     lst_macCategory.Add("Breaker Drawing");
+                    lst_macCategory.Add("Lap Former");
                     lst_macCategory.Add("Comber");
                     lst_macCategory.Add("Drawing");
                     lst_macCategory.Add("Simplex/SpeedFrame");

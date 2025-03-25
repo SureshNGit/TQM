@@ -45,6 +45,9 @@
     <Compile Update="NoilsReport.xaml.cs">
       <DependentUpon>NoilsReport.xaml</DependentUpon>
     </Compile>
+    <Compile Update="RHCorrectionPopUp.xaml.cs">
+      <DependentUpon>RHCorrectionPopUp.xaml</DependentUpon>
+    </Compile>
     <Compile Update="StretchReport.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>StretchReport.xaml</DependentUpon>
@@ -81,6 +84,9 @@
     </EmbeddedResource>
     <EmbeddedResource Update="machinePage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="RHCorrectionPopUp.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Report.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

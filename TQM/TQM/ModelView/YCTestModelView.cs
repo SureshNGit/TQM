@@ -27,6 +27,8 @@ namespace TQM.ModelView
 
         public int testcount { get; set; }
 
+        public int rhcorrection { get; set; }
+
         public decimal yarnweight { get; set; }
 
         public decimal yccalcval { get; set; }

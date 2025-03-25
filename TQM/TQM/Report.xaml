@@ -177,6 +177,8 @@
                             <x:String>RL</x:String>
                             <x:String>VL</x:String>
                             <x:String>GL</x:String>
+                            <x:String>EXP</x:String>
+                            <x:String>PAGE</x:String>
                         </x:Array>
                     </Picker.ItemsSource>
                     <!--<Picker.Effects>

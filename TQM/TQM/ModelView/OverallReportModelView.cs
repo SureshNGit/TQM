@@ -17,6 +17,8 @@ namespace TQM.ModelView
         public decimal yarnlength { get; set; }
         public int totaltestcount { get; set; }
         public decimal testaverage { get; set; }
+        public int rhcorrectionpercentage { get; set; }
+        public decimal rhcorrectedhank { get; set; }
         public decimal standardHank { get; set; }
         public decimal standardCV { get; set; }
         public string CVDeviationPercent { get; set; }

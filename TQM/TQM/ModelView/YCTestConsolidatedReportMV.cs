@@ -10,6 +10,8 @@
         public string shift { get; set; }
         public string standardValue { get; set; }
         public string testAverage { get; set; }
+        public int rhcorrectionpercentage { get; set; }
+        public decimal rhcorrectedhank { get; set; }
         public string standardDeviation { get; set; }
         public string CoEfficientOfVariation { get; set; }
         public bool isWhite_CV { get; set; } = true;
