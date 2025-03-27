@@ -644,7 +644,6 @@ namespace TQM
             });
         }
 
-
         private string formatTime(DateTime startDateTime)
         {
             TimeSpan duration = (DateTime.Now - startDateTime).Duration();
@@ -666,7 +665,6 @@ namespace TQM
             //return hrs + "h:" + mins + "m:" + sec + "s";
             return hrs + ":" + mins + ":" + sec;
         }
-
 
         private decimal getRHCorrectionFactor(int rh_correction_percent)
         {
@@ -890,7 +888,6 @@ namespace TQM
             }
         }
 
-
         // Method to calculate standard deviation
         private decimal CalculateStandardDeviation(decimal[] values)
         {
@@ -898,7 +895,6 @@ namespace TQM
             decimal sumOfSquares = (decimal)values.Select(val => Math.Pow((double)(val - avg), 2)).Sum();
             return (decimal)Math.Sqrt((double)(sumOfSquares / (values.Length - 1))); // Using sample SD (N-1)
         }
-
 
         private void reset(bool fullreset = true, bool dispose = true)
         {
@@ -988,6 +984,18 @@ namespace TQM
             hideFrames();
             await refListView(false);
             await refOverallSummary(0.0000m, 0.0000m, 0.0000m, false);
+
+            //Verify RH correction
+            if(RH_CORRECTION_PERCENT == 0)
+            {
+                _ = getRHCorrectionPercentage();
+            }
+
+            if(RH_CORRECTION_PERCENT == 0)
+            {
+                await DisplayAlert("Attention", "RH Correction is not set. Please set RH Correction to proceed!!!", "Ok");
+                return;
+            }
 
             //showProgress
             CancellationTokenSource src_p = new CancellationTokenSource();
@@ -1522,7 +1530,6 @@ namespace TQM
                 return false;
             }
         }
-
 
         private string RemoveSpecialCharacters(string str)
         {
