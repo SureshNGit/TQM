@@ -1600,7 +1600,13 @@ namespace TQM
                 }
                 else
                 {
-                    DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+                    //DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+
+                    var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM StretchTestModel");
+                    DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                    DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
                     if (DateTime.Now <= maxDate)
                     {
                         await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
@@ -2208,7 +2214,13 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 conn.CreateTable<StretchTestModel>();
-                DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+                //DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+
+                var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM StretchTestModel");
+                DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
                 if (DateTime.Now <= maxDate)
                 {
                     await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");

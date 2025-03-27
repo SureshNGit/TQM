@@ -1837,7 +1837,13 @@ namespace TQM
                 }
                 else
                 {
-                    DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+                    //DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+
+                    var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM YCTestApercentModel");
+                    DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                    DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
                     if (DateTime.Now <= maxDate)
                     {
                         await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
@@ -2445,7 +2451,13 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 conn.CreateTable<YCTestApercentModel>();
-                DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+                //DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+
+                var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM YCTestApercentModel");
+                DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
                 if (DateTime.Now <= maxDate)
                 {
                     await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
@@ -2634,7 +2646,13 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 conn.CreateTable<YCTestApercentModel>();
-                DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+                //DateTime maxDate = conn.Table<YCTestApercentModel>().Max(YCTestApercentModel => YCTestApercentModel.createdate);
+
+                var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM YCTestApercentModel");
+                DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
                 if (DateTime.Now <= maxDate)
                 {
                     await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");

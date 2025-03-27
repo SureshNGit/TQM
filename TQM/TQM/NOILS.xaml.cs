@@ -1774,7 +1774,13 @@ namespace TQM
                 }
                 else
                 {
-                    DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+                    //DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+
+                    var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM NoilsTestModel");
+                    DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                    DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
                     if (DateTime.Now <= maxDate)
                     {
                         await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
@@ -2384,7 +2390,13 @@ namespace TQM
             {
                 List<NoilsTestModel> allRecords = conn.Table<NoilsTestModel>().ToList();
                 conn.CreateTable<NoilsTestModel>();
-                DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+                //DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+
+                var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM NoilsTestModel");
+                DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
                 if (DateTime.Now <= maxDate)
                 {
                     await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");

@@ -1119,7 +1119,14 @@ namespace TQM
                 }
                 else
                 {
-                    DateTime maxDate = conn.Table<YCTestModel>().Max(YCTestModel => YCTestModel.createdate);
+                    //DateTime maxDate = conn.Table<YCTestModel>().Max(YCTestModel => YCTestModel.createdate);
+
+                    var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM YCTestModel");
+                    DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                    DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
+
                     if (DateTime.Now <= maxDate)
                     {
                         await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
