@@ -7,7 +7,7 @@
         //Current test balance serail no: H2500064125
 
         private string balanceSerialNo = "H2500064125";
-        private string tqmAppUserID = "cbepolytex";
+        private string tqmAppUserID = "tqmuser";
         private bool requireCSV = false;
         private bool noilsAutoCorrection = false;
         private bool apercentAutoCorrection = false;

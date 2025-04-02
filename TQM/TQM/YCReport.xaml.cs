@@ -619,13 +619,14 @@ namespace TQM
                                 {
                                     consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString() +
                                                                         " \n" +
-                                                                        "("+
-                                                                        formatDecimal(testsummary.standardCV, 4).ToString()+
-                                                                        "\n"+
-                                                                        "\u00B1" + 
-                                                                        formatDecimal(testsummary.CVDeviationPercent, 4).ToString()+
+                                                                        "(" +
+                                                                        formatDecimal(testsummary.standardCV, 4).ToString() +
+                                                                        "\n" +
+                                                                        "\u00B1" +
+                                                                        formatDecimal(testsummary.CVDeviationPercent, 4).ToString() +
                                                                         ")";
                                 }
+                                //consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
                                 //consolItems.testDuration = testsummary.testDuration;
                                 //consolItems.testDuration = formatTime(testsummary.createdate);
 
@@ -2169,7 +2170,7 @@ namespace TQM
                             }
                         }
 
-                        if (contentLength >= 9)
+                        if (contentLength >= 9 && contentLength >= currentRowHeight)
                         {
                             pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 9) + 1);
                         }
