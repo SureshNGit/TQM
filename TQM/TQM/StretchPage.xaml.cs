@@ -1083,6 +1083,7 @@ namespace TQM
             decimal sumOfSquares = (decimal)values.Select(val => Math.Pow((double)(val - avg), 2)).Sum();
             return (decimal)Math.Sqrt((double)(sumOfSquares / (values.Length - 1))); // Using sample SD (N-1)
         }
+
         private async void updateDB()
         {
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
@@ -1600,7 +1601,13 @@ namespace TQM
                 }
                 else
                 {
-                    DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+                    //DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+
+                    var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM StretchTestModel");
+                    DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                    DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
                     if (DateTime.Now <= maxDate)
                     {
                         await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
@@ -2010,7 +2017,6 @@ namespace TQM
             }
         }
 
-
         private string RemoveSpecialCharacters(string str)
         {
             StringBuilder sb = new StringBuilder();
@@ -2208,7 +2214,14 @@ namespace TQM
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 conn.CreateTable<StretchTestModel>();
-                DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+
+                //DateTime maxDate = conn.Table<StretchTestModel>().Max(StretchTestModel => StretchTestModel.createdate);
+
+                var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM StretchTestModel");
+                DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
                 if (DateTime.Now <= maxDate)
                 {
                     await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");

@@ -336,7 +336,6 @@ namespace TQM
             }
         }
 
-
         private void autoCorrection()
         {
             try
@@ -408,7 +407,6 @@ namespace TQM
                 DisplayAlert("Error", "An error occurred during auto correction. Please check the logs for more details.", "OK");
             }
         }
-
 
         private void autoCompleteNoils()
         {
@@ -782,7 +780,6 @@ namespace TQM
 
         }
 
-
         private void getUserfieldConfig(string mCat, Guid mid, string mac)
         {
             if (mCat == "" && mid == Guid.Empty && mac == "")
@@ -811,7 +808,6 @@ namespace TQM
                 }
             }
         }
-
 
         private void populateTestParams(string mCat, Guid mid, string mac)
         {
@@ -1774,7 +1770,13 @@ namespace TQM
                 }
                 else
                 {
-                    DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+                    //DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+
+                    var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM NoilsTestModel");
+                    DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                    DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
                     if (DateTime.Now <= maxDate)
                     {
                         await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
@@ -2185,7 +2187,6 @@ namespace TQM
             }
         }
 
-
         private string RemoveSpecialCharacters(string str)
         {
             StringBuilder sb = new StringBuilder();
@@ -2384,7 +2385,14 @@ namespace TQM
             {
                 List<NoilsTestModel> allRecords = conn.Table<NoilsTestModel>().ToList();
                 conn.CreateTable<NoilsTestModel>();
-                DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+
+                //DateTime maxDate = conn.Table<NoilsTestModel>().Max(NoilsTestModel => NoilsTestModel.createdate);
+
+                var cmd = conn.CreateCommand("SELECT MAX(createdate) FROM NoilsTestModel");
+                DateTime? md = cmd.ExecuteScalar<DateTime?>();
+
+                DateTime maxDate = md ?? DateTime.MinValue; // or any default
+
                 if (DateTime.Now <= maxDate)
                 {
                     await DisplayAlert("Attention", "Tablet date time was modified. Please change it to actual current date and time to proceed!!!", "OK");
