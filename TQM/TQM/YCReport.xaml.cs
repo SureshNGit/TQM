@@ -610,21 +610,22 @@ namespace TQM
                                 }
                                 consolItems.testAverage = formatDecimal(testsummary.testaverage).ToString();
                                 consolItems.standardDeviation = formatDecimal(testsummary.testsd).ToString();
-                                if (testsummary.standardCV == 0.0m)
-                                {
-                                    consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
-                                }
-                                else
-                                {
-                                    consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString() +
-                                                                        " \n" +
-                                                                        "("+
-                                                                        formatDecimal(testsummary.standardCV, 4).ToString()+
-                                                                        "\n"+
-                                                                        "\u00B1" + 
-                                                                        formatDecimal(testsummary.CVDeviationPercent, 4).ToString()+
-                                                                        ")";
-                                }
+                                //if (testsummary.standardCV == 0.0m)
+                                //{
+                                //    consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
+                                //}
+                                //else
+                                //{
+                                //    consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString() +
+                                //                                        " \n" +
+                                //                                        "("+
+                                //                                        formatDecimal(testsummary.standardCV, 4).ToString()+
+                                //                                        "\n"+
+                                //                                        "\u00B1" + 
+                                //                                        formatDecimal(testsummary.CVDeviationPercent, 4).ToString()+
+                                //                                        ")";
+                                //}
+                                consolItems.CoEfficientOfVariation = formatDecimal(testsummary.testcv).ToString();
                                 //consolItems.testDuration = testsummary.testDuration;
                                 //consolItems.testDuration = formatTime(testsummary.createdate);
 
