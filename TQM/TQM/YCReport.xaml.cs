@@ -2157,7 +2157,8 @@ namespace TQM
                             }
                         }
 
-                        if (contentLength >= 9)
+                        //if (contentLength >= 9)
+                        if (contentLength >= 9 && contentLength >= currentRowHeight)
                         {
                             pdfGrid.Rows[pageRecordCount].Height = currentRowHeight * ((contentLength / 9) + 1);
                         }
