@@ -19,6 +19,8 @@ namespace TQM.Model
 
         public string machineName { get; set; }
 
+        public string macSerialNo { get; set; }
+
         public int speed { get; set; }
 
         public decimal p1 { get; set; }

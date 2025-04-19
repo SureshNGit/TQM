@@ -1,5 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using Org.Apache.Http.Cookies;
+
 //using Java.Util;
 //using OpenTK;
 using RestSharp;
@@ -99,6 +101,8 @@ namespace TQM
 
         private List<MissingDrumReportModelView> odl = new List<MissingDrumReportModelView>();
         private List<MaintenanceReportMV> oml = new List<MaintenanceReportMV>();
+
+        List<IndividualTestMVReport> ind_report_csv_list = new List<IndividualTestMVReport>();
 
         public YCReport()
         {
@@ -947,7 +951,6 @@ namespace TQM
             return hrs + ":" + mins + ":" + sec;
         }
 
-
         void ViewCell_Tapped(System.Object sender, System.EventArgs e)
         {
             try
@@ -968,13 +971,12 @@ namespace TQM
             }
         }
 
-
         private void getIndividualTestView(DateTime sd, DateTime ed, Guid categoryID, Guid machineID)
         {
             try
             {
                 ed= ed.AddDays(1);
-
+                ind_report_csv_list = new List<IndividualTestMVReport>();
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     List<StrengthTestSummaryModel> stm_list = conn.Table<StrengthTestSummaryModel>().Where(StrengthTestSummaryModel => (
@@ -1007,9 +1009,21 @@ namespace TQM
 
                         if (indTest_list.Count > 0 && indTest_list[0].totalTestCount<=10)
                         {
-                            //Head
+                            IndividualTestMVReport overAllReport = loadIndividualTestRecord(stm, indTest_list);
 
-                            IndividualTestMVReport itr = new IndividualTestMVReport();
+                            if (overAllReport != null)
+                            {
+                                ind_report_csv_list.Add(overAllReport);
+                            }
+                            else
+                            {
+                                _ = toggleProgressBar();
+                                throw new Exception("Error in preparing Individual CSV report!!!Please contact software support.");
+                            }
+
+                                //Head
+
+                                IndividualTestMVReport itr = new IndividualTestMVReport();
                             itr.isHeader = true;
                             itr.isBody = false;
                             itr.Header = "TID:"+stm.testID.ToString() + "(" + stm.createdate.Day.ToString()+"-"+stm.createdate.Month.ToString()+"-"+stm.createdate.Year.ToString().Substring(2,2)+")";
@@ -1019,6 +1033,9 @@ namespace TQM
                             itr.N1 = "N1: " + stm.n1.ToString();
                             itr.Mat_Count = "Count: " + stm.materialCount;
                             itr.DrumNumber = "Drum No: "+ stm.drumNumber.ToString();
+                            //itr.machineName = stm.machineName;
+                            //itr.macSerialNo = stm.macSerialNo;
+                            //itr.testTime = stm.createdate.Hour.ToString() + ":" + stm.createdate.Minute.ToString() + ":" + stm.createdate.Second.ToString();
                             itr_all.Add(itr);
 
                             //Body
@@ -1168,6 +1185,152 @@ namespace TQM
                 
                 _ = toggleProgressBar();
                 return;
+            }
+        }
+
+        private IndividualTestMVReport loadIndividualTestRecord(StrengthTestSummaryModel st, List<StrengthTestModel> indTest_lst)
+        {
+            try
+            {
+                IndividualTestMVReport overallRecords = new IndividualTestMVReport();
+
+                overallRecords.isHeader = true;
+                overallRecords.isBody = false;
+                overallRecords.Header = st.createdate.Day.ToString() + "-" + st.createdate.Month.ToString() + "-" + st.createdate.Year.ToString().Substring(2, 2);
+                overallRecords.Speed = "Speed: " + st.speed.ToString();
+                overallRecords.P1 = st.p1.ToString();
+                overallRecords.P2 = st.p2.ToString();
+                overallRecords.N1 = st.n1.ToString();
+                overallRecords.Mat_Count = "Count: " + st.materialCount;
+                overallRecords.DrumNumber = "Drum No: " + st.drumNumber.ToString();
+                overallRecords.machineName = st.machineName;
+                overallRecords.macSerialNo = st.macSerialNo;
+                overallRecords.testTime = st.createdate.Hour.ToString() + ":" + st.createdate.Minute.ToString() + ":" + st.createdate.Second.ToString();
+              
+                overallRecords.DrumNumber = indTest_lst[0].drumNumber.ToString();
+
+
+                if (indTest_lst.Count >= 1)
+                {
+                    overallRecords.T1 = indTest_lst[0].sampleStrengthCount.ToString();
+                }
+                else
+                {
+                    overallRecords.T1 = "";
+                }
+
+                if (indTest_lst.Count >= 2)
+                {
+                    overallRecords.T2 = indTest_lst[1].sampleStrengthCount.ToString();
+                }
+                else
+                {
+                    overallRecords.T2 = "";
+                }
+
+                if (indTest_lst.Count >= 3)
+                {
+                    overallRecords.T3 = indTest_lst[2].sampleStrengthCount.ToString();
+                }
+                else
+                {
+                    overallRecords.T3 = "";
+                }
+
+                if (indTest_lst.Count >= 4)
+                {
+                    overallRecords.T4 = indTest_lst[3].sampleStrengthCount.ToString();
+                }
+                else
+                {
+                    overallRecords.T4 = "";
+                }
+
+                if (indTest_lst.Count >= 5)
+                {
+                    overallRecords.T5 = indTest_lst[4].sampleStrengthCount.ToString();
+                }
+                else
+                {
+                    overallRecords.T5 = "";
+                }
+
+                if (indTest_lst.Count >= 6)
+                {
+                    overallRecords.T6 = indTest_lst[5].sampleStrengthCount.ToString();
+                }
+                else
+                {
+                    overallRecords.T6 = "";
+                }
+
+                if (indTest_lst.Count >= 7)
+                {
+                    overallRecords.T7 = indTest_lst[6].sampleStrengthCount.ToString();
+                }
+                else
+                {
+                    overallRecords.T7 = "";
+                }
+
+                if (indTest_lst.Count >= 8)
+                {
+                    overallRecords.T8 = indTest_lst[7].sampleStrengthCount.ToString();
+                }
+                else
+                {
+                    overallRecords.T8 = "";
+                }
+
+                if (indTest_lst.Count >= 9)
+                {
+                    overallRecords.T9 = indTest_lst[8].sampleStrengthCount.ToString();
+                }
+                else
+                {
+                    overallRecords.T9 = "";
+                }
+
+                if (indTest_lst.Count >= 10)
+                {
+                    overallRecords.T10 = indTest_lst[9].sampleStrengthCount.ToString();
+                }
+                else
+                {
+                    overallRecords.T10 = "";
+                }
+
+
+                overallRecords.QT = "QT: " + st.qualifiedTestCount.ToString();
+                int disqualifiedTest = st.totalTestCount - st.qualifiedTestCount;
+                overallRecords.DQT = "DQT: " + disqualifiedTest.ToString();
+                if (disqualifiedTest != 0)
+                {
+                    overallRecords.DQT_BG_Color = "red";
+                }
+                else
+                {
+                    overallRecords.DQT_BG_Color = "white";
+                }
+                overallRecords.ST = "ST: " + st.yarnStrength.ToString();
+                decimal maxRangeVal = st.standardStrength + st.strengthDeviation;
+                decimal minRangeVal = st.standardStrength - st.strengthDeviation;
+                if (st.yarnStrength < minRangeVal || st.yarnStrength > maxRangeVal)
+                {
+                    overallRecords.ST_BG_Color = "red";
+                }
+                else
+                {
+                    overallRecords.ST_BG_Color = "white";
+                }
+                return overallRecords;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Attention", "An error occurred.Error: " + ex.ToString(), "OK");
+
+                _ = toggleProgressBar();
+                return null;
             }
         }
 
@@ -3439,6 +3602,78 @@ namespace TQM
             }
         }
 
+        private bool generateCSVIndividualReport()
+        {
+            try
+            {
+                string downloadsFolder = Path.Combine(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads), "SVYADownloads");
+                using (var textWriter = new StreamWriter(Path.Combine(downloadsFolder, "SVYA_Individual_CSV_Report.csv")))
+                {
+
+                    var writer = new CsvWriter(textWriter, CultureInfo.InvariantCulture);
+                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        Delimiter = ",",
+                        HasHeaderRecord = false
+                    };
+                    //Header
+                    writer.WriteField("Machine Name");
+                    writer.WriteField("Machine Serial Number");
+                    writer.WriteField("Drum Number");
+                    writer.WriteField("T1");
+                    writer.WriteField("T2");
+                    writer.WriteField("T3");
+                    writer.WriteField("T4");
+                    writer.WriteField("T5");
+                    writer.WriteField("T6");
+                    writer.WriteField("T7");
+                    writer.WriteField("T8");
+                    writer.WriteField("T9");
+                    writer.WriteField("T10");
+                    writer.WriteField("Date");
+                    writer.WriteField("Time");
+                    writer.WriteField("P1");
+                    writer.WriteField("P2");
+                    writer.WriteField("N1");
+                    //Actual Data
+                    writer.NextRecord();
+                    //List<StrengthTestConsolidatedReportMV> overallReportList = (List<StrengthTestConsolidatedReportMV>)listview_tcConsolidatedReport.ItemsSource;
+                    foreach (IndividualTestMVReport orl in ind_report_csv_list)
+                    {
+                        writer.WriteField(orl.machineName);
+                        writer.WriteField(orl.macSerialNo);
+                        writer.WriteField(orl.DrumNumber);
+                        writer.WriteField(orl.T1);
+                        writer.WriteField(orl.T2);
+                        writer.WriteField(orl.T3);
+                        writer.WriteField(orl.T4);
+                        writer.WriteField(orl.T5);
+                        writer.WriteField(orl.T6);
+                        writer.WriteField(orl.T7);
+                        writer.WriteField(orl.T8);
+                        writer.WriteField(orl.T9);
+                        writer.WriteField(orl.T10);
+                        writer.WriteField(orl.Header);
+                        writer.WriteField(orl.testTime);
+                        writer.WriteField(orl.P1);
+                        writer.WriteField(orl.P2);
+                        writer.WriteField(orl.N1);
+
+                        writer.NextRecord();
+                    }
+                    writer.Flush();
+
+
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                return false;
+            }
+        }
+
 
         private bool generatePDFIndividualBreifReport()
         {
@@ -4923,7 +5158,52 @@ namespace TQM
                         RestResponse response = client.Execute(request);
                         if (response.IsSuccessful)
                         {
-                            showAlert("Report uploaded sucessfully!!!");
+                            if (runConfiguration.getCSVReportStatus())
+                            {
+                                if (!generateCSVIndividualReport()) { showAlert("Error occurred in CSV report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+                                fileName = "SVYA_Individual_CSV_Report.csv";
+                                root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                                myDir = new Java.IO.File(root + "/SVYADownloads");
+                                file = new Java.IO.File(myDir, fileName);
+                                filePath = file.Path;
+                                client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                                request = new RestRequest();
+                                request.Method = Method.Post;
+                                //request.Timeout = Timeout.Infinite;
+                                request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                                request.AddParameter("uploadedby", companyName);
+                                request.AddParameter("title", "SVYA-Individual-CSV-Report-" + DateTime.Now.ToString());
+                                request.AddFile("reportpath", filePath);
+                                response = client.Execute(request);
+                                if (response.IsSuccessful)
+                                {
+                                    if (deleteAll)
+                                    {
+                                        deleteRecords(deleteList);
+                                        showAlert("Report uploaded and deleted sucessfully!!!");
+                                    }
+                                    else
+                                    {
+                                        showAlert("Report upload is sucessful!!!");
+                                    }
+                                }
+                                else
+                                {
+                                    showAlert("Upload Failed. Please try again!!!", "Error");
+                                }
+                            }
+                            else
+                            {
+                                if (deleteAll)
+                                {
+                                    deleteRecords(deleteList);
+                                    showAlert("Report uploaded and deleted sucessfully!!!");
+                                }
+                                else
+                                {
+                                    showAlert("Report upload is sucessful!!!");
+                                }
+                            }
                         }
                         else
                         {

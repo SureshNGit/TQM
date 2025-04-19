@@ -56,6 +56,7 @@ namespace TQM
         private string selectedMachineCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
+        private string selectedMacSerialNo = null;
         private int selectedSpeed = 0;
         private decimal selectedP1 = 0.0m;
         private decimal selectedP1Deviation = 0.0m;
@@ -126,6 +127,15 @@ namespace TQM
 
                 List<CategoryModel> cm = conn.Table<CategoryModel>().ToList();
                 picker_machinecategory.ItemsSource = cm;
+
+                MachineModel macInfo = conn.Table<MachineModel>().Where(
+                                                       m => m.machineCategory == machineCat ||
+                                                            m.machineName.ToLower().Contains(machineName.ToLower())).FirstOrDefault();
+
+                if (macInfo != null)
+                {
+                    selectedMacSerialNo = macInfo.macSerialNo;
+                }
             }
 
             selectedCategoryID = categoryID;
@@ -363,6 +373,15 @@ namespace TQM
                         }
                         picker_machinename.SelectedIndex = machineindex;
 
+                        MachineModel macInfo = conn.Table<MachineModel>().Where(
+                                                      m => m.machineCategory == selectedMachineCategory ||
+                                                           m.machineName.ToLower().Contains(selectedMachineName.ToLower())).FirstOrDefault();
+
+                        if (macInfo != null)
+                        {
+                            selectedMacSerialNo = macInfo.macSerialNo;
+                        }
+
                         selectedSpeed = lastTestRecord.speed;
                         selectedP1 = lastTestRecord.p1;
                         selectedP1Deviation = lastTestRecord.p1Deviation;
@@ -444,6 +463,7 @@ namespace TQM
                                     categoryID = test.categoryID,
                                     machineCategory = test.machineCategory,
                                     machineName = test.machineName,
+                                    macSerialNo = test.macSerialNo,
                                     speed = test.speed,
                                     p1 = test.p1,
                                     p1Deviation = test.p1Deviation,
@@ -861,6 +881,7 @@ namespace TQM
                     machineID = StrengthTestModelViewlist[0].machineID,
                     machineCategory = StrengthTestModelViewlist[0].machineCategory,
                     machineName = StrengthTestModelViewlist[0].machineName,
+                    macSerialNo = StrengthTestModelViewlist[0].macSerialNo,
                     speed = StrengthTestModelViewlist[0].speed,
                     p1 = StrengthTestModelViewlist[0].p1,
                     p1Deviation = StrengthTestModelViewlist[0].p1Deviation,
@@ -915,6 +936,7 @@ namespace TQM
                             machineID = cm.machineID,
                             machineCategory = cm.machineCategory,
                             machineName = cm.machineName,
+                            macSerialNo = cm.macSerialNo,
                             speed = cm.speed,
                             p1 = cm.p1,
                             p1Deviation = cm.p1Deviation,
@@ -1141,6 +1163,12 @@ namespace TQM
             if (selectedMachineID == Guid.Empty || selectedCategoryID == Guid.Empty || selectedMachineCategory == null || selectedMachineCategory == "")
             {
                 await DisplayAlert("Attention", "Please select machine category/ name to proceed!!!", "Ok");
+                _ = showProgress(false);
+                return;
+            }
+            if (selectedMacSerialNo == null || selectedMacSerialNo == "")
+            {
+                await DisplayAlert("Error", "Machine serial number not retrieved!!!Please contact software support.", "Ok");
                 _ = showProgress(false);
                 return;
             }
@@ -1457,6 +1485,7 @@ namespace TQM
                             machineID = selectedMachineID,
                             machineCategory = selectedMachineCategory,
                             machineName = selectedMachineName,
+                            macSerialNo = selectedMacSerialNo,
                             speed = selectedSpeed,
                             p1=selectedP1,
                             p1Deviation=selectedP1Deviation,
@@ -1509,6 +1538,7 @@ namespace TQM
                             machineID = selectedMachineID,
                             machineCategory = selectedMachineCategory,
                             machineName = selectedMachineName,
+                            macSerialNo = selectedMacSerialNo,
                             speed = selectedSpeed,
                             p1 = selectedP1,
                             p1Deviation=selectedP1Deviation,
@@ -1842,6 +1872,7 @@ namespace TQM
                 if (selectedMachineCategory == "" || selectedMachineCategory == null)
                 {
                     picker_machinename.ItemsSource = null;
+                    selectedMacSerialNo = null;
                 }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
@@ -1871,6 +1902,7 @@ namespace TQM
                 {
                     selectedMachineID = Guid.Empty;
                     selectedMachineName = null;
+                    selectedMacSerialNo = null;
                     populateTestParams(Guid.Empty, Guid.Empty, "");
                     return;
                 }
@@ -1878,6 +1910,19 @@ namespace TQM
                 selectedMachineID = (Guid)source[picker_machinename.SelectedIndex].ID;
                 MachineModel selectedMachine = (MachineModel)picker_machinename.SelectedItem;
                 selectedMachineName = selectedMachine.machineName;
+
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    MachineModel macInfo = conn.Table<MachineModel>().Where(
+                                                      m => m.machineCategory == selectedMachineCategory ||
+                                                           m.machineName.ToLower().Contains(selectedMachineName.ToLower())).FirstOrDefault();
+
+                    if (macInfo != null)
+                    {
+                        selectedMacSerialNo = macInfo.macSerialNo;
+                    }
+                }
+
                 populateTestParams(selectedCategoryID, selectedMachineID, selectedMachineName);
                 getUserfieldConfig(selectedCategoryID, selectedMachineID, selectedMachineName);
                 if (!isTestResume)

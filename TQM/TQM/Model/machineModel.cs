@@ -13,6 +13,7 @@ namespace TQM.Model
         [MaxLength(50)]
         public string machineCategory { get; set; }
         public string machineName { get; set; }
+        public string macSerialNo { get; set; }
         public DateTime createdate { get; set; }
 
         public bool dataSyncStatus { get; set; } = false;

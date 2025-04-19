@@ -54,6 +54,7 @@ namespace TQM
                 }
                 picker_machinecategory.SelectedIndex = machinecategoryindex;
                 entry_machinename.Text = selectedItem.machineName;
+                entry_macSerialNo.Text = selectedItem.macSerialNo;
                 btn_save.Text = "Update";
                 machineSearchResultView.ScrollTo(entry_machinename, ScrollToPosition.Start, true);
             }
@@ -74,11 +75,24 @@ namespace TQM
                     DisplayAlert("Alert", "Please enter machine name to proceed!!!", "OK");
                     return;
                 }
+                string macSerialNo = entry_macSerialNo.Text.Trim();
+                macSerialNo = Regex.Replace(macSerialNo, @"\s+", " ");
+                if (macSerialNo == "")
+                {
+                    DisplayAlert("Alert", "Please enter machine serial number to proceed!!!", "OK");
+                    return;
+                }
                 using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
                 {
                     conn.CreateTable<MachineModel>();
+                    //List<MachineModel> machinelist = conn.Table<MachineModel>().Where(
+                    //    MachineModel => MachineModel.machineName.ToLower().Contains(machinename.ToLower())).ToList();
+
                     List<MachineModel> machinelist = conn.Table<MachineModel>().Where(
-                        MachineModel => MachineModel.machineName.ToLower().Contains(machinename.ToLower())).ToList();
+                                                        m => m.machineName.ToLower().Contains(machinename.ToLower()) ||
+                                                             m.macSerialNo.ToLower().Contains(machinename.ToLower())
+                                                    ).ToList();
+
                     if (machinelist.Count > 0)
                     {
                         if (btn_save.Text.ToLower() == "save")
@@ -104,6 +118,7 @@ namespace TQM
                     categoryID = selectedCategoryID,
                     machineCategory = selectedCategory,
                     machineName = machinename,
+                    macSerialNo = macSerialNo,
                     createdate = DateTime.Now
                 };
 
@@ -146,6 +161,7 @@ namespace TQM
             btn_save.Text = "Save";
             picker_machinecategory.SelectedItem = "";
             entry_machinename.Text = "";
+            entry_macSerialNo.Text = "";
             entry_machinesearch.Text = "";
             machineSearchResultView.ItemsSource = null;
             this.currentMachineID = Guid.Empty;
@@ -189,7 +205,12 @@ namespace TQM
                 {
                     string machinesearched = entry_machinesearch.Text.Trim();
                     conn.CreateTable<MachineModel>();
-                    List<MachineModel> machinelist = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineName.ToLower().Contains(machinesearched.ToLower())).ToList();
+                    //List<MachineModel> machinelist = conn.Table<MachineModel>().Where(MachineModel => MachineModel.machineName.ToLower().Contains(machinesearched.ToLower())).ToList();
+                    List<MachineModel> machinelist = conn.Table<MachineModel>().Where(
+                                                    MachineModel => MachineModel.machineName.ToLower().Contains(machinesearched.ToLower()) ||
+                                                                    MachineModel.macSerialNo.ToLower().Contains(machinesearched.ToLower())
+                                                ).ToList();
+
                     if (machinelist.Count > 0)
                     {
                         machineSearchResultView.ItemsSource = machinelist;

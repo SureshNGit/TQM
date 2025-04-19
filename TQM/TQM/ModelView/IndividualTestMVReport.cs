@@ -27,6 +27,9 @@ namespace TQM.ModelView
         public string Mat_Count { get; set; }
         public string ST_BG_Color { get; set; } = "red";
         public string DQT_BG_Color { get; set; } = "red";
+        public string machineName { get; set; }
+        public string macSerialNo { get; set; }
+        public string testTime { get; set; }
     }
 }
 

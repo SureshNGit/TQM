@@ -18,6 +18,7 @@ namespace TQM.Model
         public Guid machineID { get; set; }
         public string machineCategory { get; set; }
         public string machineName { get; set; }
+        public string macSerialNo { get; set; }
         public int speed { get; set; }
         public decimal p1 { get; set; }
         public decimal p1Deviation { get; set; }

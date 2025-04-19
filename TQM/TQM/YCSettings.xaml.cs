@@ -17,6 +17,7 @@ namespace TQM
         private string selectedMachineCategory = null;
         private Guid selectedMachineID = Guid.Empty;
         private string selectedMachineName = null;
+        private string selectedMacSerialNo = null;
         private DateTime selectedScheduledStartDate = DEFAULTDATE;
         private DateTime selectedScheduledEndDate = DEFAULTDATE;
         private bool is_ScheduledDateUpdateInTestRequired = false;
@@ -280,6 +281,8 @@ namespace TQM
                 }
                 picker_machinename.SelectedIndex = machineindex;
             }
+
+
             //General Data
             entry_drumCount.Text = ycConfig.totalDrumCount.ToString();
             IList<string> sectionlist = picker_sectionCount.Items;
@@ -1144,6 +1147,24 @@ namespace TQM
                     uf_value_4 = entry_userfield4.Text.Trim();
                 }
 
+                using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+                {
+                    MachineModel macInfo = conn.Table<MachineModel>().Where(
+                                                       m => m.machineCategory == selectedMachineCategory ||
+                                                            m.machineName.ToLower().Contains(selectedMachineName.ToLower())).FirstOrDefault();
+
+                    if (macInfo != null)
+                    {
+                        selectedMacSerialNo = macInfo.macSerialNo;
+                    }
+                    else
+                    {
+                        DisplayAlert("Attention", "Unable to retrieve machine serial number for select machine", "OK");
+                        return;
+                    }
+
+                }
+
                 ConfigModel configModel = new ConfigModel()
                 {
                     ID = guid,
@@ -1151,6 +1172,7 @@ namespace TQM
                     machineCategory = selectedMachineCategory,
                     machineID = selectedMachineID,
                     machineName = selectedMachineName,
+                    macSerialNo = selectedMacSerialNo,
                     //General Data
                     speed = int.Parse(entry_macSpeed.Text),
                     p1 = decimal.Parse(entry_p1.Text.ToString()),
@@ -1380,6 +1402,7 @@ namespace TQM
                             machineID = cm.machineID,
                             machineCategory = cm.machineCategory,
                             machineName = cm.machineName,
+                            macSerialNo = cm.macSerialNo,
                             speed = cm.speed,
                             p1 = cm.p1,
                             p1Deviation = cm.p1Deviation,

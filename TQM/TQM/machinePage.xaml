@@ -71,9 +71,12 @@
                                     SelectedIndexChanged="picker_machinecategory_SelectedIndexChanged"
                                     ItemDisplayBinding="{Binding category}" TextColor="Green" FontSize="25" />
                             <Label Grid.Row="1" Grid.Column="0" Text="Machine Name" TextColor="#0e0273" FontSize="25" Margin="0,25"/>
-                            <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Placeholder="Enter machine name to add" PlaceholderColor="#E5E8E8"
+                            <Entry Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Placeholder="Enter machine name" PlaceholderColor="#E5E8E8"
                                    x:Name="entry_machinename" TextColor="Green" FontSize="25" Margin="5" Keyboard="Chat"/>
-                            <Button Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="1" Margin="0,15" 
+                            <Label Grid.Row="2" Grid.Column="0" Text="Mac Serial No" TextColor="#0e0273" FontSize="25" Margin="0,25"/>
+                            <Entry Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Placeholder="Enter machine serial number" PlaceholderColor="#E5E8E8"
+                            x:Name="entry_macSerialNo" TextColor="Green" FontSize="25" Margin="5" Keyboard="Chat"/>
+                            <Button Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="1" Margin="0,15" 
                                     Text="Save" x:Name="btn_save" Clicked="btn_save_Clicked" 
                                     BackgroundColor="#0e0273" TextColor="White" CornerRadius="25"/>
                         </Grid>
@@ -85,11 +88,12 @@
                         <!--<TextCell TextColor="black" Text="{Binding machineName}" />-->
                         <ViewCell Tapped="ViewCell_Tapped" >
                             <StackLayout Margin="35,10,0,0">
-                                <Label Margin="200,5,0,0" TextColor="blue" FontSize="20">
+                                <Label Margin="200,5,0,0" TextColor="black" FontSize="20">
                                     <Label.Text>
-                                        <MultiBinding StringFormat="{} Machine Category: {0} ~  Machine Name: {1}">
+                                        <MultiBinding StringFormat="{} {0} ||  {1} || {2}">
                                             <Binding Path="machineCategory"/>
                                             <Binding Path="machineName"/>
+                                            <Binding Path="macSerialNo"/>
                                         </MultiBinding>
                                     </Label.Text>
                                 </Label>
