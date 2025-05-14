@@ -4,8 +4,8 @@
     {
         //Demo balance serail no: G85219651634
         //Test balance serail no: DS85222849198
-        private string balanceSerialNo = "H2500074787";
-        private string tqmAppUserID = "muthammal";
+        private string balanceSerialNo = "G85223874668";
+        private string tqmAppUserID = "mahimaunit1";
         private bool requireCSV = false;
         private bool noilsAutoCorrection = false;
         private bool apercentAutoCorrection = false;
