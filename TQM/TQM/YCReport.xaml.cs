@@ -24,6 +24,11 @@ using static Android.Resource;
 using Color = Xamarin.Forms.Color;
 using Exception = Java.Lang.Exception;
 using String = System.String;
+//using SharpCifs.Smb;
+using System.Threading.Tasks;
+using System.Net;
+using System.Net.Sockets;
+//using FluentFTP;
 
 namespace TQM
 {
@@ -2412,6 +2417,92 @@ namespace TQM
 
         }
 
+
+        private async Task<bool> UploadFileViaFTP(string sourceFilePath, string ftpHost, string ftpUser, string ftpPass, string fileName)
+        {
+            try
+            {
+                string ftpUri = $"ftp://{ftpHost}/{fileName}";
+
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(ftpUri);
+                request.Method = WebRequestMethods.Ftp.UploadFile;
+                request.Credentials = new NetworkCredential(ftpUser, ftpPass);
+                request.UsePassive = true;
+                request.UseBinary = true;
+                request.KeepAlive = false;
+
+                byte[] fileContents;
+
+                try
+                {
+                    // File read is separated to catch IO issues specifically
+                    fileContents = File.ReadAllBytes(sourceFilePath);
+                }
+                catch (IOException ioEx)
+                {
+                    showAlert("File read failed: " + ioEx.Message, "Error");
+                    return false;
+                }
+
+                request.ContentLength = fileContents.Length;
+
+                try
+                {
+                    using (Stream requestStream = await request.GetRequestStreamAsync())
+                    {
+                        await requestStream.WriteAsync(fileContents, 0, fileContents.Length);
+                    }
+
+                    using (FtpWebResponse response = (FtpWebResponse)await request.GetResponseAsync())
+                    {
+                        Console.WriteLine($"✅ Upload complete: {response.StatusDescription}");
+                    }
+
+                    return true;
+                }
+                catch (WebException webEx)
+                {
+                    string ftpError = "";
+
+                    if (webEx.Response is FtpWebResponse ftpResponse)
+                    {
+                        ftpError = ftpResponse.StatusDescription;
+                    }
+
+                    showAlert("FTP upload failed: " + webEx.Message + "\n" + ftpError, "FTP Error");
+                    Console.WriteLine($"❌ WebException: {webEx.Message}");
+                    return false;
+                }
+                catch (SocketException sockEx)
+                {
+                    showAlert("Network connection error: " + sockEx.Message, "Connection Error");
+                    Console.WriteLine($"❌ SocketException: {sockEx.Message}");
+                    return false;
+                }
+                catch (IOException ioEx)
+                {
+                    showAlert("I/O error during transfer: " + ioEx.Message, "IO Error");
+                    Console.WriteLine($"❌ IOException: {ioEx.Message}");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    showAlert("Unexpected error during FTP: " + ex.Message, "Error");
+                    Console.WriteLine($"❌ General Exception: {ex.Message}");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Top-level fallback (should not usually be reached)
+                showAlert("Unexpected failure: " + ex.Message, "Fatal Error");
+                Console.WriteLine($"❌ Fatal Exception: {ex.Message}");
+                return false;
+            }
+        }
+
+
+
         [Obsolete]
         public async Task UploadReport()
         {
@@ -2423,70 +2514,201 @@ namespace TQM
                     if (!generatePDFConsolidatedReport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
                     else
                     {
-                        String companyName = null;
-                        try
+
+                        bool action = runConfiguration.getMoveReportToCloud();
+
+                        if(!action)
                         {
-                            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
-                            conn.CreateTable<CompanyModel>();
-                            var company = conn.Table<CompanyModel>().FirstOrDefault();
-                            if (company != null)
+                            string FTPServerIP = "";
+                            string username = "";
+                            string password = "";
+
+                            try
                             {
-                                companyName = company.Name;
-                            }
-                            conn.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
-                        }
-                        string fileName = "TQM_Report_Consolidated(Wrapping).pdf";
-                        string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                        Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
-                        Java.IO.File file = new Java.IO.File(myDir, fileName);
-                        string filePath = file.Path;
-                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
-                        var request = new RestRequest();
-                        request.Method = Method.Post;
-                        //request.Timeout = Timeout.Infinite;
-                        request.AddParameter("userName", runConfiguration.getTQMAppUserID());
-                        request.AddParameter("uploadedby", companyName);
-                        if (selectedMachineCategory != null)
-                        {
-                            request.AddParameter("title", "TQMReportsConsolidated(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
-                        }
-                        else
-                        {
-                            request.AddParameter("title", "TQMReportsConsolidated(Wrapping-All)-" + DateTime.Now.ToString());
-                        }
-                        request.AddFile("reportpath", filePath);
-                        RestResponse response = client.Execute(request);
-                        if (response.IsSuccessful)
-                        {
-                            if (runConfiguration.getCSVReportStatus())
-                            {
-                                if (!generateCSVConsolidatedReport()) { showAlert("Error occurred in CSV report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
-                                fileName = "TQM_Report_Consolidated(Wrapping).csv";
-                                root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                                myDir = new Java.IO.File(root + "/TQMDownloads");
-                                file = new Java.IO.File(myDir, fileName);
-                                filePath = file.Path;
-                                client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
-                                request = new RestRequest();
-                                request.Method = Method.Post;
-                                //request.Timeout = Timeout.Infinite;
-                                request.AddParameter("userName", runConfiguration.getTQMAppUserID());
-                                request.AddParameter("uploadedby", companyName);
-                                if (selectedMachineCategory != null)
+                                SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                                conn.CreateTable<CompanyModel>();
+                                var company = conn.Table<CompanyModel>().FirstOrDefault();
+                                if (company != null)
                                 {
-                                    request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                                    FTPServerIP = company.ftpIpAddress;
+                                    username = company.username;
+                                    password = company.password;
+                                }
+                                conn.Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                                await resetBtn();
+                                return;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(FTPServerIP) && !string.IsNullOrWhiteSpace(username) && password != null)
+                            {
+                                string fileName = "TQM_Report_Consolidated(Wrapping).pdf";
+                                string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                                Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                                Java.IO.File file = new Java.IO.File(myDir, fileName);
+                                string filePath = file.Path;
+                                bool moved = await UploadFileViaFTP(filePath, FTPServerIP, username, password, fileName);
+                                if (moved)
+                                {
+                                    if (deleteAll)
+                                    {
+                                        deleteRecords(deleteList);
+                                        showAlert("Report moved to network/shared folder and deleted sucessfully!!!");
+                                    }
+                                    else
+                                    {
+                                        showAlert("Report moved to network/shared folder successfully!");
+                                    }
                                 }
                                 else
                                 {
-                                    request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-All)-" + DateTime.Now.ToString());
+                                    showAlert("Failed to move report to network/shared folder. Please try again!!!", "Error");
                                 }
-                                request.AddFile("reportpath", filePath);
-                                response = client.Execute(request);
-                                if (response.IsSuccessful)
+                            }
+                            await resetBtn();
+
+                        }
+                        else
+                        {
+                            String companyName = null;
+                            try
+                            {
+                                SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                                conn.CreateTable<CompanyModel>();
+                                var company = conn.Table<CompanyModel>().FirstOrDefault();
+                                if (company != null)
+                                {
+                                    companyName = company.Name;
+                                }
+                                conn.Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                            }
+                            string fileName = "TQM_Report_Consolidated(Wrapping).pdf";
+                            string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                            Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                            Java.IO.File file = new Java.IO.File(myDir, fileName);
+                            string filePath = file.Path;
+                            var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                            var request = new RestRequest();
+                            request.Method = Method.Post;
+                            //request.Timeout = Timeout.Infinite;
+                            request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                            request.AddParameter("uploadedby", companyName);
+                            if (selectedMachineCategory != null)
+                            {
+                                request.AddParameter("title", "TQMReportsConsolidated(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                            }
+                            else
+                            {
+                                request.AddParameter("title", "TQMReportsConsolidated(Wrapping-All)-" + DateTime.Now.ToString());
+                            }
+                            request.AddFile("reportpath", filePath);
+                            RestResponse response = client.Execute(request);
+                            if (response.IsSuccessful)
+                            {
+                                if (runConfiguration.getCSVReportStatus())
+                                {
+                                    if (!generateCSVConsolidatedReport()) { showAlert("Error occurred in CSV report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+
+                                    bool action_csv = runConfiguration.getMoveReportToCloud();
+                                    if (!action_csv)
+                                    {
+                                        string FTPServerIP = "";
+                                        string username = "";
+                                        string password = "";
+
+                                        try
+                                        {
+                                            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                                            conn.CreateTable<CompanyModel>();
+                                            var company = conn.Table<CompanyModel>().FirstOrDefault();
+                                            if (company != null)
+                                            {
+                                                FTPServerIP = company.ftpIpAddress;
+                                                username = company.username;
+                                                password = company.password;
+                                            }
+                                            conn.Close();
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                                        }
+
+                                        if (!string.IsNullOrWhiteSpace(FTPServerIP) && !string.IsNullOrWhiteSpace(username) && password != null)
+                                        {
+                                            string fileName_csv = "TQM_Report_Consolidated(Wrapping).csv";
+                                            string root_csv = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                                            Java.IO.File myDir_csv = new Java.IO.File(root_csv + "/TQMDownloads");
+                                            Java.IO.File file_csv = new Java.IO.File(myDir_csv, fileName_csv);
+                                            string filePath_csv = file_csv.Path;
+                                            bool moved = await UploadFileViaFTP(filePath_csv, FTPServerIP, username, password, fileName_csv);
+                                            if (moved)
+                                            {
+                                                if (deleteAll)
+                                                {
+                                                    deleteRecords(deleteList);
+                                                    showAlert("Report moved to network/shared folder and deleted sucessfully!!!");
+                                                }
+                                                else
+                                                {
+                                                    showAlert("Report moved to network/shared folder successfully!");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                showAlert("Failed to move report to network/shared folder. Please try again!!!", "Error");
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        fileName = "TQM_Report_Consolidated(Wrapping).csv";
+                                        root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                                        myDir = new Java.IO.File(root + "/TQMDownloads");
+                                        file = new Java.IO.File(myDir, fileName);
+                                        filePath = file.Path;
+                                        client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                                        request = new RestRequest();
+                                        request.Method = Method.Post;
+                                        //request.Timeout = Timeout.Infinite;
+                                        request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                                        request.AddParameter("uploadedby", companyName);
+                                        if (selectedMachineCategory != null)
+                                        {
+                                            request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                                        }
+                                        else
+                                        {
+                                            request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-All)-" + DateTime.Now.ToString());
+                                        }
+                                        request.AddFile("reportpath", filePath);
+                                        response = client.Execute(request);
+                                        if (response.IsSuccessful)
+                                        {
+                                            if (deleteAll)
+                                            {
+                                                deleteRecords(deleteList);
+                                                showAlert("Report uploaded and deleted sucessfully!!!");
+                                            }
+                                            else
+                                            {
+                                                showAlert("Report upload is sucessful!!!");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            showAlert("Upload Failed. Please try again!!!", "Error");
+                                        }
+                                    }
+                                }
+                                else
                                 {
                                     if (deleteAll)
                                     {
@@ -2498,12 +2720,113 @@ namespace TQM
                                         showAlert("Report upload is sucessful!!!");
                                     }
                                 }
-                                else
-                                {
-                                    showAlert("Upload Failed. Please try again!!!", "Error");
-                                }
                             }
                             else
+                            {
+                                showAlert("Upload Failed. Please try again!!!", "Error");
+                            }
+                        }
+                        await resetBtn();
+                    }
+
+                }
+                else
+                {
+                    if (!generatePDFreport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+                    else
+                    {
+                        bool action = runConfiguration.getMoveReportToCloud();
+                        if (!action)
+                        {
+                            string FTPServerIP = "";
+                            string username = "";
+                            string password = "";
+
+                            try
+                            {
+                                SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                                conn.CreateTable<CompanyModel>();
+                                var company = conn.Table<CompanyModel>().FirstOrDefault();
+                                if (company != null)
+                                {
+                                    FTPServerIP = company.ftpIpAddress;
+                                    username = company.username;
+                                    password = company.password;
+                                }
+                                conn.Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(FTPServerIP) && !string.IsNullOrWhiteSpace(username) && password != null)
+                            {
+                                string fileName = "TQM_Report(Wrapping).pdf";
+                                string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                                Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                                Java.IO.File file = new Java.IO.File(myDir, fileName);
+                                string filePath = file.Path;
+                                bool moved = await UploadFileViaFTP(filePath, FTPServerIP, username, password, fileName);
+                                if (moved)
+                                {
+                                    if (deleteAll)
+                                    {
+                                        deleteRecords(deleteList);
+                                        showAlert("Report moved to network/shared folder and deleted sucessfully!!!");
+                                    }
+                                    else
+                                    {
+                                        showAlert("Report moved to network/shared folder successfully!");
+                                    }
+                                }
+                                else
+                                {
+                                    showAlert("Failed to move report to network/shared folder. Please try again!!!", "Error");
+                                }
+                            }
+                            await resetBtn();
+                        }
+                        else
+                        {
+                            String companyName = null;
+                            try
+                            {
+                                SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+                                conn.CreateTable<CompanyModel>();
+                                var company = conn.Table<CompanyModel>().FirstOrDefault();
+                                if (company != null)
+                                {
+                                    companyName = company.Name;
+                                }
+                                conn.Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
+                            }
+                            string fileName = "TQM_Report(Wrapping).pdf";
+                            string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                            Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
+                            Java.IO.File file = new Java.IO.File(myDir, fileName);
+                            string filePath = file.Path;
+                            var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                            var request = new RestRequest();
+                            request.Method = Method.Post;
+                            //request.Timeout = Timeout.Infinite;
+                            request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                            request.AddParameter("uploadedby", companyName);
+                            if (selectedMachineCategory != null)
+                            {
+                                request.AddParameter("title", "TQMReports(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                            }
+                            else
+                            {
+                                request.AddParameter("title", "TQMReports(Wrapping-All" + DateTime.Now.ToString());
+                            }
+                            request.AddFile("reportpath", filePath);
+                            RestResponse response = client.Execute(request);
+                            if (response.IsSuccessful)
                             {
                                 if (deleteAll)
                                 {
@@ -2515,71 +2838,10 @@ namespace TQM
                                     showAlert("Report upload is sucessful!!!");
                                 }
                             }
-                        }else
-                        {
-                            showAlert("Upload Failed. Please try again!!!", "Error");
-                        }
-                        await resetBtn();
-                    }
-
-                }
-                else
-                {
-                    if (!generatePDFreport()) { showAlert("Error occurred in PDF report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
-                    else
-                    {
-                        String companyName = null;
-                        try
-                        {
-                            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
-                            conn.CreateTable<CompanyModel>();
-                            var company = conn.Table<CompanyModel>().FirstOrDefault();
-                            if (company != null)
-                            {
-                                companyName = company.Name;
-                            }
-                            conn.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
-                        }
-                        string fileName = "TQM_Report(Wrapping).pdf";
-                        string root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                        Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
-                        Java.IO.File file = new Java.IO.File(myDir, fileName);
-                        string filePath = file.Path;
-                        var client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
-                        var request = new RestRequest();
-                        request.Method = Method.Post;
-                        //request.Timeout = Timeout.Infinite;
-                        request.AddParameter("userName", runConfiguration.getTQMAppUserID());
-                        request.AddParameter("uploadedby", companyName);
-                        if (selectedMachineCategory != null)
-                        {
-                            request.AddParameter("title", "TQMReports(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
-                        }
-                        else
-                        {
-                            request.AddParameter("title", "TQMReports(Wrapping-All" + DateTime.Now.ToString());
-                        }
-                        request.AddFile("reportpath", filePath);
-                        RestResponse response = client.Execute(request);
-                        if (response.IsSuccessful)
-                        {
-                            if (deleteAll)
-                            {
-                                deleteRecords(deleteList);
-                                showAlert("Report uploaded and deleted sucessfully!!!");
-                            }
                             else
                             {
-                                showAlert("Report upload is sucessful!!!");
+                                showAlert("Upload Failed. Please try again!!!", "Error");
                             }
-                        }
-                        else
-                        {
-                            showAlert("Upload Failed. Please try again!!!", "Error");
                         }
                         await resetBtn();
                     }

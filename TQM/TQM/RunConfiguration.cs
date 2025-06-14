@@ -4,8 +4,9 @@
     {
         //Demo balance serail no: G85219651634
         //Test balance serail no: DS85222849198
-        private string balanceSerialNo = "H2500081655";
-        private string tqmAppUserID = "compactspinners";
+        private string balanceSerialNo = "G85219651634";
+        private string tqmAppUserID = "tqmuser";
+        private bool moveReportToCloud = false;
         private bool requireCSV = false;
         private bool noilsAutoCorrection = false;
         private bool apercentAutoCorrection = false;
@@ -19,6 +20,11 @@
         public string getTQMAppUserID()
         {
             return tqmAppUserID;
+        }
+
+        public bool getMoveReportToCloud()
+        {
+            return moveReportToCloud;
         }
 
         public bool getCSVReportStatus()

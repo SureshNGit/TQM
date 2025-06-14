@@ -1,5 +1,6 @@
 ﻿using SQLite;
 using System;
+using System.Threading.Tasks;
 using TQM.Model;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -9,10 +10,22 @@ namespace TQM
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class companyPage : ContentPage
     {
-
+        private RunConfiguration runConfiguration = new RunConfiguration();
         public companyPage()
         {
             InitializeComponent();
+           
+            if (runConfiguration.getMoveReportToCloud())
+            {
+                lbl_ftpipaddress.IsVisible = false;
+                entry_ftpipaddress.IsVisible = false;
+
+                lbl_username.IsVisible = false;
+                entry_username.IsVisible = false;
+
+                lbl_password.IsVisible = false;
+                entry_password.IsVisible = false;
+            }
         }
 
         protected override void OnAppearing()
@@ -29,6 +42,9 @@ namespace TQM
                 {
                     btn_Save.Text = "Update";
                     entry_companyName.Text = company.Name;
+                    entry_ftpipaddress.Text = company.ftpIpAddress;
+                    entry_username.Text = company.username;
+                    entry_password.Text = company.password;
                 }
                 conn.Close();
             }
@@ -38,13 +54,39 @@ namespace TQM
             }
         }
 
-        private void btn_Save_Clicked(object sender, EventArgs e)
+        private async void btn_Save_Clicked(object sender, EventArgs e)
         {
             try
             {
+                String companyName = "";
+                String ftpIPAddress = "";
+                String username = "";
+                String password = "";
+                
+                if (entry_companyName.Text.Trim() == "")
+                {
+                    await DisplayAlert("Attention", "Company Name cannot be blank!!!", "Ok");
+                    return;
+                }
+                if (!runConfiguration.getMoveReportToCloud())
+                {
+                    if (entry_ftpipaddress.Text.Trim() == "")
+                    {
+                        await DisplayAlert("Attention", "FTP server IP address cannot be blank!!!", "Ok");
+                        return;
+                    }
+                }
+                companyName = entry_companyName.Text;
+                ftpIPAddress = entry_ftpipaddress.Text;
+                username = entry_username.Text;
+                password = entry_password.Text;
+
                 CompanyModel companymodel = new CompanyModel()
                 {
-                    Name = entry_companyName.Text,
+                    Name = companyName,
+                    ftpIpAddress = ftpIPAddress,
+                    username = username,
+                    password = password,
                     createdate = DateTime.Now,
                     dataSyncStatus = false
                 };
@@ -68,7 +110,7 @@ namespace TQM
                 conn.Close();
                 if (row > 0)
                 {
-                    DisplayAlert("Success", "Company " + msg + " successfully!!!", "OK");
+                    _ = DisplayAlert("Success", "Company " + msg + " successfully!!!", "OK");
                     UserModel user = null;
                     using (SQLiteConnection conn1 = new SQLiteConnection(App.DatabaseLocation))
                     {
@@ -77,17 +119,17 @@ namespace TQM
                     }
                     if (user == null)
                     {
-                        Navigation.PushAsync(new UserPage());
+                        _ = Navigation.PushAsync(new UserPage());
                     }
                 }
                 else
                 {
-                    DisplayAlert("Failure", "Company failed to be " + msg + "!!!", "OK");
+                    _ = DisplayAlert("Failure", "Company failed to be " + msg + "!!!", "OK");
                 }
             }
             catch (Exception ex)
             {
-                DisplayAlert("Notice", ex.Message.ToString(), "Ok");
+                _ = DisplayAlert("Notice", ex.Message.ToString(), "Ok");
             }
         }
     }

@@ -31,7 +31,8 @@ namespace TQM.Droid
                     CheckPermissionGranted(Manifest.Permission.BluetoothScan) &&
                     CheckPermissionGranted(Manifest.Permission.BluetoothConnect) &&
                     CheckPermissionGranted(Manifest.Permission.BluetoothAdvertise) &&
-                    CheckPermissionGranted(Manifest.Permission.Internet)))
+                    CheckPermissionGranted(Manifest.Permission.Internet) &&
+                    CheckPermissionGranted(Manifest.Permission.AccessNetworkState)))
             {
                 RequestAllPermission();
             }
@@ -41,12 +42,12 @@ namespace TQM.Droid
             string fullPath = Path.Combine(folderPath, dbName);
 
             //***********To read database file from other than default folder********
-            //string testDbName = "tqm_db_test.sqlite";
-            //string dataFiles = Android.App.Application.Context.GetExternalFilesDir("").AbsolutePath;
-            //if (File.Exists(Path.Combine(dataFiles, testDbName)))
-            //{
-            //    fullPath = Path.Combine(dataFiles, testDbName);
-            //}
+            string testDbName = "tqm_db_test.sqlite";
+            string dataFiles = Android.App.Application.Context.GetExternalFilesDir("").AbsolutePath;
+            if (File.Exists(Path.Combine(dataFiles, testDbName)))
+            {
+                fullPath = Path.Combine(dataFiles, testDbName);
+            }
             //***********End********
 
             //***********To copy database file from default folder to downloads folder********
@@ -93,7 +94,8 @@ namespace TQM.Droid
                 ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.BluetoothScan) ||
                 ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.BluetoothConnect) ||
                 ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.BluetoothAdvertise) ||
-                ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.Internet))
+                ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.Internet) ||
+                ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.AccessNetworkState))
             {
                 ActivityCompat.RequestPermissions(this, new String[] {
                     Manifest.Permission.ManageExternalStorage,
@@ -106,7 +108,8 @@ namespace TQM.Droid
                     Manifest.Permission.BluetoothScan,
                     Manifest.Permission.BluetoothConnect,
                     Manifest.Permission.BluetoothAdvertise,
-                    Manifest.Permission.Internet}, 100);
+                    Manifest.Permission.Internet,
+                    Manifest.Permission.AccessNetworkState}, 100);
 
             }
             else
@@ -122,7 +125,8 @@ namespace TQM.Droid
                     Manifest.Permission.BluetoothScan,
                     Manifest.Permission.BluetoothConnect,
                     Manifest.Permission.BluetoothAdvertise,
-                    Manifest.Permission.Internet}, 100);
+                    Manifest.Permission.Internet,
+                    Manifest.Permission.AccessNetworkState}, 100);
             }
         }
     }
