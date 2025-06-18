@@ -7,7 +7,7 @@
         private string balanceSerialNo = "G85223867538";
         private string tqmAppUserID = "tqmuser";
         private bool moveReportToCloud = false;
-        private bool requireCSV = false;
+        private bool requireCSV = true;
         private bool noilsAutoCorrection = false;
         private bool apercentAutoCorrection = false;
         private bool stretchAutoCorrection = false;
