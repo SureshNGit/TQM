@@ -2550,17 +2550,50 @@ namespace TQM
                                 Java.IO.File myDir = new Java.IO.File(root + "/TQMDownloads");
                                 Java.IO.File file = new Java.IO.File(myDir, fileName);
                                 string filePath = file.Path;
-                                bool moved = await UploadFileViaFTP(filePath, FTPServerIP, username, password, fileName);
+                                //bool moved = await UploadFileViaFTP(filePath, FTPServerIP, username, password, fileName);
+                                bool moved = true;
                                 if (moved)
                                 {
-                                    if (deleteAll)
+                                    if (runConfiguration.getCSVReportStatus())
                                     {
-                                        deleteRecords(deleteList);
-                                        showAlert("Report moved to network/shared folder and deleted sucessfully!!!");
+                                        if (!generateCSVConsolidatedReport()) { showAlert("Error occurred in CSV report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
+                                        if (!string.IsNullOrWhiteSpace(FTPServerIP) && !string.IsNullOrWhiteSpace(username) && password != null)
+                                        {
+                                            string fileName_csv = "TQM_Report_Consolidated(Wrapping).csv";
+                                            string root_csv = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                                            Java.IO.File myDir_csv = new Java.IO.File(root_csv + "/TQMDownloads");
+                                            Java.IO.File file_csv = new Java.IO.File(myDir_csv, fileName_csv);
+                                            string filePath_csv = file_csv.Path;
+                                            moved = await UploadFileViaFTP(filePath_csv, FTPServerIP, username, password, fileName_csv);
+                                            if (moved)
+                                            {
+                                                if (deleteAll)
+                                                {
+                                                    deleteRecords(deleteList);
+                                                    showAlert("Report moved to network/shared folder and deleted sucessfully!!!");
+                                                }
+                                                else
+                                                {
+                                                    showAlert("Report moved to network/shared folder successfully!");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                showAlert("Failed to move report to network/shared folder. Please try again!!!", "Error");
+                                            }
+                                        }
                                     }
                                     else
                                     {
-                                        showAlert("Report moved to network/shared folder successfully!");
+                                        if (deleteAll)
+                                        {
+                                            deleteRecords(deleteList);
+                                            showAlert("Report moved to network/shared folder and deleted sucessfully!!!");
+                                        }
+                                        else
+                                        {
+                                            showAlert("Report moved to network/shared folder successfully!");
+                                        }
                                     }
                                 }
                                 else
@@ -2615,98 +2648,44 @@ namespace TQM
                                 if (runConfiguration.getCSVReportStatus())
                                 {
                                     if (!generateCSVConsolidatedReport()) { showAlert("Error occurred in CSV report generation, hence upload is unsucessful!!!"); await resetBtn(); return; }
-
-                                    bool action_csv = runConfiguration.getMoveReportToCloud();
-                                    if (!action_csv)
+                                    fileName = "TQM_Report_Consolidated(Wrapping).csv";
+                                    root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                                    myDir = new Java.IO.File(root + "/TQMDownloads");
+                                    file = new Java.IO.File(myDir, fileName);
+                                    filePath = file.Path;
+                                    client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
+                                    request = new RestRequest();
+                                    request.Method = Method.Post;
+                                    //request.Timeout = Timeout.Infinite;
+                                    request.AddParameter("userName", runConfiguration.getTQMAppUserID());
+                                    request.AddParameter("uploadedby", companyName);
+                                    if (selectedMachineCategory != null)
                                     {
-                                        string FTPServerIP = "";
-                                        string username = "";
-                                        string password = "";
-
-                                        try
+                                        request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
+                                    }
+                                    else
+                                    {
+                                        request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-All)-" + DateTime.Now.ToString());
+                                    }
+                                    request.AddFile("reportpath", filePath);
+                                    response = client.Execute(request);
+                                    if (response.IsSuccessful)
+                                    {
+                                        if (deleteAll)
                                         {
-                                            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
-                                            conn.CreateTable<CompanyModel>();
-                                            var company = conn.Table<CompanyModel>().FirstOrDefault();
-                                            if (company != null)
-                                            {
-                                                FTPServerIP = company.ftpIpAddress;
-                                                username = company.username;
-                                                password = company.password;
-                                            }
-                                            conn.Close();
+                                            deleteRecords(deleteList);
+                                            showAlert("Report uploaded and deleted sucessfully!!!");
                                         }
-                                        catch (Exception ex)
+                                        else
                                         {
-                                            showAlert("Error occurred!!! Error: " + ex.Message.ToString(), "Error");
-                                        }
-
-                                        if (!string.IsNullOrWhiteSpace(FTPServerIP) && !string.IsNullOrWhiteSpace(username) && password != null)
-                                        {
-                                            string fileName_csv = "TQM_Report_Consolidated(Wrapping).csv";
-                                            string root_csv = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                                            Java.IO.File myDir_csv = new Java.IO.File(root_csv + "/TQMDownloads");
-                                            Java.IO.File file_csv = new Java.IO.File(myDir_csv, fileName_csv);
-                                            string filePath_csv = file_csv.Path;
-                                            bool moved = await UploadFileViaFTP(filePath_csv, FTPServerIP, username, password, fileName_csv);
-                                            if (moved)
-                                            {
-                                                if (deleteAll)
-                                                {
-                                                    deleteRecords(deleteList);
-                                                    showAlert("Report moved to network/shared folder and deleted sucessfully!!!");
-                                                }
-                                                else
-                                                {
-                                                    showAlert("Report moved to network/shared folder successfully!");
-                                                }
-                                            }
-                                            else
-                                            {
-                                                showAlert("Failed to move report to network/shared folder. Please try again!!!", "Error");
-                                            }
+                                            showAlert("Report upload is sucessful!!!");
                                         }
                                     }
                                     else
                                     {
-                                        fileName = "TQM_Report_Consolidated(Wrapping).csv";
-                                        root = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                                        myDir = new Java.IO.File(root + "/TQMDownloads");
-                                        file = new Java.IO.File(myDir, fileName);
-                                        filePath = file.Path;
-                                        client = new RestClient("https://myconsoleerp.herokuapp.com/tqmreport/upload");
-                                        request = new RestRequest();
-                                        request.Method = Method.Post;
-                                        //request.Timeout = Timeout.Infinite;
-                                        request.AddParameter("userName", runConfiguration.getTQMAppUserID());
-                                        request.AddParameter("uploadedby", companyName);
-                                        if (selectedMachineCategory != null)
-                                        {
-                                            request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-" + selectedMachineCategory + ")-" + DateTime.Now.ToString());
-                                        }
-                                        else
-                                        {
-                                            request.AddParameter("title", "TQMReportsConsolidated-CSV-(Wrapping-All)-" + DateTime.Now.ToString());
-                                        }
-                                        request.AddFile("reportpath", filePath);
-                                        response = client.Execute(request);
-                                        if (response.IsSuccessful)
-                                        {
-                                            if (deleteAll)
-                                            {
-                                                deleteRecords(deleteList);
-                                                showAlert("Report uploaded and deleted sucessfully!!!");
-                                            }
-                                            else
-                                            {
-                                                showAlert("Report upload is sucessful!!!");
-                                            }
-                                        }
-                                        else
-                                        {
-                                            showAlert("Upload Failed. Please try again!!!", "Error");
-                                        }
+                                        showAlert("Upload Failed. Please try again!!!", "Error");
                                     }
+                                    
                                 }
                                 else
                                 {
