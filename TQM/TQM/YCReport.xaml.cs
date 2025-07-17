@@ -2431,6 +2431,10 @@ namespace TQM
                 request.UseBinary = true;
                 request.KeepAlive = false;
 
+                // Set timeouts to avoid hanging if the server is unreachable
+                request.Timeout = 10000; // 10 seconds
+                request.ReadWriteTimeout = 10000; // 10 seconds
+
                 byte[] fileContents;
 
                 try
