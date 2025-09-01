@@ -5,8 +5,8 @@
         //Demo balance serail no: G85219651634
         //Test balance serail no: DS85222849198
         private string balanceSerialNo = "SS-07";
-        private string tqmAppUserID = "tqmuser";
-        private bool requireCSV = true;
+        private string tqmAppUserID = "svyapallava";
+        private bool requireCSV = false;
 
         public string getBalanceSerialNo()
         {
