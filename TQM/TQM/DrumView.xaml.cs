@@ -148,7 +148,7 @@ namespace TQM
                 {
 
                     ConfigModel cm = conn.Table<ConfigModel>().Where(ConfigModel =>
-                                    (ConfigModel.machineID == selectedMachineID)).FirstOrDefault();
+                                    (ConfigModel.machineID == selectedMachineID)).OrderByDescending(ConfigModel => ConfigModel.updateddate).FirstOrDefault();
 
                     if (cm == null)
                     {
