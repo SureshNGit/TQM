@@ -302,6 +302,10 @@ namespace TQM
 
         void btn_section2_Clicked(System.Object sender, System.EventArgs e)
         {
+            contentGrid.IsVisible = false;
+
+            progressGrid.IsVisible = true;
+
             Navigation.PushAsync(new DrumView(selectedCategoryID,
                                                 selectedCategory,
                                                 selectedMachineID,
@@ -317,6 +321,10 @@ namespace TQM
 
         void btn_section3_Clicked(System.Object sender, System.EventArgs e)
         {
+            contentGrid.IsVisible = false;
+
+            progressGrid.IsVisible = true;
+
             Navigation.PushAsync(new DrumView(selectedCategoryID,
                                                 selectedCategory,
                                                 selectedMachineID,
@@ -332,6 +340,10 @@ namespace TQM
 
         void btn_section4_Clicked(System.Object sender, System.EventArgs e)
         {
+            contentGrid.IsVisible = false;
+
+            progressGrid.IsVisible = true;
+
             Navigation.PushAsync(new DrumView(selectedCategoryID,
                                                 selectedCategory,
                                                 selectedMachineID,
