@@ -28,6 +28,11 @@ namespace TQM
         public TestHome ()
 		{
 			InitializeComponent ();
+
+            contentGrid.IsVisible = true;
+
+            progressGrid.IsVisible = false;
+
             using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
                 //conn.DropTable<StrengthTestModel>();
@@ -46,6 +51,21 @@ namespace TQM
             }
         }
 
+
+        protected override void OnAppearing()
+        {
+            try
+            {
+                base.OnAppearing();
+                contentGrid.IsVisible = true;
+
+                progressGrid.IsVisible = false;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Notice", ex.Message.ToString(), "Ok");
+            }
+        }
 
         public TestHome(string macCat, Guid macID, string macName)
         {
@@ -263,6 +283,10 @@ namespace TQM
 
         void btn_section1_Clicked(System.Object sender, System.EventArgs e)
         {
+            contentGrid.IsVisible = false;
+
+            progressGrid.IsVisible = true;
+
             Navigation.PushAsync(new DrumView(selectedCategoryID,
                                                 selectedCategory,
                                                 selectedMachineID,

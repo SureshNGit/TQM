@@ -23,7 +23,7 @@
     </NavigationPage.TitleView>
     <ContentPage.Content>
         <StackLayout>
-            <Grid Margin="20,30">
+            <Grid Margin="20,30" x:Name="contentGrid" IsVisible="false">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -93,7 +93,35 @@
                        FontSize="16" TextColor="red"/>
 
             </Grid>
-         </StackLayout>
+
+            <Grid Margin="20,30" x:Name="progressGrid" IsVisible="false">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ActivityIndicator Grid.Row="0" Grid.Column="5" Color="Orange" x:Name="actInd_progress"
+                        HorizontalOptions="End" VerticalOptions="Center" Margin="20,100,0,0"
+                        IsVisible="True" IsRunning="True" />
+                <ActivityIndicator Grid.Row="0" Grid.Column="6" Color="OrangeRed" x:Name="actInd_progress1"
+                        HorizontalOptions="Start" VerticalOptions="Center" Margin="0,100,0,0"
+                        IsVisible="True" IsRunning="True" />
+                <ActivityIndicator Grid.Row="0" Grid.Column="6" Color="LightSeaGreen" x:Name="actInd_progress2"
+                        HorizontalOptions="Center" VerticalOptions="Center" Margin="-7,100,0,0"
+                        IsVisible="True" IsRunning="True" />
+                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6" IsVisible="true"
+        Text="Analyzing drum data.Please wait... "
+                HorizontalOptions="Center" VerticalOptions="Center"
+            TextColor="Red" FontSize="48" x:Name="lbl_progress" Margin="10,100,0,0"/>
+            </Grid>
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>
 
