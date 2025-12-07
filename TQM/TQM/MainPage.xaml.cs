@@ -18,7 +18,12 @@ namespace TQM
             InitializeComponent();
         }
 
-
+        protected override bool OnBackButtonPressed()
+        {
+            // Returning true cancels the back navigation.
+            // If you want the app to exit instead, call System.Environment.Exit(0) here.
+            return true;
+        }
 
 
         protected override void OnAppearing()
