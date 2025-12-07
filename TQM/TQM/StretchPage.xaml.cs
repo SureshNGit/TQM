@@ -731,13 +731,49 @@ namespace TQM
                     STD_CV_DEVIATION = yarncountconfigmodel.CVDeviationPercent;
 
 
-                    TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
-                    TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
-                    TimeSpan shit3time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift3time).TotalHours);
-                    TimeSpan currentTime = TimeSpan.FromHours(TimeSpan.Parse(DateTime.Now.Hour.ToString() + ":" + DateTime.Now.Minute.ToString()).TotalHours);
+                    //TimeSpan shit1time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift1time).TotalHours);
+                    //TimeSpan shit2time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift2time).TotalHours);
+                    //TimeSpan shit3time = TimeSpan.FromHours(TimeSpan.Parse(yarncountconfigmodel.shift3time).TotalHours);
+                    //TimeSpan currentTime = TimeSpan.FromHours(TimeSpan.Parse(DateTime.Now.Hour.ToString() + ":" + DateTime.Now.Minute.ToString()).TotalHours);
 
-                    int duration = 0;
+                    //int duration = 0;
 
+                    //if (yarncountconfigmodel.shiftCount == 1)
+                    //{
+                    //    duration = 24;
+                    //}
+                    //else if (yarncountconfigmodel.shiftCount == 2)
+                    //{
+                    //    duration = 12;
+                    //}
+                    //if (yarncountconfigmodel.shiftCount == 3)
+                    //{
+                    //    duration = 8;
+                    //}
+
+                    //if (getTimeList(shit1time, duration).Contains(currentTime))
+                    //{
+                    //    picker_shift.SelectedItem = "Shift-1";
+                    //}
+                    //else if (getTimeList(shit2time, duration).Contains(currentTime))
+                    //{
+                    //    picker_shift.SelectedItem = "Shift-2";
+                    //}
+                    //else if (getTimeList(shit3time, duration).Contains(currentTime))
+                    //{
+                    //    picker_shift.SelectedItem = "Shift-3";
+                    //}
+
+                    // Parse shift start times directly
+                    TimeSpan shift1Start = TimeSpan.Parse(yarncountconfigmodel.shift1time);   // "HH:mm"
+                    TimeSpan shift2Start = TimeSpan.Parse(yarncountconfigmodel.shift2time);
+                    TimeSpan shift3Start = TimeSpan.Parse(yarncountconfigmodel.shift3time);
+
+                    // Current time of day (HH:mm:ss)
+                    TimeSpan currentTime = DateTime.Now.TimeOfDay;
+
+                    // Determine duration per shift (in hours)
+                    int duration;
                     if (yarncountconfigmodel.shiftCount == 1)
                     {
                         duration = 24;
@@ -746,22 +782,30 @@ namespace TQM
                     {
                         duration = 12;
                     }
-                    if (yarncountconfigmodel.shiftCount == 3)
+                    else // shiftCount == 3
                     {
                         duration = 8;
                     }
 
-                    if (getTimeList(shit1time, duration).Contains(currentTime))
+                    // Now just test intervals in order
+                    if (IsInShift(currentTime, shift1Start, duration))
                     {
                         picker_shift.SelectedItem = "Shift-1";
                     }
-                    else if (getTimeList(shit2time, duration).Contains(currentTime))
+                    else if (yarncountconfigmodel.shiftCount >= 2 &&
+                             IsInShift(currentTime, shift2Start, duration))
                     {
                         picker_shift.SelectedItem = "Shift-2";
                     }
-                    else if (getTimeList(shit3time, duration).Contains(currentTime))
+                    else if (yarncountconfigmodel.shiftCount >= 3 &&
+                             IsInShift(currentTime, shift3Start, duration))
                     {
                         picker_shift.SelectedItem = "Shift-3";
+                    }
+                    else
+                    {
+                        // Optional: handle misconfiguration or gaps between shifts
+                        picker_shift.SelectedItem = null; // or some default
                     }
 
                 }
@@ -779,26 +823,50 @@ namespace TQM
             }
         }
 
-        public List<TimeSpan> getTimeList(TimeSpan targetTime, int timeDuration)
+        private bool IsInShift(TimeSpan current, TimeSpan shiftStart, int durationHours)
         {
-            List<TimeSpan> returnTimeList = new List<TimeSpan>();
-            for (int i = 0; i < timeDuration; i++)
+            TimeSpan shiftEnd = shiftStart.Add(TimeSpan.FromHours(durationHours));
+
+            // Normalize end if it goes past midnight
+            if (shiftEnd >= TimeSpan.FromDays(1))
             {
-                int hrs = targetTime.Hours + i;
-                if (hrs >= 24)
-                {
-                    hrs = hrs - 24;
-                };
-                for (int j = 0; j < 60; j++)
-                {//minutes
-                    for (int k = 0; k < 60; k++)
-                    {//seconds
-                        returnTimeList.Add(TimeSpan.Parse(hrs.ToString() + ":" + j.ToString() + ":" + k.ToString()));
-                    }
-                }
+                shiftEnd -= TimeSpan.FromDays(1);   // subtract 24 hours
             }
-            return returnTimeList;
+
+            // Case 1: interval does NOT wrap past midnight (e.g. 07:59 – 15:59)
+            if (shiftStart < shiftEnd)
+            {
+                return current >= shiftStart && current < shiftEnd;
+            }
+            // Case 2: interval wraps past midnight (e.g. 23:59 – 07:59)
+            else
+            {
+                // Example: start = 23:59, end = 07:59
+                // Valid if current >= 23:59 OR current < 07:59
+                return current >= shiftStart || current < shiftEnd;
+            }
         }
+
+        //public List<TimeSpan> getTimeList(TimeSpan targetTime, int timeDuration)
+        //{
+        //    List<TimeSpan> returnTimeList = new List<TimeSpan>();
+        //    for (int i = 0; i < timeDuration; i++)
+        //    {
+        //        int hrs = targetTime.Hours + i;
+        //        if (hrs >= 24)
+        //        {
+        //            hrs = hrs - 24;
+        //        };
+        //        for (int j = 0; j < 60; j++)
+        //        {//minutes
+        //            for (int k = 0; k < 60; k++)
+        //            {//seconds
+        //                returnTimeList.Add(TimeSpan.Parse(hrs.ToString() + ":" + j.ToString() + ":" + k.ToString()));
+        //            }
+        //        }
+        //    }
+        //    return returnTimeList;
+        //}
 
         protected override void OnDisappearing()
         {
