@@ -561,6 +561,8 @@ namespace TQM
 
                             consolItems.testDuration = userParams;
 
+                            //consolItems.testDuration = stretchCalc.userName;
+
 
                             consolItems.remarks = stretchCalc.testRemark;
 
@@ -1517,6 +1519,7 @@ namespace TQM
                        
 
                         pdfGrid.Rows[0].Cells[7].Value = "User Params";
+                        //pdfGrid.Rows[0].Cells[7].Value = "User Name";
                         pdfGrid.Rows[0].Cells[7].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[7].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[7].Style.BackgroundBrush = PdfBrushes.LightGray;

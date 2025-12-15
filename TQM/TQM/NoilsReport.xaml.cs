@@ -555,6 +555,8 @@ namespace TQM
 
                             consolItems.testDuration = userParams;
 
+                            //consolItems.testDuration = noilsCalc.userName;
+
 
                             consolItems.remarks = noilsCalc.testRemark;
 
@@ -1413,6 +1415,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[8].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
 
                         pdfGrid.Rows[0].Cells[9].Value = "User Params";
+                        //pdfGrid.Rows[0].Cells[9].Value = "User Name";
                         pdfGrid.Rows[0].Cells[9].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[9].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[9].Style.BackgroundBrush = PdfBrushes.LightGray;

@@ -636,6 +636,7 @@ namespace TQM
                             }
 
                             consolItems.testDuration = userParams;
+                            //consolItems.testDuration = apercentCalc.userName;
 
                             consolItems.remarks = apercentCalc.testRemark;
 
@@ -1721,6 +1722,7 @@ namespace TQM
                         pdfGrid.Rows[0].Cells[7].Style.Font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
                         
                         pdfGrid.Rows[0].Cells[8].Value = "User Params";
+                        //pdfGrid.Rows[0].Cells[8].Value = "User Name";
                         pdfGrid.Rows[0].Cells[8].StringFormat.Alignment = PdfTextAlignment.Center;
                         pdfGrid.Rows[0].Cells[8].StringFormat.LineAlignment = PdfVerticalAlignment.Middle;
                         pdfGrid.Rows[0].Cells[8].Style.BackgroundBrush = PdfBrushes.LightGray;
